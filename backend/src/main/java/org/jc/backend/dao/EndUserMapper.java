@@ -12,7 +12,9 @@ public interface EndUserMapper {
 
     EndUserDO queryUserByName(String username);
 
-    List<String> queryRolesByUserId(int id);
+    String queryRoleByUserId(int id);
 
     List<String> queryPermissionsByUserId(int id);
+
+    List<EndUserDO> queryAllUsers();
 }

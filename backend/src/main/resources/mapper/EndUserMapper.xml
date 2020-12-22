@@ -11,18 +11,25 @@
     </resultMap>
     
     <select id="queryUserByName" resultMap="EndUserResultMap">
-        select * from end_user where username = #{username};
+        select user_id, username, password
+        from u_end_user
+        where username = #{username};
     </select>
 
     <select id="queryRolesByUserId" resultType="string">
         select role
-        from user_role join role on user_role.role_id = role.role_id
-        where user_role.user_id = #{id}
+        from u_user_role join u_role on u_user_role.role_id = u_role.role_id
+        where u_user_role.user_id = #{id}
     </select>
 
     <select id="queryPermissionsByUserId" resultType="string">
         select permission
-        from user_permission join permission on user_permission.permission_id = permission.permission_id
-        where user_permission.user_id = #{id}
+        from u_user_permission join u_permission on u_user_permission.permission_id = u_permission.permission_id
+        where u_user_permission.user_id = #{id}
+    </select>
+
+    <select id="queryAllUsers" resultMap="EndUserResultMap">
+        select user_id, username
+        from u_end_user
     </select>
 </mapper>

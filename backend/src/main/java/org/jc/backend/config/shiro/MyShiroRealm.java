@@ -7,12 +7,13 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.jc.backend.entity.DO.EndUserDO;
+import org.jc.backend.entity.DTO.EndUserDTO;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 
@@ -33,7 +34,7 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         UsernamePasswordToken userToken = (UsernamePasswordToken) token;
 
-        EndUserDO user = userService.queryUserByName(userToken.getUsername());
+        EndUserDTO user = userService.getUserByName(userToken.getUsername());
 
         if (user == null) {
             throw new AuthenticationException("no such account");
@@ -84,10 +85,12 @@ public class MyShiroRealm extends AuthorizingRealm {
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
-        EndUserDO user = userService.queryUserByName(username);
+        EndUserDTO user = userService.getUserByName(username);
 
-        authorizationInfo.setRoles(new HashSet<>(userService.queryRolesByUserId(user.getUserID())));
-        authorizationInfo.addStringPermissions(userService.queryPermissionsByUserId(user.getUserID()));
+        HashSet<String> roles = new HashSet<>();
+        roles.add(userService.getRoleByUserId(user.getUserID()));
+        authorizationInfo.setRoles(roles);
+        authorizationInfo.addStringPermissions(userService.getPermissionsByUserId(user.getUserID()));
 
 //        User userInfo = (User) principals.getPrimaryPrincipal();
 //        for (SysRole role : userInfo.getRoleList()) {
