@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.ModelMapper">
+
+    <resultMap id="ModelCategoryResultMap" type="org.jc.backend.entity.ModelCategoryO">
+        <result property="modelCategoryID" column="model_category_id"/>
+        <result property="sequenceNumber" column="sequence_number"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="remark" column="remark"/>
+        <result property="treeLevel" column="tree_level"/>
+    </resultMap>
+
+    <select id="queryModelCategories" resultMap="ModelCategoryResultMap">
+        select model_category_id, sequence_number, code, name, remark, tree_level
+        from w_model_category
+        order by tree_level
+    </select>
+
+    <resultMap id="ModelResultMap" type="org.jc.backend.entity.ModelO">
+        <result property="modelID" column="model_id"/>
+        <result property="sequenceNumber" column="sequence_number"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
+        <result property="categoryID" column="category_id"/>
+        <result property="unitID" column="unit_id"/>
+    </resultMap>
+
+    <select id="queryModelsByCategory" resultMap="ModelResultMap">
+        select model_id, sequence_number, new_code, old_code, category_id, unit_id
+        from w_model
+        where category_id = #{id}
+    </select>
+
+</mapper>
