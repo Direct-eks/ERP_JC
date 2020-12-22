@@ -78,7 +78,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @GetMapping("/getUserList")
     public List<EndUserVO> getUserList() {
-        logger.info("POST Request to /getUserList");
+        logger.info("GET Request to /getUserList");
 
         List<EndUserVO> userVOList = new ArrayList<>();
 
@@ -98,6 +98,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @GetMapping("/getAllRoles")
     public List<String> getAllRoles() {
+        logger.info("GET Request to /getAllRoles");
         //todo
         return null;
     }
@@ -106,6 +107,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @GetMapping("/getAllPermissions")
     public List<String> getAllPermissions() {
+        logger.info("GET Request to /getAllPermissions");
         //todo
         return null;
     }
