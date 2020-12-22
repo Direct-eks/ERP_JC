@@ -32,13 +32,17 @@ public class MyShiroConfig {
         urlFilterMap.put("/user", "anon");
 
         // swagger 2 config
-        urlFilterMap.put("/swagger-ui.html", "anon");
-        urlFilterMap.put("/swagger-resources/**", "anon");
-        urlFilterMap.put("/v2/**", "anon");
-        urlFilterMap.put("/webjars/springfox-swagger-ui/**", "anon");
+//        urlFilterMap.put("/swagger-ui.html", "anon");
+//        urlFilterMap.put("/swagger-resources/**", "anon");
+//        urlFilterMap.put("/v2/**", "anon");
+//        urlFilterMap.put("/webjars/springfox-swagger-ui/**", "anon");
 //        urlFilterMap.put("/configuration/**", "anon");
 
-        urlFilterMap.put("/**", "authc");
+        /* ------------------ production mode ------------------*/
+//        urlFilterMap.put("/**", "authc");
+
+        /* ------------------ production mode ------------------*/
+        urlFilterMap.put("/**", "anon");
 
         shiroFilterFactoryBean.setLoginUrl("/user/userAuthentication");
 //        shiroFilterFactoryBean.setUnauthorizedUrl("/user/userAuthorization");
