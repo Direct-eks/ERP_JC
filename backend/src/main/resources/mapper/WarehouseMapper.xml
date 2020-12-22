@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.WarehouseMapper">
+
+    <resultMap id="WarehouseResultMap" type="org.jc.backend.entity.WarehouseO">
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="name" column="name"/>
+        <result property="location" column="location"/>
+        <result property="isDefault" column="is_default"/>
+    </resultMap>
+
+    <select id="queryWarehouses" resultMap="WarehouseResultMap">
+        select warehouse_id, name, location, is_default
+        from w_warehouse
+    </select>
+
+</mapper>
