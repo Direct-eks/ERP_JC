@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.WarehouseStockMapper">
+
+    <resultMap id="WarehouseStockResultMap" type="org.jc.backend.entity.WarehouseStockO">
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="warehouseName" column="warehouseName"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="stockUnitPriceWithoutTax" column="stock_unit_price_without_tax"/>
+        <result property="stockUnitPriceWithTax" column="stock_unit_price_with_tax"/>
+        <result property="remark" column="remark"/>
+        <result property="factoryPriceWithoutTax" column="factory_price_without_tax"/>
+        <result property="factoryPriceWithTax" column="factory_price_with_tax"/>
+        <result property="settlementPriceWithoutTax" column="settlement_price_without_tax"/>
+        <result property="priceBaseReference" column="price_base_reference"/>
+        <result property="wholesalePriceDiscount" column="wholesale_price_discount"/>
+        <result property="wholesalePrice" column="wholesale_price"/>
+        <result property="retailPriceDiscount" column="retail_price_discount"/>
+        <result property="retailPrice" column="retail_price"/>
+        <result property="stockLowerLimit" column="stock_lower_limit"/>
+        <result property="stockUpperLimit" column="stock_upper_limit"/>
+        <result property="storagePlaceID" column="storage_place_id"/>
+    </resultMap>
+
+
+    <select id="queryWarehouseStocksBySku" resultMap="WarehouseStockResultMap">
+        select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouseName, stock_quantity,
+               stock_unit_price_without_tax, stock_unit_price_with_tax, remark, factory_price_without_tax,
+               factory_price_with_tax, settlement_price_without_tax, price_base_reference, wholesale_price_discount,
+               wholesale_price, retail_price_discount, retail_price, stock_lower_limit, stock_upper_limit, storage_place_id
+        from w_warehouse_stock as ws join w_warehouse as w on ws.warehouse_id = w.warehouse_id
+        where ws.sku_id = #{id}
+    </select>
+
+</mapper>
