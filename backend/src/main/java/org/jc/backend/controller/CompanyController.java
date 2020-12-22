@@ -45,7 +45,7 @@ public class CompanyController {
     @ApiOperation(value = "", response = CompanyO.class)
     @GetMapping("/getCompaniesByCategory/{id}")
     public List<CompanyO> getCompaniesByCategory(@PathVariable("id") int id) {
-        logger.info("POST Request to /getCompaniesByCategory, id: " + id);
+        logger.info("GET Request to /getCompaniesByCategory, id: " + id);
 
         return companyService.getCompaniesByCategory(id);
     }
