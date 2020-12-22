@@ -1,7 +1,22 @@
 server:
   port: 3000
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,shutdown"
+      base-path: "/actuator"
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      show-details: always
 
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 1s
   datasource:
     username:
     password:
