@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.PurchaseOrderMapper">
+
+    <resultMap id="" type="org.jc.backend.entity.VO.">
+
+    </resultMap>
+
+    <resultMap id="" type="org.jc.backend.entity.VO.">
+
+    </resultMap>
+
+
+    <select id="queryPurchaseOrderEntriesByCompanyID" resultMap="">
+        select
+        from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
+            join e_department as d on p.department_id = d.department_id)
+            join w_warehouse as w on p.warehouse_id = w.warehouse_id
+        where p.entry_date between #{startDate} and #{endDats}
+            <if test="id != -1">
+                and p.partner_company_id = #{id}
+            </if>
+    </select>
+
+    <select id="queryPurchaseOrderProductsByEntryID" resultMap="">
+
+    </select>
+
+</mapper>
