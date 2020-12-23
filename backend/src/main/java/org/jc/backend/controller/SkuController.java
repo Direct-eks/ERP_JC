@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.entity.SkuWithFactoryBrandO;
+import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +28,11 @@ public class SkuController {
 
     /* ------------------------------ API ------------------------------ */
 
-    @ApiOperation(value = "", response = SkuWithFactoryBrandO.class)
-    @GetMapping("/getFactoryBandsByModel/{id}")
-    public List<SkuWithFactoryBrandO> getFactoryBandsByModel(@PathVariable("id") int id) {
-        logger.info("GET Request to /getFactoryBandsByModel, id: " + id);
+    @ApiOperation(value = "", response = SkuFullO.class)
+    @GetMapping("/getFullSkuByModel/{id}")
+    public List<SkuFullO> getFullSkuByModel(@PathVariable("id") int id) {
+        logger.info("GET Request to /getFullSkuByModel, id: " + id);
 
-        return skuService.getFactoryBrandsByModel(id);
+        return skuService.getFullSkuByModel(id);
     }
 }

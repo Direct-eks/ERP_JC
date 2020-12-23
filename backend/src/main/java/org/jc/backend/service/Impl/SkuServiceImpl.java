@@ -1,7 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.jc.backend.dao.SkuMapper;
-import org.jc.backend.entity.SkuWithFactoryBrandO;
+import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class SkuServiceImpl implements SkuService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    public List<SkuWithFactoryBrandO> getFactoryBrandsByModel(int id) {
-        return skuMapper.queryFactoryBrandsByModel(id);
+    public List<SkuFullO> getFullSkuByModel(int id) {
+        return skuMapper.queryFullSkuByModel(id);
     }
 }
