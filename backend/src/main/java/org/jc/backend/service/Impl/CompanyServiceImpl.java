@@ -3,6 +3,8 @@ package org.jc.backend.service.Impl;
 import org.jc.backend.dao.CompanyMapper;
 import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
+import org.jc.backend.entity.RelevantCompanyCategoryO;
+import org.jc.backend.entity.RelevantCompanyO;
 import org.jc.backend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,5 +41,14 @@ public class CompanyServiceImpl implements CompanyService {
 
     public List<CompanyO>getCompaniesByCategory(int id) {
          return companyMapper.queryCompaniesByCategory(id);
+    }
+
+
+    public List<RelevantCompanyCategoryO> getRelevantCompanyCategories() {
+        return companyMapper.queryRelevantCompanyCategories();
+    }
+
+    public List<RelevantCompanyO> getRelevantCompaniesByCategory(int id) {
+        return companyMapper.queryRelevantCompaniesByCategory(id);
     }
 }

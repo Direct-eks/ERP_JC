@@ -4,6 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
+import org.jc.backend.entity.RelevantCompanyCategoryO;
+import org.jc.backend.entity.RelevantCompanyO;
 import org.jc.backend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,5 +50,22 @@ public class CompanyController {
         logger.info("GET Request to /getCompaniesByCategory, id: " + id);
 
         return companyService.getCompaniesByCategory(id);
+    }
+
+
+    @ApiOperation(value = "", response = RelevantCompanyCategoryO.class)
+    @GetMapping("/getRelevantCompanyCategories")
+    public List<RelevantCompanyCategoryO> getRelevantCompanyCategories() {
+        logger.info("GET Request to /getRelevantCompanyCategories");
+
+        return companyService.getRelevantCompanyCategories();
+    }
+
+    @ApiOperation(value = "", response = RelevantCompanyO.class)
+    @GetMapping("/getRelevantCompaniesByCategory/{id}")
+    public List<RelevantCompanyO> getRelevantCompaniesByCategory(@PathVariable("id") int id) {
+        logger.info("GET Request to /getRelevantCompaniesByCategory, id: " + id);
+
+        return companyService.getRelevantCompaniesByCategory(id);
     }
 }
