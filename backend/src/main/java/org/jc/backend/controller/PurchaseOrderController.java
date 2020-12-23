@@ -32,11 +32,10 @@ public class PurchaseOrderController {
 
     @ApiOperation(value = "", response = Boolean.class)
     @PutMapping("/createNewPurchaseOrder")
-    public Boolean createNewPurchaseOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) {
+    public void createNewPurchaseOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) throws GlobalException {
         logger.info("PUT Request to /createNewPurchaseOrder");
 
-        //todo
-        return null;
+        purchaseOrderService.createNewPurchaseOrder(purchaseOrderEntry);
     }
 
     @ApiOperation(value = "", response = PurchaseOrderEntryWithProductsVO.class,
@@ -46,7 +45,7 @@ public class PurchaseOrderController {
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "id", defaultValue = "-1") Integer id) throws GlobalException {
-        logger.info("GET Request to /getPurchaseOrdersByCompanyID, start date: " + startDateString +
+        logger.info("GET Request to /getPurchaseOrdersWithinDateRangeByCompanyID, start date: " + startDateString +
                 ", end date： " + endDateString + ", id: " + id);
 
         // parse Date to verify passed param
@@ -61,6 +60,6 @@ public class PurchaseOrderController {
             throw new GlobalException(errorInfo);
         }
 
-        return purchaseOrderService.getPurchaseOrdersWithinDateRangeByCompanyID(startDate, endDate, id);
+        return purchaseOrderService.getOrdersWithinDateRangeByCompanyID(startDate, endDate, id);
     }
 }

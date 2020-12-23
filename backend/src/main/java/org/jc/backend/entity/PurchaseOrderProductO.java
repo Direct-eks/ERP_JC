@@ -1,11 +1,14 @@
-package org.jc.backend.entity.DO;
+package org.jc.backend.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+
 @Getter
 @Setter
-public class PurchaseOrderProductDO {
+public class PurchaseOrderProductO {
     private int purchaseOrderProductID;
     private String purchaseOrderEntryID;
 
@@ -16,12 +19,15 @@ public class PurchaseOrderProductDO {
     private String unitName;
     private String factoryCode;
 
+    @Min(value = 1, message = "quantity not zero error")
     private int quantity;
     private String remark;
     private int warehouseStockID;
     private int warehouseID;
     private double taxRate;
+    @DecimalMin(value = "0.0", message = "unitPriceWithoutTax smaller than zero error")
     private double unitPriceWithoutTax;
+    @DecimalMin(value = "0.0", message = "unitPriceWithTax smaller than zero error")
     private double unitPriceWithTax;
     private double stockUnitPrice;
 }

@@ -2,23 +2,27 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jc.backend.entity.PurchaseOrderProductO;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
 @Setter
 public class PurchaseOrderEntryWithProductsVO {
     private String purchaseOrderEntryID;
-    private String serial;
     @NotNull(message = "entryDate null error")
-    private Date entryDate;
+    private String entryDate;
     @NotNull(message = "creationDate null error")
-    private Date creationDate;
+    private String creationDate;
+    @DecimalMin(value = "0.0", message = "totalCost smaller than zero error")
     private double totalCost;
+    @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
     private String invoiceType;
+    @Pattern(regexp = "^(执行|中止)$", message = "executionStatus value error")
     private String executionStatus;
     private String drawer;
 
@@ -39,5 +43,6 @@ public class PurchaseOrderEntryWithProductsVO {
     private String remark;
 
     // PurchaseOrderProductVO
-    private List<PurchaseOrderProductVO> purchaseOrderProducts;
+    @Valid
+    private List<PurchaseOrderProductO> purchaseOrderProducts;
 }
