@@ -16,12 +16,6 @@ public class PurchaseOrderProductModifyDO {
     private double unitPriceWithoutTax;
     private double unitPriceWithTax;
 
-    private boolean quantityChange;
-    private boolean remarkChange;
-    private boolean taxRateChange;
-    private boolean unitPriceWithoutTaxChange;
-    private boolean unitPriceWithTaxChange;
-
     //only used for modification record
     private String newCode;
     private String oldCode;

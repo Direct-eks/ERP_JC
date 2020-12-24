@@ -146,26 +146,22 @@
 
     <update id="updateOrderEntry" parameterType="org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO">
         update e_purchase_order_entry
-        <set>
-            <if test="totalCostChange">total_cost=#{totalCost},</if>
-            <if test="invoiceTypeChange">invoice_type=#{invoiceType},</if>
-            <if test="executionStatusChange">execution_status=#{executionStatus},</if>
-            <if test="departmentIDChange">department_id=#{departmentID},</if>
-            <if test="warehouseIDChange">warehouse_id=#{warehouseID},</if>
-            <if test="remarkChange">remark=#{remark}</if>
-        </set>
+        set total_cost=#{totalCost},
+            invoice_type=#{invoiceType},
+            execution_status=#{executionStatus},
+            department_id=#{departmentID},
+            warehouse_id=#{warehouseID},
+            remark=#{remark}
         where purchase_order_entry_id = #{purchaseOrderEntryID}
     </update>
 
     <update id="updateOrderProduct" parameterType="org.jc.backend.entity.DO.PurchaseOrderProductModifyDO">
         update e_purchase_order_product
-        <set>
-            <if test="quantityChange">quantity=#{quantity},</if>
-            <if test="remarkChange">remark=#{remark},</if>
-            <if test="taxRateChange">tax_rate=#{taxRate},</if>
-            <if test="unitPriceWithoutTaxChange">unit_price_without_tax=#{unitPriceWithoutTax},</if>
-            <if test="unitPriceWithTaxChange">unit_price_with_tax=#{unitPriceWithTax}</if>
-        </set>
+        set quantity=#{quantity},
+            remark=#{remark},
+            tax_rate=#{taxRate},
+            unit_price_without_tax=#{unitPriceWithoutTax},
+            unit_price_with_tax=#{unitPriceWithTax}
         where purchase_order_product_id = #{purchaseOrderProductID}
     </update>
 

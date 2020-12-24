@@ -17,14 +17,6 @@ public class PurchaseOrderEntryModifyDO {
     private int warehouseID;
     private String remark;
 
-    private boolean totalCostChange;
-    private boolean invoiceTypeChange;
-    private boolean executionStatusChange;
-    // drawer is not updated but only queried
-    private boolean departmentIDChange;
-    private boolean warehouseIDChange;
-    private boolean remarkChange;
-
     //only used for modification record
     private String departmentName;
     private String warehouseName;

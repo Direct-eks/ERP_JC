@@ -123,26 +123,31 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         //compare entry
         StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-        boolean bool1; //bool to indicate changes to entry
-        currentEntry.setTotalCostChange(bool1 = (currentEntry.getTotalCost() != originEntry.getTotalCost()));
-        if (bool1) record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(),
-                currentEntry.getTotalCost()));
-        currentEntry.setInvoiceTypeChange(bool1 =
-                (!currentEntry.getInvoiceType().equals(originEntry.getInvoiceType())));
-        if (bool1) record.append(String.format("单据类型: %s -> %s; ", originEntry.getInvoiceType(),
-                currentEntry.getInvoiceType()));
-        currentEntry.setExecutionStatusChange(bool1 =
-                (!currentEntry.getExecutionStatus().equals(originEntry.getExecutionStatus())));
-        if (bool1) record.append(String.format("状态: %s -> %s; ", originEntry.getExecutionStatus(),
-                currentEntry.getExecutionStatus()));
-        currentEntry.setDepartmentIDChange(bool1 = (currentEntry.getDepartmentID() != originEntry.getDepartmentID()));
-        if (bool1) record.append(String.format("部门: %s -> %s; ", originEntry.getDepartmentName(),
-                currentEntry.getDepartmentName()));
-        currentEntry.setWarehouseIDChange(bool1 = (currentEntry.getWarehouseID() != originEntry.getWarehouseID()));
-        if (bool1) record.append(String.format("仓库: %s -> %s; ", originEntry.getWarehouseName(),
-                currentEntry.getWarehouseName()));
-        currentEntry.setRemarkChange(bool1 = (!currentEntry.getRemark().equals(originEntry.getRemark())));
-        if (bool1) record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(), currentEntry.getRemark()));
+        boolean bool1 = false; //bool to indicate changes to entry
+        if (currentEntry.getTotalCost() != originEntry.getTotalCost()) {
+            bool1 = true;
+            record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(), currentEntry.getTotalCost()));
+        }
+        if (!currentEntry.getInvoiceType().equals(originEntry.getInvoiceType())) {
+            bool1 = true;
+            record.append(String.format("单据类型: %s -> %s; ", originEntry.getInvoiceType(), currentEntry.getInvoiceType()));
+        }
+        if (!currentEntry.getExecutionStatus().equals(originEntry.getExecutionStatus())) {
+            bool1 = true;
+            record.append(String.format("状态: %s -> %s; ", originEntry.getExecutionStatus(), currentEntry.getExecutionStatus()));
+        }
+        if (currentEntry.getDepartmentID() != originEntry.getDepartmentID()) {
+            bool1 = true;
+            record.append(String.format("部门: %s -> %s; ", originEntry.getDepartmentName(), currentEntry.getDepartmentName()));
+        }
+        if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
+            bool1 = true;
+            record.append(String.format("仓库: %s -> " + "%s; ", originEntry.getWarehouseName(), currentEntry.getWarehouseName()));
+        }
+        if (!currentEntry.getRemark().equals(originEntry.getRemark())) {
+            bool1 = true;
+            record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(), currentEntry.getRemark()));
+        }
 
         if (bool1) {
             try {
@@ -162,27 +167,32 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                     String modelCode = StringUtils.hasLength(currentProduct.getNewCode()) ?
                             currentProduct.getNewCode() : currentProduct.getOldCode();
                     // compare product
-                    boolean bool3;
-                    currentProduct.setQuantityChange(bool3 =
-                            (currentProduct.getQuantity() != originProduct.getQuantity()));
-                    if (bool3) record.append(String.format("%s 数量: %d -> %d; ", modelCode, originProduct.getQuantity(),
-                            originProduct.getQuantity()));
-                    currentProduct.setRemarkChange(bool3 =
-                            (!currentProduct.getRemark().equals(originProduct.getRemark())));
-                    if (bool3) record.append(String.format("%s 备注: %s -> %s; ", modelCode, originProduct.getRemark(),
-                            currentProduct.getRemark()));
-                    currentProduct.setTaxRateChange(bool3 =
-                            (currentProduct.getTaxRate() != originProduct.getTaxRate()));
-                    if (bool3) record.append(String.format("%s 税率: %f -> %f; ", modelCode, originProduct.getTaxRate(),
-                            currentProduct.getTaxRate()));
-                    currentProduct.setUnitPriceWithoutTaxChange(bool3 =
-                            (currentProduct.getUnitPriceWithoutTax() != originProduct.getUnitPriceWithoutTax()));
-                    if (bool3) record.append(String.format("%s 单价: %f -> %f; ", modelCode,
-                            originProduct.getUnitPriceWithoutTax(), currentProduct.getUnitPriceWithoutTax()));
-                    currentProduct.setUnitPriceWithTaxChange(bool3 =
-                            (currentProduct.getUnitPriceWithTax() != originProduct.getUnitPriceWithTax()));
-                    if (bool3) record.append(String.format("%s 税价: %f -> %f; ", modelCode,
-                            originProduct.getUnitPriceWithTax(), currentProduct.getUnitPriceWithTax()));
+                    boolean bool3 = false; //temp bool used to check each product alone
+                    if (currentProduct.getQuantity() != originProduct.getQuantity()) {
+                        bool3 = true;
+                        record.append(String.format("%s 数量: %d -> %d; ", modelCode,
+                                originProduct.getQuantity(), originProduct.getQuantity()));
+                    }
+                    if (!currentProduct.getRemark().equals(originProduct.getRemark())) {
+                        bool3 = true;
+                        record.append(String.format("%s 备注: %s -> %s; ", modelCode,
+                                originProduct.getRemark(), currentProduct.getRemark()));
+                    }
+                    if (currentProduct.getTaxRate() != originProduct.getTaxRate()) {
+                        bool3 = true;
+                        record.append(String.format("%s 税率: %f -> %f; ", modelCode,
+                                originProduct.getTaxRate(), currentProduct.getTaxRate()));
+                    }
+                    if (currentProduct.getUnitPriceWithoutTax() != originProduct.getUnitPriceWithoutTax()) {
+                        bool3 = true;
+                        record.append(String.format("%s 单价: %f -> %f; ", modelCode,
+                                originProduct.getUnitPriceWithoutTax(), currentProduct.getUnitPriceWithoutTax()));
+                    }
+                    if (currentProduct.getUnitPriceWithTax() != originProduct.getUnitPriceWithTax()) {
+                        bool3 = true;
+                        record.append(String.format("%s 税价: %f -> %f; ", modelCode,
+                                originProduct.getUnitPriceWithTax(), currentProduct.getUnitPriceWithTax()));
+                    }
 
                     if (bool3) {
                         bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
