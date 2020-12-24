@@ -49,6 +49,6 @@ public class MyUtils {
         String newSerial = String.format("%s%s-%03d", base, dateString, currentCount + 1);
         logger.info("New serial: " + newSerial);
 
-        return dateString;
+        return newSerial;
     }
 }
