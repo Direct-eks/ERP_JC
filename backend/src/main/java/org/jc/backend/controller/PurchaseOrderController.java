@@ -6,13 +6,12 @@ import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
 import org.jc.backend.service.PurchaseOrderService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -49,17 +48,8 @@ public class PurchaseOrderController {
         logger.info("GET Request to /getOrdersInDateRangeByCompanyID, start date: " + startDateString +
                 ", end date： " + endDateString + ", id: " + id);
 
-        // parse Date to verify passed param
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate, endDate;
-        try {
-            startDate = dateFormat.parse(startDateString);
-            endDate = dateFormat.parse(endDateString);
-        } catch (ParseException e) {
-            String errorInfo = "Invalid date range: " + startDateString + " -- " + endDateString;
-            logger.info(errorInfo);
-            throw new GlobalException(errorInfo);
-        }
+        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
+        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
         return purchaseOrderService.getOrdersInDateRangeByCompanyID(startDate, endDate, id);
     }

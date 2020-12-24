@@ -12,6 +12,7 @@ import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.PurchaseOrderProductO;
 import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
 import org.jc.backend.service.PurchaseOrderService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,10 +46,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         // calculate the number of entries have been created for today's date, and generate new serial
         int count = purchaseOrderMapper.countNumberOfEntriesOfToday();
-        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        dateString = dateString.substring(2).replaceAll("-", "");
-        String newSerial = String.format("采订%s-%03d", dateString, count + 1);
-        logger.info("New serial: " + newSerial);
+        String newSerial = MyUtils.formNewSerial("采订", count);
 
         newEntry.setPurchaseOrderEntryID(newSerial);
         try {
