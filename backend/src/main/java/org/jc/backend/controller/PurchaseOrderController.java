@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
+import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +31,18 @@ public class PurchaseOrderController {
 
     /* ------------------------------ API ------------------------------ */
 
-    @ApiOperation(value = "", response = Boolean.class)
-    @PutMapping("/createNewPurchaseOrder")
-    public void createNewPurchaseOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) throws GlobalException {
+    @ApiOperation(value = "", response = void.class)
+    @PutMapping("/createPurchaseOrder")
+    public void createPurchaseOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) throws GlobalException {
         logger.info("PUT Request to /createNewPurchaseOrder");
 
-        purchaseOrderService.createNewPurchaseOrder(purchaseOrderEntry);
+        purchaseOrderService.createPurchaseOrder(purchaseOrderEntry);
     }
 
     @ApiOperation(value = "", response = PurchaseOrderEntryWithProductsVO.class,
         notes = "companyID can be null, if null, query all")
-    @GetMapping("/getPurchaseOrdersWithinDateRangeByCompanyID")
-    public List<PurchaseOrderEntryWithProductsVO> getPurchaseOrdersWithinDateRangeByCompanyID(
+    @GetMapping("/getOrdersWithinDateRangeByCompanyID")
+    public List<PurchaseOrderEntryWithProductsVO> getOrdersWithinDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "id", defaultValue = "-1") Integer id) throws GlobalException {
@@ -61,5 +62,21 @@ public class PurchaseOrderController {
         }
 
         return purchaseOrderService.getOrdersWithinDateRangeByCompanyID(startDate, endDate, id);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PatchMapping("/modifyPurchaseOrder")
+    public void modifyPurchaseOrder(@RequestBody @Validated PurchaseOrderModifyVO modificationVO) {
+        logger.info("PATCH Request to /modifyPurchaseOrder");
+
+        purchaseOrderService.modifyPurchaseOrder(modificationVO);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PatchMapping("/deletePurchaseOrder/{id}")
+    public void deletePurchaseOrder(@PathVariable("id") String id) {
+        logger.info("DELETE Request to /deletePurchaseOrder, id: " + id);
+
+        purchaseOrderService.deletePurchaseOrder(id);
     }
 }

@@ -2,6 +2,8 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
+import org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO;
+import org.jc.backend.entity.DO.PurchaseOrderProductModifyDO;
 import org.jc.backend.entity.PurchaseOrderProductO;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +20,12 @@ public interface PurchaseOrderMapper {
     List<PurchaseOrderEntryDO> queryEntriesWithinDateRangeByCompanyID(
             String startDate, String endDate, int id);
     List<PurchaseOrderProductO> queryProductsByEntryID(String id);
+
+    List<PurchaseOrderEntryModifyDO> selectEntryForCompare(String id);
+    List<PurchaseOrderProductModifyDO> selectProductsForCompare(String id);
+    void updatePurchaseOrderEntry(PurchaseOrderEntryModifyDO entryModifyDO);
+    void updatePurchaseOrderProduct(PurchaseOrderProductModifyDO productModifyDO);
+
+    void deletePurchaseOrderEntry(String id);
+    void deletePurchaseOrderProducts(String id);
 }

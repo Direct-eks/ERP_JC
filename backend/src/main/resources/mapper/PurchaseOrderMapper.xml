@@ -83,6 +83,7 @@
             <if test="id != -1">
                 and p.partner_company_id = #{id}
             </if>
+        order by p.purchase_order_entry_id desc
     </select>
 
     <select id="queryProductsByEntryID" resultMap="productResultMap">
@@ -97,6 +98,85 @@
                 on s.model_id = m.model_id
         ) as sku on p.sku_id = sku.sku_id
         where purchase_order_entry_id = #{id}
+        order by purchase_order_entry_id desc, purchase_order_product_id
     </select>
+
+
+    <resultMap id="modifyEntryResultMap" type="org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO">
+        <result property="purchaseOrderEntryID" column="purchase_order_entry_id"/>
+        <result property="totalCost" column="total_cost"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="executionStatus" column="execution_status"/>
+        <result property="drawer" column="drawer"/>
+        <result property="departmentID" column="department_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="remark" column="remark"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="warehouseName" column="warehouse_name"/>
+    </resultMap>
+
+    <resultMap id="modifyProductResultMap" type="org.jc.backend.entity.DO.PurchaseOrderProductModifyDO">
+        <result property="purchaseOrderProductID" column="purchase_order_product_id"/>
+        <result property="purchaseOrderEntryID" column="purchase_order_entry_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
+    </resultMap>
+
+
+    <select id="selectEntryForCompare" resultMap="modifyEntryResultMap">
+        select purchase_order_entry_id, total_cost, invoice_type, execution_status, drawer,
+               p.department_id, p.warehouse_id, p.remark, d.name as department_name, w.name as warehouse_name
+        from (e_purchase_order_entry as p join e_department as d on p.department_id = d.department_id)
+            join w_warehouse as w on p.warehouse_id = w.warehouse_id
+        where purchase_order_entry_id = #{id}
+    </select>
+
+    <select id="selectProductsForCompare" resultMap="modifyProductResultMap">
+        select purchase_order_product_id, purchase_order_entry_id, quantity, p.remark, tax_rate,
+               unit_price_without_tax, unit_price_with_tax, m.new_code, m.old_code
+        from e_purchase_order_product as p join (w_sku as s join w_model as m on s.model_id = m.model_id)
+            on p.sku_id = s.sku_id
+        where purchase_order_entry_id = #{id}
+    </select>
+
+    <update id="updatePurchaseOrderEntry" parameterType="org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO">
+        update e_purchase_order_entry
+        <set>
+            <if test="totalCostChange">total_cost=#{totalCost},</if>
+            <if test="invoiceTypeChange">invoice_type=#{invoiceType},</if>
+            <if test="executionStatusChange">execution_status=#{executionStatus},</if>
+            <if test="departmentIDChange">department_id=#{departmentID},</if>
+            <if test="warehouseIDChange">warehouse_id=#{warehouseID},</if>
+            <if test="remarkChange">remark=#{remark}</if>
+        </set>
+        where purchase_order_entry_id = #{purchaseOrderEntryID}
+    </update>
+
+    <update id="updatePurchaseOrderProduct" parameterType="org.jc.backend.entity.DO.PurchaseOrderProductModifyDO">
+        update e_purchase_order_product
+        <set>
+            <if test="quantityChange">quantity=#{quantity},</if>
+            <if test="remarkChange">remark=#{remark},</if>
+            <if test="taxRateChange">tax_rate=#{taxRate},</if>
+            <if test="unitPriceWithoutTaxChange">unit_price_without_tax=#{unitPriceWithoutTax},</if>
+            <if test="unitPriceWithTaxChange">unit_price_with_tax=#{unitPriceWithTax}</if>
+        </set>
+        where purchase_order_product_id = #{purchaseOrderProductID}
+    </update>
+
+    <delete id="deletePurchaseOrderEntry">
+        delete from e_purchase_order_entry
+        where purchase_order_entry_id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseOrderProducts">
+        delete from e_purchase_order_product
+        where purchase_order_entry_id = #{id}
+    </delete>
 
 </mapper>
