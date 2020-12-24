@@ -1,0 +1,23 @@
+package org.jc.backend.controller;
+
+import io.swagger.annotations.Api;
+import org.jc.backend.service.CheckoutEntryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Api(tags = "CheckoutEntry Related")
+@RestController
+@RequestMapping("/checkoutEntry")
+public class CheckoutEntryController {
+    private static final Logger logger = LoggerFactory.getLogger(CheckoutEntryController.class);
+
+    private final CheckoutEntryService checkoutEntryService;
+
+    public CheckoutEntryController(CheckoutEntryService checkoutEntryService) {
+        this.checkoutEntryService = checkoutEntryService;
+    }
+
+    /* ------------------------------ API ------------------------------ */
+}
