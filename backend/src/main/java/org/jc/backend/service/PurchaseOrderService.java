@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface PurchaseOrderService {
-    void createPurchaseOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) throws GlobalException;
-    List<PurchaseOrderEntryWithProductsVO> getOrdersWithinDateRangeByCompanyID(Date startDate, Date endDate, int id);
-    void modifyPurchaseOrder(PurchaseOrderModifyVO modificationVO);
-    void deletePurchaseOrder(String id);
+    void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) throws GlobalException;
+    List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id);
+    void modifyOrder(PurchaseOrderModifyVO modificationVO);
+    void deleteOrder(String id);
 }

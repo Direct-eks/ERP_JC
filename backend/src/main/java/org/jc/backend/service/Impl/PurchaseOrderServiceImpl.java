@@ -38,13 +38,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    public void createPurchaseOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) throws GlobalException {
+    public void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) throws GlobalException {
         PurchaseOrderEntryDO newEntry = new PurchaseOrderEntryDO();
         BeanUtils.copyProperties(entryWithProducts, newEntry);
         List<PurchaseOrderProductO> newProducts = entryWithProducts.getPurchaseOrderProducts();
 
         // calculate the number of entries have been created for today's date, and generate new serial
-        int count = purchaseOrderMapper.countNumberOfEntries();
+        int count = purchaseOrderMapper.countNumberOfEntriesOfToday();
         String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         dateString = dateString.substring(2).replaceAll("-", "");
         String newSerial = String.format("采订%s-%03d", dateString, count + 1);
@@ -52,7 +52,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         newEntry.setPurchaseOrderEntryID(newSerial);
         try {
-            purchaseOrderMapper.insertNewEntry(newEntry);
+            purchaseOrderMapper.insertNewOrderEntry(newEntry);
         } catch (PersistenceException e) {
             e.printStackTrace();
             logger.error("Insert new purchase order failed");
@@ -62,7 +62,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         for (var product : newProducts) {
             product.setPurchaseOrderEntryID(newSerial);
             try {
-                int id = purchaseOrderMapper.insertNewProduct(product);
+                int id = purchaseOrderMapper.insertNewOrderProduct(product);
                 logger.info("Insert new purchase product id: " + id);
             } catch (PersistenceException e) {
                 e.printStackTrace();
@@ -72,10 +72,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         }
     }
 
-    public List<PurchaseOrderEntryWithProductsVO> getOrdersWithinDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+    public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesWithinDateRangeByCompanyID(
+        List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesInDateRangeByCompanyID(
                 dateFormat.format(startDate), dateFormat.format(endDate), id);
 
         List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
@@ -97,7 +97,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return entries;
     }
 
-    public void modifyPurchaseOrder(PurchaseOrderModifyVO modificationVO) {
+    public void modifyOrder(PurchaseOrderModifyVO modificationVO) {
         //extract entryDO
         PurchaseOrderEntryModifyDO currentEntry = new PurchaseOrderEntryModifyDO();
         BeanUtils.copyProperties(modificationVO, currentEntry);
@@ -149,7 +149,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         if (bool1) {
             try {
                 logger.info(currentEntry.toString());
-                purchaseOrderMapper.updatePurchaseOrderEntry(currentEntry);
+                purchaseOrderMapper.updateOrderEntry(currentEntry);
             } catch (PersistenceException e) {
                 e.printStackTrace();
                 //todo
@@ -190,7 +190,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                         bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
                         try {
                             logger.info(currentProduct.toString());
-                            purchaseOrderMapper.updatePurchaseOrderProduct(currentProduct);
+                            purchaseOrderMapper.updateOrderProduct(currentProduct);
                         } catch (PersistenceException e) {
                             e.printStackTrace();
                             //todo
@@ -202,7 +202,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             }
             if (!found) { //entry is removed
                 try {
-                    purchaseOrderMapper.deletePurchaseOrderProducts(originProduct.getPurchaseOrderEntryID());
+                    purchaseOrderMapper.deleteOrderProducts(originProduct.getPurchaseOrderEntryID());
                 } catch (PersistenceException e) {
                     e.printStackTrace();
                     //todo
@@ -225,10 +225,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     }
 
-    public void deletePurchaseOrder(String id) {
+    public void deleteOrder(String id) {
         try {
-            purchaseOrderMapper.deletePurchaseOrderProducts(id);
-            purchaseOrderMapper.deletePurchaseOrderEntry(id);
+            purchaseOrderMapper.deleteOrderProducts(id);
+            purchaseOrderMapper.deleteOrderEntry(id);
         } catch (PersistenceException e) {
             logger.error("");
             e.printStackTrace();

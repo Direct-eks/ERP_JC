@@ -19,7 +19,7 @@ public class PurchaseOrderProductO {
     private String unitName;
     private String factoryCode;
 
-    @Min(value = 1, message = "quantity not zero error")
+    @Min(value = 1, message = "quantity smaller than one error")
     private int quantity;
     private String remark;
     private int warehouseStockID;

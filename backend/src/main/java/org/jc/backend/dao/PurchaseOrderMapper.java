@@ -13,19 +13,18 @@ import java.util.List;
 @Repository
 public interface PurchaseOrderMapper {
 
-    int countNumberOfEntries();
-    void insertNewEntry(PurchaseOrderEntryDO entry);
-    int insertNewProduct(PurchaseOrderProductO product);
+    int countNumberOfEntriesOfToday();
+    void insertNewOrderEntry(PurchaseOrderEntryDO entry);
+    int insertNewOrderProduct(PurchaseOrderProductO product);
 
-    List<PurchaseOrderEntryDO> queryEntriesWithinDateRangeByCompanyID(
-            String startDate, String endDate, int id);
+    List<PurchaseOrderEntryDO> queryEntriesInDateRangeByCompanyID(String startDate, String endDate, int id);
     List<PurchaseOrderProductO> queryProductsByEntryID(String id);
 
     List<PurchaseOrderEntryModifyDO> selectEntryForCompare(String id);
     List<PurchaseOrderProductModifyDO> selectProductsForCompare(String id);
-    void updatePurchaseOrderEntry(PurchaseOrderEntryModifyDO entryModifyDO);
-    void updatePurchaseOrderProduct(PurchaseOrderProductModifyDO productModifyDO);
+    void updateOrderEntry(PurchaseOrderEntryModifyDO entryModifyDO);
+    void updateOrderProduct(PurchaseOrderProductModifyDO productModifyDO);
 
-    void deletePurchaseOrderEntry(String id);
-    void deletePurchaseOrderProducts(String id);
+    void deleteOrderEntry(String id);
+    void deleteOrderProducts(String id);
 }
