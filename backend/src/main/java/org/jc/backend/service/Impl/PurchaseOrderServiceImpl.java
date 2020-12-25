@@ -7,7 +7,7 @@ import org.jc.backend.dao.PurchaseOrderMapper;
 import org.jc.backend.entity.DO.ModificationDO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO;
-import org.jc.backend.entity.DO.PurchaseOrderProductModifyDO;
+import org.jc.backend.entity.PurchaseOrderProductModifyO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.PurchaseOrderProductO;
 import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
@@ -101,18 +101,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         BeanUtils.copyProperties(modificationVO, currentEntry);
 
         //extract List<productDO>
-        List<PurchaseOrderProductModifyDO> currentProducts = new ArrayList<>();
-        modificationVO.getPurchaseOrderProducts().forEach(productVO -> {
-            PurchaseOrderProductModifyDO tempProductDO = new PurchaseOrderProductModifyDO();
-            BeanUtils.copyProperties(productVO, tempProductDO);
-            currentProducts.add(tempProductDO);
-        });
+        List<PurchaseOrderProductModifyO> currentProducts = modificationVO.getPurchaseOrderProducts();
 
         //query database for compare
         String id = currentEntry.getPurchaseOrderEntryID();
         logger.info("Serial to be changed: " + id);
         PurchaseOrderEntryModifyDO originEntry;
-        List<PurchaseOrderProductModifyDO> originProducts;
+        List<PurchaseOrderProductModifyO> originProducts;
         try {
             originEntry = (purchaseOrderMapper.selectEntryForCompare(id)).get(0);
             originProducts = purchaseOrderMapper.selectProductsForCompare(id);

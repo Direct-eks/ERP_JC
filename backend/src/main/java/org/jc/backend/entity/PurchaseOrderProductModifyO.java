@@ -1,4 +1,4 @@
-package org.jc.backend.entity.VO;
+package org.jc.backend.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 
 @Getter
 @Setter
-public class PurchaseOrderProductModifyVO {
+public class PurchaseOrderProductModifyO {
     private int purchaseOrderProductID;
     private String purchaseOrderEntryID;
 

@@ -2,6 +2,7 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jc.backend.entity.PurchaseOrderProductModifyO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
@@ -31,5 +32,5 @@ public class PurchaseOrderModifyVO {
 
     // PurchaseOrderProductVO
     @Valid
-    private List<PurchaseOrderProductModifyVO> purchaseOrderProducts;
+    private List<PurchaseOrderProductModifyO> purchaseOrderProducts;
 }
