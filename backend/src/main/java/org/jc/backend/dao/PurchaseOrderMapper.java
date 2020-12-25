@@ -24,7 +24,8 @@ public interface PurchaseOrderMapper {
     List<PurchaseOrderProductModifyO> selectProductsForCompare(String id);
     void updateOrderEntry(PurchaseOrderEntryModifyDO entryModifyDO);
     void updateOrderProduct(PurchaseOrderProductModifyO productModifyDO);
+    void deleteOrderProductByID(int id);
 
     void deleteOrderEntry(String id);
-    void deleteOrderProducts(String id);
+    void deleteOrderProductsByEntryID(String id);
 }

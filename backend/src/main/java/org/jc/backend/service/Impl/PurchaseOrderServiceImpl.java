@@ -159,35 +159,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             boolean found = false;
             for (var currentProduct : currentProducts) {
                 if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
-                    String modelCode = StringUtils.hasLength(currentProduct.getNewCode()) ?
-                            currentProduct.getNewCode() : currentProduct.getOldCode();
-                    // compare product
-                    boolean bool3 = false; //temp bool used to check each product alone
-                    if (currentProduct.getQuantity() != originProduct.getQuantity()) {
-                        bool3 = true;
-                        record.append(String.format("%s 数量: %d -> %d; ", modelCode,
-                                originProduct.getQuantity(), originProduct.getQuantity()));
-                    }
-                    if (!currentProduct.getRemark().equals(originProduct.getRemark())) {
-                        bool3 = true;
-                        record.append(String.format("%s 备注: %s -> %s; ", modelCode,
-                                originProduct.getRemark(), currentProduct.getRemark()));
-                    }
-                    if (currentProduct.getTaxRate() != originProduct.getTaxRate()) {
-                        bool3 = true;
-                        record.append(String.format("%s 税率: %f -> %f; ", modelCode,
-                                originProduct.getTaxRate(), currentProduct.getTaxRate()));
-                    }
-                    if (currentProduct.getUnitPriceWithoutTax() != originProduct.getUnitPriceWithoutTax()) {
-                        bool3 = true;
-                        record.append(String.format("%s 单价: %f -> %f; ", modelCode,
-                                originProduct.getUnitPriceWithoutTax(), currentProduct.getUnitPriceWithoutTax()));
-                    }
-                    if (currentProduct.getUnitPriceWithTax() != originProduct.getUnitPriceWithTax()) {
-                        bool3 = true;
-                        record.append(String.format("%s 税价: %f -> %f; ", modelCode,
-                                originProduct.getUnitPriceWithTax(), currentProduct.getUnitPriceWithTax()));
-                    }
+                    boolean bool3 = MyUtils.entryProductsCompareAndFormModificationRecord(
+                            record, currentProduct, originProduct);
 
                     if (bool3) {
                         bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
@@ -205,7 +178,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             }
             if (!found) { //entry is removed
                 try {
-                    purchaseOrderMapper.deleteOrderProducts(originProduct.getPurchaseOrderEntryID());
+                    purchaseOrderMapper.deleteOrderProductByID(originProduct.getPurchaseOrderProductID());
                 } catch (PersistenceException e) {
                     e.printStackTrace();
                     //todo
@@ -230,7 +203,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     public void deleteOrder(String id) {
         try {
-            purchaseOrderMapper.deleteOrderProducts(id);
+            purchaseOrderMapper.deleteOrderProductsByEntryID(id);
             purchaseOrderMapper.deleteOrderEntry(id);
         } catch (PersistenceException e) {
             logger.error("");
