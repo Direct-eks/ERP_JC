@@ -155,7 +155,7 @@
         where purchase_order_entry_id = #{purchaseOrderEntryID}
     </update>
 
-    <update id="updateOrderProduct" parameterType="org.jc.backend.entity.DO.PurchaseOrderProductModifyDO">
+    <update id="updateOrderProduct" parameterType="org.jc.backend.entity.PurchaseOrderProductModifyO">
         update e_purchase_order_product
         set quantity=#{quantity},
             remark=#{remark},
