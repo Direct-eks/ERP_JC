@@ -30,7 +30,7 @@ public class DepartmentController {
     @ApiOperation(value = "", response = DepartmentO.class)
     @GetMapping("/getDepartmentOptions")
     public List<DepartmentO> getDepartmentOptions() {
-        logger.info("GET Request to /getDepartmentOptions");
+        logger.info("GET Request to /department/getDepartmentOptions");
 
         return departmentService.getDepartmentOptions();
     }

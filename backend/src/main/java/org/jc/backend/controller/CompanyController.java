@@ -31,7 +31,7 @@ public class CompanyController {
     @ApiOperation(value = "", response = CompanyO.class, notes = "only abbreviated_name and phone fields are used")
     @PostMapping("/getCompanyByFuzzySearch")
     public List<CompanyO> getCompanyByFuzzySearch(@RequestBody @Validated CompanyO companyO) {
-        logger.info("POST Request to /getCompanyByFuzzySearch");
+        logger.info("POST Request to /company/getCompanyByFuzzySearch");
 
         return companyService.getCompanyByFuzzySearch(companyO);
     }
@@ -39,7 +39,7 @@ public class CompanyController {
     @ApiOperation(value = "", response = CompanyCategoryO.class, notes = "for partner company: category is area")
     @GetMapping("/getCompanyCategories")
     public List<CompanyCategoryO> getCompanyCategories() {
-        logger.info("GET Request to /getCompanyCategories");
+        logger.info("GET Request to /company/getCompanyCategories");
 
         return companyService.getCompanyCategories();
     }
@@ -47,7 +47,7 @@ public class CompanyController {
     @ApiOperation(value = "", response = CompanyO.class)
     @GetMapping("/getCompaniesByCategory/{id}")
     public List<CompanyO> getCompaniesByCategory(@PathVariable("id") int id) {
-        logger.info("GET Request to /getCompaniesByCategory, id: " + id);
+        logger.info("GET Request to /company/getCompaniesByCategory, id: " + id);
 
         return companyService.getCompaniesByCategory(id);
     }
@@ -56,7 +56,7 @@ public class CompanyController {
     @ApiOperation(value = "", response = RelevantCompanyCategoryO.class)
     @GetMapping("/getRelevantCompanyCategories")
     public List<RelevantCompanyCategoryO> getRelevantCompanyCategories() {
-        logger.info("GET Request to /getRelevantCompanyCategories");
+        logger.info("GET Request to /company/getRelevantCompanyCategories");
 
         return companyService.getRelevantCompanyCategories();
     }
@@ -64,7 +64,7 @@ public class CompanyController {
     @ApiOperation(value = "", response = RelevantCompanyO.class)
     @GetMapping("/getRelevantCompaniesByCategory/{id}")
     public List<RelevantCompanyO> getRelevantCompaniesByCategory(@PathVariable("id") int id) {
-        logger.info("GET Request to /getRelevantCompaniesByCategory, id: " + id);
+        logger.info("GET Request to /company/getRelevantCompaniesByCategory, id: " + id);
 
         return companyService.getRelevantCompaniesByCategory(id);
     }

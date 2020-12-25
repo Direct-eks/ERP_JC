@@ -34,7 +34,7 @@ public class EndUserController {
     @ApiOperation(value = "user login api", response = String.class)
     @PostMapping("/userAuthentication")
     public String authenticate(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
-        logger.info("POST Request to /userAuthentication");
+        logger.info("POST Request to /user/userAuthentication");
         EndUserDTO userDTO = new EndUserDTO();
         BeanUtils.copyProperties(endUserLoginVO, userDTO);
         return endUserService.postUserLogInInfo(userDTO);
@@ -43,14 +43,14 @@ public class EndUserController {
     @ApiOperation(value = "user logout api")
     @PostMapping("/userLogout")
     public void logout() {
-        logger.info("POST Request to /userLogout");
+        logger.info("POST Request to /user/userLogout");
         endUserService.userLogout();
     }
 
     @ApiOperation(value = "", response = Boolean.class)
     @PostMapping("/changePassword")
     public Boolean changePassword(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
-        logger.info("POST Request to /changePassword");
+        logger.info("POST Request to /user/changePassword");
         EndUserDTO userDTO = new EndUserDTO();
         BeanUtils.copyProperties(endUserLoginVO, userDTO);
         //todo
@@ -60,7 +60,7 @@ public class EndUserController {
     @ApiOperation(value = "", response = Boolean.class)
     @PostMapping("/createNewUser")
     public Boolean createNewUser(@RequestBody @Validated EndUserVO endUserVO) {
-        logger.info("POST Request to /createNewUser");
+        logger.info("POST Request to /user/createNewUser");
         //todo
         return false;
     }
@@ -69,7 +69,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @PostMapping("/forceResetPassword")
     public Boolean forceResetPassword() {
-        logger.info("POST Request to /forceResetPassword");
+        logger.info("POST Request to /user/forceResetPassword");
         //todo
         return false;
     }
@@ -78,7 +78,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @GetMapping("/getUserList")
     public List<EndUserVO> getUserList() {
-        logger.info("GET Request to /getUserList");
+        logger.info("GET Request to /user/getUserList");
 
         List<EndUserVO> userVOList = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @GetMapping("/getAllRoles")
     public List<String> getAllRoles() {
-        logger.info("GET Request to /getAllRoles");
+        logger.info("GET Request to /user/getAllRoles");
         //todo
         return null;
     }
@@ -107,7 +107,7 @@ public class EndUserController {
     @RequiresRoles("admin")
     @GetMapping("/getAllPermissions")
     public List<String> getAllPermissions() {
-        logger.info("GET Request to /getAllPermissions");
+        logger.info("GET Request to /user/getAllPermissions");
         //todo
         return null;
     }

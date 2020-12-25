@@ -33,7 +33,7 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) throws GlobalException {
-        logger.info("PUT Request to /createEntry");
+        logger.info("PUT Request to /inboundEntry/createEntry");
 
         inboundEntryService.createEntry(inboundEntryVO);
     }
@@ -45,7 +45,7 @@ public class InboundEntryController {
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "id", defaultValue = "-1") int id
     ) throws GlobalException {
-        logger.info("GET Request to /getEntriesInDateRangeByCompanyID, start date: " +
+        logger.info("GET Request to /inboundEntry/getEntriesInDateRangeByCompanyID, start date: " +
                 startDateString + ", end date： " + endDateString + ", id: " + id);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
@@ -57,7 +57,7 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/completeEntry")
     public void completeEntry(@RequestBody @Validated InboundEntryCompleteO completionO) {
-        logger.info("PATCH Request to /completeEntry");
+        logger.info("PATCH Request to /inboundEntry/completeEntry");
 
         inboundEntryService.completeEntry(completionO);
     }
@@ -65,7 +65,7 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated InboundEntryModifyVO modificationVO) {
-        logger.info("PATCH Request to /modifyEntry");
+        logger.info("PATCH Request to /inboundEntry/modifyEntry");
 
         inboundEntryService.modifyEntry(modificationVO);
     }
@@ -73,7 +73,7 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @DeleteMapping("/deleteEntry/{id}")
     public void deleteEntry(@PathVariable("id") String id) {
-        logger.info("DELETE Request to /deleteEntry, id: " + id);
+        logger.info("DELETE Request to /inboundEntry/deleteEntry, id: " + id);
 
         inboundEntryService.deleteEntry(id);
     }

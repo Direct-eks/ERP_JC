@@ -31,7 +31,7 @@ public class SkuController {
     @ApiOperation(value = "", response = SkuFullO.class)
     @GetMapping("/getFullSkuByModel/{id}")
     public List<SkuFullO> getFullSkuByModel(@PathVariable("id") int id) {
-        logger.info("GET Request to /getFullSkuByModel, id: " + id);
+        logger.info("GET Request to /sku/getFullSkuByModel, id: " + id);
 
         return skuService.getFullSkuByModel(id);
     }

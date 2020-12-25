@@ -29,7 +29,7 @@ public class ModelController {
     @ApiOperation(value = "", response = ModelCategoryO.class)
     @GetMapping("/getModelCategories")
     public List<ModelCategoryO> getModelCategories() {
-        logger.info("GET Request to /getModelCategories");
+        logger.info("GET Request to /model/getModelCategories");
 
         return modelService.getModelCategories();
     }
@@ -37,7 +37,7 @@ public class ModelController {
     @ApiOperation(value = "", response = ModelO.class)
     @GetMapping("/getModelsByCategory/{id}")
     public List<ModelO> getModelsByCategory(@PathVariable("id") int id) {
-        logger.info("GET Request to /getModelsByCategory, id: " + id);
+        logger.info("GET Request to /model/getModelsByCategory, id: " + id);
 
         return modelService.getModelsByCategory(id);
     }

@@ -28,7 +28,7 @@ public class WarehouseStockController {
     @ApiOperation(value = "", response = WarehouseStockO.class)
     @GetMapping("/getWarehouseStocksBySku/{id}")
     public List<WarehouseStockO> getWarehouseStocksBySku(@PathVariable("id") int id) {
-        logger.info("GET Request to /getWarehouseStockBySku, id: " + id);
+        logger.info("GET Request to /warehouseStock/getWarehouseStockBySku, id: " + id);
 
         return warehouseStockService.getWarehouseStocksBySku(id);
     }

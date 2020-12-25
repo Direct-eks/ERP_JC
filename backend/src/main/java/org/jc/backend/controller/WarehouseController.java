@@ -30,7 +30,7 @@ public class WarehouseController {
     @ApiOperation(value = "", response = WarehouseO.class)
     @GetMapping("/getWarehouseOptions")
     public List<WarehouseO> getWarehouseOptions() {
-        logger.info("GET Request to /getWarehouseOptions");
+        logger.info("GET Request to /warehouse/getWarehouseOptions");
 
         return warehouseService.getWarehouseOptions();
     }

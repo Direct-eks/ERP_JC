@@ -33,7 +33,7 @@ public class PurchaseOrderController {
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createOrder")
     public void createOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) throws GlobalException {
-        logger.info("PUT Request to /createOrder");
+        logger.info("PUT Request to /purchaseOrder/createOrder");
 
         purchaseOrderService.createOrder(purchaseOrderEntry);
     }
@@ -45,8 +45,8 @@ public class PurchaseOrderController {
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "id", defaultValue = "-1") Integer id) throws GlobalException {
-        logger.info("GET Request to /getOrdersInDateRangeByCompanyID, start date: " + startDateString +
-                ", end date： " + endDateString + ", id: " + id);
+        logger.info("GET Request to /purchaseOrder/getOrdersInDateRangeByCompanyID, start date: " +
+                startDateString + ", end date： " + endDateString + ", id: " + id);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -57,7 +57,7 @@ public class PurchaseOrderController {
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyOrder")
     public void modifyOrder(@RequestBody @Validated PurchaseOrderModifyVO modificationVO) {
-        logger.info("PATCH Request to /modifyOrder");
+        logger.info("PATCH Request to /purchaseOrder/modifyOrder");
 
         purchaseOrderService.modifyOrder(modificationVO);
     }
@@ -65,7 +65,7 @@ public class PurchaseOrderController {
     @ApiOperation(value = "", response = void.class)
     @DeleteMapping("/deleteOrder/{id}")
     public void deleteOrder(@PathVariable("id") String id) {
-        logger.info("DELETE Request to /deleteOrder, id: " + id);
+        logger.info("DELETE Request to /purchaseOrder/deleteOrder, id: " + id);
 
         purchaseOrderService.deleteOrder(id);
     }
