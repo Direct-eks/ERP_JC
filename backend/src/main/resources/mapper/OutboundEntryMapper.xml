@@ -4,5 +4,229 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.OutboundEntryMapper">
 
+    <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.OutboundEntryDO">
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="shipmentDate" column="shipment_date"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="deliveryMethod" column="deliver_method"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="drawer" column="drawer"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
+        <result property="companyPhone" column="phone"/>
+        <result property="companyFullName" column="full_name"/>
+        <result property="departmentID" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="warehouseName" column="warehouse_name"/>
+        <result property="remark" column="remark"/>
+        <result property="classification" column="classification"/>
+        <result property="shippingCost" column="shipping_cost"/>
+        <result property="shippingCostType" column="shipping_cost_type"/>
+        <result property="shippingQuantity" column="shipping_quantity"/>
+        <result property="shippingNumber" column="shipping_number"/>
+        <result property="shippingMethodID" column="shipping_method_id"/>
+        <result property="relevantCompanyName" column="relevant_company_name"/>
+        <result property="shippingCostSerial" column="shipping_cost_serial"/>
+        <result property="returnDate" column="return_date"/>
+        <result property="returnSerial" column="return_serial"/>
+        <result property="printTimes" column="print_times"/>
+    </resultMap>
+
+    <resultMap id="productResultMap" type="org.jc.backend.entity.OutboundProductO">
+        <result property="outboundProductID" column="outbound_product_id"/>
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="newModelCode" column="new_code"/>
+        <result property="oldModelCode" column="old_code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+        <result property="stockUnitPrice" column="stock_unit_price"/>
+        <result property="returnStatus" column="return_status"/>
+        <result property="checkoutSerial" column="checkout_serial"/>
+        <result property="invoiceSerial" column="invoice_serial"/>
+    </resultMap>
+
+
+    <select id="countNumberOfEntriesOfToday">
+        select count(outbound_entry_id)
+        from e_outbound_entry
+        where shipment_date = date('now')
+    </select>
+
+    <insert id="insertNewEntry">
+        insert into e_outbound_entry(
+            outbound_entry_id, shipment_date, creation_date, total_amount, invoice_type, drawer,
+            partner_company_id, department_id, warehouse_id, remark, classification,
+            shipping_cost, shipping_cost_type, shipping_quantity, shipping_number,
+            shipping_method_id, shipping_cost_serial, return_date, return_serial, print_times
+        )
+        values (
+                   #{outboundEntryID}, #{shipmentDate}, #{creationDate}, #{totalAmount}, #{invoiceType},
+                   #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
+                   #{classification}, #{shippingCost}, #{shippingCostType}, #{shippingQuantity},
+                   #{shippingNumber}, #{shippingMethodID}, #{shippingCostSerial}, #{returnDate},
+                   #{returnSerial}, #{printTimes}, #{printTimes}
+               )
+    </insert>
+
+    <insert id="insertNewProduct" useGeneratedKeys="true" keyProperty="outboundProductID"
+            keyColumn="outbound_product_id">
+        insert into e_outbound_product (
+            outbound_entry_id, sku_id, quantity, stock_quantity, remark, warehouse_stock_id,
+            warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax,
+            stock_unit_price, return_status, checkout_serial, invoice_serial
+        )
+        values (
+                   #{outboundProductID}, #{outboundEntryID}, #{skuID}, #{quantity}, #{stockQuantity},
+                   #{remark}, #{warehouseStockID}, #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax},
+                   #{unitPriceWithTax}, #{stockUnitPrice}, #{returnStatus}, #{checkoutSerial}, #{invoiceSerial}
+               )
+    </insert>
+
+    <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
+        select i.outbound_entry_id, i.shipment_date, i.creation_date, i.total_amount, i.invoice_type,
+        i.drawer, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
+        c.phone, c.full_name, d.department_id, d.name as department_name, i.warehouse_id,
+        w.name as warehouse_name, i.remark, i.classification, i.shipping_cost,
+        i.shipping_cost_type, i.shipping_quantity, i.shipping_number, i.shipping_method_id,
+        r.abbreviated_name as relevant_company_name, i.shipping_cost_serial, i.return_date,
+        i.return_serial, i.print_times
+        from (((e_outbound_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id)
+        join e_department as d on i.department_id = d.department_id)
+        join w_warehouse as w on i.warehouse_id = w.warehouse_id)
+        join c_relevant_company as r on i.shipping_method_id = r.relevant_company_id
+        where (i.shipment_date between #{startDate} and #{endDate})
+        <if test="id != -1">
+            and i.partner_company_id = #{id}
+        </if>
+        order by i.outbound_entry_id desc
+    </select>
+
+    <select id="queryProductsByEntryID" resultMap="productResultMap">
+        select outbound_product_id, outbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+               sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
+               warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
+               return_status, checkout_serial, invoice_serial
+        from e_outbound_product as p join (
+            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
+                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
+                          on s.model_id = m.model_id
+        ) as sku on p.sku_id = sku.sku_id
+        where outbound_entry_id = #{id}
+        order by outbound_product_id
+    </select>
+
+
+    <resultMap id="completeEntryResultMap" type="org.jc.backend.entity.OutboundEntryCompleteO">
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="shippingCost" column="shipping_cost"/>
+        <result property="shippingCostType" column="shipping_cost_type"/>
+        <result property="shippingNumber" column="shipping_number"/>
+        <result property="shippingMethodID" column="shipping_method_id"/>
+        <result property="relevantCompanyName" column="relevant_company_name"/>
+    </resultMap>
+
+
+    <select id="selectEntryShippingInfoForCompare" resultMap="completeEntryResultMap">
+        select outbound_entry_id, shipping_cost, shipping_cost_type, shipping_number,
+               shipping_method_id, c.abbreviated_name as relevant_company_name
+        from e_outbound_entry as i join c_relevant_company as c
+                                       on i.shipping_method_id = c.relevant_company_id
+        where outbound_entry_id = #{id}
+    </select>
+
+    <update id="updateShippingInfo">
+        update e_outbound_entry
+        set shipping_cost = #{shippingCost},
+            shipping_cost_type = #{shippingCostType},
+            shipping_quantity = #{shippingQuantity},
+            shipping_number = #{shippingNumber},
+            shipping_method_id = #{shippingMethodID}
+        where outbound_entry_id = #{outboundEntryID}
+    </update>
+
+
+    <resultMap id="modifyEntryResultMap" type="org.jc.backend.entity.DO.OutboundEntryModifyDO">
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="drawer" column="drawer"/>
+        <result property="departmentID" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <resultMap id="modifyProductResultMap" type="org.jc.backend.entity.OutboundProductModifyO">
+        <result property="outboundProductID" column="outbound_product_id"/>
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
+    </resultMap>
+
+
+    <select id="selectEntryForCompare" resultMap="modifyEntryResultMap">
+        select outbound_entry_id, total_amount, invoice_type, drawer, i.department_id,
+               d.name as department_name, i.remark
+        from e_outbound_entry as i join e_department as d on i.department_id = d.department_id
+        where outbound_entry_id = #{id}
+    </select>
+
+    <select id="selectProductsForCompare" resultMap="modifyProductResultMap">
+        select outbound_product_id, outbound_entry_id, quantity, p.remark, tax_rate,
+               unit_price_without_tax, unit_price_with_tax, m.new_code, m.old_code
+        from e_outbound_product as p join (w_sku as s join w_model as m on s.model_id = m.model_id)
+                                         on p.sku_id = s.sku_id
+        where outbound_entry_id = #{id}
+    </select>
+
+    <update id="updateEntry">
+        update e_outbound_entry
+        set total_amount = #{totalCost},
+            invoice_type = #{invoiceType},
+            department_id = #{departmentID},
+            remark = #{remark}
+        where outbound_entry_id = #{inboundEntryID}
+    </update>
+
+    <update id="updateProduct">
+        update e_outbound_product
+        set quantity = #{quantity},
+            remark = #{remark},
+            tax_rate = #{taxRate},
+            unit_price_without_tax = #{unitPriceWithoutTax},
+            unit_price_with_tax = #{unitPriceWithTax}
+        where outbound_product_id = #{inboundProductID}
+    </update>
+
+    <update id="deleteProductByID">
+        delete from e_outbound_product
+        where outbound_product_id = #{id}
+    </update>
+
+    <delete id="deleteEntry">
+        delete from e_outbound_entry
+        where outbound_entry_id = #{id}
+    </delete>
+
+    <delete id="deleteProductsByEntryID">
+        delete from e_outbound_product
+        where outbound_entry_id = #{id}
+    </delete>
 
 </mapper>
