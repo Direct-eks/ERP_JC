@@ -12,6 +12,7 @@ import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.PurchaseOrderProductO;
 import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
 import org.jc.backend.service.PurchaseOrderService;
+import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +118,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         //compare entry
         StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-        boolean bool1 = MyUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+        boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
         if (bool1) {
             try {
@@ -134,7 +135,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             boolean found = false;
             for (var currentProduct : currentProducts) {
                 if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
-                    boolean bool3 = MyUtils.productsCompareAndFormModificationRecord(
+                    boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
                             record, currentProduct, originProduct);
 
                     if (bool3) {

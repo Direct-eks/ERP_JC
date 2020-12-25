@@ -13,6 +13,7 @@ import org.jc.backend.entity.InboundEntryCompleteO;
 import org.jc.backend.entity.VO.InboundEntryModifyVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
+import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 //todo fallback previous inserts
             }
         }
+
+        //todo: deduct stock
     }
 
     public List<InboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
@@ -110,7 +113,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
         // check changes to shipping info
-        boolean bool = MyUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
+        boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
 
         if (bool) {
             try {
@@ -155,7 +158,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         //compare entry
         StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-        boolean bool1 = MyUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+        boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
         if (bool1) {
             try {
@@ -172,7 +175,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             boolean found = false;
             for (var currentProduct : currentProducts) {
                 if (currentProduct.getInboundProductID() == originProduct.getInboundProductID()) {
-                    boolean bool3 = MyUtils.productsCompareAndFormModificationRecord(
+                    boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
                             record, currentProduct, originProduct);
 
                     if (bool3) {
@@ -212,6 +215,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
         }
 
+        //todo: deduct stock
     }
 
     public void deleteEntry(String id) {
@@ -222,6 +226,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             logger.error("");
             //todo
         }
+
+        //todo: deduct stock
     }
 
 }

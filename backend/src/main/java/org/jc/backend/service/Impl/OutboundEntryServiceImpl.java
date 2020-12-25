@@ -13,6 +13,7 @@ import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.OutboundEntryModifyVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
+import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 //todo
             }
         }
+
+        //todo: deduct stock
     }
 
     public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
@@ -108,7 +111,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         }
 
         StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
-        boolean bool = MyUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
+        boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
 
         if (bool) {
             try {
@@ -149,7 +152,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         }
 
         StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-        boolean bool1 = MyUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+        boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
         if (bool1) {
             try {
@@ -166,7 +169,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             boolean found = false;
             for (var currentProduct : currentProducts) {
                 if (currentProduct.getOutboundProductID() == originProduct.getOutboundProductID()) {
-                    boolean bool3 = MyUtils.productsCompareAndFormModificationRecord(
+                    boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
                             record, currentProduct, originProduct);
 
                     if (bool3) {
@@ -206,6 +209,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             }
         }
 
+        //todo: deduct stock
     }
 
     public void deleteEntry(String id) {
@@ -216,5 +220,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             logger.error("");
             //todo
         }
+
+        //todo: deduct stock
     }
 }
