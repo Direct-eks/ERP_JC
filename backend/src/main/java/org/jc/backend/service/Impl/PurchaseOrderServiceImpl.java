@@ -100,7 +100,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         PurchaseOrderEntryModifyDO currentEntry = new PurchaseOrderEntryModifyDO();
         BeanUtils.copyProperties(modificationVO, currentEntry);
 
-        //extract List<productDO>
+        //extract List<productO>
         List<PurchaseOrderProductModifyO> currentProducts = modificationVO.getPurchaseOrderProducts();
 
         //query database for compare
