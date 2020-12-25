@@ -17,9 +17,7 @@ import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -112,32 +110,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
         // check changes to shipping info
-        boolean bool = false;
-        if (currentInfo.getShippingCost() != originInfo.getShippingCost()) {
-            bool = true;
-            record.append(String.format("运费: %f -> %f; ",
-                    originInfo.getShippingCost(), currentInfo.getShippingCost()));
-        }
-        if (!currentInfo.getShippingCostType().equals(originInfo.getShippingCostType())) {
-            bool = true;
-            record.append(String.format("类型: %s -> %s",
-                    originInfo.getShippingCostType(), currentInfo.getShippingCostType()));
-        }
-        if (currentInfo.getShippingQuantity() != originInfo.getShippingQuantity()) {
-            bool = true;
-            record.append(String.format("数量: %d -> %d",
-                    originInfo.getShippingQuantity(), currentInfo.getShippingQuantity()));
-        }
-        if (!currentInfo.getShippingNumber().equals(originInfo.getShippingNumber())) {
-            bool = true;
-            record.append(String.format("运单号: %s -> %s",
-                    originInfo.getShippingNumber(), currentInfo.getShippingNumber()));
-        }
-        if (currentInfo.getShippingMethodID() != originInfo.getShippingMethodID()) {
-            bool = true;
-            record.append(String.format("承运: %s -> %s",
-                    originInfo.getRelevantCompanyName(), currentInfo.getRelevantCompanyName()));
-        }
+        boolean bool = MyUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
 
         if (bool) {
             try {
@@ -182,23 +155,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         //compare entry
         StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-        boolean bool1 = false;
-        if (originEntry.getTotalCost() != currentEntry.getTotalCost()) {
-            bool1 = true;
-            record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(), currentEntry.getTotalCost()));
-        }
-        if (!originEntry.getInvoiceType().equals(currentEntry.getInvoiceType())) {
-            bool1 = true;
-            record.append(String.format("单据类型: %s -> %s; ", originEntry.getInvoiceType(), currentEntry.getInvoiceType()));
-        }
-        if (originEntry.getDepartmentID() != currentEntry.getDepartmentID()) {
-            bool1 = true;
-            record.append(String.format("部门: %s -> %s; ", originEntry.getDepartmentName(), currentEntry.getDepartmentName()));
-        }
-        if (!originEntry.getRemark().equals(currentEntry.getRemark())) {
-            bool1 = true;
-            record.append(String.format("备注: %s -> %s", originEntry.getRemark(), currentEntry.getRemark()));
-        }
+        boolean bool1 = MyUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
         if (bool1) {
             try {
@@ -215,7 +172,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             boolean found = false;
             for (var currentProduct : currentProducts) {
                 if (currentProduct.getInboundProductID() == originProduct.getInboundProductID()) {
-                    boolean bool3 = MyUtils.entryProductsCompareAndFormModificationRecord(
+                    boolean bool3 = MyUtils.productsCompareAndFormModificationRecord(
                             record, currentProduct, originProduct);
 
                     if (bool3) {

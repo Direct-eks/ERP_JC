@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -118,31 +117,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         //compare entry
         StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-        boolean bool1 = false; //bool to indicate changes to entry
-        if (currentEntry.getTotalCost() != originEntry.getTotalCost()) {
-            bool1 = true;
-            record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(), currentEntry.getTotalCost()));
-        }
-        if (!currentEntry.getInvoiceType().equals(originEntry.getInvoiceType())) {
-            bool1 = true;
-            record.append(String.format("单据类型: %s -> %s; ", originEntry.getInvoiceType(), currentEntry.getInvoiceType()));
-        }
-        if (!currentEntry.getExecutionStatus().equals(originEntry.getExecutionStatus())) {
-            bool1 = true;
-            record.append(String.format("状态: %s -> %s; ", originEntry.getExecutionStatus(), currentEntry.getExecutionStatus()));
-        }
-        if (currentEntry.getDepartmentID() != originEntry.getDepartmentID()) {
-            bool1 = true;
-            record.append(String.format("部门: %s -> %s; ", originEntry.getDepartmentName(), currentEntry.getDepartmentName()));
-        }
-        if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
-            bool1 = true;
-            record.append(String.format("仓库: %s -> " + "%s; ", originEntry.getWarehouseName(), currentEntry.getWarehouseName()));
-        }
-        if (!currentEntry.getRemark().equals(originEntry.getRemark())) {
-            bool1 = true;
-            record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(), currentEntry.getRemark()));
-        }
+        boolean bool1 = MyUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
         if (bool1) {
             try {
@@ -159,7 +134,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             boolean found = false;
             for (var currentProduct : currentProducts) {
                 if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
-                    boolean bool3 = MyUtils.entryProductsCompareAndFormModificationRecord(
+                    boolean bool3 = MyUtils.productsCompareAndFormModificationRecord(
                             record, currentProduct, originProduct);
 
                     if (bool3) {
