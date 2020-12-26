@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface OutboundEntryService {
     void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalException;
-    List<OutboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(Date startDate, Date endDate, int id);
+    List<OutboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
+                                                                              String type, int id);
     void completeEntry(OutboundEntryCompleteO completeO);
     void modifyEntry(OutboundEntryModifyVO modifyVO);
     void deleteEntry(String id);

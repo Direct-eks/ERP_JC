@@ -71,11 +71,11 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         //todo: deduct stock
     }
 
-    public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+    public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate, String type, int id) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.queryEntriesInDateRangeByCompanyID(
-                dateFormat.format(startDate), dateFormat.format(endDate), id);
+        List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
+                dateFormat.format(startDate), dateFormat.format(endDate), type, id);
 
         List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
         for (var entryFromDatabase : entriesFromDatabase) {

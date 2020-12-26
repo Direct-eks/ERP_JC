@@ -43,15 +43,24 @@ public class OutboundEntryController {
     public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam(value = "id", defaultValue = "-1") int id
+            @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
+            @RequestParam("type") String type
     ) throws GlobalException {
         logger.info("GET Request to /outboundEntry/getEntriesInDateRangeByCompanyID, start date: " +
-                startDateString + ", end date： " + endDateString + ", id: " + id);
+                startDateString + ", end date： " + endDateString + ", companyID: " + companyID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        return outboundEntryService.getEntriesInDateRangeByCompanyID(startDate, endDate, id);
+        switch (type) {
+            case "销出":
+            case "入退":
+                break;
+            default:
+                throw new GlobalException("Invalid type error");
+        }
+
+        return outboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(startDate, endDate, type, companyID);
     }
 
     @ApiOperation(value = "", response = void.class)

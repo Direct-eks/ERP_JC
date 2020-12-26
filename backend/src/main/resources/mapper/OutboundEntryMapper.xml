@@ -93,7 +93,7 @@
                )
     </insert>
 
-    <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
+    <select id="queryEntriesInDateRangeByTypeAndCompanyID" resultMap="entryResultMap">
         select i.outbound_entry_id, i.shipment_date, i.creation_date, i.total_amount, i.invoice_type,
         i.drawer, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
         c.phone, c.full_name, d.department_id, d.name as department_name, i.warehouse_id,
@@ -105,7 +105,7 @@
         join e_department as d on i.department_id = d.department_id)
         join w_warehouse as w on i.warehouse_id = w.warehouse_id)
         join c_relevant_company as r on i.shipping_method_id = r.relevant_company_id
-        where (i.shipment_date between #{startDate} and #{endDate})
+        where (i.shipment_date between #{startDate} and #{endDate}) and i.classification = #{type}
         <if test="id != -1">
             and i.partner_company_id = #{id}
         </if>
