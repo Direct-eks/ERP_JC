@@ -54,7 +54,7 @@ public class InboundEntryController {
 
         switch (type) {
             case "购入":
-            case "退货":
+            case "出退":
                 break;
             default:
                 throw new GlobalException("Invalid type param");
