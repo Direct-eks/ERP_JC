@@ -39,19 +39,28 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundEntryWithProductsVO.class)
-    @GetMapping("/getEntriesInDateRangeByCompanyID")
-    public List<InboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(
+    @GetMapping("/getEntriesInDateRange")
+    public List<InboundEntryWithProductsVO> getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam(value = "id", defaultValue = "-1") int id
+            @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
+            @RequestParam("type") String type
     ) throws GlobalException {
-        logger.info("GET Request to /inboundEntry/getEntriesInDateRangeByCompanyID, start date: " +
-                startDateString + ", end date： " + endDateString + ", id: " + id);
+        logger.info("GET Request to /inboundEntry/getEntriesInDateRange, start date: " +
+                startDateString + ", end date： " + endDateString + ", companyID: " + companyID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        return inboundEntryService.getEntriesInDateRangeByCompanyID(startDate, endDate, id);
+        switch (type) {
+            case "购入":
+            case "退货":
+                break;
+            default:
+                throw new GlobalException("Invalid type param");
+        }
+
+        return inboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(startDate, endDate, type, companyID);
     }
 
     @ApiOperation(value = "", response = void.class)

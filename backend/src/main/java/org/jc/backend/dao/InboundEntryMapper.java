@@ -18,7 +18,8 @@ public interface InboundEntryMapper {
     void insertNewEntry(InboundEntryDO entryDO);
     int insertNewProduct(InboundProductO productDO);
 
-    List<InboundEntryDO> queryEntriesInDateRangeByCompanyID(String startDate, String endDate, int id);
+    List<InboundEntryDO> queryEntriesInDateRangeByTypeAndCompanyID(String startDate, String endDate,
+                                                                   String type, int id);
     List<InboundProductO> queryProductsByEntryID(String id);
 
     List<InboundEntryCompleteO> selectEntryShippingInfoForCompare(String id);

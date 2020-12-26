@@ -45,7 +45,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         List<InboundProductO> newProducts = entryWithProductsVO.getInboundProducts();
 
         int count = inboundEntryMapper.countNumberOfEntriesOfToday();
-        String newSerial = MyUtils.formNewSerial("入库", count);
+        String newSerial = MyUtils.formNewSerial("购入", count);
 
         newEntry.setInboundEntryID(newSerial);
         try {
@@ -72,11 +72,12 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         //todo: deduct stock
     }
 
-    public List<InboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+    public List<InboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
+                                                                                    String type, int id) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByCompanyID(
-                dateFormat.format(startDate), dateFormat.format(endDate), id);
+        List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
+                dateFormat.format(startDate), dateFormat.format(endDate), type, id);
 
         List<InboundEntryWithProductsVO> entries = new ArrayList<>();
         for (var entryFromDatabase : entriesFromDatabase) {
