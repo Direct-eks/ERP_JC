@@ -1,7 +1,6 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
@@ -19,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,85 +39,89 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    public void createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalException {
+    @Transactional
+    public void createEntry(InboundEntryWithProductsVO entryWithProductsVO) {
+
         InboundEntryDO newEntry = new InboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
         List<InboundProductO> newProducts = entryWithProductsVO.getInboundProducts();
 
-        int count = inboundEntryMapper.countNumberOfEntriesOfToday();
-        String newSerial = MyUtils.formNewSerial("购入", count);
-
-        newEntry.setInboundEntryID(newSerial);
         try {
-            inboundEntryMapper.insertNewEntry(newEntry);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            logger.error("Insert new inbound entry failed");
-            throw new GlobalException("Insert new inbound entry failed");
-        }
+            int count = inboundEntryMapper.countNumberOfEntriesOfToday();
+            String newSerial = MyUtils.formNewSerial("购入", count);
 
-        for (var product : newProducts) {
-            product.setInboundEntryID(newSerial);
-            try {
+            newEntry.setInboundEntryID(newSerial);
+            //initialize newEntry fields
+            newEntry.setShippingCostSerial("");
+            newEntry.setReturnDate("");
+            newEntry.setReturnSerial("");
+            newEntry.setPrintTimes(0);
+            inboundEntryMapper.insertNewEntry(newEntry);
+
+            for (var product : newProducts) {
+                //set entry serial id for product
+                product.setInboundEntryID(newSerial);
+                //initialize entry newProduct fields
+                product.setReturnStatus(0);
+                product.setCheckoutSerial("");
+                product.setInvoiceSerial("");
                 int id = inboundEntryMapper.insertNewProduct(product);
                 logger.info("Insert new inbound product id: " + id);
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                logger.error("Insert new inbound product failed");
-                throw new GlobalException("Insert new inbound product failed");
-                //todo fallback previous inserts
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Insert failed");
+            throw e;
         }
 
-        //todo: deduct stock
     }
 
+    @Transactional(readOnly = true)
     public List<InboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
-                                                                                    String type, int id) {
+                                                                                    String type, int companyID) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
-                dateFormat.format(startDate), dateFormat.format(endDate), type, id);
-
         List<InboundEntryWithProductsVO> entries = new ArrayList<>();
-        for (var entryFromDatabase : entriesFromDatabase) {
-            InboundEntryWithProductsVO tempEntry = new InboundEntryWithProductsVO();
-            BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+        try {
+            List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
+                    dateFormat.format(startDate), dateFormat.format(endDate), type, companyID);
 
-            try {
+            for (var entryFromDatabase : entriesFromDatabase) {
+                InboundEntryWithProductsVO tempEntry = new InboundEntryWithProductsVO();
+                BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+
                 List<InboundProductO> products = inboundEntryMapper.queryProductsByEntryID(
                         tempEntry.getInboundEntryID());
                 tempEntry.setInboundProducts(products);
-            } catch (PersistenceException e) {
-                logger.error("");
-                //todo
+
+                entries.add(tempEntry);
             }
 
-            entries.add(tempEntry);
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Query failed");
+            throw e;
         }
 
         return entries;
     }
 
-    public void completeEntry(InboundEntryCompleteO completionO) {
-        InboundEntryCompleteO currentInfo = completionO;
-        //query database for compare
-        String id = completionO.getInboundEntryID();
+    @Transactional
+    public void completeEntry(InboundEntryCompleteO currentInfo) {
+
+        String id = currentInfo.getInboundEntryID();
+
         InboundEntryCompleteO originInfo;
         try {
+            //query database for compare
             originInfo = (inboundEntryMapper.selectEntryShippingInfoForCompare(id)).get(0);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            //todo
-            return;
-        }
 
-        StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
-        // check changes to shipping info
-        boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
+            // check changes to shipping info
+            StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
+            boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
 
-        if (bool) {
-            try {
+            if (bool) {
                 inboundEntryMapper.updateShippingInfo(currentInfo);
 
                 logger.info("Completion: " + record);
@@ -125,16 +129,19 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                         0, originInfo.getInboundEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
+            } else {
+                logger.warn("Nothing changed!");
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Completion failed");
+            throw e;
         }
-        else {
-            logger.info("nothing changed");
-        }
+
     }
 
+    @Transactional
     public void modifyEntry(InboundEntryModifyVO modificationVO) {
         //extract entryDO
         InboundEntryModifyDO currentEntry = new InboundEntryModifyDO();
@@ -151,84 +158,61 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         try {
             originEntry = (inboundEntryMapper.selectEntryForCompare(id)).get(0);
             originProducts = inboundEntryMapper.selectProductsForCompare(id);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            //todo
-            return;
-        }
 
-        //compare entry
-        StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-        boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            //compare entry
+            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
+            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
-        if (bool1) {
-            try {
-                logger.info(""); //todo
+            if (bool1) {
                 inboundEntryMapper.updateEntry(currentEntry);
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
-        }
 
-        boolean bool2 = false;
-        for (var originProduct : originProducts) {
-            boolean found = false;
-            for (var currentProduct : currentProducts) {
-                if (currentProduct.getInboundProductID() == originProduct.getInboundProductID()) {
-                    boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
-                            record, currentProduct, originProduct);
+            boolean bool2 = false;
+            for (var originProduct : originProducts) {
+                boolean found = false;
+                for (var currentProduct : currentProducts) {
+                    if (currentProduct.getInboundProductID() == originProduct.getInboundProductID()) {
+                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                                record, currentProduct, originProduct);
 
-                    if (bool3) {
-                        bool2 = true;
-                        try {
-                            logger.info("");//todo
+                        if (bool3) {
+                            bool2 = true;
                             inboundEntryMapper.updateProduct(currentProduct);
-                        } catch (PersistenceException e) {
-                            e.printStackTrace();
-                            //todo
                         }
+                        found = true;
+                        break;
                     }
-                    found = true;
-                    break;
                 }
-            }
-            if (!found) {
-                try {
+                if (!found) {
                     inboundEntryMapper.deleteProductByID(originProduct.getInboundProductID());
-                } catch (PersistenceException e) {
-                    e.printStackTrace();
-                    //todo
                 }
             }
-        }
 
-        if (bool1 || bool2) {
-            logger.info("Modification: " + record);
-            try {
+            if (bool1 || bool2) {
+                logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationDO(
                         0, originEntry.getInboundEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Modify failed");
+            throw e;
         }
 
-        //todo: deduct stock
     }
 
+    @Transactional
     public void deleteEntry(String id) {
         try {
             inboundEntryMapper.deleteProductsByEntryID(id);
             inboundEntryMapper.deleteEntry(id);
         } catch (PersistenceException e) {
-            logger.error("");
-            //todo
+            logger.error("Deletion failed"); // todo remove in production mode
+            throw e;
         }
-
-        //todo: deduct stock
     }
 
 }

@@ -32,7 +32,7 @@ public class InboundEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
-    public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) throws GlobalException {
+    public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) {
         logger.info("PUT Request to /inboundEntry/createEntry");
 
         inboundEntryService.createEntry(inboundEntryVO);
@@ -44,7 +44,8 @@ public class InboundEntryController {
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
-            @RequestParam("type") String type
+            @RequestParam("type") String type,
+            @RequestParam("forModify") boolean forModify
     ) throws GlobalException {
         logger.info("GET Request to /inboundEntry/getEntriesInDateRange, start date: " +
                 startDateString + ", end date： " + endDateString + ", companyID: " + companyID);
@@ -60,7 +61,21 @@ public class InboundEntryController {
                 throw new GlobalException("Invalid type param");
         }
 
-        return inboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(startDate, endDate, type, companyID);
+        List<InboundEntryWithProductsVO> entries = inboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(
+                startDate, endDate, type, companyID);
+
+        //forbid changes to invoiced entries
+        //drop entries if were invoiced when forModify is true
+        for (var entry : entries) {
+            for (var product : entry.getInboundProducts()) {
+                if (!product.getCheckoutSerial().equals("")) {
+                    entries.remove(entry);
+                    break;
+                }
+            }
+        }
+
+        return entries;
     }
 
     @ApiOperation(value = "", response = void.class)

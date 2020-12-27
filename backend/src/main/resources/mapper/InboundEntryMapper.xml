@@ -74,7 +74,7 @@
             #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
             #{classification}, #{shippingCost}, #{shippingCostType}, #{shippingQuantity},
             #{shippingNumber}, #{shippingMethodID}, #{shippingCostSerial}, #{returnDate},
-            #{returnSerial}, #{printTimes}, #{printTimes}
+            #{returnSerial}, #{printTimes}
         )
     </insert>
 
@@ -86,9 +86,9 @@
             stock_unit_price, return_status, checkout_serial, invoice_serial
         )
         values (
-            #{inboundProductID}, #{inboundEntryID}, #{skuID}, #{quantity}, #{stockQuantity},
-            #{remark}, #{warehouseStockID}, #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax},
-            #{unitPriceWithTax}, #{stockUnitPrice}, #{returnStatus}, #{checkoutSerial}, #{invoiceSerial}
+            #{inboundEntryID}, #{skuID}, #{quantity}, #{stockQuantity}, #{remark}, #{warehouseStockID},
+            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice},
+            #{returnStatus}, #{checkoutSerial}, #{invoiceSerial}
         )
     </insert>
 

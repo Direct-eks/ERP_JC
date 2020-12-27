@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -21,12 +22,18 @@ public class InboundProductO {
     @Min(value = 1, message = "quantity smaller than one error")
     private int quantity;
     private int stockQuantity;
+
+    @NotNull(message = "remark null error")
     private String remark;
     private int warehouseStockID;
     private int warehouseID;
+
+    @DecimalMin(value = "0.0", message = "taxRate smaller than zero error")
     private double taxRate;
+
     @DecimalMin(value = "0.0", message = "unitPriceWithoutTax smaller than zero error")
     private double unitPriceWithoutTax;
+
     @DecimalMin(value = "0.0", message = "unitPriceWithTax smaller than zero error")
     private double unitPriceWithTax;
     private double stockUnitPrice;
