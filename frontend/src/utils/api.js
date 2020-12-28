@@ -29,7 +29,7 @@ const api = {
     /*------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', //PUT
     //GET startDate= endDate= companyID=int
-    getPurchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID?', //GET
+    purchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID?', //GET
     modifyPurchaseOrder: '/purchaseOrder/modifyOrder', //PATCH
 
     /*------ /sku ------*/

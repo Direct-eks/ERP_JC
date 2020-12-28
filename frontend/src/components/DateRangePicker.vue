@@ -63,19 +63,28 @@
                             new Date().format("yyyy-MM-dd").substr(0,10)
                         ],
                         name: '最近一周'
-                    }, {
-                        range: [
-                            new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 30)).format("yyyy-MM-dd").substr(0,10),
-                            new Date().format("yyyy-MM-dd").substr(0,10)
-                        ],
-                        name: '最近一个月'
-                    }, {
+                    },
+                    {
                         range: [
                             new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
                             new Date().format("yyyy-MM-dd").substr(0,10)
                         ],
                         name: '月初至今'
-                    }
+                    },
+                    {
+                        range: [
+                            new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 30)).format("yyyy-MM-dd").substr(0,10),
+                            new Date().format("yyyy-MM-dd").substr(0,10)
+                        ],
+                        name: '最近30天'
+                    },
+                    {
+                        range: [
+                            new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 90)).format("yyyy-MM-dd").substr(0,10),
+                            new Date().format("yyyy-MM-dd").substr(0,10)
+                        ],
+                        name: '最近90天'
+                    },
                 ],
             }
         },
