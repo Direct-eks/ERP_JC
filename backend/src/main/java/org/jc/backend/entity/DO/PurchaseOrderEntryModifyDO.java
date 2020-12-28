@@ -16,6 +16,7 @@ public class PurchaseOrderEntryModifyDO {
     private int departmentID;
     private int warehouseID;
     private String remark;
+    private int isModified;
 
     //only used for modification record
     private String departmentName;

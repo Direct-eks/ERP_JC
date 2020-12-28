@@ -74,6 +74,7 @@ public class InboundEntryWithProductsVO {
     private String returnDate;
     private String returnSerial;
     private int printTimes;
+    private int isModified;
 
     @Valid
     List<InboundProductO> inboundProducts;

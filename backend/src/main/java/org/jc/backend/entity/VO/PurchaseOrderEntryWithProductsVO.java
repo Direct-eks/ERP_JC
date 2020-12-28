@@ -46,6 +46,7 @@ public class PurchaseOrderEntryWithProductsVO {
     private String warehouseName;
 
     private String remark;
+    private int isModified;
 
     // PurchaseOrderProductVO
     @Valid

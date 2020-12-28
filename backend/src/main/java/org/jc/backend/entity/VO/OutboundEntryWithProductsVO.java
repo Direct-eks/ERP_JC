@@ -58,6 +58,7 @@ public class OutboundEntryWithProductsVO {
     private String returnDate;
     private String returnSerial;
     private int printTimes;
+    private int isModified;
 
     List<OutboundProductO> outboundProducts;
 }

@@ -21,6 +21,7 @@
         <result property="warehouseID" column="warehouse_id"/>
         <result property="warehouseName" column="warehouse_name"/>
         <result property="remark" column="remark"/>
+        <result property="isModified" column="is_modified"/>
     </resultMap>
 
     <resultMap id="productResultMap" type="org.jc.backend.entity.PurchaseOrderProductO">
@@ -51,11 +52,12 @@
     <insert id="insertNewOrderEntry">
         insert into e_purchase_order_entry(
             purchase_order_entry_id, entry_date, creation_date, total_cost, invoice_type,
-            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark
+            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark, is_modified
         )
         values (
             #{purchaseOrderEntryID}, #{entryDate}, #{creationDate}, #{totalCost}, #{invoiceType},
-            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark}
+            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
+            #{isModified}
         )
     </insert>
 
@@ -75,7 +77,7 @@
         select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
                p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name, c.phone,
                c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
-               w.name as warehouse_name, p.remark
+               w.name as warehouse_name, p.remark, p.is_modified
         from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
             join e_department as d on p.department_id = d.department_id)
             join w_warehouse as w on p.warehouse_id = w.warehouse_id
@@ -111,6 +113,7 @@
         <result property="departmentID" column="department_id"/>
         <result property="warehouseID" column="warehouse_id"/>
         <result property="remark" column="remark"/>
+        <result property="isModified" column="is_modified"/>
         <result property="departmentName" column="department_name"/>
         <result property="warehouseName" column="warehouse_name"/>
     </resultMap>
@@ -151,7 +154,8 @@
             execution_status=#{executionStatus},
             department_id=#{departmentID},
             warehouse_id=#{warehouseID},
-            remark=#{remark}
+            remark=#{remark},
+            is_modified=#{isModified}
         where purchase_order_entry_id = #{purchaseOrderEntryID}
     </update>
 

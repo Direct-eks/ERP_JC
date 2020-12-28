@@ -31,6 +31,7 @@
         <result property="returnDate" column="return_date"/>
         <result property="returnSerial" column="return_serial"/>
         <result property="printTimes" column="print_times"/>
+        <result property="isModified" column="is_modified"/>
     </resultMap>
 
     <resultMap id="productResultMap" type="org.jc.backend.entity.InboundProductO">
@@ -67,14 +68,14 @@
             inbound_entry_id, entry_date, creation_date, total_cost, invoice_type, drawer,
             partner_company_id, department_id, warehouse_id, remark, classification,
             shipping_cost, shipping_cost_type, shipping_quantity, shipping_number,
-            shipping_method_id, shipping_cost_serial, return_date, return_serial, print_times
+            shipping_method_id, shipping_cost_serial, return_date, return_serial, print_times, is_modified
         )
         values (
             #{inboundEntryID}, #{entryDate}, #{creationDate}, #{totalCost}, #{invoiceType},
             #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
             #{classification}, #{shippingCost}, #{shippingCostType}, #{shippingQuantity},
             #{shippingNumber}, #{shippingMethodID}, #{shippingCostSerial}, #{returnDate},
-            #{returnSerial}, #{printTimes}
+            #{returnSerial}, #{printTimes}, #{isModified}
         )
     </insert>
 
@@ -99,11 +100,11 @@
                w.name as warehouse_name, i.remark, i.classification, i.shipping_cost,
                i.shipping_cost_type, i.shipping_quantity, i.shipping_number, i.shipping_method_id,
                r.abbreviated_name as relevant_company_name, i.shipping_cost_serial, i.return_date,
-               i.return_serial, i.print_times
+               i.return_serial, i.print_times, i.is_modified
         from (((e_inbound_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id)
             join e_department as d on i.department_id = d.department_id)
             join w_warehouse as w on i.warehouse_id = w.warehouse_id)
-            join c_relevant_company as r on i.shipping_method_id = r.relevant_company_id
+            left join c_relevant_company as r on i.shipping_method_id = r.relevant_company_id
         where (i.entry_date between #{startDate} and #{endDate}) and i.classification = #{type}
             <if test="id != -1">
                 and i.partner_company_id = #{id}
@@ -164,6 +165,7 @@
         <result property="departmentID" column="department_id"/>
         <result property="departmentName" column="department_name"/>
         <result property="remark" column="remark"/>
+        <result property="isModified" column="is_modified"/>
     </resultMap>
 
     <resultMap id="modifyProductResultMap" type="org.jc.backend.entity.InboundProductModifyO">
@@ -199,7 +201,8 @@
         set total_cost = #{totalCost},
             invoice_type = #{invoiceType},
             department_id = #{departmentID},
-            remark = #{remark}
+            remark = #{remark},
+            is_modified = #{isModified}
         where inbound_entry_id = #{inboundEntryID}
     </update>
 

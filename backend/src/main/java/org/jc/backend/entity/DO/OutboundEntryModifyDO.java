@@ -17,4 +17,5 @@ public class OutboundEntryModifyDO {
     private String departmentName;
 
     private String remark;
+    private int isModified;
 }

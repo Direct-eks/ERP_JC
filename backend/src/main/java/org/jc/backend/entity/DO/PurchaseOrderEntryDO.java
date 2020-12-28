@@ -29,4 +29,5 @@ public class PurchaseOrderEntryDO {
     private String warehouseName;
 
     private String remark;
+    private int isModified;
 }

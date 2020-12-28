@@ -4,7 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
-import org.jc.backend.entity.DO.ModificationDO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryModifyDO;
 import org.jc.backend.entity.OutboundEntryCompleteO;
@@ -118,7 +118,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 outboundEntryMapper.updateShippingInfo(currentInfo);
 
                 logger.info("Completion: " + record);
-                modificationMapper.insertModificationRecord(new ModificationDO(
+                modificationMapper.insertModificationRecord(new ModificationO(
                         0, originInfo.getOutboundEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));
@@ -199,7 +199,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         if (bool1 || bool2) {
             logger.info("Modification: " + record);
             try {
-                modificationMapper.insertModificationRecord(new ModificationDO(
+                modificationMapper.insertModificationRecord(new ModificationO(
                         0, originEntry.getOutboundEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));

@@ -42,4 +42,5 @@ public class InboundEntryDO {
     private String returnDate;
     private String returnSerial;
     private int printTimes;
+    private int isModified;
 }

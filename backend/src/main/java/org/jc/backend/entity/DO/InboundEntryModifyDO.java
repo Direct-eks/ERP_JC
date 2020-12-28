@@ -16,4 +16,5 @@ public class InboundEntryModifyDO {
     private String departmentName;
 
     private String remark;
+    private int isModified;
 }

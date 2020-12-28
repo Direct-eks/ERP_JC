@@ -1,10 +1,9 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.PurchaseOrderMapper;
-import org.jc.backend.entity.DO.ModificationDO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO;
 import org.jc.backend.entity.PurchaseOrderProductModifyO;
@@ -53,6 +52,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             String newSerial = MyUtils.formNewSerial("采订", count);
 
             newEntry.setPurchaseOrderEntryID(newSerial);
+            newEntry.setIsModified(0);
             purchaseOrderMapper.insertNewOrderEntry(newEntry);
 
             for (var product : newProducts) {
@@ -104,6 +104,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         //extract entryDO
         PurchaseOrderEntryModifyDO currentEntry = new PurchaseOrderEntryModifyDO();
         BeanUtils.copyProperties(modificationVO, currentEntry);
+        currentEntry.setIsModified(1);
 
         //extract List<productO>
         List<PurchaseOrderProductModifyO> currentProducts = modificationVO.getPurchaseOrderProducts();
@@ -148,7 +149,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
             if (bool1 || bool2) {
                 logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationDO(
+                modificationMapper.insertModificationRecord(new ModificationO(
                         0, originEntry.getPurchaseOrderEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));

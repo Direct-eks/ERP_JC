@@ -5,7 +5,7 @@ import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.InboundEntryModifyDO;
-import org.jc.backend.entity.DO.ModificationDO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.InboundProductModifyO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.InboundEntryCompleteO;
@@ -56,6 +56,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             newEntry.setReturnDate("");
             newEntry.setReturnSerial("");
             newEntry.setPrintTimes(0);
+            newEntry.setIsModified(0);
             inboundEntryMapper.insertNewEntry(newEntry);
 
             for (var product : newProducts) {
@@ -125,7 +126,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 inboundEntryMapper.updateShippingInfo(currentInfo);
 
                 logger.info("Completion: " + record);
-                modificationMapper.insertModificationRecord(new ModificationDO(
+                modificationMapper.insertModificationRecord(new ModificationO(
                         0, originInfo.getInboundEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));
@@ -146,6 +147,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         //extract entryDO
         InboundEntryModifyDO currentEntry = new InboundEntryModifyDO();
         BeanUtils.copyProperties(modificationVO, currentEntry);
+        currentEntry.setIsModified(1);
 
         //extract List<productO>
         List<InboundProductModifyO> currentProducts = modificationVO.getInboundProducts();
@@ -190,7 +192,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
             if (bool1 || bool2) {
                 logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationDO(
+                modificationMapper.insertModificationRecord(new ModificationO(
                         0, originEntry.getInboundEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));
