@@ -3,50 +3,33 @@
         <v-form ref="form">
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-if="enabledFields.warehouse"
-                              v-model="form.warehouseID"
+                    <!--does not allow changes to be made after products are imported-->
+                    <v-select v-model="form.warehouseID"
                               :rules="rules.warehouseID"
                               :items="warehouseOptions"
-                              item-value="id"
+                              item-value="warehouseID"
                               item-text="name"
                               label="仓库"
                               hide-details="auto"
                               outlined dense
+                              :readonly="tableData.length !== 0"
                               style="width: 150px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.warehouse"
-                                  label="仓库"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense>
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="enabledFields.department"
-                              v-model="form.departmentID"
+                    <v-select v-model="form.departmentID"
                               :rules="rules.departmentID"
                               :items="departmentOptions"
-                              item-value="id"
+                              item-value="departmentID"
                               item-text="name"
                               label="部门"
                               hide-details="auto"
                               outlined dense
                               style="width: 180px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.department"
-                                  label="部门"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense>
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu v-if="enabledFields.entryDate"
-                            close-on-content-click
+                    <v-menu close-on-content-click
                             :nudge-right="40"
                             transition="scale-transition"
                             offset-y>
@@ -63,24 +46,17 @@
                         </template>
                         <v-date-picker v-model="form.entryDate"
                                        no-title
+                                       :max="allowedMaxDate"
                                        :first-day-of-week="0"
                                        locale="zh-cn">
                         </v-date-picker>
                     </v-menu>
-                    <v-text-field v-else
-                                  v-model="form.entryDate"
-                                  label="入库日期"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense>
-                    </v-text-field>
                 </v-col>
             </v-row>
 
             <v-row>
                 <v-col cols="auto">
-                    <v-text-field v-model="form.entryType"
+                    <v-text-field v-model="form.classification"
                                   label="入库类别"
                                   hide-details="auto"
                                   outlined
@@ -100,9 +76,8 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="enabledFields.expectedInvoiceType"
-                              v-model="form.expectedInvoiceType"
-                              :rules="rules.expectedInvoiceType"
+                    <v-select v-model="form.invoiceType"
+                              :rules="rules.invoiceType"
                               :items="invoiceTypeOptions"
                               item-value="value"
                               item-text="label"
@@ -111,15 +86,6 @@
                               outlined dense
                               style="width: 180px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.expectedInvoiceType"
-                                  label="预计单据类型"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                 </v-col>
             </v-row>
 
@@ -129,17 +95,10 @@
                                   label="电话"
                                   hide-details="auto"
                                   outlined
-                                  :readonly="!enabledFields.company"
                                   dense
-                                  style="width: 200px">
+                                  style="width: 200px"
+                                  @keydown.enter="triggerSimpleSearch = true">
                     </v-text-field>
-                </v-col>
-                <v-col v-if="enabledFields.company" cols="auto">
-                    <CompanySearchSimple
-                            v-bind:simpleSearchField="form.companyPhone"
-                            simpleSearchMethod="phone"
-                            @simpleSearchChoose="simpleSearchChooseAction">
-                    </CompanySearchSimple>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.companyAbbreviatedName"
@@ -147,16 +106,17 @@
                                   hide-details="auto"
                                   outlined
                                   :rules="rules.company"
-                                  :readonly="!enabledFields.company"
                                   dense
-                                  style="width: 200px">
+                                  style="width: 200px"
+                                  @keydown.enter="triggerSimpleSearch = true">
                     </v-text-field>
                 </v-col>
-                <v-col v-if="enabledFields.company" cols="auto">
+                <v-col cols="auto">
                     <CompanySearchSimple
-                            v-bind:simpleSearchField="form.companyAbbreviatedName"
-                            simpleSearchMethod="name"
-                            @simpleSearchChoose="simpleSearchChooseAction">
+                        :phoneSearchField="form.companyPhone"
+                        :companyNameSearchField="form.companyAbbreviatedName"
+                        :triggerSearchPanel="triggerSimpleSearch"
+                        @simpleSearchChoose="simpleSearchChooseAction">
                     </CompanySearchSimple>
                 </v-col>
             </v-row>
@@ -166,12 +126,11 @@
                                   label="供货单位全称"
                                   hide-details="auto"
                                   outlined
-                                  :readonly="!enabledFields.company"
                                   dense
                                   style="width: 300px">
                     </v-text-field>
                 </v-col>
-                <v-col v-if="enabledFields.company" cols="auto">
+                <v-col cols="auto">
                     <v-dialog v-model="fullSearchPanelOpen"
                               persistent
                               scrollable
@@ -185,14 +144,13 @@
                             </v-btn>
                         </template>
                         <CompanySearch
-                                @fullSearchClose="fullSearchCloseAction"
-                                @fullSearchChoose="fullSearchChooseAction">
+                            @fullSearchChoose="fullSearchChooseAction">
                         </CompanySearch>
                     </v-dialog>
                 </v-col>
             </v-row>
 
-            <v-row>
+            <v-row v-if="inboundEntryMode">
                 <v-col cols="auto">
                     <v-text-field v-model="form.shippingMethod"
                                   label="运输方式"
@@ -204,7 +162,7 @@
                                   style="width: 180px">
                     </v-text-field>
                 </v-col>
-                <v-col v-if="enabledFields.shipping" cols="auto">
+                <v-col cols="auto">
                     <v-dialog v-model="relativeCompanySearchPanelOpen"
                               persistent
                               scrollable
@@ -218,8 +176,7 @@
                             </v-btn>
                         </template>
                         <RelativeCompanySearch
-                                @relativeCompanyClose="relativeCompanyCloseAction"
-                                @relativeCompanyChoose="relativeCompanyChooseAction">
+                            @relativeCompanyChoose="relativeCompanyChooseAction">
                         </RelativeCompanySearch>
                     </v-dialog>
                 </v-col>
@@ -228,14 +185,10 @@
                                   label="运单号"
                                   hide-details="auto"
                                   outlined
-                                  :readonly="!enabledFields.shipping"
                                   dense
                                   style="width: 220px">
                     </v-text-field>
                 </v-col>
-            </v-row>
-
-            <v-row>
                 <v-col cols="auto">
                     <v-text-field v-model="form.shippingQuantity"
                                   label="件数"
@@ -243,29 +196,29 @@
                                   type="number"
                                   @change="handleShippingQuantityChange"
                                   outlined
-                                  :readonly="!enabledFields.shipping"
                                   dense
                                   style="width: 80px">
                     </v-text-field>
                 </v-col>
-                <v-col cols="auto">
+            </v-row>
+
+            <v-row>
+                <v-col cols="auto" v-if="inboundEntryMode">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
-                                   :readonly="!enabledFields.shipping"
                                    class="mt-0"
                                    row dense>
-                        <v-radio label="无运费" value="无运费"></v-radio>
-                        <v-radio label="自付运费" value="自付运费"></v-radio>
-                        <v-radio label="代垫运费" value="代垫运费"></v-radio>
+                        <v-radio label="无运费" value="无"></v-radio>
+                        <v-radio label="自付运费" value="自付"></v-radio>
+                        <v-radio label="代垫运费" value="代垫"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" v-if="inboundEntryMode">
                     <v-text-field v-model.number="form.shippingCost"
                                   label="运费"
                                   @change="handleShippingCostChange"
                                   hide-details="auto"
                                   outlined
-                                  :readonly="!enabledFields.shipping"
                                   dense
                                   style="width: 100px">
                     </v-text-field>
@@ -287,7 +240,6 @@
                                 label="备注"
                                 hide-details="auto"
                                 outlined
-                                :readonly="!enabledFields.remark"
                                 dense
                                 auto-grow
                                 rows="1"
@@ -295,23 +247,10 @@
                     </v-textarea>
                 </v-col>
             </v-row>
-            <v-row v-if="enabledFields.remarkForModification">
-                <v-col>
-                    <v-textarea v-model.number="form.remarkForModification"
-                                label="修改备注"
-                                hide-details="auto"
-                                outlined
-                                :readonly="!enabledFields.remarkForModification"
-                                dense
-                                auto-grow
-                                rows="1">
-                    </v-textarea>
-                </v-col>
-            </v-row>
         </v-form>
 
         <v-row dense>
-            <v-col v-if="enabledFields.entrySave">
+            <v-col v-if="inboundEntryMode">
                 <v-dialog v-model="purchaseOrderPanelOpen"
                           persistent
                           scrollable
@@ -320,18 +259,17 @@
                     <template v-slot:activator="{on}">
                         <v-btn color="accent"
                                v-on="on"
-                               :disabled="purchaseOrderPanelOpen">
+                               :disabled="purchaseOrderPanelOpen || form.partnerCompanyID === -1">
                             查询该单位采购订单
                         </v-btn>
                     </template>
                     <InboundQueryPurchaseEntry
-                            :companyID="form.companyID"
-                            @purchaseOrderClose="purchaseOrderCloseAction"
-                            @purchaseOrderChoose="purchaseOrderChooseAction">
+                        :companyID="form.partnerCompanyID"
+                        @purchaseOrderChoose="purchaseOrderChooseAction">
                     </InboundQueryPurchaseEntry>
                 </v-dialog>
             </v-col>
-            <v-col v-if="enabledFields.entrySave || enabledFields.editSave || enabledFields.purchaseSave">
+            <v-col>
                 <v-dialog v-model="modelSearchPanelOpen"
                           persistent
                           scrollable
@@ -340,17 +278,18 @@
                     <template v-slot:activator="{on}">
                         <v-btn color="accent"
                                v-on="on"
-                               :disabled="modelSearchPanelOpen">
+                               :disabled="modelSearchPanelOpen || form.partnerCompanyID === -1">
                             型号助选
                         </v-btn>
                     </template>
                     <ModelSearch
-                            @modelSearchClose="modelSearchCloseAction"
-                            @modelSearchChoose="modelSearchChooseAction">
+                        :warehouseID="form.warehouseID"
+                        @modelSearchClose="modelSearchCloseAction"
+                        @modelSearchChoose="modelSearchChooseAction">
                     </ModelSearch>
                 </v-dialog>
             </v-col>
-            <v-col v-if="enabledFields.entrySave || enabledFields.editSave || enabledFields.purchaseSave">
+            <v-col>
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="red lighten-1"
@@ -379,83 +318,27 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col v-if="enabledFields.purchaseSave">
+            <v-col v-if="inboundEntryMode">
                 <v-btn color="primary"
-                       @click="saveAsPurchaseOrder">
-                    存为采购订单
-                </v-btn>
-            </v-col>
-            <v-col v-if="enabledFields.entrySave">
-                <v-btn color="primary"
-                       @click="saveAsEntry(true)">
+                       @click="saveAsInboundEntry(true)">
                     存为入库单后新增
                 </v-btn>
             </v-col>
-            <v-col v-if="enabledFields.entrySave">
+            <v-col v-if="inboundEntryMode">
                 <v-btn color="primary"
-                       @click="saveAsEntry(false)">
+                       @click="saveAsInboundEntry(false)">
                     存为入库单
                 </v-btn>
             </v-col>
-            <v-col v-if="enabledFields.completionSave || enabledFields.editSave || enabledFields.returnSave">
+            <v-col v-if="purchaseOrderMode">
                 <v-btn color="primary"
-                       @click="saveModification">
-                    保存修改
+                       @click="saveAsPurchaseOrder()">
+                    存为采购订单
                 </v-btn>
             </v-col>
         </v-row>
 
-        <v-data-table v-if="enabledFields.productsShow"
-                      :headers="tableHeaders"
-                      :items="tableData"
-                      item-key="id"
-                      height="45vh"
-                      calculate-widths
-                      disable-sort
-                      fixed-header
-                      disable-pagination
-                      hide-default-footer
-                      locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{form.products.indexOf(item) + 1}}
-            </template>
-        </v-data-table>
-
-        <v-data-table v-else-if="enabledFields.returnSave"
-                      v-model="tableRowsSelectedForDeletion"
-                      :headers="returnTableHeaders"
-                      :items="tableData"
-                      item-key="id"
-                      height="45vh"
-                      calculate-widths
-                      disable-sort
-                      fixed-header
-                      disable-pagination
-                      hide-default-footer
-                      locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{form.products.indexOf(item) + 1}}
-            </template>
-            <template v-slot:item.returnQuantity="{ item }">
-                <v-edit-dialog :return-value="item.returnQuantity"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handleReturnQuantityChange(item)">
-                    {{item.returnQuantity}}
-                    <template v-slot:input>
-                        <v-text-field v-model="item.returnQuantity"
-                                      single-line
-                                      counter="12">
-                        </v-text-field>
-                    </template>
-                </v-edit-dialog>
-            </template>
-        </v-data-table>
-
-        <v-data-table v-else
-                      v-model="tableRowsSelectedForDeletion"
+        <v-data-table v-model="tableRowsSelectedForDeletion"
                       :headers="tableHeaders"
                       :items="tableData"
                       item-key="id"
@@ -481,7 +364,7 @@
                     <template v-slot:input>
                         <v-text-field v-model="item.quantity"
                                       single-line
-                                      counter="12">
+                                      counter="8">
                         </v-text-field>
                     </template>
                 </v-edit-dialog>
@@ -518,6 +401,21 @@
                     </template>
                 </v-edit-dialog>
             </template>
+            <template v-slot:item.remark="{ item }">
+                <v-edit-dialog :return-value="item.remark"
+                               persistent
+                               large
+                               save-text="确认"
+                               cancel-text="取消">
+                    {{item.remark}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.remark"
+                                      single-line
+                                      counter="200">
+                        </v-text-field>
+                    </template>
+                </v-edit-dialog>
+            </template>
         </v-data-table>
 
         <v-row>
@@ -541,7 +439,6 @@
                 {{sumWithTax}}
             </v-col>
         </v-row>
-
     </v-container>
 </template>
 
@@ -571,298 +468,99 @@
                 type: String,
                 required: true
             },
-            chosenEntryForDetail: {
-                type: Object,
-                default: () => {return null}
-            }
-        },
-        watch: {
-            chosenEntryForDetail: {
-                handler: function (val, oldVal) {
-                    if (this.chosenEntryForDetail === null) return
-                    console.log('updated', this.chosenEntryForDetail.entryID)
-                    this.form = Object.assign(this.form, val)
-                    this.tableData = val.products
-                },
-                immediate: true
-            }
         },
         beforeMount() {
-            switch (this.editMode) {
-                case 'entry':
-                case 'purchase_entry':
-                    this.$getRequest(this.$api.warehouseOptions).then((res) => {
-                        console.log(res.data)
-                        this.warehouseOptions = res.data
-                        for (let item of this.warehouseOptions)
-                            if (item.isDefault === 1)
-                                this.form.warehouseID = item.id
-                    }).catch((error) => this.$ajaxErrorHandler(error))
-
-                    this.$getRequest(this.$api.departmentOptions).then((res) => {
-                        console.log(res.data)
-                        this.departmentOptions = res.data
-                        for (let item of this.departmentOptions)
-                            if (item.isDefault === 1)
-                                this.form.departmentID = item.id
-                    }).catch((error) => this.$ajaxErrorHandler(error))
-
-                    this.enabledFields.warehouse = true
-                    this.enabledFields.department = true
-                    this.enabledFields.entryDate = true
-                    this.enabledFields.expectedInvoiceType = true
-                    this.enabledFields.company = true
-                    this.enabledFields.shipping = true
-                    this.enabledFields.remark = true
-
-                    this.form.entryDate = new Date().format("yyyy-MM-dd").substr(0,10)
-                    this.form.drawer = this.$store.getters.currentUser
-
-                    if (this.editMode === 'entry') {
-                        this.enabledFields.entrySave = true
-                        this.form.entryType = '购入'
-                        this.form.shippingCostType = '无运费'
-                    }
-                    else {
-                        this.enabledFields.purchaseSave = true
-                        this.form.entryType = '采订'
-                    }
+            switch(this.editMode) {
+                case 'inboundEntry':
+                    this.inboundEntryMode = true
                     break
-                case 'completion':
-                    this.enabledFields.shipping = true
-                    this.enabledFields.remark = true
-                    this.enabledFields.completionSave = true
-                    this.enabledFields.productsShow = true
-                    break
-                case 'modify':
-                    this.$getRequest(this.$api.departmentOptions).then((res) => {
-                        console.log(res.data)
-                        this.departmentOptions = res.data
-                        for (let item of this.departmentOptions)
-                            if (item.isDefault === 1)
-                                this.form.departmentID = item.id
-                    }).catch((error) => this.$ajaxErrorHandler(error))
-
-                    this.enabledFields.department = true
-                    this.enabledFields.expectedInvoiceType = true
-                    this.enabledFields.company = true
-                    this.enabledFields.shipping = true
-                    this.enabledFields.remark = true
-                    this.enabledFields.remarkForModification = true
-                    this.enabledFields.editSave = true
-                    break
-                case 'return':
-                    this.enabledFields.returnSave = true
-                    break
-                case 'query':
-                case 'purchase_query':
-                    this.enabledFields.productsShow = true
+                case 'purchaseOrder':
+                    this.purchaseOrderMode = true
                     break
             }
+
+            this.$getRequest(this.$api.warehouseOptions).then((res) => {
+                console.log(res.data)
+                this.warehouseOptions = res.data
+                for (let item of this.warehouseOptions) {
+                    if (item.isDefault === 1) {
+                        this.form.warehouseID = item.warehouseID
+                        break
+                    }
+                }
+            }).catch((error) => this.$ajaxErrorHandler(error))
+
+            this.$getRequest(this.$api.departmentOptions).then((res) => {
+                console.log(res.data)
+                this.departmentOptions = res.data
+                for (let item of this.departmentOptions) {
+                    if (item.isDefault === 1) {
+                        this.form.departmentID = item.departmentID
+                        break
+                    }
+                }
+            }).catch((error) => this.$ajaxErrorHandler(error))
         },
         data() {
             return {
+                inboundEntryMode: false,
+                purchaseOrderMode: false,
+
+                triggerSimpleSearch: false,
                 fullSearchPanelOpen: false,
                 relativeCompanySearchPanelOpen: false,
                 modelSearchPanelOpen: false,
                 purchaseOrderPanelOpen: false,
 
-                enabledFields: {
-                    warehouse: false,
-                    department: false,
-                    entryDate: false,
-                    // entryType: true,
-                    // drawer: true,
-                    expectedInvoiceType: false,
-                    company: false,
-                    shipping: false, //relative company
-                    // totalCost: true,
-                    remark: false,
-                    remarkForModification: false,
-                    //todo
-                    entrySave: false,
-                    completionSave: false,
-                    editSave: false,
-                    returnSave: false,
-                    purchaseSave: false,
-                    productsShow: false
-                },
+                allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
+
                 form: {
-                    entryID: '',
-                    serial: '',
-                    warehouse: '',
-                    warehouseID: -1,
-                    department: '',
-                    departmentID: -1,
-                    entryDate: null,
-                    entryType: '',
-                    drawer: '',
-                    expectedInvoiceType: '',
-                    companyPhone: '',
-                    companyAbbreviatedName: '',
-                    companyFullName: '',
-                    companyID: -1,
-                    shippingMethod: '', //relative company
-                    shippingMethodID: -1,
-                    shippingNumber: '',
-                    shippingQuantity: 0,
-                    shippingCostType: '',
-                    shippingCost: 0,
-                    totalCost: '',
-                    remark: '',
-                    remarkForModification: '',
-                    products: [],
+                    entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
+                    creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
+                    totalCost: 0.0, invoiceType: '',
+                    drawer: this.$store.getters.currentUser,
+                    partnerCompanyID: -1,
+                    companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                    departmentID: -1, departmentName: '',
+                    warehouseID: -1, warehouseName: '',
+                    remark: '', classification: '购入',
+                    shippingCost: 0, shippingCostType: '无运费',
+                    shippingQuantity: 0, shippingNumber: '',
+                    shippingMethodID: -1, relevantCompanyName: '',
+                    inboundProducts: [],
                 },
                 rules: {
                     warehouseID: [v => !!v || '请选择仓库'],
                     departmentID: [v => !!v || '请选择部门'],
                     entryDate: [v => !!v || '请选择日期'],
-                    expectedInvoiceType: [v => (!!v || this.enabledFields.purchaseSave) || ' 请选择单据类型'], //no need to validate if is purchase order
+                    invoiceType: [v => !!v || ' 请选择单据类型'], //no need to validate if is purchase order
                     company: [v => !!v || '请选择单位'],
-                    shippingMethodID: [v => (!!v || this.enabledFields.completionSave) || '请选择运输方式'],
-                    shippingCostType: [v => (!!v || this.enabledFields.completionSave) || '请选择运费类型'],
+                    shippingCostType: [v => !!v || '请选择运费类型'],
                 },
 
                 warehouseOptions: [],
                 departmentOptions: [],
                 invoiceTypeOptions: [
-                    {
-                        value: '增值税票',
-                        label: '增值税票'
-                    }, {
-                        value: '普票',
-                        label: '普票'
-                    }, {
-                        value: '收据',
-                        label: '收据'
-                    }
+                    {value: '增值税票', label: '增值税票'},
+                    {value: '普票', label: '普票'},
+                    {value: '收据', label: '收据'}
                 ],
 
                 tableHeaders: [
-                    {
-                        text: '序号',
-                        value: 'index',
-                        width: '60px'
-                    }, {
-                        text: '新代号',
-                        value: 'newModelCode',
-                        width: '100px'
-                    }, {
-                        text: '旧代号',
-                        value: 'oldModelCode',
-                        width: '100px'
-                    }, {
-                        text: '厂牌',
-                        value: 'factoryBrandCode',
-                        width: '65px'
-                    }, {
-                        text: '入库数量',
-                        value: 'quantity',
-                        width: '85px'
-                    }, {
-                        text: '单位',
-                        value: 'unitName',
-                        width: '60px'
-                    }, {
-                        text: '含税单价',
-                        value: 'unitPriceWithTax',
-                        width: '100px'
-                    }, {
-                        text: '不含税单价',
-                        value: 'unitPriceWithoutTax',
-                        width: '100px'
-                    }, {
-                        text: '不含税金额',
-                        value: '',
-                        width: '100px'
-                    }, {
-                        text: '税率',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '税额',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '备注',
-                        value: 'remark',
-                        width: '120px'
-                    }, {
-                        text: '库存数量',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '库存单价',
-                        value: '',
-                        width: '120px'
-                    }
-                ],
-                returnTableHeaders: [
-                    {
-                        text: '序号',
-                        value: 'index',
-                        width: '60px'
-                    }, {
-                        text: '新代号',
-                        value: 'newModelCode',
-                        width: '100px'
-                    }, {
-                        text: '旧代号',
-                        value: 'oldModelCode',
-                        width: '100px'
-                    }, {
-                        text: '厂牌',
-                        value: 'factoryBrandCode',
-                        width: '65px'
-                    }, {
-                        text: '原入库数',
-                        value: 'quantity',
-                        width: '85px'
-                    }, {
-                        text: '退货数',
-                        value: 'returnQuantity',
-                        width: '85px'
-                    }, {
-                        text: '现入库数',
-                        value: '',
-                        width: '85px'
-                    }, {
-                        text: '单位',
-                        value: 'unitName',
-                        width: '60px'
-                    }, {
-                        text: '含税单价',
-                        value: 'unitPriceWithTax',
-                        width: '100px'
-                    }, {
-                        text: '不含税单价',
-                        value: 'unitPriceWithoutTax',
-                        width: '100px'
-                    }, {
-                        text: '不含税金额',
-                        value: '',
-                        width: '100px'
-                    }, {
-                        text: '税率',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '税额',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '备注',
-                        value: 'remark',
-                        width: '120px'
-                    }, {
-                        text: '库存数量',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '库存单价',
-                        value: '',
-                        width: '120px'
-                    }
+                    {text: '序号', value: 'index', width: '60px'},
+                    {text: '新代号', value: 'newCode', width: '100px'},
+                    {text: '旧代号', value: 'oldCode', width: '100px'},
+                    {text: '厂牌', value: 'factoryCode', width: '65px'},
+                    {text: '入库数量', value: 'quantity', width: '80px'},
+                    {text: '单位', value: 'unitName', width: '60px'},
+                    {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
+                    {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
+                    {text: '无税金额', value: 'totalWithoutTax', width: '80px'},
+                    {text: '税率', value: 'taxRate', width: '65px'},
+                    {text: '税额', value: 'totalTax', width: '80px'},
+                    {text: '备注', value: 'remark', width: '120px'},
+                    {text: '库存数量', value: 'stockQuantity', width: '120px'},
+                    {text: '库存单价', value: 'stockUnitPrice', width: '120px'}
                 ],
                 tableData: [],
 
@@ -878,49 +576,47 @@
             /*------- simple name/phone company search -------*/
             simpleSearchChooseAction(val) {
                 if (val) {
-                    this.form.companyAbbreviatedName = val.hasOwnProperty('companyAbbreviatedName') ?
-                        val.companyAbbreviatedName : ''
-                    this.form.companyFullName = val.hasOwnProperty('companyFullName') ?
-                        val.companyFullName : ''
+                    this.form.companyAbbreviatedName = val.hasOwnProperty('abbreviatedName') ?
+                        val.abbreviatedName : ''
+                    this.form.companyFullName = val.hasOwnProperty('fullName') ?
+                        val.fullName : ''
                     this.form.companyPhone = val.hasOwnProperty('phone') ?
                         val.phone : ''
-                    this.form.companyID = val.hasOwnProperty('companyID') ?
+                    this.form.partnerCompanyID = val.hasOwnProperty('companyID') ?
                         val.companyID : -1
                 }
+                this.triggerSimpleSearch = false //reset status
             },
             /*------- full name company search -------*/
-            fullSearchCloseAction() {
-                this.fullSearchPanelOpen = false
-            },
             fullSearchChooseAction(val) {
-                this.form.companyAbbreviatedName = val.hasOwnProperty('companyAbbreviatedName') ?
-                    val.companyAbbreviatedName : ''
-                this.form.companyFullName = val.hasOwnProperty('companyFullName') ?
-                    val.companyFullName : ''
-                this.form.companyPhone = val.hasOwnProperty('phone') ?
-                    val.phone : ''
-                this.form.companyID = val.hasOwnProperty('companyID') ?
-                    val.companyID : -1
+                if (val) {
+                    this.form.companyAbbreviatedName = val.hasOwnProperty('abbreviatedName') ?
+                        val.abbreviatedName : ''
+                    this.form.companyFullName = val.hasOwnProperty('fullName') ?
+                        val.fullName : ''
+                    this.form.companyPhone = val.hasOwnProperty('phone') ?
+                        val.phone : ''
+                    this.form.partnerCompanyID = val.hasOwnProperty('companyID') ?
+                        val.companyID : -1
+                }
                 this.fullSearchPanelOpen = false
             },
             /*------- relative company search -------*/
-            relativeCompanyCloseAction() {
-                this.relativeCompanySearchPanelOpen = false
-            },
             relativeCompanyChooseAction(val) {
-                this.form.shippingMethod = val.hasOwnProperty('relativeCompanyAbbreviatedName') ?
-                    val.relativeCompanyAbbreviatedName : ''
-                this.form.shippingMethodID = val.hasOwnProperty('relativeCompanyID') ?
-                    val.relativeCompanyID : -1
+                if (val) {
+                    this.form.shippingMethod = val.hasOwnProperty('abbreviatedName') ?
+                        val.abbreviatedName : ''
+                    this.form.shippingMethodID = val.hasOwnProperty('companyID') ?
+                        val.companyID : -1
+                }
                 this.relativeCompanySearchPanelOpen = false
             },
-            /*------- purchase order query -------*/
-            purchaseOrderCloseAction() {
-                this.purchaseOrderPanelOpen = false
-            },
+            /*------- purchase order import -------*/
             purchaseOrderChooseAction(val) {
                 //todo
-                this.tableData = val
+                if (val) {
+                    this.tableData = val
+                }
                 this.purchaseOrderPanelOpen = false
             },
             /*------- model search -------*/
@@ -941,187 +637,6 @@
                     message: '添加成功', color: 'success'
                 })
             },
-            /*------- table & entry submission -------*/
-            handleDeleteRow() {
-                this.deleteTableRowPopup = false
-                if (this.tableRowsSelectedForDeletion.length !== 0) {
-                    for (let item of this.tableRowsSelectedForDeletion)
-                        this.tableData.splice(this.tableData.indexOf(item), 1)
-                    this.tableRowsSelectedForDeletion = []
-                }
-                else {
-                    this.$store.commit('setSnackbar', {
-                        message: '未选中任何行', color: 'error'
-                    })
-                }
-            },
-            generateEntryID() {
-                return new Promise((resolve) => {
-                    this.$postRequest(this.$api.newEntryID, {
-                        entryDate: this.form.entryDate,
-                    }).then((res) => {
-                        console.log('received', res.data)
-                        resolve(res.data)
-                    }).catch((error) => this.$ajaxErrorHandler(error))
-                })
-            },
-            saveAsEntry(bool) {
-                if (this.$refs.form.validate()) {
-                    // generate entryID and serial
-                    this.generateEntryID().then(entryID => {
-                        console.log('entry id: ', entryID)
-                        if (!entryID) return
-                        this.form.entryID = entryID
-                        this.form.serial = '购入' + entryID
-
-                        //products data for transfer
-                        for (let item of this.tableData) {
-                            this.form.products.push({
-                                //todo
-                                stockID: item.stockID,
-                                quantity: item.quantity,
-                                warehouseID: this.form.warehouseID,
-                                taxRate: item.taxRate,
-                                unitPriceWithoutTax: item.unitPriceWithoutTax,
-                                unitPriceWithTax: item.unitPriceWithTax,
-                            })
-                        }
-
-                        this.$putRequest(this.$api.newInboundEntry, this.form).then((res) => {
-                            this.$store.commit('setSnackbar', {
-                                message: '提交成功', color: 'success'
-                            })
-
-                            if (bool) { // continue add without exit
-                                for (let item of this.warehouseOptions)
-                                    if (item.isDefault === 1) this.form.warehouse = item.name
-                                for (let item of this.departmentOptions)
-                                    if (item.isDefault === 1) this.form.department = item.name
-                                this.form.entryType = ''
-                                this.form.expectedInvoiceType = ''
-                                this.form.companyID = -1
-                                this.form.companyPhone = ''
-                                this.form.companyAbbreviatedName = ''
-                                this.form.companyFullName = ''
-                                this.form.entryType = '购入'
-                                this.form.shippingMethod = ''
-                                this.form.shippingMethodID = -1
-                                this.form.shippingNumber = ''
-                                this.form.shippingQuantity = 0
-                                this.form.shippingCostType = '无运费'
-                                this.form.shippingCost = 0
-                                this.form.totalCost = 0
-                                this.form.remark = ''
-
-                                this.tableData = []
-                                this.tax = 0
-                                this.sumWithoutTax = 0
-                                this.sumWithTax = 0
-
-                                this.tableRowsSelectedForDeletion = []
-                            }
-                            else {
-                                this.$router.replace('/home')
-                            }
-                        })
-                    })
-                }
-            },
-            saveAsPurchaseOrder() {
-                if (this.$refs.form.validate()) {
-                    // generate entryID and serial
-                    this.generateEntryID().then(entryID => {
-                        console.log('entry id: ', entryID)
-                        if (!entryID) return
-                        this.form.entryID = entryID
-                        this.form.serial = '采订' + entryID
-
-                        //products data for transfer
-                        for (let item of this.tableData) {
-                            this.form.products.push({
-                                //todo
-                                stockID: item.stockID,
-                                quantity: item.quantity,
-                                warehouseID: this.form.warehouseID,
-                                taxRate: item.taxRate,
-                                unitPriceWithoutTax: item.unitPriceWithoutTax,
-                                unitPriceWithTax: item.unitPriceWithTax,
-                            })
-                        }
-
-                        this.$putRequest(this.$api.newInboundEntry, this.form).then((res) => {
-                            this.$store.commit('setSnackbar', {
-                                message: '提交成功', color: 'success'
-                            })
-
-                            this.$router.replace('/home')
-                        })
-                    })
-                }
-            },
-            saveModification() {
-                if (this.form.entryID === '') return
-                const submissionForm = {}
-                switch (this.editMode) {
-                    case 'completion':
-                        submissionForm.entryID = this.form.entryID
-                        submissionForm.shippingMethodID = this.form.shippingMethodID
-                        submissionForm.shippingQuantity = this.form.shippingQuantity
-                        submissionForm.shippingCostType = this.form.shippingCostType
-                        submissionForm.shippingNumber = this.form.shippingNumber
-                        submissionForm.shippingCost = this.form.shippingCost
-                        submissionForm.totalCost = this.form.totalCost
-                        submissionForm.remark = this.form.remark
-                        break
-                    case 'modify':
-                        submissionForm.products = []
-                        for (let item of this.tableData) {
-                            submissionForm.products.push({
-                                entryProductID: item.hasOwnProperty('entryProductID') ?
-                                    item.entryProductID : -1,
-                                stockID: item.stockID,
-                                quantity: item.quantity,
-                                warehouseID: this.form.warehouseID,
-                                taxRate: item.taxRate,
-                                unitPriceWithoutTax: item.unitPriceWithoutTax,
-                                unitPriceWithTax: item.unitPriceWithTax,
-                            })
-                        }
-                        submissionForm.entryID = this.form.entryID
-                        submissionForm.departmentID = this.form.departmentID
-                        submissionForm.expectedInvoiceType = this.form.expectedInvoiceType
-                        submissionForm.companyID = this.form.companyID
-                        submissionForm.shippingMethodID = this.form.shippingMethodID
-                        submissionForm.shippingQuantity = this.form.shippingQuantity
-                        submissionForm.shippingCostType = this.form.shippingCostType
-                        submissionForm.shippingNumber = this.form.shippingNumber
-                        submissionForm.shippingCost = this.form.shippingCost
-                        submissionForm.totalCost = this.form.totalCost
-                        submissionForm.remark = this.form.remark
-                        submissionForm.remarkForModification = this.form.remarkForModification
-                        break
-                    case 'return':
-                        submissionForm.products = []
-                        for (let item of this.tableData) {
-                            if (item.returnQuantity !== 0) {
-                                submissionForm.products.push({
-                                    entryProductID: item.entryProductID,
-                                    returnQuantity: item.returnQuantity
-                                })
-                            }
-                        }
-                        break
-                }
-
-                this.$patchRequest(this.$api.updateEntryInfo, submissionForm).then((res) => {
-                    console.log()
-
-                    this.$router.replace('/home')
-                }).catch(error => this.$ajaxErrorHandler(error))
-            },
-            handleReturnQuantityChange(row) {
-                //todo
-            },
             /* ----- number calculation ----- */
             handleShippingQuantityChange() {
                 this.form.shippingQuantity = this.form.shippingQuantity.toString().replace(/[^\d]/g, "")
@@ -1134,6 +649,11 @@
 
                 let tempSumWithTax = 0, tempSumWithoutTax = 0
                 this.tableData.forEach((item) => {
+                    //calculate for each row
+                    row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
+                    row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
+
+                    //calculate for total
                     tempSumWithTax += item.unitPriceWithTax * item.quantity
                     tempSumWithoutTax += item.unitPriceWithoutTax * item.quantity
                 })
@@ -1150,6 +670,66 @@
                 row.unitPriceWithoutTax = validateFloat(row.unitPriceWithoutTax.toString())
                 row.unitPriceWithTax = (row.unitPriceWithoutTax * 1.16).toFixed(2)
                 this.handleQuantityChange(row)
+            },
+            /*------- table & entry submission -------*/
+            handleDeleteRow() {
+                this.deleteTableRowPopup = false
+                if (this.tableRowsSelectedForDeletion.length !== 0) {
+                    for (let item of this.tableRowsSelectedForDeletion)
+                        this.tableData.splice(this.tableData.indexOf(item), 1)
+                    this.tableRowsSelectedForDeletion = []
+                } else {
+                    this.$store.commit('setSnackbar', {
+                        message: '未选中任何行', color: 'error'
+                    })
+                }
+            },
+            saveAsInboundEntry(bool) {
+                if (this.$refs.form.validate()) {
+                    //products data for transfer
+                    this.form.inboundProducts = this.tableData
+
+                    this.$putRequest(this.$api.createEntry, this.form).then((res) => {
+                        this.$store.commit('setSnackbar', {
+                            message: '提交成功', color: 'success'
+                        })
+
+                        if (bool) { // continue to add without exit, reset fields
+                            for (let item of this.warehouseOptions) {
+                                if (item.isDefault === 1) {
+                                    this.form.warehouseID = item.warehouseID
+                                    break
+                                }
+                            }
+                            for (let item of this.departmentOptions) {
+                                if (item.isDefault === 1) {
+                                    this.form.departmentID = item.departmentID
+                                    break
+                                }
+                            }
+                            this.form.shippingCost = 0.0
+                            this.form.shippingCostType = '无运费'
+                            this.form.shippingQuantity = 0
+                            this.form.shippingNumber = ''
+                            this.form.shippingMethodID = -1
+                            this.form.relevantCompanyName = ''
+                            this.form.totalCost = 0.0
+                            this.form.remark = ''
+                            this.form.inboundProducts = []
+
+                            this.tableData = []
+                            this.tax = 0.0
+                            this.sumWithoutTax = 0.0
+                            this.sumWithTax = 0.0
+                            this.tableRowsSelectedForDeletion = []
+                        } else {
+                            this.$router.replace('/home')
+                        }
+                    })
+                }
+            },
+            saveAsPurchaseOrder() {
+                //todo
             }
         },
         computed: {
@@ -1164,7 +744,6 @@
                 let sum = parseFloat(this.sumWithTax)
                 switch (this.form.shippingCostType) {
                     case "无运费":
-                        break
                     case '自付运费':
                         break
                     case '代垫运费':

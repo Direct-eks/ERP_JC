@@ -4,7 +4,7 @@
     <v-card outlined>
         <v-card-title>采购订单录入</v-card-title>
 
-        <InboundEntryDisplayComponent editMode="purchase_entry">
+        <InboundEntryDisplayComponent editMode="purchaseOrder">
         </InboundEntryDisplayComponent>
 
         <SnackMessage></SnackMessage>
