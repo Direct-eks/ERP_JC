@@ -9,7 +9,7 @@ import org.jc.backend.entity.RelevantCompanyO;
 import java.util.List;
 
 public interface CompanyService {
-    List<CompanyO> getCompanyByFuzzySearch(CompanyO companyO);
+    List<CompanyO> getCompanyByFuzzySearch(String phone, String name);
     List<CompanyCategoryO> getCompanyCategories();
     List<CompanyO> getCompaniesByCategory(int id);
 

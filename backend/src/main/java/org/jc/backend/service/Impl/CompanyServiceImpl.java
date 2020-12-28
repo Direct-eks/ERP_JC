@@ -26,13 +26,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    public List<CompanyO> getCompanyByFuzzySearch(CompanyO companyO) {
-        String phoneQuery = StringUtils.trimAllWhitespace(companyO.getPhone());
-        phoneQuery = StringUtils.hasLength(phoneQuery) ? phoneQuery + "%" : phoneQuery;
-        String nameQuery = StringUtils.trimAllWhitespace(companyO.getAbbreviatedName());
-        nameQuery = StringUtils.hasLength(nameQuery) ? nameQuery + "%" : nameQuery;
-        logger.info("FuzzySearch nameQuery: " + nameQuery + ", phoneQuery: " + phoneQuery + ".");
-        return companyMapper.queryCompanyByFuzzySearch(phoneQuery, nameQuery);
+    public List<CompanyO> getCompanyByFuzzySearch(String phone, String name) {
+        return companyMapper.queryCompanyByFuzzySearch(phone, name);
     }
 
     public List<CompanyCategoryO> getCompanyCategories() {

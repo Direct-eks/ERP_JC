@@ -38,13 +38,13 @@
         where
         <choose>
             <when test="phone != '' and name != ''">
-                abbreviated_name like #{name} and phone like #{phone}
+                phone like '%'||#{phone}||'%' and abbreviated_name like '%'||#{name}||'%'
             </when>
             <when test="name != ''">
-                abbreviated_name like #{name}
+                abbreviated_name like '%'||#{name}||'%'
             </when>
             <when test="phone != ''">
-                phone like #{phone}
+                phone like '%'||#{phone}||'%'
             </when>
         </choose>
     </select>

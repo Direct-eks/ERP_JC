@@ -29,18 +29,21 @@ public class CompanyController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = CompanyO.class, notes = "only abbreviated_name and phone fields are used")
-    @PostMapping("/getCompanyByFuzzySearch")
-    public List<CompanyO> getCompanyByFuzzySearch(@RequestBody @Validated CompanyO companyO) {
-        logger.info("POST Request to /company/getCompanyByFuzzySearch");
+    @GetMapping("/getCompanyByFuzzySearch")
+    public List<CompanyO> getCompanyByFuzzySearch(
+            @RequestParam(value = "phone", defaultValue = "") String phone,
+            @RequestParam(value = "name", defaultValue = "") String name
+    ) {
+        logger.info("GET Request to /company/getCompanyByFuzzySearch, phone: " + phone + ", name: " + name);
 
-        return companyService.getCompanyByFuzzySearch(companyO);
+        return companyService.getCompanyByFuzzySearch(phone, name);
     }
 
-    @ApiOperation(value = "", response = CompanyCategoryO.class, notes = "for partner company: category is area")
-    @GetMapping("/getCompanyCategories")
-    public List<CompanyCategoryO> getCompanyCategories() {
-        logger.info("GET Request to /company/getCompanyCategories");
-
+    @ApiOperation(value = "", response = CompanyCategoryO.class)
+    @GetMapping("/getCompanyAreas")
+    public List<CompanyCategoryO> getCompanyAreas() {
+        logger.info("GET Request to /company/getCompanyAreas");
+        //category is area here!
         return companyService.getCompanyCategories();
     }
 
