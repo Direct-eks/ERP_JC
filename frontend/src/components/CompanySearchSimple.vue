@@ -3,12 +3,12 @@
               persistent
               scrollable
               no-click-animation
-              width="60vw">
+              width="70vw">
         <template v-slot:activator="{on}">
             <v-btn color="accent"
                    v-on="on"
                    @click="simpleSearch"
-                   :disabled="simpleSearchField === ''">
+                   :disabled="phoneSearchField === ''">
                 单位检索
             </v-btn>
         </template>
@@ -17,7 +17,7 @@
                 <v-toolbar dense flat>
                     <v-toolbar-title>重复单位检查</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="simpleSearchPanelOpen = false">
+                    <v-btn icon @click="simpleSearchClose">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-toolbar>
@@ -53,34 +53,26 @@
     export default {
         name: "CompanySearchSimple",
         props: {
-            simpleSearchField: {
-                type: String,
-                required: true,
-                default: ''
-            },
-            simpleSearchMethod: {
-                type: String,
-                required: true,
-                default: ''
+            phoneSearchField: {type: String, required: true, default: ''},
+            companyNameSearchField: {type: String, required: false, default: ''},
+            triggerSearchPanel: {type: Boolean, required: true, default: false}
+        },
+        watch: {
+            triggerSearchPanel(val) {
+                if (val === true) {
+                    this.simpleSearchPanelOpen = true
+                    this.simpleSearch();
+                }
             }
         },
         data() {
             return {
                 simpleSearchPanelOpen: false,
                 simpleSearchTableHeaders: [
-                    {
-                        text: '单位简称',
-                        value: 'companyAbbreviatedName'
-                    }, {
-                        text: '电话',
-                        value: 'phone'
-                    }, {
-                        text: '单位全称',
-                        value: 'companyFullName'
-                    }, {
-                        text: '重要提示',
-                        value: 'remark'
-                    }
+                    {text: '单位简称', value: 'abbreviatedName', width: '220px'},
+                    {text: '电话', value: 'phone', width: '200px'},
+                    {text: '单位全称', value: 'fullName', width: '280px'},
+                    {text: '重要提示', value: 'remark'}
                 ],
                 simpleSearchCurrentRow: [],
                 simpleSearchTable: [],
@@ -88,29 +80,22 @@
         },
         methods: {
             simpleSearch() {
-                if (this.simpleSearchField !== '') {
-                    if (this.simpleSearchMethod === 'phone') {
-                        this.$postRequest(this.$api.companyByPhone,
-                            {phone: this.simpleSearchField}).then((res) => {
-                            console.log('received', res.data)
-                            this.simpleSearchTable = res.data
-                            // open panel
-                            this.simpleSearchPanelOpen = true
-                        }).catch(error => this.$ajaxErrorHandler(error))
-                    }
-                    else if (this.simpleSearchMethod === 'name') {
-                        this.$postRequest(this.$api.companyByName,
-                            {companyAbbreviatedName: this.simpleSearchField}).then((res) => {
-                            console.log('received', res.data)
-                            this.simpleSearchTable = res.data
-                            // open panel
-                            this.simpleSearchPanelOpen = true
-                        }).catch(error => this.$ajaxErrorHandler(error))
-                    }
-                }
+                this.$getRequest(this.$api.companyFuzzySearch +
+                    'phone=' + encodeURI(this.phoneSearchField) + '&name=' +
+                    encodeURI(this.companyNameSearchField)
+                ).then((res) => {
+                    console.log('received', res.data)
+                    this.simpleSearchTable = res.data
+                    // open panel
+                    this.simpleSearchPanelOpen = true
+                }).catch(error => this.$ajaxErrorHandler(error))
             },
             handleTableClick(val) {
                 this.simpleSearchCurrentRow = [val]
+            },
+            simpleSearchClose() {
+                this.$emit('simpleSearchChoose',null)
+                this.simpleSearchPanelOpen = false
             },
             simpleSearchChoose() {
                 this.$emit('simpleSearchChoose', this.simpleSearchCurrentRow[0])
