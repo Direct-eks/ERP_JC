@@ -4,6 +4,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const url = require('url')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const publicPath = ''
 
 const bundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -42,15 +43,16 @@ module.exports = (options = {}) => ({
                 ]
             },
             {
-                test: /\.s([ca])ss$/,
+                test: /\.(sa|sc|c)ss$/,
                 use: [
-                    'vue-style-loader',
+                    MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
                             esModule: false
-                        } 
+                        }
                     },
+                    'postcss-loader',
                     {
                         loader: 'sass-loader',
                         // Requires sass-loader@^8.0.0
@@ -85,7 +87,7 @@ module.exports = (options = {}) => ({
         },
         extensions: ['.js', '.vue', '.json', '.css']
     },
-    devtool: options.dev ? '#eval-source-map' : '#source-map',
+    devtool: options.dev ? 'eval-source-map' : 'source-map',
     devServer: {
         host: '127.0.0.1',
         port: 8080,
@@ -107,11 +109,29 @@ module.exports = (options = {}) => ({
         new HtmlWebpackPlugin({
             template: 'src/assets/index.html'
         }),
-        new bundleAnalyzerPlugin()
+        new bundleAnalyzerPlugin(),
+        new MiniCssExtractPlugin({
+            filename: '[name].[hash].css',
+            chunkFilename: '[id].[hash].css'
+        })
     ],
     optimization: {
+        runtimeChunk: "single",
         splitChunks: {
-            chunks: 'async'
+            // chunks: 'async'
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: "all"
+                },
+                styles: {
+                    name: 'styles',
+                    test: /\.css$/,
+                    chunks: "all",
+                    enforce: true
+                }
+            }
         }
     }
 })
