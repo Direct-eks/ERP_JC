@@ -1,13 +1,21 @@
 <template>
     <v-card>
         <v-card-title>
-            <v-toolbar dense flat>
-                <v-toolbar-title>相关单位</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon @click="close">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </v-toolbar>
+            相关单位
+            <v-spacer></v-spacer>
+            <v-text-field v-model="name"
+                          label="搜索"
+                          hide-details="auto"
+                          clearable
+                          style="width: 400px">
+            </v-text-field>
+            <v-spacer></v-spacer>
+            <v-btn class="mr-8" color="primary" @click="chooseHandle">
+                选择
+            </v-btn>
+            <v-btn icon @click="close">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
         </v-card-title>
 
         <v-card-text>
@@ -29,8 +37,9 @@
                     <v-data-table v-model="currentRow"
                                   :headers="tableHeaders"
                                   :items="tableData"
-                                  item-key="relativeCompanyID"
+                                  item-key="companyID"
                                   @click:row="handleTableClick"
+                                  :search="name"
                                   disable-sort
                                   disable-pagination
                                   hide-default-footer
@@ -44,13 +53,6 @@
                 </v-col>
             </v-row>
         </v-card-text>
-
-        <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="chooseHandle">
-                选择
-            </v-btn>
-        </v-card-actions>
     </v-card>
 </template>
 
@@ -61,32 +63,14 @@
             return {
                 treeData: [],
                 tableHeaders: [
-                    {
-                        text: '单位简称',
-                        value: 'relativeCompanyAbbreviatedName',
-                        width: '120px'
-                    }, {
-                        text: '电话',
-                        value: 'phone',
-                        width: '120px'
-                    }, {
-                        text: '联系人',
-                        value: 'contactPerson',
-                        width: '120px'
-                    }, {
-                        text: '联系电话',
-                        value: 'contactNumber',
-                        width: '120px'
-                    }, {
-                        text: '地址',
-                        value: 'address',
-                        width: '120px'
-                    }, {
-                        text: '传真',
-                        value: 'fax',
-                        width: '120px'
-                    }
+                    {text: '单位简称', value: 'abbreviatedName', width: '120px'},
+                    {text: '电话', value: 'phone', width: '120px'},
+                    {text: '联系人', value: 'contactPerson', width: '120px', filterable: false},
+                    {text: '联系电话', value: 'contactNumber', width: '120px', filterable: false},
+                    {text: '地址', value: 'address', width: '120px', filterable: false},
+                    {text: '传真', value: 'fax', width: '120px', filterable: false}
                 ],
+                name: '',
                 tableData: [],
                 currentRow: []
             }
@@ -95,17 +79,17 @@
             const creatTree = (data => {
                 const tree = [];
                 data.forEach(item => {
-                    tree.push({label: item.categoryName, children: [], categoryID: item.categoryID})
+                    tree.push({label: item.name, children: [], categoryID: item.categoryID})
                 })
                 return tree
             })
 
-            let result = this.$store.getters.companyList
+            let result = this.$store.getters.relativeCompanyList
             if (result) {
                 this.treeData = result
                 return
             }
-            this.$getRequest(this.$api.relativeCompanyList).then((res) => {
+            this.$getRequest(this.$api.relevantCompanyCategories).then((res) => {
                 console.log('received', res.data)
                 this.treeData = creatTree(res.data)
                 this.$store.commit('modifyRelativeCompanyList', this.treeData)
@@ -130,7 +114,8 @@
                         this.tableData = result
                         return
                     }
-                    this.$postRequest(this.$api.relativeCompanyByCategory, {categoryID: val.categoryID}).then((res) => {
+                    this.$getRequest(this.$api.relevantCompaniesByCategory +
+                    encodeURI(val.categoryID)).then((res) => {
                         console.log('received', res.data)
                         this.tableData = res.data
                         this.$store.commit('modifyRelativeCompanies', {key: val.categoryID, value: res.data})
