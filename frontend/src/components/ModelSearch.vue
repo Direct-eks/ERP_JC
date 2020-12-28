@@ -1,64 +1,32 @@
 <template>
         <v-card height="85vh">
             <v-card-title>
-                <v-toolbar dense flat>
-                    <v-toolbar-title>型号助选</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon @click="close">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                </v-toolbar>
+                型号助选
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-text-field v-model="modelCode"
+                                  label="代号搜索"
+                                  hide-details="auto"
+                                  clearable
+                                  style="width: 400px">
+                    </v-text-field>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-btn class="mr-8"
+                       color="accent"
+                       @click="addNewHandle">
+                    新增商品
+                </v-btn>
+                <v-btn class="mr-8"
+                       color="primary"
+                       @click="chooseHandle">
+                    选择
+                </v-btn>
+                <v-btn icon @click="close">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
             </v-card-title>
             <v-card-text>
-                <v-form @keyup.enter.native="search">
-                    <v-row>
-                        <v-col cols="auto">
-                            <v-text-field v-model="newModelCode"
-                                          label="新代号"
-                                          outlined
-                                          dense
-                                          clearable
-                                          style="width: 200px">
-                            </v-text-field>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-text-field v-model="oldModelCode"
-                                          label="原代号"
-                                          outlined
-                                          dense
-                                          clearable
-                                          style="width: 200px">
-                            </v-text-field>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-radio-group v-model="matchChoice"
-                                           row dense class="mt-0">
-                                <v-radio label="前匹配" value="1"></v-radio>
-                                <v-radio label="模糊" value="2"></v-radio>
-                                <v-radio label="后匹配" value="3"></v-radio>
-                            </v-radio-group>
-                        </v-col>
-                        <v-col cols="auto" class="mr-auto">
-                            <v-btn color="primary"
-                                   @click="search">
-                                查询
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-btn color="primary"
-                                   @click="addNewHandle">
-                                新增商品
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-btn color="primary"
-                                   @click="chooseHandle">
-                                选择
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-form>
-
                 <v-row>
                     <v-col cols="auto">
                         <v-responsive height="65vh"
@@ -81,6 +49,7 @@
                                       :items="modelTableData"
                                       item-key="modelID"
                                       @click:row="modelTableChoose"
+                                      :search="modelCode"
                                       height="65vh"
                                       hide-default-footer
                                       calculate-widths
@@ -95,11 +64,11 @@
                     <v-col cols="auto" md="6">
                         <v-row>
                             <v-col cols="auto" md="2" class="pt-0">
-                                <v-data-table v-model="stockTableCurrentRow"
-                                              :headers="stockTableHeaders"
-                                              :items="stockTableData"
-                                              item-key="stockID"
-                                              @click:row="stockTableChoose"
+                                <v-data-table v-model="skuTableCurrentRow"
+                                              :headers="skuTableHeaders"
+                                              :items="skuTableData"
+                                              item-key="skuID"
+                                              @click:row="skuTableChoose"
                                               height="20vh"
                                               calculate-widths
                                               disable-sort
@@ -126,30 +95,6 @@
                                 </v-data-table>
                             </v-col>
                         </v-row>
-                        <v-divider></v-divider>
-                        <v-row>
-                            <v-col>
-                                <v-radio-group></v-radio-group>
-                            </v-col>
-                        </v-row>
-                        <v-divider></v-divider>
-                        <v-row>
-                            <v-col>
-                                <v-data-table v-model="supplierCurrentRow"
-                                              :headers="supplierTableHeaders"
-                                              :items="supplierTableData"
-                                              item-key=""
-                                              height="25vh"
-                                              calculate-widths
-                                              disable-sort
-                                              single-select
-                                              fixed-header
-                                              hide-default-footer
-                                              locale="zh-cn"
-                                              dense>
-                                </v-data-table>
-                            </v-col>
-                        </v-row>
                     </v-col>
                 </v-row>
 
@@ -162,71 +107,31 @@
         name: "ModelSearch",
         data() {
             return {
-                newModelCode: '',
-                oldModelCode: '',
-                matchChoice: '1',
+                modelCode: '',
 
                 treeData: [],
 
                 modelTableHeaders: [
-                    {
-                        text: '新代号',
-                        value: 'newModelCode',
-                        width: '160px'
-                    }, {
-                        text: '原代号',
-                        value: 'oldModelCode',
-                        width: '140px'
-                    }
+                    {text: '新代号', value: 'newCode', width: '180px'},
+                    {text: '原代号', value: 'oldCode', width: '180px'}
                 ],
                 modelTableData: [],
                 modelTableCurrentRow: [],
 
-                stockTableHeaders: [
-                    {
-                        text: '生产厂',
-                        value: 'factoryBrandCode',
-                        width: '80px'
-                    }
+                skuTableHeaders: [
+                    {text: '生产厂', value: 'factoryCode', width: '80px'}
                 ],
-                stockTableData: [],
-                stockTableCurrentRow: [],
+                skuTableData: [],
+                skuTableCurrentRow: [],
 
                 warehouseStockTableHeaders: [
-                    {
-                        text: '仓库',
-                        value: 'warehouseName',
-                        width: '120px'
-                    }, {
-                        text: '架位',
-                        value: '',
-                        width: '120px'
-                    }, {
-                        text: '库存数量',
-                        value: 'quantity',
-                        width: '120px'
-                    }, {
-                        text: '库存无税价',
-                        value: '',
-                        width: '120px'
-                    }
+                    {text: '仓库', value: 'warehouseName', width: '120px'},
+                    {text: '架位', value: '', width: '120px'},
+                    {text: '库存数量', value: 'stockQuantity', width: '120px'},
+                    {text: '库存无税价', value: 'stockUnitPriceWithoutTax', width: '120px'}
                 ],
                 warehouseStockTableData: [],
-                warehouseStockCurrentRow: [],
-
-                supplierTableHeaders: [
-                    {
-                        text: '新代号',
-                        value: '',
-                        width: '160px'
-                    }, {
-                        text: '原代号',
-                        value: '',
-                        width: '140px'
-                    }
-                ],
-                supplierTableData: [],
-                supplierCurrentRow: []
+                warehouseStockCurrentRow: []
             }
         },
         beforeMount() {
@@ -234,8 +139,8 @@
                 const tree = [];
                 for (let item of data) {
                     if (item.treeLevel.length === 1) { //first level object
-                        tree.push({label: item.categoryCode, children: [],
-                            categoryID: item.categoryID, treeLevel: item.treeLevel})
+                        tree.push({label: item.code, children: [],
+                            categoryID: item.modelCategoryID, treeLevel: item.treeLevel})
                     }
                 }
                 console.log(tree)
@@ -250,8 +155,8 @@
                     if (item.treeLevel.startsWith(prefix + '-') &&
                         item.treeLevel.length === depth * 2 + 1) {
                         tree[lastLevelIndex].children.push({
-                            label: item.categoryCode, children: [],
-                            categoryID: item.categoryID, treeLevel: item.treeLevel
+                            label: item.code, children: [],
+                            categoryID: item.modelCategoryID, treeLevel: item.treeLevel
                         })
                         count++
                     }
@@ -268,7 +173,7 @@
                 this.treeData = result
                 return
             }
-            this.$getRequest(this.$api.productCategoryList).then((res) => {
+            this.$getRequest(this.$api.modelCategories).then((res) => {
                 console.log('received', res.data)
                 this.treeData = creatTree(res.data)
                 this.$store.commit('modifyProductList', this.treeData)
@@ -281,33 +186,13 @@
             addNewHandle() {
 
             },
-            search() {
-                this.modelTableCurrentRow = [] //reset model table
-                this.stockTableCurrentRow = [] //reset stock table
-
-                if (this.newModelCode === '' && this.oldModelCode === '') {
-                    this.$store.commit('setSnackbar', {
-                        message: '请填写代号', color: 'error'
-                    })
-                }
-
-                this.$postRequest(this.$api.modelByModelCode, {
-                    newModelCode: this.newModelCode,
-                    oldModelCode: this.oldModelCode,
-                    matchMode: parseInt(this.matchChoice)
-                }).then((res) => {
-                    console.log('received', res.data)
-                    this.modelTableData = res.data
-                    if (this.modelTableData.length === 0) {
-                        this.$store.commit('setSnackbar', {
-                            message: '无结果', color: 'warning'
-                        })
-                    }
-                }).catch(error => this.$ajaxErrorHandler(error))
-            },
             treeSelect(data) {
+                this.modelTableData = []
                 this.modelTableCurrentRow = [] //reset model table
-                this.stockTableCurrentRow = [] //reset stock table
+                this.skuTableData = []
+                this.skuTableCurrentRow = [] //reset stock table
+                this.warehouseStockTableData = []
+                this.warehouseStockCurrentRow = []
 
                 let val = data[0]
                 if (val.children.length === 0) { // end node
@@ -317,7 +202,8 @@
                         this.modelTableData = result
                         return
                     }
-                    this.$postRequest(this.$api.modelByCategory, {categoryID: val.categoryID}).then((res) => {
+                    this.$getRequest(this.$api.modelsByCategory +
+                        encodeURI(val.categoryID)).then((res) => {
                         console.log('received', res.data)
                         this.modelTableData = res.data
                         this.$store.commit('modifyModels', {key: val.categoryID, value: res.data})
@@ -326,41 +212,36 @@
             },
             modelTableChoose(val) {
                 this.modelTableCurrentRow = [val]
-                this.stockTableCurrentRow = [] //reset stock table
+                this.skuTableData = []
+                this.skuTableCurrentRow = [] //reset stock table
+                this.warehouseStockTableData = []
+                this.warehouseStockCurrentRow = []
 
-                this.$postRequest(this.$api.stockByModel, val).then((res) => {
+                this.$getRequest(this.$api.fullSkuByModel +
+                encodeURI(val.modelID)).then((res) => {
                     console.log('received', res.data)
-                    this.stockTableData = res.data
+                    this.skuTableData = res.data
                 }).catch(error => this.$ajaxErrorHandler(error))
             },
-            stockTableChoose(val) {
-                this.stockTableCurrentRow = [val]
+            skuTableChoose(val) {
+                this.skuTableCurrentRow = [val]
+                this.warehouseStockTableData = []
+                this.warehouseStockCurrentRow = []
 
-                this.$postRequest(this.$api.warehouseStockByStock, val).then((res) => {
+                this.$getRequest(this.$api.warehouseStockBySKu +
+                encodeURI(val.skuID)).then((res) => {
                     console.log('received', res.data)
                     this.warehouseStockTableData = res.data
                 }).catch(error => this.$ajaxErrorHandler(error))
             },
             chooseHandle() {
                 if (this.modelTableCurrentRow.length !== 0 &&
-                    this.stockTableCurrentRow.length !== 0) {
-                    this.$emit('modelSearchChoose', {
-                        newModelCode: this.modelTableCurrentRow[0].newModelCode,
-                        oldModelCode: this.modelTableCurrentRow[0].oldModelCode,
-                        stockID: this.stockTableCurrentRow[0].stockID,
-                        factoryBrandCode: this.stockTableCurrentRow[0].factoryBrandCode,
-                        unitName: this.modelTableCurrentRow[0].unitName,
-                        /*-- field initialization --*/
-                        quantity: 0,
-                        taxRate: 0.16,
-                        unitPriceWithTax: 0.0,
-                        unitPriceWithoutTax: 0.0,
-                        remark: ''
-                    })
+                    this.skuTableCurrentRow.length !== 0) {
+                    this.$emit('modelSearchChoose', this.skuTableCurrentRow[0])
                     this.modelTableCurrentRow = []
-                    this.stockTableCurrentRow = []
+                    this.skuTableCurrentRow = []
                 }
-            },
+            }
         }
     }
 </script>
