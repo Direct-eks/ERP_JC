@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,62 +40,66 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    public void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) throws GlobalException {
+    @Transactional
+    public void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) {
+
         PurchaseOrderEntryDO newEntry = new PurchaseOrderEntryDO();
         BeanUtils.copyProperties(entryWithProducts, newEntry);
         List<PurchaseOrderProductO> newProducts = entryWithProducts.getPurchaseOrderProducts();
 
-        // calculate the number of entries have been created for today's date, and generate new serial
-        int count = purchaseOrderMapper.countNumberOfEntriesOfToday();
-        String newSerial = MyUtils.formNewSerial("采订", count);
-
-        newEntry.setPurchaseOrderEntryID(newSerial);
         try {
-            purchaseOrderMapper.insertNewOrderEntry(newEntry);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            logger.error("Insert new purchase order failed");
-            throw new GlobalException("Insert new purchase order failed");
-        }
+            // calculate the number of entries have been created for today's date, and generate new serial
+            int count = purchaseOrderMapper.countNumberOfEntriesOfToday();
+            String newSerial = MyUtils.formNewSerial("采订", count);
 
-        for (var product : newProducts) {
-            product.setPurchaseOrderEntryID(newSerial);
-            try {
+            newEntry.setPurchaseOrderEntryID(newSerial);
+            purchaseOrderMapper.insertNewOrderEntry(newEntry);
+
+            for (var product : newProducts) {
+                product.setPurchaseOrderEntryID(newSerial);
                 int id = purchaseOrderMapper.insertNewOrderProduct(product);
                 logger.info("Insert new purchase product id: " + id);
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                logger.error("Insert new purchase order product failed");
-                throw new GlobalException("Insert new purchase order product failed");
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Insert failed");
+            throw e;
         }
+
     }
 
+    @Transactional(readOnly = true)
     public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesInDateRangeByCompanyID(
-                dateFormat.format(startDate), dateFormat.format(endDate), id);
-
         List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
-        for (var entryFromDatabase : entriesFromDatabase) {
-            PurchaseOrderEntryWithProductsVO tempEntry = new PurchaseOrderEntryWithProductsVO();
-            BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+        try {
+            List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesInDateRangeByCompanyID(
+                    dateFormat.format(startDate), dateFormat.format(endDate), id);
 
-            try {
+            for (var entryFromDatabase : entriesFromDatabase) {
+                PurchaseOrderEntryWithProductsVO tempEntry = new PurchaseOrderEntryWithProductsVO();
+                BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+
                 List<PurchaseOrderProductO> products = purchaseOrderMapper.queryProductsByEntryID(
                         tempEntry.getPurchaseOrderEntryID());
                 tempEntry.setPurchaseOrderProducts(products);
-            } catch (PersistenceException e) {
-                logger.error("Query error");
+
+                entries.add(tempEntry);
             }
 
-            entries.add(tempEntry);
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Query error");
+            throw e;
         }
 
         return entries;
     }
 
+    @Transactional
     public void modifyOrder(PurchaseOrderModifyVO modificationVO) {
         //extract entryDO
         PurchaseOrderEntryModifyDO currentEntry = new PurchaseOrderEntryModifyDO();
@@ -111,79 +116,61 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         try {
             originEntry = (purchaseOrderMapper.selectEntryForCompare(id)).get(0);
             originProducts = purchaseOrderMapper.selectProductsForCompare(id);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            return;
-        }
 
-        //compare entry
-        StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-        boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            //compare entry
+            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
+            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
-        if (bool1) {
-            try {
-                logger.info(currentEntry.toString());
+            if (bool1) {
                 purchaseOrderMapper.updateOrderEntry(currentEntry);
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
-        }
 
-        boolean bool2 = false; //bool to indicate changes to products
-        for (var originProduct : originProducts) {
-            boolean found = false;
-            for (var currentProduct : currentProducts) {
-                if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
-                    boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
-                            record, currentProduct, originProduct);
+            boolean bool2 = false; //bool to indicate changes to products
+            for (var originProduct : originProducts) {
+                boolean found = false;
+                for (var currentProduct : currentProducts) {
+                    if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
+                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                                record, currentProduct, originProduct);
 
-                    if (bool3) {
-                        bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
-                        try {
-                            logger.info(currentProduct.toString());
+                        if (bool3) {
+                            bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
                             purchaseOrderMapper.updateOrderProduct(currentProduct);
-                        } catch (PersistenceException e) {
-                            e.printStackTrace();
-                            //todo
                         }
+                        found = true;
+                        break;
                     }
-                    found = true;
-                    break;
                 }
-            }
-            if (!found) { //entry is removed
-                try {
+                if (!found) { //entry is removed
                     purchaseOrderMapper.deleteOrderProductByID(originProduct.getPurchaseOrderProductID());
-                } catch (PersistenceException e) {
-                    e.printStackTrace();
-                    //todo
                 }
             }
-        }
 
-        if (bool1 || bool2) {
-            logger.info("Modification: " + record);
-            try {
+            if (bool1 || bool2) {
+                logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationDO(
                         0, originEntry.getPurchaseOrderEntryID(), record.toString(),
                         new SimpleDateFormat("yyyy-MM-dd").format(new Date())
                 ));
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Update error");
+            throw e;
         }
 
     }
 
+    @Transactional
     public void deleteOrder(String id) {
         try {
             purchaseOrderMapper.deleteOrderProductsByEntryID(id);
             purchaseOrderMapper.deleteOrderEntry(id);
         } catch (PersistenceException e) {
-            logger.error("");
-            e.printStackTrace();
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Delete error");
+            throw e;
         }
     }
 }

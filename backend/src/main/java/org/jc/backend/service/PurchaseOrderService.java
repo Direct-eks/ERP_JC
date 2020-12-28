@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface PurchaseOrderService {
-    void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) throws GlobalException;
+    void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts);
     List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id);
     void modifyOrder(PurchaseOrderModifyVO modificationVO);
     void deleteOrder(String id);

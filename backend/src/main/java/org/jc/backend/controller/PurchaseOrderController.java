@@ -32,7 +32,7 @@ public class PurchaseOrderController {
 
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createOrder")
-    public void createOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) throws GlobalException {
+    public void createOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) {
         logger.info("PUT Request to /purchaseOrder/createOrder");
 
         purchaseOrderService.createOrder(purchaseOrderEntry);
