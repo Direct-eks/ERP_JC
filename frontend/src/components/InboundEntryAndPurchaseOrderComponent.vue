@@ -523,11 +523,14 @@
                     companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
                     departmentID: -1, departmentName: '',
                     warehouseID: -1, warehouseName: '',
-                    remark: '', classification: '购入',
+                    remark: '',
+                    classification: '购入',
+                    executionStatus: '执行',
                     shippingCost: 0, shippingCostType: '无运费',
                     shippingQuantity: 0, shippingNumber: '',
                     shippingMethodID: -1, relevantCompanyName: '',
                     inboundProducts: [],
+                    purchaseOrderProducts: []
                 },
                 rules: {
                     warehouseID: [v => !!v || '请选择仓库'],
@@ -689,7 +692,7 @@
                     //products data for transfer
                     this.form.inboundProducts = this.tableData
 
-                    this.$putRequest(this.$api.createEntry, this.form).then((res) => {
+                    this.$putRequest(this.$api.createInboundEntry, this.form).then((res) => {
                         this.$store.commit('setSnackbar', {
                             message: '提交成功', color: 'success'
                         })
@@ -729,7 +732,17 @@
                 }
             },
             saveAsPurchaseOrder() {
-                //todo
+                if (this.$refs.form.validate()) {
+                    //products data for transfer
+                    this.form.purchaseOrderProducts = this.tableData
+
+                    this.$putRequest(this.$api.createPurchaseOrder, this.form).then((res) => {
+                        this.$store.commit('setSnackbar', {
+                            message: '提交成功', color: 'success'
+                        })
+                        this.$router.replace('/home')
+                    })
+                }
             }
         },
         computed: {
