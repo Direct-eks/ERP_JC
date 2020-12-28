@@ -105,6 +105,9 @@
 <script>
     export default {
         name: "ModelSearch",
+        props: {
+            warehouseID: {type: Number, required: true, default: -1}
+        },
         data() {
             return {
                 modelCode: '',
@@ -235,9 +238,39 @@
                 }).catch(error => this.$ajaxErrorHandler(error))
             },
             chooseHandle() {
+                //check if sku is chosen
                 if (this.modelTableCurrentRow.length !== 0 &&
                     this.skuTableCurrentRow.length !== 0) {
-                    this.$emit('modelSearchChoose', this.skuTableCurrentRow[0])
+
+                    let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = 0.0
+                    for (let item of this.warehouseStockTableData) {
+                        if (item.warehouseID === this.warehouseID) {
+                            stockQuantity = item.stockQuantity
+                            warehouseStockID = item.warehouseStockID
+                            stockUnitPrice = item.stockUnitPriceWithTax
+                            break
+                        }
+                    }
+
+                    this.$emit('modelSearchChoose', {
+                        skuID: this.skuTableCurrentRow[0].skuID,
+                        newCode: this.skuTableCurrentRow[0].newCode,
+                        oldCode: this.skuTableCurrentRow[0].oldCode,
+                        unitName: this.skuTableCurrentRow[0].unitName,
+                        factoryCode: this.skuTableCurrentRow[0].factoryCode,
+                        quantity: 0,
+                        stockQuantity: stockQuantity,
+                        remark: '',
+                        warehouseStockID: warehouseStockID,
+                        warehouseID: this.warehouseID,
+                        taxRate: 0.16, //todo
+                        unitPriceWithoutTax: 0.0,
+                        unitPriceWithTax: 0.0,
+                        stockUnitPrice: stockUnitPrice,
+                        //statistic fields
+                        totalWithoutTax: 0.0,
+                        totalTax: 0.0
+                    })
                     this.modelTableCurrentRow = []
                     this.skuTableCurrentRow = []
                 }
