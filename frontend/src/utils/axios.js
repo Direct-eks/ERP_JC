@@ -19,7 +19,8 @@ axios.interceptors.response.use((response) => {
     }
     return Promise.resolve(response)
 }, (error) => {
-    console.log(error)
+    console.log("error status: " + error.response.status)
+    console.log("error message: " + error.response.data.message)
     switch (error.response.status) {
         case 400: // Bad Request
             break
