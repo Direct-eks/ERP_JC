@@ -63,7 +63,7 @@
             companyID: {
                 handler: function (val, oldVal) {
                     if (val === -1) return
-                    this.$getRequest(this.$api.getPurchaseOrdersInDateRangeByCompanyID +
+                    this.$getRequest(this.$api.purchaseOrdersInDateRangeByCompanyID +
                     'startDate=' + encodeURI('2018-01-01') + '&endDate=' +
                     encodeURI(new Date().format("yyyy-MM-dd").substr(0, 10)) +
                     '&companyID=' + encodeURI(String(this.companyID))).then((res) => {

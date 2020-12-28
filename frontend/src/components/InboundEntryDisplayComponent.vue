@@ -1,0 +1,641 @@
+<template>
+    <v-container>
+        <v-form ref="form">
+            <v-row>
+                <v-col cols="auto">
+                    <v-select v-if="purchaseOrderModifyMode"
+                              v-model="form.warehouseID"
+                              :rules="rules.warehouseID"
+                              :items="warehouseOptions"
+                              item-value="warehouseID"
+                              item-text="name"
+                              label="仓库"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 150px">
+                    </v-select>
+                    <v-text-field v-else
+                                  v-model="form.warehouseName"
+                                  label="仓库"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 150px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-select v-if="inboundEntryModifyMode || purchaseOrderModifyMode"
+                              v-model="form.departmentID"
+                              :rules="rules.departmentID"
+                              :items="departmentOptions"
+                              item-value="departmentID"
+                              item-text="name"
+                              label="部门"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 180px">
+                    </v-select>
+                    <v-text-field v-else
+                                  v-model="form.departmentName"
+                                  label="部门"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 180px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.entryDate"
+                                  label="入库日期"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense>
+                    </v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row>
+                <v-col cols="auto">
+                    <v-text-field v-if="inboundEntryDisplayMode || inboundEntryModifyMode"
+                                  v-model="form.classification"
+                                  label="入库类别"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 150px">
+                    </v-text-field>
+                    <v-text-field v-else-if="purchaseOrderDisplayMode"
+                                  v-model="form.executionStatus"
+                                  label="状态"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 150px">
+                    </v-text-field>
+                    <v-select v-else
+                              v-model="form.executionStatus"
+                              :items="executionStatusOptions"
+                              item-value="value"
+                              item-text="label"
+                              label="状态"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 180px">
+                    </v-select>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.drawer"
+                                  label="开单人"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 150px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-select v-if="inboundEntryModifyMode || purchaseOrderModifyMode"
+                              v-model="form.invoiceType"
+                              :rules="rules.invoiceType"
+                              :items="invoiceTypeOptions"
+                              item-value="value"
+                              item-text="label"
+                              label="预计单据类型"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 180px">
+                    </v-select>
+                    <v-text-field v-else
+                                  v-model="form.invoiceType"
+                                  label="预计单据类型"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 180px">
+                    </v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.companyPhone"
+                                  label="电话"
+                                  hide-details="auto"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 200px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.companyAbbreviatedName"
+                                  label="供货单位简称"
+                                  hide-details="auto"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 200px">
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.companyFullName"
+                                  label="供货单位全称"
+                                  hide-details="auto"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 300px">
+                    </v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
+                <v-col cols="auto">
+                    <v-text-field v-model="form.relevantCompanyName"
+                                  label="运输方式"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 180px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.shippingNumber"
+                                  label="运单号"
+                                  hide-details="auto"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 220px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.shippingQuantity"
+                                  label="件数"
+                                  hide-details="auto"
+                                  type="number"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 80px">
+                    </v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row>
+                <v-col cols="auto" v-if="inboundEntryDisplayMode">
+                    <v-radio-group v-model="form.shippingCostType"
+                                   hide-details="auto"
+                                   class="mt-0"
+                                   row dense
+                                   :readonly="!inboundEntryModifyMode">
+                        <v-radio label="无运费" value="无"></v-radio>
+                        <v-radio label="自付运费" value="自付"></v-radio>
+                        <v-radio label="代垫运费" value="代垫"></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols="auto" v-if="inboundEntryDisplayMode">
+                    <v-text-field v-model.number="form.shippingCost"
+                                  label="运费"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 100px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model.number="form.totalCost"
+                                  label="总金额"
+                                  hide-details="auto"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 100px">
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-textarea v-model.number="form.remark"
+                                label="备注"
+                                hide-details="auto"
+                                outlined
+                                dense
+                                :readonly="inboundEntryDisplayMode || purchaseOrderDisplayMode"
+                                auto-grow
+                                rows="1"
+                                counter="200">
+                    </v-textarea>
+                </v-col>
+            </v-row>
+        </v-form>
+
+        <v-row v-if="inboundEntryModifyMode || purchaseOrderModifyMode">
+            <v-col>
+                <v-dialog v-model="deleteTableRowPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="red lighten-1"
+                               v-on="on">
+                            删除
+                        </v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            确认删除？
+                        </v-card-title>
+                        <v-card-text>
+                            {{rowDeletionConfirm}}
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary"
+                                   @click="deleteTableRowPopup = false">
+                                取消
+                            </v-btn>
+                            <v-btn color="success"
+                                   @click="handleDeleteRow">
+                                确认
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-col>
+            <v-col>
+                <v-btn color="primary"
+                       @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
+                    保存修改
+                </v-btn>
+            </v-col>
+        </v-row>
+
+        <v-data-table v-if="inboundEntryDisplayMode || purchaseOrderDisplayMode"
+                      :headers="tableHeaders"
+                      :items="inboundEntryDisplayMode ? form.inboundProducts : form.purchaseOrderProducts"
+                      item-key="id"
+                      height="45vh"
+                      calculate-widths
+                      disable-sort
+                      fixed-header
+                      disable-pagination
+                      hide-default-footer
+                      locale="zh-cn">
+            <template v-slot:item.index="{ item }">
+                {{inboundEntryDisplayMode ? form.inboundProducts.indexOf(item) + 1
+                : form.purchaseOrderProducts.indexOf(item) + 1}}
+            </template>
+        </v-data-table>
+
+        <v-data-table v-else-if="inboundEntryModifyMode || purchaseOrderModifyMode"
+                      v-model="tableRowsSelectedForDeletion"
+                      :headers="tableHeaders"
+                      :items="inboundEntryModifyMode ? form.inboundProducts : form.purchaseOrderProducts"
+                      item-key="inboundProductID"
+                      height="45vh"
+                      calculate-widths
+                      disable-sort
+                      show-select
+                      fixed-header
+                      disable-pagination
+                      hide-default-footer
+                      locale="zh-cn">
+            <template v-slot:item.index="{ item }">
+                {{inboundEntryModifyMode ? form.inboundProducts.indexOf(item) + 1
+                : form.purchaseOrderProducts.indexOf(item) + 1}}
+            </template>
+            <template v-slot:item.quantity="{ item }">
+                <v-edit-dialog :return-value="item.quantity"
+                               persistent
+                               large
+                               save-text="确认"
+                               cancel-text="取消"
+                               @save="handleQuantityChange(item)">
+                    {{item.quantity}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.quantity"
+                                      single-line
+                                      counter="8">
+                        </v-text-field>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.unitPriceWithTax="{ item }">
+                <v-edit-dialog :return-value="item.unitPriceWithTax"
+                               persistent
+                               large
+                               save-text="确认"
+                               cancel-text="取消"
+                               @save="handlePriceWithTaxChange(item)">
+                    {{item.unitPriceWithTax}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.unitPriceWithTax"
+                                      single-line
+                                      counter="12">
+                        </v-text-field>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.unitPriceWithoutTax="{ item }">
+                <v-edit-dialog :return-value="item.unitPriceWithoutTax"
+                               persistent
+                               large
+                               save-text="确认"
+                               cancel-text="取消"
+                               @save="handlePriceWithoutTaxChange(item)">
+                    {{item.unitPriceWithoutTax}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.unitPriceWithoutTax"
+                                      single-line
+                                      counter="12">
+                        </v-text-field>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.remark="{ item }">
+                <v-edit-dialog :return-value="item.remark"
+                               persistent
+                               large
+                               save-text="确认"
+                               cancel-text="取消">
+                    {{item.remark}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.remark"
+                                      single-line
+                                      counter="200">
+                        </v-text-field>
+                    </template>
+                </v-edit-dialog>
+            </template>
+        </v-data-table>
+
+        <v-row>
+            <v-spacer></v-spacer>
+            <v-col cols="auto">
+                <span>税额合计</span>
+            </v-col>
+            <v-col cols="auto">
+                {{tax}}
+            </v-col>
+            <v-col cols="auto">
+                <span>不含税合计</span>
+            </v-col>
+            <v-col cols="auto">
+                {{sumWithoutTax}}
+            </v-col>
+            <v-col cols="auto">
+                <span>价税合计</span>
+            </v-col>
+            <v-col cols="auto">
+                {{sumWithTax}}
+            </v-col>
+        </v-row>
+    </v-container>
+</template>
+
+<script>
+
+function validateFloat(value) {
+    value = value.replace(/[^\d.]/g, "")  // 清除“数字”和“.”以外的字符
+    value = value.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
+    value = value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
+    value = value.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
+    if (value.indexOf(".") < 0 && value !== "") // 如果没有小数点，首位不能为0
+        value = parseFloat(value)
+    console.log('float', value)
+    return value
+}
+
+export default {
+    name: "InboundEntryDisplayComponent",
+    props: {
+        displayMode: {
+            type: String,
+            required: true
+        },
+        form: {
+            type: Object,
+            required: true
+        }
+    },
+    beforeMount() {
+        switch (this.displayMode) {
+            case 'inboundEntryDisplay':
+                this.inboundEntryDisplayMode = true
+                break
+            case 'purchaseOrderDisplay':
+                this.purchaseOrderDisplayMode = true
+                break
+            case 'inboundEntryModify':
+                this.inboundEntryModifyMode = true
+                break
+            case 'purchaseOrderModify':
+                this.purchaseOrderModifyMode = true
+                break
+        }
+        if (this.inboundEntryModifyMode || this.purchaseOrderModifyMode) {
+            this.$getRequest(this.$api.departmentOptions).then((res) => {
+                console.log(res.data)
+                this.departmentOptions = res.data
+                for (let item of this.departmentOptions) {
+                    if (item.isDefault === 1) {
+                        this.form.departmentID = item.departmentID
+                        break
+                    }
+                }
+            }).catch((error) => this.$ajaxErrorHandler(error))
+        }
+        if (this.purchaseOrderModifyMode) {
+            this.$getRequest(this.$api.warehouseOptions).then((res) => {
+                console.log(res.data)
+                this.warehouseOptions = res.data
+                for (let item of this.warehouseOptions) {
+                    if (item.isDefault === 1) {
+                        this.form.warehouseID = item.warehouseID
+                        break
+                    }
+                }
+            }).catch((error) => this.$ajaxErrorHandler(error))
+        }
+    },
+    data() {
+        return {
+            inboundEntryDisplayMode: false,
+            purchaseOrderDisplayMode: false,
+            inboundEntryModifyMode: false,
+            purchaseOrderModifyMode: false,
+
+            rules: {
+                warehouseID: [v => !!v || '请选择仓库'],
+                departmentID: [v => !!v || '请选择部门'],
+                invoiceType: [v => !!v || ' 请选择单据类型'], //no need to validate if is purchase order
+            },
+
+            warehouseOptions: [],
+            departmentOptions: [],
+            executionStatusOptions: [
+                {value: '执行', label: '执行'},
+                {value: '中止', label: '中止'}
+            ],
+            invoiceTypeOptions: [
+                {value: '增值税票', label: '增值税票'},
+                {value: '普票', label: '普票'},
+                {value: '收据', label: '收据'}
+            ],
+
+            tableHeaders: [
+                {text: '序号', value: 'index', width: '60px'},
+                {text: '新代号', value: 'newCode', width: '100px'},
+                {text: '旧代号', value: 'oldCode', width: '100px'},
+                {text: '厂牌', value: 'factoryCode', width: '65px'},
+                {text: '入库数量', value: 'quantity', width: '80px'},
+                {text: '单位', value: 'unitName', width: '60px'},
+                {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
+                {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
+                {text: '无税金额', value: 'totalWithoutTax', width: '80px'},
+                {text: '税率', value: 'taxRate', width: '65px'},
+                {text: '税额', value: 'totalTax', width: '80px'},
+                {text: '备注', value: 'remark', width: '120px'},
+                {text: '库存数量', value: 'stockQuantity', width: '120px'},
+                {text: '库存单价', value: 'stockUnitPrice', width: '120px'}
+            ],
+
+            deleteTableRowPopup: false,
+            tableRowsSelectedForDeletion: [],
+        }
+    },
+    methods: {
+        /* ----- number calculation ----- */
+        handleQuantityChange(row) {
+            //calculate for each row
+            row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
+            row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
+            row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
+
+            let tempSumWithTax = 0, tempSumWithoutTax = 0
+            this.tableData.forEach((item) => {
+                //calculate for total
+                tempSumWithTax += item.unitPriceWithTax * item.quantity
+                tempSumWithoutTax += item.unitPriceWithoutTax * item.quantity
+            })
+            this.sumWithTax = tempSumWithTax.toFixed(2)
+            this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
+            this.tax = (tempSumWithTax - tempSumWithoutTax).toFixed(2)
+        },
+        handlePriceWithTaxChange(row) {
+            row.unitPriceWithTax = validateFloat(row.unitPriceWithTax.toString())
+            row.unitPriceWithoutTax = (row.unitPriceWithTax / 1.16).toFixed(2)
+            this.handleQuantityChange(row)
+        },
+        handlePriceWithoutTaxChange(row) {
+            row.unitPriceWithoutTax = validateFloat(row.unitPriceWithoutTax.toString())
+            row.unitPriceWithTax = (row.unitPriceWithoutTax * 1.16).toFixed(2)
+            this.handleQuantityChange(row)
+        },
+        /*------- table & entry submission -------*/
+        handleDeleteRow() {
+            this.deleteTableRowPopup = false
+            if (this.tableRowsSelectedForDeletion.length !== 0) {
+                for (let item of this.tableRowsSelectedForDeletion) {
+                    if (this.inboundEntryModifyMode) {
+                        this.form.inboundProducts.splice(this.form.inboundProducts.indexOf(item), 1)
+                    }
+                    else {
+                        this.form.purchaseOrderProducts.splice(this.form.purchaseOrderProducts.indexOf(item), 1)
+                    }
+                }
+                this.tableRowsSelectedForDeletion = []
+            } else {
+                this.$store.commit('setSnackbar', {
+                    message: '未选中任何行', color: 'error'
+                })
+            }
+        },
+        saveEntryModification() {
+            if (this.$refs.form.validate()) {
+                this.$patchRequest(this.$api.modifyEntry, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/inbound_management')
+                }).catch((error) => this.$ajaxErrorHandler(error))
+            }
+        },
+        saveOrderModification() {
+            if (this.$refs.form.validate()) {
+                this.$patchRequest(this.$api.modifyPurchaseOrder, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/inbound_management')
+                }).catch((error) => this.$ajaxErrorHandler(error))
+            }
+        }
+    },
+    computed: {
+        rowDeletionConfirm() {
+            let result = '确认删除以下序号的行: '
+            this.tableRowsSelectedForDeletion.forEach(item => {
+                result += (this.inboundEntryModifyMode ?
+                    this.form.inboundProducts.indexOf(item) + 1
+                    : this.form.purchaseOrderProducts.indexOf(item) + 1).toString() + ' '
+            })
+            return result
+        },
+        tax: function() {
+            let tax = 0.0
+            if (this.inboundEntryDisplayMode) {
+                this.form.inboundProducts.forEach(item => {
+                    tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                })
+            }
+            else if (this.purchaseOrderDisplayMode) {
+                this.form.purchaseOrderProducts.forEach(item => {
+                    tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                })
+            }
+            return tax.toFixed(2);
+        },
+        sumWithTax: function() {
+            let sumWithTax = 0.0
+            if (this.inboundEntryDisplayMode) {
+                this.form.inboundProducts.forEach(item => {
+                    sumWithTax += item.unitPriceWithTax * item.quantity
+                })
+            }
+            else if (this.purchaseOrderDisplayMode) {
+                this.form.purchaseOrderProducts.forEach(item => {
+                    sumWithTax += item.unitPriceWithTax * item.quantity
+                })
+            }
+            return sumWithTax.toFixed(2)
+        },
+        sumWithoutTax: function() {
+            let sumWithoutTax = 0.0
+            if (this.inboundEntryDisplayMode) {
+                this.form.inboundProducts.forEach(item => {
+                    sumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                })
+            }
+            else if (this.purchaseOrderDisplayMode) {
+                this.form.purchaseOrderProducts.forEach(item => {
+                    sumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                })
+            }
+            return sumWithoutTax.toFixed(2)
+        }
+    },
+}
+</script>
+
+<style scoped>
+
+</style>
