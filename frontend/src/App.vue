@@ -22,7 +22,6 @@
 
         <v-app-bar app dense :clipped-left="$vuetify.breakpoint.mdAndUp">
 
-
             <v-app-bar-nav-icon @click.stop="navDrawer = !navDrawer"></v-app-bar-nav-icon>
 
             <v-toolbar-title>精诚轴承</v-toolbar-title>
@@ -43,14 +42,14 @@
             <!-- Provides the application the proper gutter -->
             <v-container fluid>
                 <!-- If using vue-router -->
-                <!-- <router-view></router-view> -->
+                 <router-view></router-view>
             </v-container>
 
             <SnackMessage></SnackMessage>
         </v-main>
 
-<!--        <v-footer app>-->
-<!--        </v-footer>-->
+        <!-- <v-footer app> -->
+        <!-- </v-footer> -->
     </v-app>
 </template>
 

@@ -11,7 +11,7 @@ const bundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = (options = {}) => ({
     entry: {
         // vendor: './src/vendor',
-        main: './src/main.js'
+        index: './src/main.js'
     },
     output: {
         path: resolve(__dirname, 'dist'),
@@ -42,10 +42,15 @@ module.exports = (options = {}) => ({
                 ]
             },
             {
-                test: /\.s(c|a)ss$/,
+                test: /\.s([ca])ss$/,
                 use: [
                     'vue-style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            esModule: false
+                        } 
+                    },
                     {
                         loader: 'sass-loader',
                         // Requires sass-loader@^8.0.0
@@ -63,15 +68,15 @@ module.exports = (options = {}) => ({
                 test: /\.css$/,
                 use: ['vue-style-loader', 'css-loader', 'postcss-loader']
             },
-            // {
-            //     test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
-            //     use: [{
-            //         loader: 'url-loader',
-            //         options: {
-            //             limit: 10000
-            //         }
-            //     }]
-            // }
+            {
+                test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        limit: 10000
+                    }
+                }]
+            }
         ]
     },
     resolve: {
@@ -80,7 +85,7 @@ module.exports = (options = {}) => ({
         },
         extensions: ['.js', '.vue', '.json', '.css']
     },
-    devtool: options.dev ? 'inline-source-map' : 'source-map',
+    devtool: options.dev ? '#eval-source-map' : '#source-map',
     devServer: {
         host: '127.0.0.1',
         port: 8080,
@@ -98,11 +103,11 @@ module.exports = (options = {}) => ({
     },
     plugins: [
         new VueLoaderPlugin(),
+        new VuetifyLoaderPlugin(),
         new HtmlWebpackPlugin({
             template: 'src/assets/index.html'
         }),
-        new bundleAnalyzerPlugin(),
-        new VuetifyLoaderPlugin()
+        new bundleAnalyzerPlugin()
     ],
     optimization: {
         splitChunks: {
