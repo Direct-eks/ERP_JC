@@ -15,17 +15,22 @@ const api = {
     /*------ /department ------*/
     departmentOptions: '/department/getDepartmentOptions', //GET
 
+    /*------ /inboundEntry ------*/
+    completeInboundEntry: '/inboundEntry/completeEntry', //PATCH
+    createInboundEntry: '/inboundEntry/createEntry', //PUT
+    //GET startDate= endDate= type= forModify=bool companyID=int
+    entriesInDateRange: '/inboundEntry/getEntriesInDateRange?',
+    modifyEntry: '/inboundEntry/modifyEntry', //PATCH
+
     /*------ /model ------*/
     modelCategories: '/model/getModelCategories', //GET
     modelsByCategory: '/model/getModelsByCategory/', //GET {id}
 
-    /*------ /inboundEntry ------*/
-    completeEntry: '/inboundEntry/completeEntry', //PATCH
-    createEntry: '/inboundEntry/createEntry', //PUT
-
-    //GET startDate= endDate= type= forModify=bool companyID=int
-    entriesInDateRange: '/inboundEntry/getEntriesInDateRange?',
-    modifyEntry: '/inboundEntry/modifyEntry', //PATCH
+    /*------ /purchaseOrder ------*/
+    createPurchaseOrder: '/purchaseOrder/createOrder', //PUT
+    //GET startDate= endDate= companyID=int
+    getPurchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrderInDateRangeByCompanyID', //GET
+    modifyPurchaseOrder: '/purchaseOrder/modifyOrder', //PATCH
 
     /*------ /sku ------*/
     fullSkuByModel: '/sku/getFullSkuByModel/', //GET {id}
