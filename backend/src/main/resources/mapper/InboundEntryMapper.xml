@@ -37,8 +37,8 @@
         <result property="inboundProductID" column="inbound_product_id"/>
         <result property="inboundEntryID" column="inbound_entry_id"/>
         <result property="skuID" column="sku_id"/>
-        <result property="newModelCode" column="new_code"/>
-        <result property="oldModelCode" column="old_code"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
         <result property="unitName" column="unit_name"/>
         <result property="factoryCode" column="factory_code"/>
         <result property="quantity" column="quantity"/>
