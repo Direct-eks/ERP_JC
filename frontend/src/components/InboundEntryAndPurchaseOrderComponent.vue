@@ -526,7 +526,7 @@
                     remark: '',
                     classification: '购入',
                     executionStatus: '执行',
-                    shippingCost: 0, shippingCostType: '无运费',
+                    shippingCost: 0, shippingCostType: '无',
                     shippingQuantity: 0, shippingNumber: '',
                     shippingMethodID: -1, relevantCompanyName: '',
                     inboundProducts: [],
@@ -648,14 +648,13 @@
                 this.form.shippingCost = validateFloat(this.form.shippingCost.toString())
             },
             handleQuantityChange(row) {
+                //calculate for each row
                 row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
+                row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
+                row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
 
                 let tempSumWithTax = 0, tempSumWithoutTax = 0
                 this.tableData.forEach((item) => {
-                    //calculate for each row
-                    row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
-                    row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
-
                     //calculate for total
                     tempSumWithTax += item.unitPriceWithTax * item.quantity
                     tempSumWithoutTax += item.unitPriceWithoutTax * item.quantity
