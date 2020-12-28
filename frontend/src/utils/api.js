@@ -5,43 +5,37 @@ const api = {
     userLogout: '/user/userLogout',
 
     /*------ /company ------*/
-    companyList: '/company/companyList', //company category tree structure
-    companyByCategory: '/company/companyByCategory', //get company by category in tree structure
-    companyByPhone: '/company/companyByPhone', //get company by phone number
-    companyByName: '/company/companyByName', //get company by name (abbreviated)
-    companyByNameAndPhone: '/company/companyByNameAndPhone', //get company by both name and phone
+    companyFuzzySearch: '/company/getCompanyByFuzzySearch?', //GET name= phone=
+    companyAreas: '/company/getCompanyAreas', //GET
+    companiesByCategory: '/company/getCompaniesByCategory/', //GET
 
-    relativeCompanyList: '/company/relativeCompanyList', //relative company tree structure
-    relativeCompanyByCategory: '/company/relativeCompanyByCategory', //get relative company by category in tree structure
+    relevantCompanyCategories: '/company/getRelevantCompanyCategories', //GET
+    relevantCompaniesByCategory: '/company/getRelevantCompaniesByCategory/', //GET {id}
 
-    /*------ /options ------*/
-    warehouseOptions: '/options/warehouseOptions', //get options for warehouse
-    departmentOptions: '/options/departmentOptions', //get options for department
+    /*------ /department ------*/
+    departmentOptions: '/department/getDepartmentOptions', //GET
 
-    /*------ /product ------*/
-    productCategoryList: '/product/productCategoryList', //get product category tree structure
-    modelByModelCode: '/product/modelByModelCode', //get model by model code (either of both new and/or old)
-    modelByCategory: '/product/modelByCategory', //get model by category in tree structure
+    /*------ /model ------*/
+    modelCategories: '/model/getModelCategories', //GET
+    modelsByCategory: '/model/getModelsByCategory/', //GET {id}
 
-    stockByModel: '/product/stockByModel', //get stock by model
+    /*------ /inboundEntry ------*/
+    completeEntry: '/inboundEntry/completeEntry', //PATCH
+    createEntry: '/inboundEntry/createEntry', //PUT
 
-    warehouseStockByStock: '/product/warehouseStockByStock', //get warehouse stock by stock
+    //GET startDate= endDate= type= forModify=bool companyID=int
+    entriesInDateRange: '/inboundEntry/getEntriesInDateRange?',
+    modifyEntry: '/inboundEntry/modifyEntry', //PATCH
 
-    /*------ /entry ------*/
-    purchaseOrderByCompany: '/entry/purchaseOrderByCompany',
+    /*------ /sku ------*/
+    fullSkuByModel: '/sku/getFullSkuByModel/', //GET {id}
 
-    newEntryID: '/entry/newEntryID', //get the entryID for this entry to be uploaded
-    newInboundEntry: '/entry/newInboundEntry', //put a new entry
+    /*------ /warehouse ------*/
+    warehouseOptions: '/warehouse/getWarehouseOptions',
 
-    newPurchaseOrder: '/entry/newPurchaseOrder',
+    /*------ /warehouseStock ------*/
+    warehouseStockBySKu: '/warehouseStock/getWarehouseStocksBySku/', //GET {id}
 
-    entryByDateRange: '/entry/entryByDateRange', //query entries with given date range
-    purchaseOrderByDateRange: '/entry/purchaseOrderByDateRange',
-    shippingInfoByEntry: '/entry/shippingInfoByEntry', //query shipping info of a given entry
-    entryProductByEntry: '/entry/entryProductsByEntry', //query entry products of a given entry
-    entryBySerial: '/entry/entryBySerial', //query the entry with specified serial
-
-    updateEntryInfo: '/entry/updateEntryInfo',
 }
 
 export default api
