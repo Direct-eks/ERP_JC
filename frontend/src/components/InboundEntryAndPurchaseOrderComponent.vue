@@ -455,7 +455,7 @@
     }
 
     export default {
-        name: "InboundEntryDisplayComponent",
+        name: "InboundEntryAndPurchaseOrderComponent",
         components: {
             CompanySearchSimple: () => import("~/components/CompanySearchSimple"),
             CompanySearch: () => import("~/components/CompanySearch"),

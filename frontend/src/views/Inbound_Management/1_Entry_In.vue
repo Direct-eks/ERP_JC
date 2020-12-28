@@ -4,8 +4,8 @@
     <v-card outlined>
         <v-card-title>入库单录入</v-card-title>
 
-        <InboundEntryDisplayComponent editMode="inboundEntry">
-        </InboundEntryDisplayComponent>
+        <InboundEntryAndPurchaseOrderComponent editMode="inboundEntry">
+        </InboundEntryAndPurchaseOrderComponent>
 
         <SnackMessage></SnackMessage>
     </v-card>
@@ -17,7 +17,7 @@
     export default {
         name: "Entry_In",
         components: {
-            InboundEntryDisplayComponent: () => import('../../components/InboundEntryDisplayComponent'),
+            InboundEntryAndPurchaseOrderComponent: () => import('../../components/InboundEntryAndPurchaseOrderComponent'),
             SnackMessage
         }
     }
