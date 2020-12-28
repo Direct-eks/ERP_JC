@@ -627,13 +627,14 @@
                 this.modelSearchPanelOpen = false
             },
             modelSearchChooseAction(val) {
-                let max_id = this.tableData.length
-                this.tableData.forEach(item => { // find max id in current tableData
-                    max_id = item.id >= max_id ? item.id + 1 : max_id // add 1 to get new max value
-                })
-                //add attribute to the object
-                // this id is used for v-data-table to uniquely identify a row
-                val['id'] = max_id
+                for (let item of this.tableData) {
+                    if (item.skuID === val.skuID) {
+                        this.$store.commit('setSnackbar', {
+                            message: '已添加改商品', color: 'warning'
+                        })
+                        return
+                    }
+                }
                 this.tableData.push(val)
 
                 this.$store.commit('setSnackbar', {
