@@ -445,24 +445,12 @@ export default {
             this.$getRequest(this.$api.departmentOptions).then((res) => {
                 console.log(res.data)
                 this.departmentOptions = res.data
-                for (let item of this.departmentOptions) {
-                    if (item.isDefault === 1) {
-                        this.form.departmentID = item.departmentID
-                        break
-                    }
-                }
             }).catch((error) => this.$ajaxErrorHandler(error))
         }
         if (this.purchaseOrderModifyMode) {
             this.$getRequest(this.$api.warehouseOptions).then((res) => {
                 console.log(res.data)
                 this.warehouseOptions = res.data
-                for (let item of this.warehouseOptions) {
-                    if (item.isDefault === 1) {
-                        this.form.warehouseID = item.warehouseID
-                        break
-                    }
-                }
             }).catch((error) => this.$ajaxErrorHandler(error))
         }
     },
@@ -561,6 +549,12 @@ export default {
         },
         saveEntryModification() {
             if (this.$refs.form.validate()) {
+                //fill in department name
+                this.departmentOptions.forEach(item => {
+                    if (item.departmentID === this.form.departmentID)
+                        this.form.departmentName = item.name
+                })
+
                 this.$patchRequest(this.$api.modifyEntry, this.form).then((res) => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
@@ -571,6 +565,17 @@ export default {
         },
         saveOrderModification() {
             if (this.$refs.form.validate()) {
+                //fill in department name
+                this.departmentOptions.forEach(item => {
+                    if (item.departmentID === this.form.departmentID)
+                        this.form.departmentName = item.name
+                })
+                //fill in warehouse name
+                this.warehouseOptions.forEach(item => {
+                    if (item.warehouseID === this.form.warehouseID)
+                        this.form.warehouseName = item.name
+                })
+
                 this.$patchRequest(this.$api.modifyPurchaseOrder, this.form).then((res) => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
