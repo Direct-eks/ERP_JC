@@ -19,7 +19,7 @@ const routes = [
     },
     {
         path: '/login',
-        component: () => import(/* webpackChunkName: "login" */ '../views/Login')
+        component: () => import( '../views/Login')
     },
     {
         path : '/home',
@@ -29,7 +29,7 @@ const routes = [
     {
         path: '/inbound_management',
         name: '',
-        component: () => import(/* webpackChunkName: "inbound" */ '../views/1_Page_inbound_management'),
+        component: () => import( '../views/1_Page_inbound_management'),
         children: [
             {
                 path: 'entry_in',
@@ -594,7 +594,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     console.log(from.path, to.path)
 
-    /* ----------- disabled for debugging ----------- */
+
     // if path to /login and is not authenticated (for logout, or debug with no authen info)
     if (to.path === '/login' &&
         (!sessionStorage.getItem('isAuthenticated') ||
@@ -608,12 +608,13 @@ router.beforeEach((to, from, next) => {
         next('/home')
         return
     }
-    if (!sessionStorage.getItem('isAuthenticated') ||
-                sessionStorage.getItem('isAuthenticated') === 'false') {
-        console.log('not authenticated')
-        next('/login')
-        return
-    }
+    /* ----------- disabled for debugging ----------- */
+    // if (!sessionStorage.getItem('isAuthenticated') ||
+    //             sessionStorage.getItem('isAuthenticated') === 'false') {
+    //     console.log('not authenticated')
+    //     next('/login')
+    //     return
+    // }
     console.log('ddd')
     next()
 })
