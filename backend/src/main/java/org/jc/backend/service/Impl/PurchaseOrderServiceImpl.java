@@ -70,14 +70,14 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+    public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int companyID) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesInDateRangeByCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), id);
+                    dateFormat.format(startDate), dateFormat.format(endDate), companyID);
 
             for (var entryFromDatabase : entriesFromDatabase) {
                 PurchaseOrderEntryWithProductsVO tempEntry = new PurchaseOrderEntryWithProductsVO();

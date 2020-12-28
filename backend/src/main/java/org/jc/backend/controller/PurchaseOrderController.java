@@ -44,14 +44,14 @@ public class PurchaseOrderController {
     public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam(value = "id", defaultValue = "-1") Integer id) throws GlobalException {
+            @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalException {
         logger.info("GET Request to /purchaseOrder/getOrdersInDateRangeByCompanyID, start date: " +
-                startDateString + ", end date： " + endDateString + ", id: " + id);
+                startDateString + ", end date： " + endDateString + ", id: " + companyID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        return purchaseOrderService.getOrdersInDateRangeByCompanyID(startDate, endDate, id);
+        return purchaseOrderService.getOrdersInDateRangeByCompanyID(startDate, endDate, companyID);
     }
 
     @ApiOperation(value = "", response = void.class)

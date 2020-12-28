@@ -27,8 +27,8 @@
         <result property="purchaseOrderProductID" column="purchase_order_product_id"/>
         <result property="purchaseOrderEntryID" column="purchase_order_entry_id"/>
         <result property="skuID" column="sku_id"/>
-        <result property="newModelCode" column="new_code"/>
-        <result property="oldModelCode" column="old_code"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
         <result property="unitName" column="unit_name"/>
         <result property="factoryCode" column="factory_code"/>
         <result property="quantity" column="quantity"/>
@@ -88,7 +88,7 @@
 
     <select id="queryProductsByEntryID" resultMap="productResultMap">
         select purchase_order_product_id, purchase_order_entry_id, p.sku_id,
-               sku.new_code, sku.old_code, sku.unit_name, sku.factory_code
+               sku.new_code, sku.old_code, sku.unit_name, sku.factory_code,
                quantity, remark, warehouse_stock_id, warehouse_id, tax_rate,
                unit_price_without_tax, unit_price_with_tax, stock_unit_price
         from e_purchase_order_product as p join (
