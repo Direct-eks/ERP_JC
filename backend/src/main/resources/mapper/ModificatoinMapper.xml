@@ -4,14 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.ModificationMapper">
 
-    <resultMap id="ModificationRecordResultMap" type="org.jc.backend.entity.ModificationO">
-        <result property="modificationRecordID" column="modification_record_id"/>
-        <result property="recordSerial" column="record_serial"/>
-        <result property="recordContent" column="record_content"/>
-        <result property="modificationDate" column="modification_date"/>
-    </resultMap>
-
-
     <insert id="insertModificationRecord" useGeneratedKeys="true" keyProperty="modificationRecordID">
         insert into modification_record(
             record_serial, record_content, modification_date
@@ -21,5 +13,17 @@
         )
     </insert>
 
+    <resultMap id="ModificationRecordResultMap" type="org.jc.backend.entity.ModificationO">
+        <result property="modificationRecordID" column="modification_record_id"/>
+        <result property="recordSerial" column="record_serial"/>
+        <result property="recordContent" column="record_content"/>
+        <result property="modificationDate" column="modification_date"/>
+    </resultMap>
+
+    <select id="getRecordsBySerial" resultMap="ModificationRecordResultMap">
+        select modification_record_id, record_serial, record_content, modification_date
+        from modification_record
+        where record_serial = #{serial}
+    </select>
 
 </mapper>
