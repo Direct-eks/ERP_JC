@@ -6,28 +6,28 @@
             <v-toolbar-title>采购订单查询</v-toolbar-title>
 
             <template v-slot:extension>
-                <v-tabs v-model="tab">
+                <v-tabs v-model="tab" @change="handleTabChange">
                     <v-tabs-slider></v-tabs-slider>
-                    <v-tab key="浏览">浏览</v-tab>
-                    <v-tab key="详细情况">详细情况</v-tab>
+                    <v-tab key="browse">浏览</v-tab>
+                    <v-tab key="detail" :disabled="currentTableRow === null">详细情况</v-tab>
                 </v-tabs>
             </template>
         </v-toolbar>
 
         <v-tabs-items v-model="tab">
 
-            <v-tab-item key="浏览">
+            <v-tab-item key="browse">
                 <InboundQueryDisplayComponent
                         @tableClick="tableClickAction"
-                        displayMode="purchase_query">
+                        displayMode="purchaseOrder">
                 </InboundQueryDisplayComponent>
             </v-tab-item>
 
-            <v-tab-item key="详细情况">
-                <InboundEntryDisplayComponent
-                        :chosenEntryForDetail="currentTableRow"
-                        editMode="purchase_query">
-                </InboundEntryDisplayComponent>
+            <v-tab-item key="detail">
+                <InboundEntryDisplayAndModifyComponent
+                    :form="form"
+                    displayMode="purchaseOrderDisplay">
+                </InboundEntryDisplayAndModifyComponent>
             </v-tab-item>
 
         </v-tabs-items>
@@ -42,47 +42,49 @@
     export default {
         name: "Purchase_Order_Query",
         components: {
-            InboundEntryDisplayComponent: () => import('../../components/InboundEntryDisplayComponent'),
             InboundQueryDisplayComponent: () => import('../../components/InboundQueryDisplayComponent'),
+            InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryDisplayAndModifyComponent'),
             SnackMessage,
         },
         data() {
             return {
                 tab: null,
-                currentTableRow: null
+                currentTableRow: null,
+
+                form: {
+                    entryDate: '',
+                    creationDate: '',
+                    totalCost: 0.0, invoiceType: '',
+                    drawer: '',
+                    partnerCompanyID: -1,
+                    companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                    departmentID: -1, departmentName: '',
+                    warehouseID: -1, warehouseName: '',
+                    remark: '',
+                    classification: '',
+                    executionStatus: '',
+                    shippingCost: 0, shippingCostType: '',
+                    shippingQuantity: 0, shippingNumber: '',
+                    shippingMethodID: -1, relevantCompanyName: '',
+                    inboundProducts: [],
+                    purchaseOrderProducts: []
+                }
             }
         },
         methods: {
+            handleTabChange(val) {
+                if (val === 0) {
+                    this.currentTableRow = null
+                }
+            },
             tableClickAction(val) {
-                //todo query missing fields and products
-                if (val.shippingMethod === -1) { // check if shipping method is null, if null, no need to query
-                    this.$postRequest(this.$api.entryProductByEntry, {
-                        entryID: val.entryID
-                    }).then((res) => {
-                        console.log('received', res.data)
-                        val.products = res.data
-
-                        this.currentTableRow = val
-                    })
-                }
-                else {
-                    this.$postRequest(this.$api.shippingInfoByEntry, {
-                        shippingMethodID: val.shippingMethodID
-                    }).then((res) => {
-                        console.log('received', res.data)
-                        val.shippingMethod = res.data
-
-                        this.$postRequest(this.$api.entryProductByEntry, {
-                            entryID: val.entryID
-                        }).then((res) => {
-                            console.log('received', res.data)
-                            val.products =  res.data
-
-                            this.currentTableRow = val
-                        })
-
-                    })
-                }
+                this.currentTableRow = val
+                //create missing fields and calculate values
+                this.currentTableRow.purchaseOrderProducts.forEach(item => {
+                    item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
+                    item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+                })
+                this.form = Object.assign(this.form, this.currentTableRow)
             }
         }
     }

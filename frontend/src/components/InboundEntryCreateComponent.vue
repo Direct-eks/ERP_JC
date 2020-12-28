@@ -263,10 +263,10 @@
                             查询该单位采购订单
                         </v-btn>
                     </template>
-                    <InboundQueryPurchaseEntry
+                    <InboundImportPurchaseEntry
                         :companyID="form.partnerCompanyID"
                         @purchaseOrderChoose="purchaseOrderChooseAction">
-                    </InboundQueryPurchaseEntry>
+                    </InboundImportPurchaseEntry>
                 </v-dialog>
             </v-col>
             <v-col>
@@ -461,7 +461,7 @@
             CompanySearch: () => import("~/components/CompanySearch"),
             ModelSearch: () => import("~/components/InboundModelSearch"),
             RelativeCompanySearch: () => import("~/components/RelativeCompanySearch"),
-            InboundQueryPurchaseEntry: () => import("~/components/InboundQueryPurchaseEntry")
+            InboundImportPurchaseEntry: () => import("~/components/InboundImportPurchaseEntry")
         },
         props: {
             editMode: {

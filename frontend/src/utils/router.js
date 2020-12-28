@@ -65,6 +65,11 @@ const routes = [
                 path: 'purchase_order_query',
                 name: '采购订单查询',
                 component: () => import('../views/Inbound_Management/7_Purchase_Order_Query')
+            },
+            {
+                path: 'purchase_order_modify',
+                name: '采购订单修改',
+                component: () => import('../views/Inbound_Management/8_Purchase_Order_Modify')
             }
         ]
     },

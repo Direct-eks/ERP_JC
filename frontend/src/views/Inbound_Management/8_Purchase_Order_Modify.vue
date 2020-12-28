@@ -24,10 +24,10 @@
             </v-tab-item>
 
             <v-tab-item key="detail">
-                <InboundEntryDisplayComponent
+                <InboundEntryDisplayAndModifyComponent
                     :form="form"
                     displayMode="purchaseOrderModify">
-                </InboundEntryDisplayComponent>
+                </InboundEntryDisplayAndModifyComponent>
             </v-tab-item>
 
         </v-tabs-items>
@@ -43,7 +43,7 @@ export default {
     name: "Purchase_Order_Modify",
     components: {
         InboundQueryDisplayComponent: () => import('../../components/InboundQueryDisplayComponent'),
-        InboundEntryDisplayComponent: () => import('../../components/InboundEntryDisplayComponent'),
+        InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryDisplayAndModifyComponent'),
         SnackMessage,
     },
     data() {

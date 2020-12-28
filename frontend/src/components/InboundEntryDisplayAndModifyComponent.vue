@@ -299,7 +299,7 @@
                       v-model="tableRowsSelectedForDeletion"
                       :headers="tableHeaders"
                       :items="inboundEntryModifyMode ? form.inboundProducts : form.purchaseOrderProducts"
-                      item-key="inboundProductID"
+                      item-key="skuID"
                       height="45vh"
                       calculate-widths
                       disable-sort
@@ -632,7 +632,7 @@ export default {
             }
             return sumWithoutTax.toFixed(2)
         }
-    },
+    }
 }
 </script>
 

@@ -81,6 +81,10 @@ export default {
         {
             name: '采购订单查询',
             url: '/inbound_management/purchase_order_query'
+        },
+        {
+            name: '采购订单修改',
+            url: '/inbound_management/purchase_order_modify'
         }
     ],
     outbound_management_nav: [
