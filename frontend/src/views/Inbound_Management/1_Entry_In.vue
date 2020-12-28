@@ -17,7 +17,7 @@
     export default {
         name: "Entry_In",
         components: {
-            InboundEntryAndPurchaseOrderComponent: () => import('../../components/InboundEntryAndPurchaseOrderComponent'),
+            InboundEntryAndPurchaseOrderComponent: () => import('../../components/InboundEntryCreateComponent'),
             SnackMessage
         }
     }
