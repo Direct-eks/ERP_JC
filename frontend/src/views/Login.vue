@@ -1,48 +1,4 @@
 <template>
-    <!--    <el-card id="login">-->
-    <!--        <div slot="header" class="clearfix">-->
-    <!--            <span>登录认证</span>-->
-    <!--        </div>-->
-    <!--        <el-form-->
-    <!--                :model="ruleForm"-->
-    <!--                method="post"-->
-    <!--                :rules="rules"-->
-    <!--                ref="ruleForm"-->
-    <!--                @keyup.enter.native="login('ruleForm')">-->
-    <!--            <el-form-item label="用户名" prop="username">-->
-    <!--                <el-input-->
-    <!--                        v-model="ruleForm.username"-->
-    <!--                        type="text"-->
-    <!--                        id="username"-->
-    <!--                        placeholder="请输入用户名"-->
-    <!--                        clearable>-->
-    <!--                </el-input>-->
-    <!--            </el-form-item>-->
-    <!--            <el-form-item label="密码" prop="password">-->
-    <!--                <el-input-->
-    <!--                        v-model="ruleForm.password"-->
-    <!--                        type="password"-->
-    <!--                        id="password"-->
-    <!--                        placeholder="请输入密码"-->
-    <!--                        show-password>-->
-    <!--                </el-input>-->
-    <!--            </el-form-item>-->
-    <!--            <el-alert v-if="loginFailed"-->
-    <!--                    :title="errorMessage"-->
-    <!--                    type="error"-->
-    <!--                    effect="dark"-->
-    <!--                      show-icon center>-->
-    <!--            </el-alert>-->
-    <!--            <el-form-item>-->
-    <!--                <el-button type="primary" style="margin-top: 20px"-->
-    <!--                           v-loading.fullscreen.lock="loading"-->
-    <!--                           @click="login('ruleForm')">-->
-    <!--                    登录-->
-    <!--                </el-button>-->
-    <!--            </el-form-item>-->
-    <!--        </el-form>-->
-    <!--    </el-card>-->
-
     <v-row align="center"
            justify="center">
         <v-col cols="12"
