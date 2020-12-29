@@ -192,18 +192,18 @@
             </v-row>
 
             <v-row>
-                <v-col cols="auto" v-if="inboundEntryDisplayMode">
+                <v-col cols="auto" v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
                                    class="mt-0"
                                    row dense
-                                   :readonly="!inboundEntryModifyMode">
+                                   readonly>
                         <v-radio label="无运费" value="无"></v-radio>
                         <v-radio label="自付运费" value="自付"></v-radio>
                         <v-radio label="代垫运费" value="代垫"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="auto" v-if="inboundEntryDisplayMode">
+                <v-col cols="auto" v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
                     <v-text-field v-model.number="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
@@ -498,6 +498,10 @@ export default {
 
             deleteTableRowPopup: false,
             tableRowsSelectedForDeletion: [],
+
+            tax: 0.0,
+            sumWithTax: 0.0,
+            sumWithoutTax: 0.0
         }
     },
     methods: {
@@ -508,15 +512,20 @@ export default {
             row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
             row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
 
-            let tempSumWithTax = 0, tempSumWithoutTax = 0
-            this.tableData.forEach((item) => {
-                //calculate for total
-                tempSumWithTax += item.unitPriceWithTax * item.quantity
-                tempSumWithoutTax += item.unitPriceWithoutTax * item.quantity
-            })
-            this.sumWithTax = tempSumWithTax.toFixed(2)
-            this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
-            this.tax = (tempSumWithTax - tempSumWithoutTax).toFixed(2)
+            let tempSumWithTax = 0
+            if (this.inboundEntryModifyMode) {
+                this.form.inboundProducts.forEach((item) => {
+                    tempSumWithTax += item.unitPriceWithTax * item.quantity
+                })
+            }
+            else {
+                this.form.purchaseOrderProducts.forEach((item) => {
+                    tempSumWithTax += item.unitPriceWithTax * item.quantity
+                })
+            }
+
+            this.form.totalCost = this.form.shippingCostType === '代垫' ?
+                tempSumWithTax + this.form.shippingCost : tempSumWithTax
         },
         handlePriceWithTaxChange(row) {
             row.unitPriceWithTax = validateFloat(row.unitPriceWithTax.toString())
@@ -595,47 +604,33 @@ export default {
             })
             return result
         },
-        tax: function() {
-            let tax = 0.0
-            if (this.inboundEntryDisplayMode) {
-                this.form.inboundProducts.forEach(item => {
-                    tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                })
-            }
-            else if (this.purchaseOrderDisplayMode) {
-                this.form.purchaseOrderProducts.forEach(item => {
-                    tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                })
-            }
-            return tax.toFixed(2);
-        },
-        sumWithTax: function() {
-            let sumWithTax = 0.0
-            if (this.inboundEntryDisplayMode) {
-                this.form.inboundProducts.forEach(item => {
-                    sumWithTax += item.unitPriceWithTax * item.quantity
-                })
-            }
-            else if (this.purchaseOrderDisplayMode) {
-                this.form.purchaseOrderProducts.forEach(item => {
-                    sumWithTax += item.unitPriceWithTax * item.quantity
-                })
-            }
-            return sumWithTax.toFixed(2)
-        },
-        sumWithoutTax: function() {
-            let sumWithoutTax = 0.0
-            if (this.inboundEntryDisplayMode) {
-                this.form.inboundProducts.forEach(item => {
-                    sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                })
-            }
-            else if (this.purchaseOrderDisplayMode) {
-                this.form.purchaseOrderProducts.forEach(item => {
-                    sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                })
-            }
-            return sumWithoutTax.toFixed(2)
+    },
+    watch: {
+        form: {
+            handler(newVal, oldVal) {
+                let tax = 0.0
+                let sumWithTax = 0.0
+                let sumWithoutTax = 0.0
+                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode) {
+                    for (let item of newVal.inboundProducts) {
+                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                        sumWithTax += item.unitPriceWithTax * item.quantity
+                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                    }
+                }
+                else if (this.purchaseOrderDisplayMode || this.purchaseOrderModifyMode) {
+                    for (let item of newVal.purchaseOrderProducts) {
+                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                        sumWithTax += item.unitPriceWithTax * item.quantity
+                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                    }
+                }
+                this.tax = tax.toFixed(2)
+                this.sumWithTax = sumWithTax.toFixed(2)
+                this.sumWithoutTax = sumWithoutTax.toFixed(2)
+            },
+            deep: true,
+            immediate: true
         }
     }
 }

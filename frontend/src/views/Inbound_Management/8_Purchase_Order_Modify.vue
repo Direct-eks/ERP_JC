@@ -23,7 +23,7 @@
                 </InboundQueryDisplayComponent>
             </v-tab-item>
 
-            <v-tab-item key="detail">
+            <v-tab-item key="detail" :eager="true">
                 <InboundEntryDisplayAndModifyComponent
                     :form="form"
                     displayMode="purchaseOrderModify">
