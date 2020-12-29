@@ -26,6 +26,9 @@ const api = {
     modelCategories: '/model/getModelCategories', //GET
     modelsByCategory: '/model/getModelsByCategory/', //GET {id}
 
+    /*------ /modificationRecord ------*/
+    modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', //GET {serial}
+
     /*------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', //PUT
     //GET startDate= endDate= companyID=int
