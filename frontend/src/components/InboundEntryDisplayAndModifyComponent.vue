@@ -558,6 +558,9 @@ export default {
         },
         saveEntryModification() {
             if (this.$refs.form.validate()) {
+                //change drawer name for modification
+                this.form.drawer = this.$store.getters.currentUser
+
                 //fill in department name
                 this.departmentOptions.forEach(item => {
                     if (item.departmentID === this.form.departmentID)
@@ -574,6 +577,9 @@ export default {
         },
         saveOrderModification() {
             if (this.$refs.form.validate()) {
+                //change drawer name for modification
+                this.form.drawer = this.$store.getters.currentUser
+                
                 //fill in department name
                 this.departmentOptions.forEach(item => {
                     if (item.departmentID === this.form.departmentID)
