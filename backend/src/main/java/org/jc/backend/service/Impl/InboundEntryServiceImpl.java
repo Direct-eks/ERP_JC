@@ -127,9 +127,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
                 logger.info("Completion: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        0, originInfo.getInboundEntryID(), record.toString(),
-                        new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                ));
+                        originInfo.getInboundEntryID(), record.toString()));
             } else {
                 logger.warn("Nothing changed!");
             }
@@ -193,9 +191,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             if (bool1 || bool2) {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        0, originEntry.getInboundEntryID(), record.toString(),
-                        new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                ));
+                        originEntry.getInboundEntryID(), record.toString()));
             }
 
         } catch (PersistenceException e) {

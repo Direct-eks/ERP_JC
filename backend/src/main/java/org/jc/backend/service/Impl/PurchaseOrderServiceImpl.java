@@ -150,9 +150,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             if (bool1 || bool2) {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        0, originEntry.getPurchaseOrderEntryID(), record.toString(),
-                        new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                ));
+                        originEntry.getPurchaseOrderEntryID(), record.toString()));
             }
 
         } catch (PersistenceException e) {

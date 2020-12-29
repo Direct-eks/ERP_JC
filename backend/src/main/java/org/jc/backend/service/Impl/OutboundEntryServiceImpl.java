@@ -119,9 +119,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
                 logger.info("Completion: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        0, originInfo.getOutboundEntryID(), record.toString(),
-                        new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                ));
+                        originInfo.getOutboundEntryID(), record.toString()));
             } catch (PersistenceException e) {
                 e.printStackTrace();
                 //todo
@@ -200,9 +198,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             logger.info("Modification: " + record);
             try {
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        0, originEntry.getOutboundEntryID(), record.toString(),
-                        new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-                ));
+                        originEntry.getOutboundEntryID(), record.toString()));
             } catch (PersistenceException e) {
                 e.printStackTrace();
                 //todo

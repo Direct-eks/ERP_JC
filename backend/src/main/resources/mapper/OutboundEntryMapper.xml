@@ -60,7 +60,7 @@
     <select id="countNumberOfEntriesOfToday">
         select count(outbound_entry_id)
         from e_outbound_entry
-        where shipment_date = date('now')
+        where shipment_date = date('now', 'localtime')
     </select>
 
     <insert id="insertNewEntry">

@@ -46,7 +46,7 @@
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(purchase_order_entry_id)
         from e_purchase_order_entry
-        where entry_date = date('now')
+        where entry_date = date('now', 'localtime')
     </select>
 
     <insert id="insertNewOrderEntry">

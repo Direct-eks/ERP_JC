@@ -9,7 +9,7 @@
             record_serial, record_content, modification_date
         )
         values (
-            #{recordSerial}, #{recordContent}, #{modificationDate}
+            #{recordSerial}, #{recordContent}, datetime('now', 'localtime')
         )
     </insert>
 
