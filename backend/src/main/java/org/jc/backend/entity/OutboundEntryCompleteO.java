@@ -26,4 +26,7 @@ public class OutboundEntryCompleteO {
     private int shippingMethodID;
     // used for modification record only
     private String relevantCompanyName;
+
+    @NotNull(message = "remark null error")
+    private String remark;
 }

@@ -135,12 +135,13 @@
         <result property="shippingNumber" column="shipping_number"/>
         <result property="shippingMethodID" column="shipping_method_id"/>
         <result property="relevantCompanyName" column="relevant_company_name"/>
+        <result property="remark" column="remark"/>
     </resultMap>
 
 
     <select id="selectEntryShippingInfoForCompare" resultMap="completeEntryResultMap">
         select outbound_entry_id, shipping_cost, shipping_cost_type, shipping_number,
-               shipping_method_id, c.abbreviated_name as relevant_company_name
+               shipping_method_id, c.abbreviated_name as relevant_company_name, i.remark
         from e_outbound_entry as i join c_relevant_company as c
                                        on i.shipping_method_id = c.relevant_company_id
         where outbound_entry_id = #{id}
@@ -152,7 +153,8 @@
             shipping_cost_type = #{shippingCostType},
             shipping_quantity = #{shippingQuantity},
             shipping_number = #{shippingNumber},
-            shipping_method_id = #{shippingMethodID}
+            shipping_method_id = #{shippingMethodID},
+            remark = #{remark}
         where outbound_entry_id = #{outboundEntryID}
     </update>
 

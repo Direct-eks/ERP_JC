@@ -49,6 +49,11 @@ public class IOModificationUtils {
             record.append(String.format("承运: %s -> %s;",
                     originShippingInfo.getRelevantCompanyName(), modifiedShippingInfo.getRelevantCompanyName()));
         }
+        if (!modifiedShippingInfo.getRemark().equals(originShippingInfo.getRemark())) {
+            bool = true;
+            record.append(String.format("备注: %s -> %s",
+                    originShippingInfo.getRemark(), modifiedShippingInfo.getRemark()));
+        }
 
         return bool;
     }
