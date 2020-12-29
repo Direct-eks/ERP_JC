@@ -1,16 +1,19 @@
 package org.jc.backend.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class WarehouseStockO {
     private int warehouseStockID;
     private int skuID;
     private int warehouseID;
     //from w_warehouse
     private String warehouseName;
+
     private int stockQuantity;
     private double stockUnitPriceWithoutTax;
     private double stockUnitPriceWithTax;

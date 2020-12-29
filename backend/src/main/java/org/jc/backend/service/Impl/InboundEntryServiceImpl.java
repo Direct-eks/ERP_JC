@@ -3,12 +3,10 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
+import org.jc.backend.dao.WarehouseStockMapper;
+import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.InboundEntryModifyDO;
-import org.jc.backend.entity.ModificationO;
-import org.jc.backend.entity.InboundProductModifyO;
-import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.InboundEntryCompleteO;
 import org.jc.backend.entity.VO.InboundEntryModifyVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
@@ -31,10 +29,14 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     private final InboundEntryMapper inboundEntryMapper;
     private final ModificationMapper modificationMapper;
+    private final WarehouseStockMapper warehouseStockMapper;
 
-    public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper, ModificationMapper modificationMapper) {
+    public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper,
+                                   ModificationMapper modificationMapper,
+                                   WarehouseStockMapper warehouseStockMapper) {
         this.inboundEntryMapper = inboundEntryMapper;
         this.modificationMapper = modificationMapper;
+        this.warehouseStockMapper = warehouseStockMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -66,6 +68,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 product.setReturnStatus(0);
                 product.setCheckoutSerial("");
                 product.setInvoiceSerial("");
+
+                //check warehouseStock for existence, if not, create new one
+                if (warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID()).size() == 0) {
+                    WarehouseStockO newWarehouseStock = new WarehouseStockO(
+                            0, product.getSkuID(), product.getWarehouseID(), "",
+                            0, 0.0, 0.0, "",
+                            0.0, 0.0, 0.0, "",
+                            0.0, 0.0, 0.0, 0.0, -1,
+                            -1, -1);
+                    warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                }
+
                 int id = inboundEntryMapper.insertNewProduct(product);
                 logger.info("Insert new inbound product id: " + id);
             }
