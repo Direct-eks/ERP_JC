@@ -135,6 +135,7 @@
                 case 'completion':
                 case 'modify':
                 case 'query':
+                case 'return':
                     break
                 case 'purchaseOrder':
                     this.isPurchaseQuery = true
