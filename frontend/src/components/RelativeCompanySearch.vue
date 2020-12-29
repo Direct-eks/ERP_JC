@@ -97,7 +97,7 @@
         },
         methods: {
             close() {
-                this.$emit('relativeCompanyClose')
+                this.$emit('relativeCompanyChoose', null)
             },
             chooseHandle() {
                 if (this.currentRow.length !== 0)

@@ -106,6 +106,7 @@
 
         <v-data-table :headers="modificationRecordTableHeader"
                       :items="modificationRecords"
+                      item-key="modificationRecordID"
                       disable-sort
                       hide-default-footer
                       locale="zh-cn">
@@ -192,8 +193,8 @@
                 queryTableCurrentRow: [],
 
                 modificationRecordTableHeader: [
-                    {text: '修改日期', value: 'modificationDate', width: '100px'},
-                    {text: '修改明细', value: '', width: ''}
+                    {text: '修改日期', value: 'modificationDate', width: '180px'},
+                    {text: '修改明细', value: 'recordContent', width: ''}
                 ],
                 modificationRecords: []
             }
