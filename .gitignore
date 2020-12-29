@@ -26,6 +26,9 @@ node_modules/
 dist/
 npm-debug.log
 
+#electron_app
+electron_app/
+
 ### STS ###
 .apt_generated
 .classpath
