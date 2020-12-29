@@ -4,6 +4,9 @@ import Vuetify from 'vuetify/lib'
 Vue.use(Vuetify)
 
 const opts = {
+    icons: {
+        iconfont: 'mdiSvg'
+    },
     theme: {
         themes: {
             light: {
@@ -17,22 +20,6 @@ const opts = {
             }
         }
     }
-    // components: {
-    //     VApp,
-    //     VNavigationDrawer,
-    //     VList,
-    //     VListItem,
-    //     VListItemContent,
-    //     VListItemTitle,
-    //     VAppBar,
-    //     VAppBarNavIcon,
-    //     VToolbarTitle,
-    //     VBtn,
-    //     VSpacer,
-    //     VIcon,
-    //     VMain,
-    //     VContainer
-    // }
 }
 
 export default new Vuetify(opts)

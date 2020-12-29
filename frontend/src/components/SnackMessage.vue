@@ -10,16 +10,20 @@
             <v-btn icon
                    v-bind="attrs"
                    @click="visible = false">
-                <v-icon>mdi-close</v-icon>
+                <v-icon>{{mdiClosePath}}</v-icon>
             </v-btn>
         </template>
     </v-snackbar>
 </template>
 
 <script>
+    import {mdiClose} from '@mdi/js'
+
     export default {
         data() {
             return {
+                mdiClosePath: mdiClose,
+
                 visible: false,
                 timeout: 1500,
                 message: '',

@@ -11,13 +11,12 @@ const bundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = (options = {}) => ({
     entry: {
-        // vendor: './src/vendor',
         index: './src/main.js'
     },
     output: {
         path: resolve(__dirname, 'dist'),
-        filename: options.dev ? '[name].js' : '[name].js?[chunkhash]',
-        chunkFilename: '[id].js?[chunkhash]',
+        filename: options.dev ? '[name].js' : 'bundle.js',
+        chunkFilename: "[name].bundle.js",
         publicPath: options.dev ? '/assets/' : publicPath
     },
     module: {
@@ -67,10 +66,6 @@ module.exports = (options = {}) => ({
                 ],
             },
             {
-                test: /\.css$/,
-                use: ['vue-style-loader', 'css-loader', 'postcss-loader']
-            },
-            {
                 test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
                 use: [{
                     loader: 'url-loader',
@@ -107,7 +102,8 @@ module.exports = (options = {}) => ({
         new VueLoaderPlugin(),
         new VuetifyLoaderPlugin(),
         new HtmlWebpackPlugin({
-            template: 'src/assets/index.html'
+            template: 'src/assets/index.html',
+            favicon: 'src/assets/favicon.png'
         }),
         new bundleAnalyzerPlugin(),
         new MiniCssExtractPlugin({
@@ -116,9 +112,10 @@ module.exports = (options = {}) => ({
         })
     ],
     optimization: {
+        usedExports: true,
         runtimeChunk: "single",
         splitChunks: {
-            // chunks: 'async'
+            chunks: 'async',
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,

@@ -27,11 +27,11 @@
             <v-toolbar-title>精诚轴承</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon to="/home">
-                <v-icon>mdi-home</v-icon>
+                <v-icon>{{mdiHomePath}}</v-icon>
             </v-btn>
 
             <v-btn icon>
-                <v-icon @click="logout">mdi-logout</v-icon>
+                <v-icon @click="logout">{{ mdiLogoutPath }}</v-icon>
             </v-btn>
 
         </v-app-bar>
@@ -56,6 +56,8 @@
 <script>
     import nav from "~/utils/nav";
     import SnackMessage from "~/components/SnackMessage";
+    import {mdiLogout} from '@mdi/js'
+    import {mdiHome} from '@mdi/js'
 
     Date.prototype.format = function(fmt) {
         const o = {
@@ -81,6 +83,9 @@
     export default {
         data() {
             return {
+                mdiHomePath: mdiHome,
+                mdiLogoutPath: mdiLogout,
+
                 nav: nav.items,
                 navDrawer: null
             }

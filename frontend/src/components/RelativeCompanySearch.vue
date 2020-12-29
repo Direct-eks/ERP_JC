@@ -14,7 +14,7 @@
                 选择
             </v-btn>
             <v-btn icon @click="close">
-                <v-icon>mdi-close</v-icon>
+                <v-icon>{{mdiClosePath}}</v-icon>
             </v-btn>
         </v-card-title>
 
@@ -57,10 +57,14 @@
 </template>
 
 <script>
+import {mdiClose} from '@mdi/js'
+
     export default {
         name: "RelativeCompanySearch",
         data() {
             return {
+                mdiClosePath: mdiClose,
+
                 treeData: [],
                 tableHeaders: [
                     {text: '单位简称', value: 'abbreviatedName', width: '120px'},

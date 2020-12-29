@@ -18,7 +18,7 @@
                     <v-toolbar-title>重复单位检查</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn icon @click="simpleSearchClose">
-                        <v-icon>mdi-close</v-icon>
+                        <v-icon>{{mdiClosePath}}</v-icon>
                     </v-btn>
                 </v-toolbar>
             </v-card-title>
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import {mdiClose} from '@mdi/js'
+
     export default {
         name: "CompanySearchSimple",
         props: {
@@ -67,6 +69,8 @@
         },
         data() {
             return {
+                mdiClosePath: mdiClose,
+
                 simpleSearchPanelOpen: false,
                 simpleSearchTableHeaders: [
                     {text: '单位简称', value: 'abbreviatedName', width: '220px'},

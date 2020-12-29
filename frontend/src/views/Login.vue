@@ -16,7 +16,7 @@
                                    large
                                    target="_blank"
                                    v-on="on">
-                                <v-icon>mdi-code-tags</v-icon>
+                                <v-icon>{{mdiCodeTagsPath}}</v-icon>
                             </v-btn>
                         </template>
                         <span>Source</span>
@@ -29,7 +29,7 @@
                                       required
                                       label="登录名"
                                       name="login"
-                                      prepend-icon="mdi-account"
+                                      prepend-icon="mdiAccount"
                                       type="text">
                         </v-text-field>
 
@@ -39,7 +39,7 @@
                                       id="password"
                                       label="密码"
                                       name="password"
-                                      prepend-icon="mdi-lock"
+                                      prepend-icon="mdiLock"
                                       type="password">
                         </v-text-field>
                     </v-form>
@@ -54,10 +54,14 @@
 </template>
 
 <script>
+    import {mdiCodeTags} from '@mdi/js'
+
     export default {
         name: 'Login',
         data() {
             return {
+                mdiCodeTagsPath: mdiCodeTags,
+
                 ruleForm: {
                     username: '',
                     password: ''

@@ -5,7 +5,7 @@
                 <v-toolbar-title>采购订单查询</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="close">
-                    <v-icon>mdi-close</v-icon>
+                    <v-icon>{{mdiClosePath}}</v-icon>
                 </v-btn>
             </v-toolbar>
         </v-card-title>
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import {mdiClose} from '@mdi/js'
+
     export default {
         name: "InboundQueryPurchaseEntry",
         props: {
@@ -76,6 +78,8 @@
         },
         data() {
             return {
+                mdiClosPath: mdiClose,
+
                 purchaseQueryTableHeaders: [
                     {text: '采购订单', value: 'purchaseOrderEntryID', width: '80px'},
                     {text: '订单状态', value: 'executionStatus', width: '65px'},

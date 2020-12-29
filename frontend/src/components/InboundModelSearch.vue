@@ -23,7 +23,7 @@
                     选择
                 </v-btn>
                 <v-btn icon @click="close">
-                    <v-icon>mdi-close</v-icon>
+                    <v-icon>{{mdiClosePath}}</v-icon>
                 </v-btn>
             </v-card-title>
             <v-card-text>
@@ -103,6 +103,8 @@
 </template>
 
 <script>
+import {mdiClose} from '@mdi/js'
+
     export default {
         name: "ModelSearch",
         props: {
@@ -110,6 +112,8 @@
         },
         data() {
             return {
+                mdiClosePath: mdiClose,
+
                 modelCode: '',
 
                 treeData: [],
