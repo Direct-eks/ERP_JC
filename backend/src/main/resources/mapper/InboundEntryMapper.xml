@@ -4,6 +4,40 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.InboundEntryMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+        select count(inbound_entry_id)
+        from e_inbound_entry
+        where entry_date = date('now', 'localtime')
+    </select>
+
+    <insert id="insertNewEntry">
+        insert into e_inbound_entry(
+            inbound_entry_id, entry_date, creation_date, total_cost, invoice_type, drawer,
+            partner_company_id, department_id, warehouse_id, remark, classification,
+            shipping_cost, shipping_cost_type, shipping_quantity, shipping_number,
+            shipping_method_id
+        )
+        values (
+            #{inboundEntryID}, #{entryDate}, date('now', 'localtime'), #{totalCost}, #{invoiceType},
+            #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
+            #{classification}, #{shippingCost}, #{shippingCostType}, #{shippingQuantity},
+            #{shippingNumber}, #{shippingMethodID}
+        )
+    </insert>
+
+    <insert id="insertNewProduct" useGeneratedKeys="true" keyProperty="inboundProductID"
+            keyColumn="inbound_product_id">
+        insert into e_inbound_product (
+            inbound_entry_id, sku_id, quantity, stock_quantity, remark, warehouse_stock_id,
+            warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price
+        )
+        values (
+            #{inboundEntryID}, #{skuID}, #{quantity}, #{stockQuantity}, #{remark}, #{warehouseStockID},
+            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice}
+        )
+    </insert>
+
+
     <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.InboundEntryDO">
         <result property="inboundEntryID" column="inbound_entry_id"/>
         <result property="entryDate" column="entry_date"/>
@@ -56,42 +90,6 @@
         <result property="invoiceSerial" column="invoice_serial"/>
     </resultMap>
 
-
-    <select id="countNumberOfEntriesOfToday" resultType="int">
-        select count(inbound_entry_id)
-        from e_inbound_entry
-        where entry_date = date('now', 'localtime')
-    </select>
-
-    <insert id="insertNewEntry">
-        insert into e_inbound_entry(
-            inbound_entry_id, entry_date, creation_date, total_cost, invoice_type, drawer,
-            partner_company_id, department_id, warehouse_id, remark, classification,
-            shipping_cost, shipping_cost_type, shipping_quantity, shipping_number,
-            shipping_method_id, shipping_cost_serial, return_date, return_serial, print_times, is_modified
-        )
-        values (
-            #{inboundEntryID}, #{entryDate}, #{creationDate}, #{totalCost}, #{invoiceType},
-            #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
-            #{classification}, #{shippingCost}, #{shippingCostType}, #{shippingQuantity},
-            #{shippingNumber}, #{shippingMethodID}, #{shippingCostSerial}, #{returnDate},
-            #{returnSerial}, #{printTimes}, #{isModified}
-        )
-    </insert>
-
-    <insert id="insertNewProduct" useGeneratedKeys="true" keyProperty="inboundProductID"
-            keyColumn="inbound_product_id">
-        insert into e_inbound_product (
-            inbound_entry_id, sku_id, quantity, stock_quantity, remark, warehouse_stock_id,
-            warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax,
-            stock_unit_price, return_status, checkout_serial, invoice_serial
-        )
-        values (
-            #{inboundEntryID}, #{skuID}, #{quantity}, #{stockQuantity}, #{remark}, #{warehouseStockID},
-            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice},
-            #{returnStatus}, #{checkoutSerial}, #{invoiceSerial}
-        )
-    </insert>
 
     <select id="queryEntriesInDateRangeByTypeAndCompanyID" resultMap="entryResultMap">
         select i.inbound_entry_id, i.entry_date, i.creation_date, i.total_cost, i.invoice_type,

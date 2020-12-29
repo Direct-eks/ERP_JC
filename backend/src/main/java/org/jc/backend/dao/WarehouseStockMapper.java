@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface WarehouseStockMapper {
     List<WarehouseStockO> queryWarehouseStocksBySku(int id);
-    void insertNewWarehouseStock(WarehouseStockO warehouseStockO);
+    int insertNewWarehouseStock(WarehouseStockO warehouseStockO);
 }

@@ -52,7 +52,6 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             String newSerial = MyUtils.formNewSerial("采订", count);
 
             newEntry.setPurchaseOrderEntryID(newSerial);
-            newEntry.setIsModified(0);
             purchaseOrderMapper.insertNewOrderEntry(newEntry);
 
             for (var product : newProducts) {

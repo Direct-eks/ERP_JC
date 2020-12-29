@@ -53,31 +53,20 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             String newSerial = MyUtils.formNewSerial("购入", count);
 
             newEntry.setInboundEntryID(newSerial);
-            //initialize newEntry fields
-            newEntry.setShippingCostSerial("");
-            newEntry.setReturnDate("");
-            newEntry.setReturnSerial("");
-            newEntry.setPrintTimes(0);
-            newEntry.setIsModified(0);
             inboundEntryMapper.insertNewEntry(newEntry);
 
             for (var product : newProducts) {
                 //set entry serial id for product
                 product.setInboundEntryID(newSerial);
-                //initialize entry newProduct fields
-                product.setReturnStatus(0);
-                product.setCheckoutSerial("");
-                product.setInvoiceSerial("");
 
                 //check warehouseStock for existence, if not, create new one
-                if (warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID()).size() == 0) {
-                    WarehouseStockO newWarehouseStock = new WarehouseStockO(
-                            0, product.getSkuID(), product.getWarehouseID(), "",
-                            0, 0.0, 0.0, "",
-                            0.0, 0.0, 0.0, "",
-                            0.0, 0.0, 0.0, 0.0, -1,
-                            -1, -1);
-                    warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                if (product.getWarehouseStockID() == -1 ||
+                        warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID()).size() == 0) {
+                    WarehouseStockO newWarehouseStock = new WarehouseStockO();
+                    newWarehouseStock.setSkuID(product.getSkuID());
+                    newWarehouseStock.setWarehouseID(product.getWarehouseID());
+                    int newID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    product.setWarehouseStockID(newID);
                 }
 
                 int id = inboundEntryMapper.insertNewProduct(product);

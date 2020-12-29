@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class WarehouseStockO {
     private int warehouseStockID;
     private int skuID;

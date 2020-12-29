@@ -52,12 +52,11 @@
     <insert id="insertNewOrderEntry">
         insert into e_purchase_order_entry(
             purchase_order_entry_id, entry_date, creation_date, total_cost, invoice_type,
-            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark, is_modified
+            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark
         )
         values (
             #{purchaseOrderEntryID}, #{entryDate}, #{creationDate}, #{totalCost}, #{invoiceType},
-            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
-            #{isModified}
+            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark}
         )
     </insert>
 

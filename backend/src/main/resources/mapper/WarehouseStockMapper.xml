@@ -36,19 +36,10 @@
         where ws.sku_id = #{id}
     </select>
 
-    <insert id="insertNewWarehouseStock">
-        insert into w_warehouse_stock(
-            sku_id, warehouse_id, stock_quantity, stock_unit_price_without_tax, stock_unit_price_with_tax, remark,
-            factory_price_without_tax, factory_price_with_tax, settlement_price_without_tax, price_base_reference,
-            wholesale_price_discount, wholesale_price, retail_price_discount, retail_price, stock_lower_limit,
-            stock_upper_limit, storage_place_id
-        )
-        values (
-            #{skuID}, #{warehouseID}, #{stockQuantity}, #{stockUnitPriceWithoutTax}, #{stockUnitPriceWithTax},
-            #{remark}, #{factoryPriceWithoutTax}, #{factoryPriceWithTax}, #{settlementPriceWithoutTax},
-            #{priceBaseReference}, #{wholesalePriceDiscount}, #{wholesalePrice}, #{retailPriceDiscount},
-            #{retailPrice}, #{stockLowerLimit}, #{stockUpperLimit}, #{storagePlaceID}
-        )
+    <insert id="insertNewWarehouseStock" useGeneratedKeys="true" keyProperty="warehouseStockID"
+            keyColumn="warehouse_stock_id">
+        insert into w_warehouse_stock(sku_id, warehouse_id)
+        values (#{skuID}, #{warehouseID})
     </insert>
 
 </mapper>
