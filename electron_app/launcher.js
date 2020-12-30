@@ -4,11 +4,18 @@ const http = require('http')
 
 const springBoot = spawn("java", ['-jar', './target/backend-0.0.1-SNAPSHOT.jar']);
 
+let applicationStarted = false
+
 springBoot.stdout.on('data', (data) => {
     const line = `${data}`
     console.log(line.trimEnd())
     if (line.includes('Application started!')) {
+        applicationStarted = true
         process.send('launched')
+    }
+    else {
+        if (!applicationStarted)
+            process.send('one line')
     }
 })
 
