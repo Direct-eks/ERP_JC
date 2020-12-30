@@ -17,8 +17,6 @@ public class InboundEntryWithProductsVO {
     @NotBlank(message = "entryDate blank error")
     private String entryDate;
 
-    @NotNull(message = "creationDate null error")
-    @NotBlank(message = "creationDate blank error")
     private String creationDate;
 
     @DecimalMin(value = "0.0", message = "totalCost smaller than zero error")

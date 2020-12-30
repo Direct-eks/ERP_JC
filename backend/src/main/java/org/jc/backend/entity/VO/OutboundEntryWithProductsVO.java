@@ -11,16 +11,19 @@ import java.util.List;
 @Setter
 public class OutboundEntryWithProductsVO {
     private String outboundEntryID;
+
     @NotNull(message = "shipmentDate null error")
     @NotBlank(message = "shipmentDate blank error")
     private String shipmentDate;
-    @NotNull(message = "creationDate null error")
-    @NotBlank(message = "creationDate blank error")
+
     private String creationDate;
+
     @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
     private double totalAmount;
+
     @Pattern(regexp = "^(自提|送货|代办发货|发货代收款)$", message = "deliveryMethod value error")
     private String deliveryMethod;
+
     @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
     private String invoiceType;
     @NotNull(message = "drawer null error")
@@ -42,8 +45,10 @@ public class OutboundEntryWithProductsVO {
     private String warehouseName;
 
     private String remark;
+
     @Pattern(regexp = "^(销出|入退)$", message = "classification value error")
     private String classification;
+
     @DecimalMin(value = "0.0", message = "shipping cost smaller than zero error")
     private double shippingCost;
     private String shippingCostType;
