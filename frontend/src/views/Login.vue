@@ -29,7 +29,7 @@
                                       required
                                       label="登录名"
                                       name="login"
-                                      prepend-icon="mdiAccount"
+                                      :prepend-icon="mdiAccountPath"
                                       type="text">
                         </v-text-field>
 
@@ -39,7 +39,7 @@
                                       id="password"
                                       label="密码"
                                       name="password"
-                                      prepend-icon="mdiLock"
+                                      :prepend-icon="mdiLockPath"
                                       type="password">
                         </v-text-field>
                     </v-form>
@@ -55,12 +55,16 @@
 
 <script>
     import {mdiCodeTags} from '@mdi/js'
+    import {mdiAccount} from '@mdi/js'
+    import {mdiLock} from '@mdi/js'
 
     export default {
         name: 'Login',
         data() {
             return {
                 mdiCodeTagsPath: mdiCodeTags,
+                mdiAccountPath: mdiAccount,
+                mdiLockPath: mdiLock,
 
                 ruleForm: {
                     username: '',
