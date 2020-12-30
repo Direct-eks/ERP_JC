@@ -211,7 +211,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             inboundEntryMapper.deleteProductsByEntryID(id);
             inboundEntryMapper.deleteEntry(id);
         } catch (PersistenceException e) {
-            logger.error("Deletion failed"); // todo remove in production mode
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Deletion failed");
             throw e;
         }
     }
@@ -234,10 +235,27 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
             logger.error("Query failed");
             throw e;
         }
 
         return products;
+    }
+
+    @Transactional
+    public void updateProductsWithCheckoutSerial(List<InboundProductO> products, String checkoutSerial) {
+
+        try {
+            for (var product : products) {
+                product.setCheckoutSerial(checkoutSerial);
+                inboundEntryMapper.updateProductsWithCheckoutSerial(product);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Update failed");
+        }
+
     }
 }

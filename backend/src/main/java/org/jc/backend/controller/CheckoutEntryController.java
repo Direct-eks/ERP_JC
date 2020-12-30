@@ -1,11 +1,13 @@
 package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "CheckoutEntry Related")
 @RestController
@@ -20,4 +22,12 @@ public class CheckoutEntryController {
     }
 
     /* ------------------------------ API ------------------------------ */
+
+    @ApiOperation(value = "", response = void.class)
+    @PutMapping("/createEntry")
+    public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO) {
+        logger.info("PUT Request to /checkoutEntry/createEntry");
+
+        checkoutEntryService.createEntry(checkoutEntryWithProductsVO);
+    }
 }

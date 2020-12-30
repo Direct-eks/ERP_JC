@@ -35,4 +35,6 @@ public interface InboundEntryMapper {
     void deleteProductsByEntryID(String id);
 
     List<String> queryEntriesByCompanyIDAndInvoiceType(int companyID, String invoiceType);
+
+    void updateProductsWithCheckoutSerial(InboundProductO productO);
 }

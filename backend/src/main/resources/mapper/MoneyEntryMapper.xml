@@ -4,5 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.MoneyEntryMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+        select count(money_entry_serial)
+        from m_money_entry
+        where creation_date = date('now', 'localtime')
+          and money_entry_serial like #{prefix}||'%'
+    </select>
+
+    <insert id="insertEntry">
+        insert into m_money_entry(
+            money_entry_serial, partner_company_id, invoice_indication, payment_method, payment_number,
+            payment_amount, bank_account_id, remark, drawer, creation_date, payment_date, checkout_serial,
+            department_id
+        )
+        values (
+            #{moneyEntrySerial}, #{partnerCompanyID}, #{invoiceIndication}, #{paymentAmount}, #{paymentNumber},
+            #{paymentAmount}, #{bankAccountID}, #{remark}, #{drawer}, date('now', 'localtime'), #{paymentDate},
+            #{checkoutSerial}, #{departmentID}
+        )
+    </insert>
 
 </mapper>

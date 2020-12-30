@@ -4,5 +4,50 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.CheckoutEntryMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+        select count(checkout_entry_serial)
+        from m_checkout_entry
+        where creation_date = date('now', 'localtime')
+            and checkout_entry_serial like #{prefix}||'%'
+    </select>
+
+    <insert id="insertEntry">
+        insert into m_checkout_entry (
+            checkout_entry_serial, partner_company_id, invoice_type, payment_method, payment_number,
+            payment_amount, bank_account_id, total_amount, is_rounded, debt, service_fee, remark,
+            drawer, creation_date, checkout_date, money_entry_serial, department_id
+        )
+        values (
+            #{checkoutEntrySerial}, #{partnerCompanyID}, #{invoiceType}, #{paymentMethod}, #{paymentNumber},
+            #{paymentAmount}, #{bankAccountID}, #{totalAmount}, #{isRounded}, #{debt}, #{serviceFee}, #{remark},
+            #{drawer}, date('now', 'localtime'), #{checkoutDate}, #{moneyEntrySerial}, #{departmentID}
+        )
+    </insert>
+
+    <resultMap id="" type="org.jc.backend.entity.DO.CheckoutEntryDO">
+        <result property="checkoutEntrySerial" column="checkout_entry_serial"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="paymentNumber" column="payment_number"/>
+        <result property="paymentAmount" column="payment_amount"/>
+        <result property="bankAccountID" column="bank_account_id"/>
+        <result property="bankAccountName" column="bank_account_name"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="isRounded" column="is_rounded"/>
+        <result property="debt" column="debt"/>
+        <result property="serviceFee" column="service_fee"/>
+        <result property="remark" column="remark"/>
+        <result property="drawer" column="drawer"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="checkoutDate" column="checkout_date"/>
+        <result property="moneyEntrySerial" column="money_entry_serial"/>
+        <result property="returnSerial" column="return_serial"/>
+        <result property="departmentID" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="isVerified" column="is_verified"/>
+        <result property="isModified" column="is_modified"/>
+    </resultMap>
+
 
 </mapper>

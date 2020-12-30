@@ -1,0 +1,62 @@
+package org.jc.backend.entity.VO;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.InvoiceEntryO;
+
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+@Getter
+@Setter
+public class CheckoutEntryWithProductsVO {
+    @NotNull(message = "checkoutEntrySerial null error")
+    private String checkoutEntrySerial;
+
+    private int partnerCompanyID;
+
+    @NotNull(message = "invoiceType null error")
+    private String invoiceType;
+
+    private String paymentMethod;
+    private String paymentNumber;
+
+    @DecimalMin(value = "0.0", message = "paymentAmount smaller than zero error")
+    private double paymentAmount;
+
+    private int bankAccountID;
+    //from c_bank_account
+    private String bankAccountName;
+
+    @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
+    private double totalAmount;
+    private double debt;
+
+    @DecimalMin(value = "0.0", message = "serviceFee smaller than zero error")
+    private double serviceFee;
+
+    @NotNull(message = "remark null error")
+    private String remark;
+
+    @NotNull(message = "drawer null error")
+    private String drawer;
+    private String creationDate;
+    private String checkoutDate;
+    private String moneyEntrySerial;
+    private String returnSerial;
+
+    private int departmentID;
+    //from e_department
+    private String departmentName;
+
+    private int isVerified;
+    private int isModified;
+
+    private List<InboundProductO> checkoutProducts;
+
+    @Valid
+    private InvoiceEntryO invoiceEntry;
+}

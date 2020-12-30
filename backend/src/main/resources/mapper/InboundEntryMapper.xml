@@ -237,4 +237,10 @@
         where partner_company_id = #{companyID} and invoice_type = #{invoiceType}
     </select>
 
+    <update id="updateProductsWithCheckoutSerial">
+        update e_inbound_product
+        set checkout_serial = #{checkoutSerial}
+        where inbound_product_id = #{inboundProductID}
+    </update>
+
 </mapper>
