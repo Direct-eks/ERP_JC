@@ -13,7 +13,7 @@
     },
     "private": true,
     "scripts": {
-        "dev": "webpack-dev-server --inline --hot --env.dev",
+        "dev": "set NODE_ENV=development && webpack-dev-server --inline --hot --env.dev",
         "build": "rimraf dist && webpack -p --progress --hide-modules --mode=production"
     },
     "dependencies": {

@@ -62,7 +62,13 @@ axios.interceptors.response.use((response) => {
     return Promise.reject(error)
 })
 
-let base = '/api';
+let base
+if (process.env.NODE_ENV === 'development') {
+    base = '/api'
+}
+else {
+    base = 'http://127.0.0.1:8088'
+}
 
 export const getRequest = (url, params) => {
     return axios({
