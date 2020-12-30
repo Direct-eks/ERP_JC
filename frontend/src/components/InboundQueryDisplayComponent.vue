@@ -231,11 +231,13 @@
                 }
                 else {
                     console.log(this.dateRange)
-                    this.$getRequest(this.$api.entriesInDateRange +
-                        'startDate=' + encodeURI( this.dateRange[0]) + '&endDate=' +
-                        encodeURI(this.dateRange[1]) + '&type=' + encodeURI(this.category) +
-                        '&companyID=' + encodeURI(String(this.companyID)) + '&forModify=false'
-                    ).then((res) => {
+                    this.$getRequest(this.$api.entriesInDateRange, {
+                        startDate: this.dateRange[0],
+                        endDate: this.dateRange[1],
+                        type: this.category,
+                        companyID: this.companyID,
+                        forModify: false
+                    }).then((res) => {
                         console.log('received', res.data)
                         this.queryTableData = res.data
                     }).catch(error => this.$ajaxErrorHandler(error))

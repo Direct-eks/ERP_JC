@@ -7,7 +7,7 @@ axios.defaults.withCredentials = false
 axios.interceptors.request.use((config) => {
     const token = sessionStorage.getItem('userToken')
     config.headers.Authorization = !!token ? token : ''
-    console.log('modified header', config.headers)
+    // console.log('modified header', config.headers)
     return config
 })
 
@@ -71,25 +71,25 @@ export const getRequest = (url, params) => {
         params: params
     })
 }
-export const postRequest = (url, params) => {
+export const postRequest = (url, body) => {
     return axios({
         method: 'post',
         url: `${base}${url}`,
-        data: params
+        data: body
     })
 }
-export const putRequest = (url, params) => {
+export const putRequest = (url, body) => {
     return axios({
         method: 'put',
         url: `${base}${url}`,
-        data: params
+        data: body
     })
 }
-export const patchRequest = (url, params) => {
+export const patchRequest = (url, body) => {
     return axios({
         method: 'patch',
         url: `${base}${url}`,
-        data: params
+        data: body
     })
 }
 export const deleteRequest = (url, params) => {

@@ -5,7 +5,7 @@ const api = {
     userLogout: '/user/userLogout',
 
     /*------ /company ------*/
-    companyFuzzySearch: '/company/getCompanyByFuzzySearch?', //GET name= phone=
+    companyFuzzySearch: '/company/getCompanyByFuzzySearch', //GET name= phone=
     companyAreas: '/company/getCompanyAreas', //GET
     companiesByCategory: '/company/getCompaniesByCategory/', //GET
 
@@ -19,7 +19,7 @@ const api = {
     completeInboundEntry: '/inboundEntry/completeEntry', //PATCH
     createInboundEntry: '/inboundEntry/createEntry', //PUT
     //GET startDate= endDate= type= forModify=bool companyID=int
-    entriesInDateRange: '/inboundEntry/getEntriesInDateRange?',
+    entriesInDateRange: '/inboundEntry/getEntriesInDateRange',
     modifyEntry: '/inboundEntry/modifyEntry', //PATCH
 
     /*------ /model ------*/
@@ -32,7 +32,7 @@ const api = {
     /*------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', //PUT
     //GET startDate= endDate= companyID=int
-    purchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID?', //GET
+    purchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID', //GET
     modifyPurchaseOrder: '/purchaseOrder/modifyOrder', //PATCH
 
     /*------ /sku ------*/

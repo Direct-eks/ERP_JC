@@ -84,10 +84,10 @@ import {mdiClose} from '@mdi/js'
         },
         methods: {
             simpleSearch() {
-                this.$getRequest(this.$api.companyFuzzySearch +
-                    'phone=' + encodeURI(this.phoneSearchField) + '&name=' +
-                    encodeURI(this.companyNameSearchField)
-                ).then((res) => {
+                this.$getRequest(this.$api.companyFuzzySearch, {
+                    phone: this.phoneSearchField,
+                    name: this.companyNameSearchField
+                }).then((res) => {
                     console.log('received', res.data)
                     this.simpleSearchTable = res.data
                     // open panel
