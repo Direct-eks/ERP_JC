@@ -27,7 +27,10 @@ dist/
 npm-debug.log
 
 #electron_app
-electron_app/
+electron_app/logs/
+electron_app/dist/
+electron_app/target/
+electron_app/db/
 
 ### STS ###
 .apt_generated
