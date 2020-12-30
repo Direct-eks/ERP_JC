@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.InboundEntryCompleteO;
+import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.VO.InboundEntryModifyVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
@@ -100,5 +101,17 @@ public class InboundEntryController {
         logger.info("DELETE Request to /inboundEntry/deleteEntry, id: " + id);
 
         inboundEntryService.deleteEntry(id);
+    }
+
+    @ApiOperation(value = "", response = InboundProductO.class)
+    @GetMapping("/getProductsByCompanyAndInvoiceType")
+    public List<InboundProductO> getProductsByCompanyAndInvoiceType(
+            @RequestParam("companyID") int companyID,
+            @RequestParam("invoiceType") String invoiceType
+    ) {
+        logger.info("GET Request to /inboundEntry/getProductsByInvoiceType, companyID: " +
+                companyID + ", invoiceType: " + invoiceType);
+
+        return inboundEntryService.getProductsByCompanyIDAndInvoiceType(companyID, invoiceType);
     }
 }

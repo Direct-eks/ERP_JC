@@ -33,4 +33,6 @@ public interface InboundEntryMapper {
 
     void deleteEntry(String id);
     void deleteProductsByEntryID(String id);
+
+    List<String> queryEntriesByCompanyIDAndInvoiceType(int companyID, String invoiceType);
 }

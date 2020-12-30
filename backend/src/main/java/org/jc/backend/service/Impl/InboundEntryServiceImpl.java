@@ -216,4 +216,28 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getProductsByCompanyIDAndInvoiceType(int companyID, String invoiceType) {
+
+        List<InboundProductO> products = new ArrayList<>();
+
+        try {
+            List<String> entryIDs = inboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+            for (var entryID : entryIDs) {
+                List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
+                for (var tempProduct : tempProducts) {
+                    //filter out invoiced products
+                    if (tempProduct.getInvoiceSerial().equals("")) {
+                        products.add(tempProduct);
+                    }
+                }
+            }
+
+        } catch (PersistenceException e) {
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
+    }
 }

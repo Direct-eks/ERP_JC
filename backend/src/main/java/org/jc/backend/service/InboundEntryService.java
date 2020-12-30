@@ -2,6 +2,7 @@ package org.jc.backend.service;
 
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.InboundEntryCompleteO;
+import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.VO.InboundEntryModifyVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 
@@ -15,4 +16,6 @@ public interface InboundEntryService {
     void completeEntry(InboundEntryCompleteO completionVO);
     void modifyEntry(InboundEntryModifyVO modificationVO);
     void deleteEntry(String id);
+
+    List<InboundProductO> getProductsByCompanyIDAndInvoiceType(int companyID, String invoiceType);
 }

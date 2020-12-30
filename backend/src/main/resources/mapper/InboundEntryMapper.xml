@@ -231,4 +231,10 @@
         where inbound_entry_id = #{id}
     </delete>
 
+    <select id="queryEntriesByCompanyIDAndInvoiceType" resultType="String">
+        select inbound_entry_id
+        from e_inbound_entry
+        where partner_company_id = #{companyID} and invoice_type = #{invoiceType}
+    </select>
+
 </mapper>
