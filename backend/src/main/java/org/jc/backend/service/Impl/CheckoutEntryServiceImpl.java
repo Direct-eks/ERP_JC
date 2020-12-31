@@ -8,6 +8,7 @@ import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.service.InboundEntryService;
+import org.jc.backend.service.InvoiceEntryService;
 import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -25,13 +26,16 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final CheckoutEntryMapper checkoutEntryMapper;
     private final MoneyEntryService moneyEntryService;
     private final InboundEntryService inboundEntryService;
+    private final InvoiceEntryService invoiceEntryService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     MoneyEntryService moneyEntryService,
-                                    InboundEntryService inboundEntryService) {
+                                    InboundEntryService inboundEntryService,
+                                    InvoiceEntryService invoiceEntryService) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.moneyEntryService = moneyEntryService;
         this.inboundEntryService = inboundEntryService;
+        this.invoiceEntryService = invoiceEntryService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -57,6 +61,11 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             //update product checkoutSerial
             inboundEntryService.updateProductsWithCheckoutSerial(
                     checkoutEntryWithProductsVO.getCheckoutProducts(), newCheckoutSerial);
+
+            //check if it is needed to create invoiceEntry
+            if (checkoutEntryWithProductsVO.getInvoiceEntry() != null) {
+                invoiceEntryService.createEntryForCheckout(checkoutEntryWithProductsVO, true);
+            }
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production

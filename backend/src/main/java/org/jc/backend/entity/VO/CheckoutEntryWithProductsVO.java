@@ -8,17 +8,17 @@ import org.jc.backend.entity.InvoiceEntryO;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
 @Setter
 public class CheckoutEntryWithProductsVO {
-    @NotNull(message = "checkoutEntrySerial null error")
     private String checkoutEntrySerial;
-
     private int partnerCompanyID;
 
     @NotNull(message = "invoiceType null error")
+    @Pattern(regexp = "^(增值税票|普票)$", message = "invoiceType value error")
     private String invoiceType;
 
     private String paymentMethod;

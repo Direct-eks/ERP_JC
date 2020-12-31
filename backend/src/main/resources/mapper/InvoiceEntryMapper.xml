@@ -4,5 +4,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.InvoiceEntryMapper">
 
+    <insert id="insertEntry">
+        insert into m_invoice_entry(
+            invoice_entry_serial, partner_company_id, invoice_type, invoice_number, total_amount, invoice_amount,
+            invoice_indication, is_follow_up_indication, remark, drawer, creation_date, checkout_date, in_or_out,
+            invoice_date, invoice_number_date
+        )
+        values (
+            #{invoiceEntrySerial}, #{partnerCompanyID}, #{invoiceType}, #{invoiceNumber}, #{totalAmount},
+            #{invoiceAmount}, #{invoiceIndication}, #{isFollowUpIndication}, #{remark}, #{drawer},
+            date('now', 'localtime'), #{checkout_date}, #{in_or_out}, #{invoice_date}, #{invoice_number_date}
+        )
+    </insert>
+
+    <resultMap id="InvoiceEntryResultMap" type="org.jc.backend.entity.InvoiceEntryO">
+        <result property="invoiceEntrySerial" column="invoice_entry_serial"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="invoiceNumber" column="invoice_number"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="invoiceAmount" column="invoice_amount"/>
+        <result property="invoiceIndication" column="invoice_indication"/>
+        <result property="isFollowUpIndication" column="is_follow_up_indication"/>
+        <result property="remark" column="remark"/>
+        <result property="drawer" column="drawer"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="checkoutDate" column="checkout_date"/>
+        <result property="inOrOut" column="in_or_out"/>
+        <result property="invoiceDate" column="invoice_date"/>
+        <result property="invoiceNumberDate" column="invoice_number_date"/>
+        <result property="isModified" column="is_modified"/>
+    </resultMap>
 
 </mapper>
