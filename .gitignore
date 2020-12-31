@@ -29,8 +29,9 @@ npm-debug.log
 #electron_app
 electron_app/logs/
 electron_app/dist/
-electron_app/target/
-electron_app/db/
+electron_app/db
+electron_app/webpages/
+electron_app/springboot/
 
 ### STS ###
 .apt_generated
