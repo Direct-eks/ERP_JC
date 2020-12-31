@@ -1,74 +1,91 @@
 const { app, BrowserWindow, dialog } = require('electron')
 
-const child = require('child_process')
+/* ---------------------- */
 
+let fs = require('fs')
+filenames = fs.readdirSync(app.getAppPath())
+let backend = false
+for (let file of filenames) {
+    console.log(file)
+    if (file === 'springboot') backend = true
+}
 
-const springBootLauncher = child.fork('./launcher.js')
+if (!backend) {
+    app.quit()
+}
+else {
+    const child = require('child_process')
+    const springBootLauncher = child.fork(__dirname + '/launcher.js')
 
-let win
-let progress = 0.001
+    let win
+    let progress = 0.001
 
-app.whenReady().then(() => {
-    win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true,
-        },
-        useContentSize: true
+    app.whenReady().then(() => {
+        win = new BrowserWindow({
+            width: 800,
+            height: 600,
+            webPreferences: {
+                nodeIntegration: false,
+            },
+            useContentSize: true
+        })
+
+        win.on('close', (e) => {
+            // e.preventDefault();
+            let result = dialog.showMessageBoxSync({
+                type: "warning",
+                title: '退出确认',
+                message: '确认退出？',
+                buttons: ['取消', '确认']
+            })
+            if (result === 0) {
+                e.preventDefault()
+            }
+            else {
+                return null
+            }
+        })
+
     })
 
-    win.on('close', (e) => {
-        // e.preventDefault();
-        let result = dialog.showMessageBoxSync({
-            type: "warning",
-            title: '退出确认',
-            message: '确认退出？',
-            buttons: ['取消', '确认']
-        })
-        if (result === 0) {
-            e.preventDefault()
+    springBootLauncher.on('message', (message) => {
+        if (`${message}` === 'launched') {
+            win.setProgressBar(-1)
+            win.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
+            win.maximize()
+        }
+        else if (`${message}` === 'one line') {
+            try {
+                win.setProgressBar(progress)
+                progress += 0.004
+            } catch (error) {
+                //ignore
+            }
         }
         else {
-            return null
+            app.quit()
         }
     })
 
-})
-
-springBootLauncher.on('message', (message) => {
-    if (`${message}` === 'launched') {
-        win.setProgressBar(-1)
-        win.loadFile('./dist/index.html', {hash: '#/Login'})
-        win.maximize()
-    }
-    else if (`${message}` === 'one line') {
-        try {
-            win.setProgressBar(progress)
-            progress += 0.004
-        } catch (error) {
-            //ignore
+    app.on('window-all-closed', () => {
+        if (process.platform !== 'darwin') {
+            console.log('window closed')
+            // app.quit()
+            springBootLauncher.send('shutdown')
+            console.log('message passed')
         }
-    }
-    else {
-        app.quit()
-    }
-})
+    })
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        console.log('window closed')
-        // app.quit()
-        springBootLauncher.send('shutdown')
-        console.log('message passed')
-    }
-})
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            // createWindow()
+        }
+    })
+}
 
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        // createWindow()
-    }
-})
+/* ---------------------- */
+
+
 
 
 

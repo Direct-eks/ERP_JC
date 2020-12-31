@@ -2,7 +2,8 @@ const { spawn } = require('child_process')
 const http = require('http')
 
 
-const springBoot = spawn("java", ['-jar', './target/backend-0.0.1-SNAPSHOT.jar']);
+const springBoot = spawn(__dirname + "/springboot/fulljre11/bin/java",
+    ['-jar', __dirname + '/springboot/backend-0.0.1-SNAPSHOT.jar']);
 
 let applicationStarted = false
 

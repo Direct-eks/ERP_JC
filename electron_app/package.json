@@ -4,10 +4,26 @@
   "main": "main.js",
   "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.54",
+    "electron-packager": "^15.2.0",
     "electron": "^11.1.1"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win --x64",
+    "packager": "electron-packager ./ testApp --win --out ./build"
+  },
+  "build": {
+    "appId": "testJC",
+    "asar": false,
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "**/*"
+    ],
+    "compression": "store",
+    "win": {
+      "target": "portable"
+    }
   }
 }
