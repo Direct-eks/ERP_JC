@@ -8,7 +8,6 @@ import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +43,8 @@ public class CheckoutEntryController {
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
-            @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType
+            @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType,
+            @RequestParam("forModify") boolean forModify
     ) throws GlobalException {
         logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, startDate: " + startDateString +
                 ", endDate: " + endDateString + ", companyID: " + companyID + ", invoiceType: "+ invoiceType);
@@ -63,6 +63,22 @@ public class CheckoutEntryController {
             }
         }
 
-        return checkoutEntryService.getEntriesInDateRange(startDate, endDate, companyID, invoiceType);
+        List<CheckoutEntryWithProductsVO> entries = checkoutEntryService.getEntriesInDateRange(
+                startDate, endDate, companyID, invoiceType);
+
+        //filter out verified entries, if query is forModify
+        if (forModify) {
+            entries.removeIf(entry -> entry.getIsVerified() == 1);
+        }
+
+        return entries;
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PatchMapping("/modifyEntry")
+    public void modifyEntry(CheckoutEntryWithProductsVO modifyVO) {
+        logger.info("PATCH Request to /checkoutEntry/modifyEntry");
+
+        checkoutEntryService.modifyEntry(modifyVO);
     }
 }

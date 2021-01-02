@@ -24,7 +24,7 @@
         )
     </insert>
 
-    <resultMap id="" type="org.jc.backend.entity.DO.CheckoutEntryDO">
+    <resultMap id="checkoutEntryResultMap" type="org.jc.backend.entity.DO.CheckoutEntryDO">
         <result property="checkoutEntrySerial" column="checkout_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="invoiceType" column="invoice_type"/>
@@ -49,5 +49,23 @@
         <result property="isModified" column="is_modified"/>
     </resultMap>
 
+    <select id="selectEntryBySerialForCompare" resultMap="checkoutEntryResultMap">
+        select checkout_entry_serial, invoice_type, payment_method, payment_number, payment_amount,
+               c.bank_account_id, b.name as bank_account_name, service_fee, c.remark, drawer, is_verified
+        from m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id
+        where checkout_entry_serial = #{serial}
+    </select>
+
+    <update id="modifyEntry">
+        update m_checkout_entry
+        set payment_method = #{paymentMethod},
+            payment_number = #{paymentNumber},
+            payment_amount = #{paymentAmount},
+            bank_account_id = #{bankAccountID},
+            service_fee = #{serviceFee},
+            remark = #{remark},
+            is_modified = 1
+        where checkout_entry_serial = #{checkoutEntrySerial}
+    </update>
 
 </mapper>

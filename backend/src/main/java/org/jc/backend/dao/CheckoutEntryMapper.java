@@ -14,4 +14,7 @@ public interface CheckoutEntryMapper {
 
     List<CheckoutEntryDO> getEntriesInDateRange(String startDate, String endDate,
                                                 int companyID, String invoiceType);
+
+    CheckoutEntryDO selectEntryBySerialForCompare(String serial);
+    void modifyEntry(CheckoutEntryDO modifyDO);
 }

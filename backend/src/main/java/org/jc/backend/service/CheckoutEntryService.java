@@ -9,4 +9,5 @@ public interface CheckoutEntryService {
     void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO);
     List<CheckoutEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                             int companyID, String invoiceType);
+    void modifyEntry(CheckoutEntryWithProductsVO modifyVO);
 }

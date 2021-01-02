@@ -1,6 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.CheckoutEntryMapper;
 import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
@@ -112,5 +113,64 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         }
 
         return entries;
+    }
+
+    @Transactional
+    public void modifyEntry(CheckoutEntryWithProductsVO modifyVO) {
+
+        try {
+            CheckoutEntryDO modifyDO = new CheckoutEntryDO();
+            BeanUtils.copyProperties(modifyVO, modifyDO);
+
+            CheckoutEntryDO originDO = checkoutEntryMapper.selectEntryBySerialForCompare(
+                            modifyDO.getCheckoutEntrySerial());
+
+            StringBuilder record = new StringBuilder("修改者: " + modifyDO.getDrawer() + "; ");
+            boolean bool = compareEntryAndFormModificationRecord(record, modifyDO, originDO);
+
+            if (bool) {
+                checkoutEntryMapper.modifyEntry(modifyDO);
+            }
+            else {
+                logger.warn("nothing modified");
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+    }
+
+    private boolean compareEntryAndFormModificationRecord(StringBuilder record, CheckoutEntryDO modifiedDO,
+                                            CheckoutEntryDO originDO) {
+        boolean bool = false;
+        if (!modifiedDO.getPaymentMethod().equals(originDO.getPaymentMethod())) {
+            bool = true;
+            record.append(String.format("付款方式: %s -> %s; ", originDO.getPaymentMethod(), modifiedDO.getPaymentMethod()));
+        }
+        if (!modifiedDO.getPaymentNumber().equals(originDO.getPaymentNumber())) {
+            bool = true;
+            record.append(String.format("付款号码: %s -> %s; ", originDO.getPaymentNumber(), modifiedDO.getPaymentNumber()));
+        }
+        if (modifiedDO.getPaymentAmount() != originDO.getPaymentAmount()) {
+            bool = true;
+            record.append(String.format("付款金额: %f -> %f; ", originDO.getPaymentAmount(), modifiedDO.getPaymentAmount()));
+        }
+        if (modifiedDO.getBankAccountID() != originDO.getBankAccountID()) {
+            bool = true;
+            record.append(String.format("银行账号: %s -> %s; ", originDO.getBankAccountName(), modifiedDO.getBankAccountName()));
+        }
+        if (!modifiedDO.getRemark().equals(originDO.getRemark())) {
+            bool = true;
+            record.append(String.format("备注: %s -> %s; ", originDO.getRemark(), modifiedDO.getRemark()));
+        }
+        if (modifiedDO.getServiceFee() != originDO.getServiceFee()) {
+            bool = true;
+            record.append(String.format("服务费: %f -> %f;", originDO.getServiceFee(), modifiedDO.getServiceFee()));
+        }
+
+        return bool;
     }
 }
