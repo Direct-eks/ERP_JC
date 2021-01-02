@@ -62,6 +62,9 @@ public class CheckoutEntryController {
                     throw new GlobalException("Invalid invoiceType param");
             }
         }
+        else {
+            invoiceType = null;
+        }
 
         List<CheckoutEntryWithProductsVO> entries = checkoutEntryService.getEntriesInDateRange(
                 startDate, endDate, companyID, invoiceType);

@@ -49,6 +49,20 @@
         <result property="isModified" column="is_modified"/>
     </resultMap>
 
+
+    <select id="getEntriesInDateRange" resultMap="checkoutEntryResultMap">
+        select
+        from (m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id)
+            join e_department as d on c.department_id = d.department_id
+        where (c.checkout_date between #{startDate} and #{endDate})
+            <if test="companyID != -1">
+                and c.partner_company_id = #{companyID}
+            </if>
+            <if test="invoiceType != null">
+                and c.invoice_type = #{invoice_type}
+            </if>
+    </select>
+
     <select id="selectEntryBySerialForCompare" resultMap="checkoutEntryResultMap">
         select checkout_entry_serial, invoice_type, payment_method, payment_number, payment_amount,
                c.bank_account_id, b.name as bank_account_name, service_fee, c.remark, drawer, is_verified

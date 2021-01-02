@@ -1,12 +1,12 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.CheckoutEntryMapper;
 import org.jc.backend.dao.InboundEntryMapper;
+import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.MoneyEntryO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.service.InboundEntryService;
@@ -33,17 +33,20 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final InboundEntryService inboundEntryService;
     private final InboundEntryMapper inboundEntryMapper;
     private final InvoiceEntryService invoiceEntryService;
+    private final ModificationMapper modificationMapper;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     MoneyEntryService moneyEntryService,
                                     InboundEntryService inboundEntryService,
                                     InboundEntryMapper inboundEntryMapper,
-                                    InvoiceEntryService invoiceEntryService) {
+                                    InvoiceEntryService invoiceEntryService,
+                                    ModificationMapper modificationMapper) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.moneyEntryService = moneyEntryService;
         this.inboundEntryService = inboundEntryService;
         this.inboundEntryMapper = inboundEntryMapper;
         this.invoiceEntryService = invoiceEntryService;
+        this.modificationMapper = modificationMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -130,6 +133,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
             if (bool) {
                 checkoutEntryMapper.modifyEntry(modifyDO);
+
+                modificationMapper.insertModificationRecord(new ModificationO(
+                        originDO.getCheckoutEntrySerial(), record.toString()));
             }
             else {
                 logger.warn("nothing modified");
