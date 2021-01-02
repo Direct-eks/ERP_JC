@@ -67,11 +67,13 @@ public class InboundEntryController {
 
         //forbid changes to invoiced entries
         //drop entries if were invoiced when forModify is true
-        for (var entry : entries) {
-            for (var product : entry.getInboundProducts()) {
-                if (!product.getCheckoutSerial().equals("")) {
-                    entries.remove(entry);
-                    break;
+        if (forModify) {
+            for (var entry : entries) {
+                for (var product : entry.getInboundProducts()) {
+                    if (!product.getCheckoutSerial().equals("")) {
+                        entries.remove(entry);
+                        break;
+                    }
                 }
             }
         }
