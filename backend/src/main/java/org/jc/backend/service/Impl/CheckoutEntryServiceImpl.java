@@ -2,6 +2,7 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.CheckoutEntryMapper;
+import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.MoneyEntryO;
@@ -17,6 +18,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,15 +30,18 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final CheckoutEntryMapper checkoutEntryMapper;
     private final MoneyEntryService moneyEntryService;
     private final InboundEntryService inboundEntryService;
+    private final InboundEntryMapper inboundEntryMapper;
     private final InvoiceEntryService invoiceEntryService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     MoneyEntryService moneyEntryService,
                                     InboundEntryService inboundEntryService,
+                                    InboundEntryMapper inboundEntryMapper,
                                     InvoiceEntryService invoiceEntryService) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.moneyEntryService = moneyEntryService;
         this.inboundEntryService = inboundEntryService;
+        this.inboundEntryMapper = inboundEntryMapper;
         this.invoiceEntryService = invoiceEntryService;
     }
 
@@ -73,5 +80,37 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             throw e;
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
+                                                                   int companyID, String invoiceType) {
+
+        List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRange(
+                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType);
+
+            for (var entryFromDatabase : entriesFromDatabase) {
+                CheckoutEntryWithProductsVO tempEntry = new CheckoutEntryWithProductsVO();
+                BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+
+                List<InboundProductO> products = inboundEntryMapper.getProductsWithCheckoutSerial(
+                        tempEntry.getCheckoutEntrySerial());
+                tempEntry.setCheckoutProducts(products);
+
+                entries.add(tempEntry);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return entries;
     }
 }

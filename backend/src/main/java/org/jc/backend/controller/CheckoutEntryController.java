@@ -2,12 +2,19 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
 
 @Api(tags = "CheckoutEntry Related")
 @RestController
@@ -29,5 +36,33 @@ public class CheckoutEntryController {
         logger.info("PUT Request to /checkoutEntry/createEntry");
 
         checkoutEntryService.createEntry(checkoutEntryWithProductsVO);
+    }
+
+    @ApiOperation(value = "", response = CheckoutEntryWithProductsVO.class)
+    @GetMapping("/getEntriesInDateRange")
+    public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
+            @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType
+    ) throws GlobalException {
+        logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, startDate: " + startDateString +
+                ", endDate: " + endDateString + ", companyID: " + companyID + ", invoiceType: "+ invoiceType);
+
+        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
+        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+
+        if (StringUtils.hasLength(invoiceType)) {
+            switch (invoiceType) {
+                case "增值税票":
+                case "普票":
+                case "收据":
+                    break;
+                default:
+                    throw new GlobalException("Invalid invoiceType param");
+            }
+        }
+
+        return checkoutEntryService.getEntriesInDateRange(startDate, endDate, companyID, invoiceType);
     }
 }
