@@ -255,6 +255,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
             logger.error("Update failed");
+            throw e;
         }
 
     }
