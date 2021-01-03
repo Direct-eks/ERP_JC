@@ -49,7 +49,8 @@ public class InboundEntryController {
             @RequestParam("forModify") boolean forModify
     ) throws GlobalException {
         logger.info("GET Request to /inboundEntry/getEntriesInDateRange, start date: " +
-                startDateString + ", end date： " + endDateString + ", companyID: " + companyID);
+                startDateString + ", end date： " + endDateString + ", companyID: " + companyID +
+                ", type: " + type + ", forModify:" + forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -68,14 +69,14 @@ public class InboundEntryController {
         //forbid changes to invoiced entries
         //drop entries if were invoiced when forModify is true
         if (forModify) {
-            for (var entry : entries) {
+            entries.removeIf(entry -> {
                 for (var product : entry.getInboundProducts()) {
                     if (!product.getCheckoutSerial().equals("")) {
-                        entries.remove(entry);
-                        break;
+                        return true;
                     }
                 }
-            }
+                return false;
+            });
         }
 
         return entries;
