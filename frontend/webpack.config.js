@@ -1,10 +1,11 @@
-const resolve = require('path').resolve
-const webpack = require('webpack')
+const { resolve } = require('path')
+// const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const url = require('url')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
 const publicPath = ''
 
 const bundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -34,7 +35,7 @@ module.exports = (options = {}) => ({
                         loader: 'babel-loader',
                         options: {
                             // 'babelrc': false,
-                            "plugins": [
+                            plugins: [
                                 "@babel/plugin-syntax-dynamic-import"
                             ]
                         }
