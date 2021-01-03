@@ -1,0 +1,124 @@
+<template>
+    <v-card height="85vh">
+        <v-card-title>
+            入库商品助选
+            <v-spacer></v-spacer>
+            <v-col cols="auto">
+                <v-text-field v-model="modelCode"
+                              label="代号搜索"
+                              hide-details="auto"
+                              clearable
+                              style="width: 400px">
+                </v-text-field>
+            </v-col>
+            <v-btn class="mr-8"
+                   color="primary"
+                   @click="choose">
+                选择
+            </v-btn>
+            <v-btn icon @click="close">
+                <v-icon>{{mdiClosePath}}</v-icon>
+            </v-btn>
+        </v-card-title>
+        <v-card-text>
+            <v-data-table v-model="queryTableCurrentRows"
+                          :headers="tableHeaders"
+                          :items="queryTableData"
+                          item-key="inboundProductID"
+                          @click:row="tableChoose"
+                          :search="modelCode"
+                          height="65vh"
+                          hide-default-footer
+                          calculate-widths
+                          disable-sort
+                          disable-pagination
+                          show-select
+                          fixed-header
+                          locale="zh-cn"
+                          dense>
+            </v-data-table>
+        </v-card-text>
+    </v-card>
+</template>
+
+<script>
+import {mdiClose} from '@mdi/js'
+
+export default {
+    name: "InboundCheckoutProductsChoose",
+    props: {
+        companyID: {
+            type: Number,
+            required: true,
+        },
+        invoiceType: {
+            type: String,
+            required: true,
+        }
+    },
+    watch: {
+        companyID: {
+            handler: function (val, oldVal) {
+                if (val === -1) return
+                this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
+                    companyID: this.companyID, invoiceType: this.invoiceType
+                }).then((res) => {
+                    console.log(res.data)
+                    this.queryTableData = res.data
+                })
+            },
+            immediate: true
+        },
+        invoiceType: {
+            handler: function (val, oldVal) {
+                if (this.companyID === -1) return
+                this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
+                    companyID: this.companyID, invoiceType: this.invoiceType
+                }).then((res) => {
+                    console.log(res.data)
+                    this.queryTableData = res.data
+                })
+            }
+        }
+    },
+    data() {
+        return {
+            mdiClosePath: mdiClose,
+
+            modelCode: '',
+
+            tableHeaders: [
+                {text: '序号', value: 'index', width: '60px', filterable: false},
+                {text: '新代号', value: 'newCode', width: '100px'},
+                {text: '旧代号', value: 'oldCode', width: '100px'},
+                {text: '厂牌', value: 'factoryCode', width: '65px', filterable: false},
+                {text: '入库数量', value: 'quantity', width: '80px', filterable: false},
+                {text: '单位', value: 'unitName', width: '60px', filterable: false},
+                {text: '含税单价', value: 'unitPriceWithTax', width: '80px', filterable: false},
+                {text: '不含税单价', value: 'unitPriceWithoutTax', width: '80px', filterable: false},
+                {text: '备注', value: 'remark', width: '120px', filterable: false},
+            ],
+            queryTableData: [],
+            queryTableCurrentRows: [],
+        }
+    },
+    methods: {
+        tableChoose(val) {
+            if (this.queryTableCurrentRows.includes(val))
+                this.queryTableCurrentRows.slice(this.queryTableCurrentRows.indexOf(val), 1)
+            else
+                this.queryTableCurrentRows.push(val)
+        },
+        close() {
+            this.$emit('productsChoose', null)
+        },
+        choose() {
+            this.$emit('productsChoose', this.queryTableCurrentRows)
+        }
+    }
+}
+</script>
+
+<style scoped>
+
+</style>
