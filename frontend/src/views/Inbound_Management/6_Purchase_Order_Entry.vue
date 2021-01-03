@@ -4,8 +4,8 @@
     <v-card outlined>
         <v-card-title>采购订单录入</v-card-title>
 
-        <InboundEntryAndPurchaseOrderComponent editMode="purchaseOrder">
-        </InboundEntryAndPurchaseOrderComponent>
+        <InboundEntryCreateComponent editMode="purchaseOrder">
+        </InboundEntryCreateComponent>
 
         <SnackMessage></SnackMessage>
     </v-card>
@@ -17,7 +17,7 @@ import SnackMessage from "~/components/SnackMessage";
 export default {
     name: "Purchase_Order_Entry",
     components: {
-        InboundEntryAndPurchaseOrderComponent: () => import('../../components/InboundEntryCreateComponent'),
+        InboundEntryCreateComponent: () => import('../../components/InboundEntryCreateComponent'),
         SnackMessage
     }
 }
