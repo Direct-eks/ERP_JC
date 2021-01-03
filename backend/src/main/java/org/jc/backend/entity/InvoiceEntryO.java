@@ -30,8 +30,6 @@ public class InvoiceEntryO {
     @Pattern(regexp = "^(正常|红冲)$", message = "invoiceIndication value error")
     private String invoiceIndication;
 
-    @NotNull(message = "isFollowUpIndication null error")
-    @Pattern(regexp = "^(正常|补票)$", message = "isFollowUpIndication value error")
     private int isFollowUpIndication;
 
     @NotNull(message = "remark null error")
@@ -40,7 +38,7 @@ public class InvoiceEntryO {
     private String drawer;
     private String creationDate;
     private String checkoutDate;
-    private int inOrOut;
+    private String inOrOut;
     private String invoiceDate;
     private String invoiceNumberDate;
     private int isModified;

@@ -4,6 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.InvoiceEntryMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+        select count(invoice_entry_serial)
+        from m_invoice_entry
+        where creation_date = date('now', 'localtime')
+          and m_invoice_entry.invoice_entry_serial like #{prefix}||'%'
+    </select>
+
     <insert id="insertEntry">
         insert into m_invoice_entry(
             invoice_entry_serial, partner_company_id, invoice_type, invoice_number, total_amount, invoice_amount,
@@ -13,7 +20,7 @@
         values (
             #{invoiceEntrySerial}, #{partnerCompanyID}, #{invoiceType}, #{invoiceNumber}, #{totalAmount},
             #{invoiceAmount}, #{invoiceIndication}, #{isFollowUpIndication}, #{remark}, #{drawer},
-            date('now', 'localtime'), #{checkout_date}, #{in_or_out}, #{invoice_date}, #{invoice_number_date}
+            date('now', 'localtime'), #{checkoutDate}, #{inOrOut}, #{invoiceDate}, #{invoiceNumberDate}
         )
     </insert>
 

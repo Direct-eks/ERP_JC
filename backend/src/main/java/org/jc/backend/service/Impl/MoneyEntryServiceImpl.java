@@ -41,6 +41,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
         moneyEntryO.setPaymentNumber(checkoutEntry.getPaymentNumber());
         moneyEntryO.setPaymentAmount(checkoutEntry.getPaymentAmount());
         moneyEntryO.setBankAccountID(checkoutEntry.getBankAccountID());
+        moneyEntryO.setRemark("");
         moneyEntryO.setDrawer(checkoutEntry.getDrawer());
         moneyEntryO.setPaymentDate(checkoutEntry.getCheckoutDate());
         moneyEntryO.setCheckoutSerial(checkoutEntry.getCheckoutEntrySerial());

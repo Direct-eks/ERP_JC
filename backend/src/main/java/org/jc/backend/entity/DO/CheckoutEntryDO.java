@@ -7,7 +7,13 @@ import lombok.Setter;
 @Setter
 public class CheckoutEntryDO {
     private String checkoutEntrySerial;
+
     private int partnerCompanyID;
+    // from c_partner_company
+    private String companyAbbreviatedName;
+    private String companyFullName;
+    private String companyPhone;
+
     private String invoiceType;
     private String paymentMethod;
     private String paymentNumber;
@@ -19,6 +25,7 @@ public class CheckoutEntryDO {
 
     private double totalAmount;
     private int isRounded;
+    private double roundedAmount;
     private double debt;
     private double serviceFee;
     private String remark;

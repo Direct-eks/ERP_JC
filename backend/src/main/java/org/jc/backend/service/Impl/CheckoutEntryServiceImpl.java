@@ -168,13 +168,26 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             bool = true;
             record.append(String.format("银行账号: %s -> %s; ", originDO.getBankAccountName(), modifiedDO.getBankAccountName()));
         }
-        if (!modifiedDO.getRemark().equals(originDO.getRemark())) {
+        if (modifiedDO.getIsRounded() != originDO.getIsRounded()) {
             bool = true;
-            record.append(String.format("备注: %s -> %s; ", originDO.getRemark(), modifiedDO.getRemark()));
+            record.append(String.format("抹零状态: %s -> %s; ", originDO.getIsRounded() == 0 ? "不抹零" : "抹零",
+                    modifiedDO.getIsRounded() == 0 ? "不抹零" : "抹零"));
+        }
+        if (modifiedDO.getRoundedAmount() != originDO.getRoundedAmount()) {
+            bool = true;
+            record.append(String.format("抹零金额: %f -> %f; ", originDO.getRoundedAmount(), modifiedDO.getRoundedAmount()));
+        }
+        if (modifiedDO.getDebt() != originDO.getDebt()) {
+            bool = true;
+            record.append(String.format("余额: %f -> %f; ", originDO.getDebt(), modifiedDO.getDebt()));
         }
         if (modifiedDO.getServiceFee() != originDO.getServiceFee()) {
             bool = true;
             record.append(String.format("服务费: %f -> %f;", originDO.getServiceFee(), modifiedDO.getServiceFee()));
+        }
+        if (!modifiedDO.getRemark().equals(originDO.getRemark())) {
+            bool = true;
+            record.append(String.format("备注: %s -> %s; ", originDO.getRemark(), modifiedDO.getRemark()));
         }
 
         return bool;

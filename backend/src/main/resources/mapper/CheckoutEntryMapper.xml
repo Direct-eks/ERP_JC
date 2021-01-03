@@ -14,19 +14,23 @@
     <insert id="insertEntry">
         insert into m_checkout_entry (
             checkout_entry_serial, partner_company_id, invoice_type, payment_method, payment_number,
-            payment_amount, bank_account_id, total_amount, is_rounded, debt, service_fee, remark,
-            drawer, creation_date, checkout_date, money_entry_serial, department_id
+            payment_amount, bank_account_id, total_amount, is_rounded, rounded_amount, debt, service_fee,
+            remark, drawer, creation_date, checkout_date, money_entry_serial, department_id
         )
         values (
             #{checkoutEntrySerial}, #{partnerCompanyID}, #{invoiceType}, #{paymentMethod}, #{paymentNumber},
-            #{paymentAmount}, #{bankAccountID}, #{totalAmount}, #{isRounded}, #{debt}, #{serviceFee}, #{remark},
-            #{drawer}, date('now', 'localtime'), #{checkoutDate}, #{moneyEntrySerial}, #{departmentID}
+            #{paymentAmount}, #{bankAccountID}, #{totalAmount}, #{isRounded}, #{roundedAmount}, #{debt},
+            #{serviceFee}, #{remark}, #{drawer}, date('now', 'localtime'), #{checkoutDate}, #{moneyEntrySerial},
+            #{departmentID}
         )
     </insert>
 
     <resultMap id="checkoutEntryResultMap" type="org.jc.backend.entity.DO.CheckoutEntryDO">
         <result property="checkoutEntrySerial" column="checkout_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
+        <result property="companyFullName" column="company_full_name"/>
+        <result property="companyPhone" column="company_phone"/>
         <result property="invoiceType" column="invoice_type"/>
         <result property="paymentMethod" column="payment_method"/>
         <result property="paymentNumber" column="payment_number"/>
@@ -35,6 +39,8 @@
         <result property="bankAccountName" column="bank_account_name"/>
         <result property="totalAmount" column="total_amount"/>
         <result property="isRounded" column="is_rounded"/>
+        <result property="isRounded" column="is_rounded"/>
+        <result property="roundedAmount" column="rounded_amount"/>
         <result property="debt" column="debt"/>
         <result property="serviceFee" column="service_fee"/>
         <result property="remark" column="remark"/>
@@ -51,9 +57,14 @@
 
 
     <select id="getEntriesInDateRange" resultMap="checkoutEntryResultMap">
-        select
-        from (m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id)
-            join e_department as d on c.department_id = d.department_id
+        select checkout_entry_serial, c.partner_company_id, p.abbreviated_name as company_abbreviated_name,
+               p.full_name as company_full_name, p.phone as company_phone, invoice_type, payment_method,
+               payment_number, payment_amount, c.bank_account_id, b.name as bank_account_name, total_amount,
+               is_rounded, rounded_amount, debt, service_fee, c.remark, drawer, creation_date, checkout_date,
+               money_entry_serial, return_serial, c.department_id, is_verified, is_modified
+        from ((m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id)
+            join e_department as d on c.department_id = d.department_id)
+            join c_partner_company as p on c.partner_company_id = p.partner_company_id
         where (c.checkout_date between #{startDate} and #{endDate})
             <if test="companyID != -1">
                 and c.partner_company_id = #{companyID}
@@ -64,8 +75,9 @@
     </select>
 
     <select id="selectEntryBySerialForCompare" resultMap="checkoutEntryResultMap">
-        select checkout_entry_serial, invoice_type, payment_method, payment_number, payment_amount,
-               c.bank_account_id, b.name as bank_account_name, service_fee, c.remark, drawer, is_verified
+        select checkout_entry_serial, payment_method, payment_number, payment_amount, c.bank_account_id,
+               b.name as bank_account_name, is_rounded, rounded_amount, debt, service_fee, c.remark, drawer,
+               is_verified
         from m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id
         where checkout_entry_serial = #{serial}
     </select>
@@ -76,6 +88,9 @@
             payment_number = #{paymentNumber},
             payment_amount = #{paymentAmount},
             bank_account_id = #{bankAccountID},
+            is_rounded = #{isRounded},
+            rounded_amount = #{roundedAmount},
+            debt = #{debt},
             service_fee = #{serviceFee},
             remark = #{remark},
             is_modified = 1

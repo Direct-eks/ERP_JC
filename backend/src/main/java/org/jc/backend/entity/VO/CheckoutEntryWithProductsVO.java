@@ -16,6 +16,9 @@ import java.util.List;
 public class CheckoutEntryWithProductsVO {
     private String checkoutEntrySerial;
     private int partnerCompanyID;
+    private String companyAbbreviatedName;
+    private String companyFullName;
+    private String companyPhone;
 
     @NotNull(message = "invoiceType null error")
     @Pattern(regexp = "^(增值税票|普票)$", message = "invoiceType value error")
@@ -34,6 +37,9 @@ public class CheckoutEntryWithProductsVO {
     @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
     private double totalAmount;
     private double debt;
+
+    private int isRounded;
+    private double roundedAmount;
 
     @DecimalMin(value = "0.0", message = "serviceFee smaller than zero error")
     private double serviceFee;
