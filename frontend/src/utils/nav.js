@@ -128,37 +128,37 @@ export default {
     inbound_invoicing_nav: [
         {
             name: '入库结账单',
-            url: '/inbound_invoicing/inbound_check',
+            url: '/inbound_invoicing/inbound_checkout',
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_invoicing/inbound_check_entry'
+                    url: '/inbound_invoicing/inbound_checkout_entry'
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/inbound_check_query'
+                    url: '/inbound_invoicing/inbound_checkout_query'
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/inbound_check_modify'
+                    url: '/inbound_invoicing/inbound_checkout_modify'
                 }
             ]
         },
         {
             name: '入库结账单开票',
-            url: '/inbound_invoicing/inbound_check_invoicing',
+            url: '/inbound_invoicing/inbound_invoicing',
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_invoicing/inbound_check_invoicing_entry'
+                    url: '/inbound_invoicing/inbound_invoice_entry'
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/inbound_check_invoicing_query'
+                    url: '/inbound_invoicing/inbound_invoice_query'
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/inbound_check_invoicing_modify'
+                    url: '/inbound_invoicing/inbound_invoice_modify'
                 }
             ]
         },
@@ -168,15 +168,15 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_invoicing/pay_entry'
+                    url: '/inbound_invoicing/payment_entry'
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/pay_query'
+                    url: '/inbound_invoicing/payment_query'
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/pay_modify'
+                    url: '/inbound_invoicing/payment_modify'
                 }
             ]
         },
@@ -186,11 +186,11 @@ export default {
             children: [
                 {
                     name: '明细',
-                    url: '/inbound_invoicing/incomplete_pay_detail'
+                    url: '/inbound_invoicing/incomplete_payment_detail'
                 },
                 {
                     name: '总账',
-                    url: '/inbound_invoicing/incomplete_pay_ledger'
+                    url: '/inbound_invoicing/incomplete_payment_ledger'
                 }
             ]
         },
@@ -204,21 +204,21 @@ export default {
             children: [
                 {
                     name: '结账',
-                    url: '/inbound_invoicing/cost_bill'
+                    url: '/inbound_invoicing/shipping_cost_checkout'
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/cost_query'
+                    url: '/inbound_invoicing/shipping_cost_query'
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/cost_modify'
+                    url: '/inbound_invoicing/shipping_cost_modify'
                 }
             ]
         },
         {
             name: '入库结账后退货',
-            url: '/inbound_invoicing/inbound_check_invoicing_return'
+            url: '/inbound_invoicing/inbound_checkout_return'
         }
     ],
     outbound_invoicing_nav: [

@@ -131,59 +131,59 @@ const routes = [
         component: () => import('../views/3_Page_inbound_invoicing'),
         children: [
             {
-                path: 'inbound_check_entry',
+                path: 'inbound_checkout_entry',
                 name: '入库结账单录入',
-                component: () => import('../views/Inbound_Invoicing/1_Inbound_Check/1_In_Check_Entry')
+                component: () => import('../views/Inbound_Invoicing/1_Checkout/1_Checkout_Entry')
             },
             {
-                path: 'inbound_check_query',
+                path: 'inbound_checkout_query',
                 name: '入库结账单查询',
-                component: () => import('../views/Inbound_Invoicing/1_Inbound_Check/2_In_Check_Query')
+                component: () => import('../views/Inbound_Invoicing/1_Checkout/2_Checkout_Query')
             },
             {
-                path: 'inbound_check_modify',
+                path: 'inbound_checkout_modify',
                 name: '入库结账单修改',
-                component: () => import('../views/Inbound_Invoicing/1_Inbound_Check/3_In_Check_Modify')
+                component: () => import('../views/Inbound_Invoicing/1_Checkout/3_Checkout_Modify')
             },
             {
-                path: 'inbound_check_invoicing_entry',
+                path: 'inbound_invoice_entry',
                 name: '入库结账单开票录入',
-                component: () => import('../views/Inbound_Invoicing/2_Inbound_Invoicing/1_In_Check_Inv_Entry')
+                component: () => import('../views/Inbound_Invoicing/2_Invoice/1_Invoice_Entry')
             },
             {
-                path: 'inbound_check_invoicing_query',
+                path: 'inbound_invoice_query',
                 name: '入库结账单开票查询',
-                component: () => import('../views/Inbound_Invoicing/2_Inbound_Invoicing/2_In_Check_Inv_Query')
+                component: () => import('../views/Inbound_Invoicing/2_Invoice/2_Invoice_Query')
             },
             {
-                path: 'inbound_check_invoicing_modify',
+                path: 'inbound_invoice_modify',
                 name: '入库结账单开票修改',
-                component: () => import('../views/Inbound_Invoicing/2_Inbound_Invoicing/3_In_Check_Inv_Modify')
+                component: () => import('../views/Inbound_Invoicing/2_Invoice/3_Invoice_Modify')
             },
             {
-                path: 'pay_entry',
+                path: 'payment_entry',
                 name: '付款单录入',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/1_Pay_Entry')
+                component: () => import('../views/Inbound_Invoicing/3_Payment/1_Payment_Entry')
             },
             {
-                path: 'pay_query',
+                path: 'payment_query',
                 name: '付款单查询',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/3_Pay_Query')
+                component: () => import('../views/Inbound_Invoicing/3_Payment/3_Payment_Query')
             },
             {
-                path: 'pay_modify',
+                path: 'payment_modify',
                 name: '付款单修改',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/2_Pay_Modify')
+                component: () => import('../views/Inbound_Invoicing/3_Payment/2_Payment_Modify')
             },
             {
-                path: 'incomplete_pay_detail',
+                path: 'incomplete_payment_detail',
                 name: '入库未结账明细',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/4_Incomplete_Pay_Detail')
+                component: () => import('../views/Inbound_Invoicing/3_Payment/4_Incomplete_Payment_Detail')
             },
             {
-                path: 'incomplete_pay_ledger',
+                path: 'incomplete_payment_ledger',
                 name: '入库未结账总账',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/5_Incomplete_Pay_Ledger')
+                component: () => import('../views/Inbound_Invoicing/3_Payment/5_Incomplete_Payment_Ledger')
             },
             {
                 path: 'incomplete_invoice_query',
@@ -191,24 +191,24 @@ const routes = [
                 component: () => import('../views/Inbound_Invoicing/3_Payment/6_Incomplete_Invoice_Query')
             },
             {
-                path: 'cost_bill',
+                path: 'shipping_cost_checkout',
                 name: 'IN付运费结账',
-                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/1_In_Cost_Bill')
+                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/1_Shipping_Cost_Checkout')
             },
             {
-                path: 'cost_query',
+                path: 'shipping_cost_query',
                 name: 'IN付运费查询',
-                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/2_In_Cost_Query')
+                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/2_Shipping_Cost_Query')
             },
             {
-                path: 'cost_modify',
+                path: 'shipping_cost_modify',
                 name: 'IN付运费修改',
-                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/3_In_Cost_Modify')
+                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/3_Shipping_Cost_Modify')
             },
             {
-                path: 'inbound_check_invoicing_return',
+                path: 'inbound_checkout_return',
                 name: '入库结账后退货',
-                component: () => import('../views/Inbound_Invoicing/5_In_Check_Inv_Return')
+                component: () => import('../views/Inbound_Invoicing/5_Checkout_Return')
             }
         ]
     },

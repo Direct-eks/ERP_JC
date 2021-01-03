@@ -35,16 +35,16 @@
 </template>
 
 <script>
-    import nav from "~/utils/nav";
+import nav from "~/utils/nav";
 
-    export default {
-        name: "Page_inbound_invoicing",
-        data() {
-            return {
-                navItem: nav.inbound_invoicing_nav
-            }
+export default {
+    name: "Page_inbound_invoicing",
+    data() {
+        return {
+            navItem: nav.inbound_invoicing_nav
         }
     }
+}
 </script>
 
 <style scoped>
