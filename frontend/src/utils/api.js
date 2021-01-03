@@ -4,6 +4,15 @@ const api = {
     userAuthentication: '/user/userAuthentication',
     userLogout: '/user/userLogout',
 
+    /* ------ /bankAccount ------*/
+    visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET
+
+    /* ------ /checkoutEntry ------*/
+    createCheckoutEntry: '/checkoutEntry/createEntry', // PUT
+    // GET startDate= endDate=  companyID= invoiceType=
+    checkoutEntriesInDateRange: '/checkoutEntry/getEntriesInDateRange',
+    modifyCheckoutEntry: '/checkoutEntry/modifyEntry', // PATCH
+
     /* ------ /company ------*/
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=
     companyAreas: '/company/getCompanyAreas', // GET
@@ -19,8 +28,9 @@ const api = {
     completeInboundEntry: '/inboundEntry/completeEntry', // PATCH
     createInboundEntry: '/inboundEntry/createEntry', // PUT
     // GET startDate= endDate= type= forModify=bool companyID=int
-    entriesInDateRange: '/inboundEntry/getEntriesInDateRange',
+    inboundEntriesInDateRange: '/inboundEntry/getEntriesInDateRange',
     modifyEntry: '/inboundEntry/modifyEntry', // PATCH
+    inboundProductsByCompanyAndInvoiceType: '/inboundEntry/getProductsByCompanyAndInvoiceType', // GET companyID= invoiceType=
 
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET

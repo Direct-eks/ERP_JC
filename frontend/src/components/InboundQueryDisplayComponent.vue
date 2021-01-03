@@ -231,7 +231,7 @@ export default {
             }
             else {
                 console.log(this.dateRange)
-                this.$getRequest(this.$api.entriesInDateRange, {
+                this.$getRequest(this.$api.inboundEntriesInDateRange, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     type: this.category,
