@@ -227,8 +227,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             for (var entryID : entryIDs) {
                 List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
                 for (var tempProduct : tempProducts) {
-                    //filter out invoiced products
-                    if (tempProduct.getInvoiceSerial().equals("")) {
+                    //filter out checkout products
+                    if (tempProduct.getCheckoutSerial().equals("")) {
                         products.add(tempProduct);
                     }
                 }
