@@ -57,8 +57,10 @@ module.exports = (options = {}) => ({
                         loader: 'sass-loader',
                         // Requires sass-loader@^8.0.0
                         options: {
+                            // eslint-disable-next-line global-require
                             implementation: require('sass'),
                             sassOptions: {
+                                // eslint-disable-next-line global-require
                                 fiber: require('fibers'),
                                 indentedSyntax: true // optional
                             },
@@ -106,6 +108,7 @@ module.exports = (options = {}) => ({
             template: 'src/assets/index.html',
             favicon: 'src/assets/favicon.png'
         }),
+        // eslint-disable-next-line new-cap
         new bundleAnalyzerPlugin(),
         new MiniCssExtractPlugin({
             filename: '[name].[hash].css',

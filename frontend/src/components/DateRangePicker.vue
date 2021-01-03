@@ -45,61 +45,61 @@
 </template>
 
 <script>
-    export default {
-        name: "DateRangePicker",
-        data() {
-            return {
-                menu: false,
-                dateRange: [
-                    new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
-                    new Date().format("yyyy-MM-dd").substr(0,10)
-                ],
-                maxDate: new Date().format("yyyy-MM-dd").substr(0,10),
+export default {
+    name: "DateRangePicker",
+    data() {
+        return {
+            menu: false,
+            dateRange: [
+                new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
+                new Date().format("yyyy-MM-dd").substr(0,10)
+            ],
+            maxDate: new Date().format("yyyy-MM-dd").substr(0,10),
 
-                dateRangePickerOptions: [
-                    {
-                        range: [
-                            new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 7)).format("yyyy-MM-dd").substr(0,10),
-                            new Date().format("yyyy-MM-dd").substr(0,10)
-                        ],
-                        name: '最近一周'
-                    },
-                    {
-                        range: [
-                            new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
-                            new Date().format("yyyy-MM-dd").substr(0,10)
-                        ],
-                        name: '月初至今'
-                    },
-                    {
-                        range: [
-                            new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 30)).format("yyyy-MM-dd").substr(0,10),
-                            new Date().format("yyyy-MM-dd").substr(0,10)
-                        ],
-                        name: '最近30天'
-                    },
-                    {
-                        range: [
-                            new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 90)).format("yyyy-MM-dd").substr(0,10),
-                            new Date().format("yyyy-MM-dd").substr(0,10)
-                        ],
-                        name: '最近90天'
-                    },
-                ],
-            }
-        },
-        computed: {
-            dateRangeText() {
-                return '从 ' + this.dateRange.join(' 至 ')
-            }
-        },
-        methods: {
-            choose() {
-                this.$refs.menu.save(this.dateRange)
-                this.$emit('chooseDate', this.dateRange)
-            }
+            dateRangePickerOptions: [
+                {
+                    range: [
+                        new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 7)).format("yyyy-MM-dd").substr(0,10),
+                        new Date().format("yyyy-MM-dd").substr(0,10)
+                    ],
+                    name: '最近一周'
+                },
+                {
+                    range: [
+                        new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
+                        new Date().format("yyyy-MM-dd").substr(0,10)
+                    ],
+                    name: '月初至今'
+                },
+                {
+                    range: [
+                        new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 30)).format("yyyy-MM-dd").substr(0,10),
+                        new Date().format("yyyy-MM-dd").substr(0,10)
+                    ],
+                    name: '最近30天'
+                },
+                {
+                    range: [
+                        new Date(new Date().setTime(Date.now() - 3600 * 1000 * 24 * 90)).format("yyyy-MM-dd").substr(0,10),
+                        new Date().format("yyyy-MM-dd").substr(0,10)
+                    ],
+                    name: '最近90天'
+                },
+            ],
+        }
+    },
+    computed: {
+        dateRangeText() {
+            return '从 ' + this.dateRange.join(' 至 ')
+        }
+    },
+    methods: {
+        choose() {
+            this.$refs.menu.save(this.dateRange)
+            this.$emit('chooseDate', this.dateRange)
         }
     }
+}
 </script>
 
 <style scoped>

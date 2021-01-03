@@ -12,15 +12,15 @@
 </template>
 
 <script>
-    import SnackMessage from "~/components/SnackMessage";
+import SnackMessage from "~/components/SnackMessage";
 
-    export default {
-        name: "Purchase_Order_Entry",
-        components: {
-            InboundEntryAndPurchaseOrderComponent: () => import('../../components/InboundEntryCreateComponent'),
-            SnackMessage
-        }
+export default {
+    name: "Purchase_Order_Entry",
+    components: {
+        InboundEntryAndPurchaseOrderComponent: () => import('../../components/InboundEntryCreateComponent'),
+        SnackMessage
     }
+}
 </script>
 
 <style scoped>

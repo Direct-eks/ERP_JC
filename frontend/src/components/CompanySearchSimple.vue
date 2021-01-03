@@ -52,61 +52,61 @@
 <script>
 import {mdiClose} from '@mdi/js'
 
-    export default {
-        name: "CompanySearchSimple",
-        props: {
-            phoneSearchField: {type: String, required: true, default: ''},
-            companyNameSearchField: {type: String, required: false, default: ''},
-            triggerSearchPanel: {type: Boolean, required: true, default: false}
-        },
-        watch: {
-            triggerSearchPanel(val) {
-                if (val === true) {
-                    this.simpleSearchPanelOpen = true
-                    this.simpleSearch();
-                }
-            }
-        },
-        data() {
-            return {
-                mdiClosePath: mdiClose,
-
-                simpleSearchPanelOpen: false,
-                simpleSearchTableHeaders: [
-                    {text: '单位简称', value: 'abbreviatedName', width: '220px'},
-                    {text: '电话', value: 'phone', width: '200px'},
-                    {text: '单位全称', value: 'fullName', width: '280px'},
-                    {text: '重要提示', value: 'remark'}
-                ],
-                simpleSearchCurrentRow: [],
-                simpleSearchTable: [],
-            }
-        },
-        methods: {
-            simpleSearch() {
-                this.$getRequest(this.$api.companyFuzzySearch, {
-                    phone: this.phoneSearchField,
-                    name: this.companyNameSearchField
-                }).then((res) => {
-                    console.log('received', res.data)
-                    this.simpleSearchTable = res.data
-                    // open panel
-                    this.simpleSearchPanelOpen = true
-                }).catch(error => this.$ajaxErrorHandler(error))
-            },
-            handleTableClick(val) {
-                this.simpleSearchCurrentRow = [val]
-            },
-            simpleSearchClose() {
-                this.$emit('simpleSearchChoose',null)
-                this.simpleSearchPanelOpen = false
-            },
-            simpleSearchChoose() {
-                this.$emit('simpleSearchChoose', this.simpleSearchCurrentRow[0])
-                this.simpleSearchPanelOpen = false
+export default {
+    name: "CompanySearchSimple",
+    props: {
+        phoneSearchField: {type: String, required: true, default: ''},
+        companyNameSearchField: {type: String, required: false, default: ''},
+        triggerSearchPanel: {type: Boolean, required: true, default: false}
+    },
+    watch: {
+        triggerSearchPanel(val) {
+            if (val === true) {
+                this.simpleSearchPanelOpen = true
+                this.simpleSearch();
             }
         }
+    },
+    data() {
+        return {
+            mdiClosePath: mdiClose,
+
+            simpleSearchPanelOpen: false,
+            simpleSearchTableHeaders: [
+                {text: '单位简称', value: 'abbreviatedName', width: '220px'},
+                {text: '电话', value: 'phone', width: '200px'},
+                {text: '单位全称', value: 'fullName', width: '280px'},
+                {text: '重要提示', value: 'remark'}
+            ],
+            simpleSearchCurrentRow: [],
+            simpleSearchTable: [],
+        }
+    },
+    methods: {
+        simpleSearch() {
+            this.$getRequest(this.$api.companyFuzzySearch, {
+                phone: this.phoneSearchField,
+                name: this.companyNameSearchField
+            }).then((res) => {
+                console.log('received', res.data)
+                this.simpleSearchTable = res.data
+                // open panel
+                this.simpleSearchPanelOpen = true
+            }).catch(error => this.$ajaxErrorHandler(error))
+        },
+        handleTableClick(val) {
+            this.simpleSearchCurrentRow = [val]
+        },
+        simpleSearchClose() {
+            this.$emit('simpleSearchChoose',null)
+            this.simpleSearchPanelOpen = false
+        },
+        simpleSearchChoose() {
+            this.$emit('simpleSearchChoose', this.simpleSearchCurrentRow[0])
+            this.simpleSearchPanelOpen = false
+        }
     }
+}
 </script>
 
 <style scoped>

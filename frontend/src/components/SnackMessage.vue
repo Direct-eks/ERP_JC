@@ -17,33 +17,33 @@
 </template>
 
 <script>
-    import {mdiClose} from '@mdi/js'
+import {mdiClose} from '@mdi/js'
 
-    export default {
-        data() {
-            return {
-                mdiClosePath: mdiClose,
+export default {
+    data() {
+        return {
+            mdiClosePath: mdiClose,
 
-                visible: false,
-                timeout: 1500,
-                message: '',
-                color: ''
-            }
-        },
-        created() {
-            this.$store.watch(state => state.snackbar.message, () => {
-                let msg = this.$store.state.snackbar.message
-                if (msg !== '') {
-                    this.message = msg
-                    this.color = this.$store.state.snackbar.color
-                    this.visible = true
-                    this.$store.commit('setSnackbar', {
-                        message: '', color: ''
-                    })
-                }
-            })
+            visible: false,
+            timeout: 1500,
+            message: '',
+            color: ''
         }
+    },
+    created() {
+        this.$store.watch(state => state.snackbar.message, () => {
+            let msg = this.$store.state.snackbar.message
+            if (msg !== '') {
+                this.message = msg
+                this.color = this.$store.state.snackbar.color
+                this.visible = true
+                this.$store.commit('setSnackbar', {
+                    message: '', color: ''
+                })
+            }
+        })
     }
+}
 </script>
 
 <style scoped>

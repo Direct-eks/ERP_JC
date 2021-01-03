@@ -4,45 +4,45 @@ const api = {
     userAuthentication: '/user/userAuthentication',
     userLogout: '/user/userLogout',
 
-    /*------ /company ------*/
-    companyFuzzySearch: '/company/getCompanyByFuzzySearch', //GET name= phone=
-    companyAreas: '/company/getCompanyAreas', //GET
-    companiesByCategory: '/company/getCompaniesByCategory/', //GET
+    /* ------ /company ------*/
+    companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=
+    companyAreas: '/company/getCompanyAreas', // GET
+    companiesByCategory: '/company/getCompaniesByCategory/', // GET
 
-    relevantCompanyCategories: '/company/getRelevantCompanyCategories', //GET
-    relevantCompaniesByCategory: '/company/getRelevantCompaniesByCategory/', //GET {id}
+    relevantCompanyCategories: '/company/getRelevantCompanyCategories', // GET
+    relevantCompaniesByCategory: '/company/getRelevantCompaniesByCategory/', // GET {id}
 
-    /*------ /department ------*/
-    departmentOptions: '/department/getDepartmentOptions', //GET
+    /* ------ /department ------*/
+    departmentOptions: '/department/getDepartmentOptions', // GET
 
-    /*------ /inboundEntry ------*/
-    completeInboundEntry: '/inboundEntry/completeEntry', //PATCH
-    createInboundEntry: '/inboundEntry/createEntry', //PUT
-    //GET startDate= endDate= type= forModify=bool companyID=int
+    /* ------ /inboundEntry ------*/
+    completeInboundEntry: '/inboundEntry/completeEntry', // PATCH
+    createInboundEntry: '/inboundEntry/createEntry', // PUT
+    // GET startDate= endDate= type= forModify=bool companyID=int
     entriesInDateRange: '/inboundEntry/getEntriesInDateRange',
-    modifyEntry: '/inboundEntry/modifyEntry', //PATCH
+    modifyEntry: '/inboundEntry/modifyEntry', // PATCH
 
-    /*------ /model ------*/
-    modelCategories: '/model/getModelCategories', //GET
-    modelsByCategory: '/model/getModelsByCategory/', //GET {id}
+    /* ------ /model ------*/
+    modelCategories: '/model/getModelCategories', // GET
+    modelsByCategory: '/model/getModelsByCategory/', // GET {id}
 
-    /*------ /modificationRecord ------*/
-    modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', //GET {serial}
+    /* ------ /modificationRecord ------*/
+    modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', // GET {serial}
 
-    /*------ /purchaseOrder ------*/
-    createPurchaseOrder: '/purchaseOrder/createOrder', //PUT
-    //GET startDate= endDate= companyID=int
-    purchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID', //GET
-    modifyPurchaseOrder: '/purchaseOrder/modifyOrder', //PATCH
+    /* ------ /purchaseOrder ------*/
+    createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
+    // GET startDate= endDate= companyID=int
+    purchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID', // GET
+    modifyPurchaseOrder: '/purchaseOrder/modifyOrder', // PATCH
 
-    /*------ /sku ------*/
-    fullSkuByModel: '/sku/getFullSkuByModel/', //GET {id}
+    /* ------ /sku ------*/
+    fullSkuByModel: '/sku/getFullSkuByModel/', // GET {id}
 
-    /*------ /warehouse ------*/
+    /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',
 
-    /*------ /warehouseStock ------*/
-    warehouseStockBySKu: '/warehouseStock/getWarehouseStocksBySku/', //GET {id}
+    /* ------ /warehouseStock ------*/
+    warehouseStockBySKu: '/warehouseStock/getWarehouseStocksBySku/', // GET {id}
 
 }
 

@@ -428,18 +428,18 @@ export default {
     },
     beforeMount() {
         switch (this.displayMode) {
-            case 'inboundEntryDisplay':
-                this.inboundEntryDisplayMode = true
-                break
-            case 'purchaseOrderDisplay':
-                this.purchaseOrderDisplayMode = true
-                break
-            case 'inboundEntryModify':
-                this.inboundEntryModifyMode = true
-                break
-            case 'purchaseOrderModify':
-                this.purchaseOrderModifyMode = true
-                break
+        case 'inboundEntryDisplay':
+            this.inboundEntryDisplayMode = true
+            break
+        case 'purchaseOrderDisplay':
+            this.purchaseOrderDisplayMode = true
+            break
+        case 'inboundEntryModify':
+            this.inboundEntryModifyMode = true
+            break
+        case 'purchaseOrderModify':
+            this.purchaseOrderModifyMode = true
+            break
         }
         if (this.inboundEntryModifyMode || this.purchaseOrderModifyMode) {
             this.$getRequest(this.$api.departmentOptions).then((res) => {
@@ -567,7 +567,7 @@ export default {
                         this.form.departmentName = item.name
                 })
 
-                this.$patchRequest(this.$api.modifyEntry, this.form).then((res) => {
+                this.$patchRequest(this.$api.modifyEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
@@ -579,7 +579,7 @@ export default {
             if (this.$refs.form.validate()) {
                 //change drawer name for modification
                 this.form.drawer = this.$store.getters.currentUser
-                
+
                 //fill in department name
                 this.departmentOptions.forEach(item => {
                     if (item.departmentID === this.form.departmentID)
@@ -591,7 +591,7 @@ export default {
                         this.form.warehouseName = item.name
                 })
 
-                this.$patchRequest(this.$api.modifyPurchaseOrder, this.form).then((res) => {
+                this.$patchRequest(this.$api.modifyPurchaseOrder, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })

@@ -6,7 +6,7 @@ module.exports = {
     },
     extends: [
         'plugin:vue/essential',
-        'airbnb-base',
+        // 'airbnb-base',
     ],
     parserOptions: {
         ecmaVersion: 12,
@@ -31,9 +31,12 @@ module.exports = {
         "object-property-newline": 0, // all fields must on newlines
         "arrow-parens": 0,
         "no-param-reassign": 0, // assign to param
+        "import/no-unresolved": 0,
+        "import/extensions": 0,
         'vue/valid-v-slot': ['error', {
             allowModifiers: true,
         }],
-        'vue/no-side-effects-in-computed-properties': 0
+        'vue/no-side-effects-in-computed-properties': 0,
+        'vue/no-mutating-props': 0
     },
 };

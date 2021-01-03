@@ -59,75 +59,75 @@
 <script>
 import {mdiClose} from '@mdi/js'
 
-    export default {
-        name: "RelativeCompanySearch",
-        data() {
-            return {
-                mdiClosePath: mdiClose,
+export default {
+    name: "RelativeCompanySearch",
+    data() {
+        return {
+            mdiClosePath: mdiClose,
 
-                treeData: [],
-                tableHeaders: [
-                    {text: '单位简称', value: 'abbreviatedName', width: '120px'},
-                    {text: '电话', value: 'phone', width: '120px'},
-                    {text: '联系人', value: 'contactPerson', width: '120px', filterable: false},
-                    {text: '联系电话', value: 'contactNumber', width: '120px', filterable: false},
-                    {text: '地址', value: 'address', width: '120px', filterable: false},
-                    {text: '传真', value: 'fax', width: '120px', filterable: false}
-                ],
-                name: '',
-                tableData: [],
-                currentRow: []
-            }
-        },
-        beforeMount() {
-            const creatTree = (data => {
-                const tree = [];
-                data.forEach(item => {
-                    tree.push({label: item.name, children: [], categoryID: item.categoryID})
-                })
-                return tree
+            treeData: [],
+            tableHeaders: [
+                {text: '单位简称', value: 'abbreviatedName', width: '120px'},
+                {text: '电话', value: 'phone', width: '120px'},
+                {text: '联系人', value: 'contactPerson', width: '120px', filterable: false},
+                {text: '联系电话', value: 'contactNumber', width: '120px', filterable: false},
+                {text: '地址', value: 'address', width: '120px', filterable: false},
+                {text: '传真', value: 'fax', width: '120px', filterable: false}
+            ],
+            name: '',
+            tableData: [],
+            currentRow: []
+        }
+    },
+    beforeMount() {
+        const creatTree = (data => {
+            const tree = [];
+            data.forEach(item => {
+                tree.push({label: item.name, children: [], categoryID: item.categoryID})
             })
+            return tree
+        })
 
-            let result = this.$store.getters.relativeCompanyList
-            if (result) {
-                this.treeData = result
-                return
-            }
-            this.$getRequest(this.$api.relevantCompanyCategories).then((res) => {
-                console.log('received', res.data)
-                this.treeData = creatTree(res.data)
-                this.$store.commit('modifyRelativeCompanyList', this.treeData)
-            }).catch(error => this.$ajaxErrorHandler(error))
+        let result = this.$store.getters.relativeCompanyList
+        if (result) {
+            this.treeData = result
+            return
+        }
+        this.$getRequest(this.$api.relevantCompanyCategories).then((res) => {
+            console.log('received', res.data)
+            this.treeData = creatTree(res.data)
+            this.$store.commit('modifyRelativeCompanyList', this.treeData)
+        }).catch(error => this.$ajaxErrorHandler(error))
+    },
+    methods: {
+        close() {
+            this.$emit('relativeCompanyChoose', null)
         },
-        methods: {
-            close() {
-                this.$emit('relativeCompanyChoose', null)
-            },
-            chooseHandle() {
-                if (this.currentRow.length !== 0)
-                    this.$emit('relativeCompanyChoose', this.currentRow[0])
-            },
-            handleTableClick(val) {
-                this.currentRow = [val]
-            },
-            treeSelect(data) {
-                let val = data[0]
-                if (val.children.length === 0) {
-                    let result = this.$store.getters.relativeCompanies(val.categoryID)
-                    if (result) {
-                        this.tableData = result
-                        return
-                    }
-                    this.$getRequest(this.$api.relevantCompaniesByCategory +
-                    encodeURI(val.categoryID)).then((res) => {
-                        console.log('received', res.data)
-                        this.tableData = res.data
-                        this.$store.commit('modifyRelativeCompanies', {key: val.categoryID, value: res.data})
-                    })
+        chooseHandle() {
+            if (this.currentRow.length !== 0)
+                this.$emit('relativeCompanyChoose', this.currentRow[0])
+        },
+        handleTableClick(val) {
+            this.currentRow = [val]
+        },
+        treeSelect(data) {
+            let val = data[0]
+            if (val.children.length === 0) {
+                let result = this.$store.getters.relativeCompanies(val.categoryID)
+                if (result) {
+                    this.tableData = result
+                    return
                 }
+                this.$getRequest(this.$api.relevantCompaniesByCategory +
+                    encodeURI(val.categoryID)).then((res) => {
+                    console.log('received', res.data)
+                    this.tableData = res.data
+                    this.$store.commit('modifyRelativeCompanies', {key: val.categoryID, value: res.data})
+                })
             }
-        } // end methods
-    }
+        }
+    } // end methods
+}
 </script>
 
 <style scoped>

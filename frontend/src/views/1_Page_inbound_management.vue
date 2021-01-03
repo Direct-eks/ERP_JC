@@ -23,17 +23,17 @@
 </template>
 
 <script>
-    import nav from "~/utils/nav";
+import nav from "~/utils/nav";
 
-    export default {
-        name: "Inbound_Management_Page",
-        data() {
-            return {
-                navItem: nav.inbound_management_nav,
-                active: 0
-            }
+export default {
+    name: "Inbound_Management_Page",
+    data() {
+        return {
+            navItem: nav.inbound_management_nav,
+            active: 0
         }
     }
+}
 </script>
 
 <style scoped lang="sass">
