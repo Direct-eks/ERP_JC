@@ -20,44 +20,44 @@ axios.interceptors.response.use((response) => {
     return Promise.resolve(response)
 }, (error) => {
     console.log("error status: " + error.response.status)
-    console.log("error message: " + error.response.data.message)
+    console.log("error message: " + error.response.data.msg)
     switch (error.response.status) {
-        case 400: // Bad Request
-            break
-        case 401: // Unauthorized
-            main.$store.commit('setSnackbar', {
-                message: '登录失效，请重新登录', color: 'error'
-            })
-            break
-        case 403: // Forbidden
-            main.$store.commit('setSnackbar', {
-                message: '权限错误', color: 'error'
-            })
-            break
-        case 404: // Not Found
-            main.$store.commit('setSnackbar', {
-                message: '资源请求错误', color: 'error'
-            })
-            break
-        case 500: // Internal Server Error
-            main.$store.commit('setSnackbar', {
-                message: '服务器错误', color: 'error'
-            })
-            break
-        case 503: // Service Unavailable
-            main.$store.commit('setSnackbar', {
-                message: '服务器不可用', color: 'error'
-            })
-            break
-        case 504: // Gateway Timeout
-            main.$store.commit('setSnackbar', {
-                message: '无法链接服务器', color: 'error'
-            })
-            break
-        default:
-            main.$store.commit('setSnackbar', {
-                message: '未知错误' + error.status, color: 'error'
-            })
+    case 400: // Bad Request
+        break
+    case 401: // Unauthorized
+        main.$store.commit('setSnackbar', {
+            message: '登录失效，请重新登录', color: 'error'
+        })
+        break
+    case 403: // Forbidden
+        main.$store.commit('setSnackbar', {
+            message: '权限错误', color: 'error'
+        })
+        break
+    case 404: // Not Found
+        main.$store.commit('setSnackbar', {
+            message: '资源请求错误', color: 'error'
+        })
+        break
+    case 500: // Internal Server Error
+        main.$store.commit('setSnackbar', {
+            message: '服务器错误', color: 'error'
+        })
+        break
+    case 503: // Service Unavailable
+        main.$store.commit('setSnackbar', {
+            message: '服务器不可用', color: 'error'
+        })
+        break
+    case 504: // Gateway Timeout
+        main.$store.commit('setSnackbar', {
+            message: '无法链接服务器', color: 'error'
+        })
+        break
+    default:
+        main.$store.commit('setSnackbar', {
+            message: '未知错误' + error.status, color: 'error'
+        })
     }
     return Promise.reject(error)
 })
