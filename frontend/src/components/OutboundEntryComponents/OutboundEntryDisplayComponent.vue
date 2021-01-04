@@ -611,7 +611,7 @@ export default {
     components: {
         CompanySearchSimple: () => import("~/components/CompanySearchSimple"),
         CompanySearch: () => import("~/components/CompanySearch"),
-        ModelSearch: () => import("~/components/InboundModelSearch"),
+        ModelSearch: () => import("~/components/InboundEntryComponents/ModelSearch"),
         RelativeCompanySearch: () => import("~/components/RelativeCompanySearch")
     },
     props: {

@@ -39,7 +39,7 @@ import SnackMessage from "~/components/SnackMessage";
 export default {
     name: "Return_In",
     components: {
-        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/InboundQueryDisplayComponent'),
+        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/QueryDisplayComponent'),
         SnackMessage,
     },
     data() {

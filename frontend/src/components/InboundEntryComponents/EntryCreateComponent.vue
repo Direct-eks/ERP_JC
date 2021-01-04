@@ -460,9 +460,9 @@ export default {
     components: {
         CompanySearchSimple: () => import("~/components/CompanySearchSimple"),
         CompanySearch: () => import("~/components/CompanySearch"),
-        ModelSearch: () => import("~/components/InboundEntryComponents/InboundModelSearch"),
+        ModelSearch: () => import("~/components/InboundEntryComponents/ModelSearch"),
         RelativeCompanySearch: () => import("~/components/RelativeCompanySearch"),
-        InboundImportPurchaseEntry: () => import("~/components/InboundEntryComponents/InboundImportPurchaseEntry")
+        InboundImportPurchaseEntry: () => import("~/components/InboundEntryComponents/ImportPurchaseEntry")
     },
     props: {
         editMode: {

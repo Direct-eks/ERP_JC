@@ -17,7 +17,7 @@ import SnackMessage from "~/components/SnackMessage";
 export default {
     name: "In_Checkout_Entry",
     components: {
-        InboundCheckoutComponent: () => import("../../../components/InboundCheckoutComponent"),
+        InboundCheckoutComponent: () => import("../../../components/InboundInvoiceComponents/InboundCheckoutComponent"),
         SnackMessage
     }
 }

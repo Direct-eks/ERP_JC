@@ -41,8 +41,8 @@ import SnackMessage from '~/components/SnackMessage'
 export default {
     name: "Completion_In",
     components: {
-        InboundShippingInfoChangeComponent: () => import('../../components/InboundEntryComponents/InboundShippingInfoComponent'),
-        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/InboundQueryDisplayComponent'),
+        InboundShippingInfoChangeComponent: () => import('../../components/InboundEntryComponents/ShippingInfoComponent'),
+        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/QueryDisplayComponent'),
         SnackMessage,
     },
     data() {
