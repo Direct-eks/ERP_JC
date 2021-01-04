@@ -193,7 +193,7 @@ export default {
             }).then((res) => {
                 console.log(res.data)
                 this.queryTableData = res.data
-            })
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
         queryModificationRecord() {
             this.$getRequest(this.$api.modificationRecordsBySerial
