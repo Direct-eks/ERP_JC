@@ -17,7 +17,7 @@
     export default {
         name: "Entry_Out",
         components: {
-            OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryDisplayComponent'),
+            OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryComponents/OutboundEntryDisplayComponent'),
             SnackMessage
         }
     }

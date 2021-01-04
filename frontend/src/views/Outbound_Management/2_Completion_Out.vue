@@ -42,8 +42,8 @@
     export default {
         name: "Completion_Out",
         components: {
-            OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryDisplayComponent'),
-            OutboundQueryDisplayComponent: () => import('../../components/OutboundQueryDisplayComponent'),
+            OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryComponents/OutboundEntryDisplayComponent'),
+            OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/OutboundQueryDisplayComponent'),
             SnackMessage,
         },
         data() {

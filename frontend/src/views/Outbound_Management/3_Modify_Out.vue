@@ -51,7 +51,7 @@
     export default {
         name: "Modify_Out",
         components: {
-            OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryDisplayComponent'),
+            OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryComponents/OutboundEntryDisplayComponent'),
             SnackMessage
         },
         data() {
