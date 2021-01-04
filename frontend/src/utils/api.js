@@ -32,6 +32,9 @@ const api = {
     modifyEntry: '/inboundEntry/modifyEntry', // PATCH
     inboundProductsByCompanyAndInvoiceType: '/inboundEntry/getProductsByCompanyAndInvoiceType', // GET companyID= invoiceType=
 
+    /* ------ /invoiceEntry ------*/
+    createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
+
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
     modelsByCategory: '/model/getModelsByCategory/', // GET {id}

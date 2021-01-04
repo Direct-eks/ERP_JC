@@ -169,6 +169,31 @@
                 </v-col>
             </v-row>
         </v-form>
+
+        <v-row v-if="invoiceEntryMode">
+            <v-col cols="auto" class="pr-0">
+                <v-radio-group v-model="companyResetIndicator"
+                               hide-details="auto"
+                               class="mt-0"
+                               row dense>
+                    <v-radio label="保持单位不变" :value=0></v-radio>
+                    <v-radio label="清空" :value=1></v-radio>
+                </v-radio-group>
+            </v-col>
+            <v-col>
+                <v-btn color="primary"
+                       @click="createInvoiceEntry(false)">
+                    存盘后新增
+                </v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col>
+                <v-btn color="primary"
+                       @click="createInvoiceEntry(true)">
+                    保存
+                </v-btn>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -195,49 +220,26 @@ export default {
             type: String,
             required: true
         },
-        paramCheckoutDate: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        paramCompanyInfo: {
+        params: {
             type: Object,
             require: false,
-            default() {return {partnerCompanyID: -1, companyFullName: '',}}
+            default: null
         },
-        paramInvoiceType: {
-            type: String,
-            require: false,
-        },
-        paramTotalAmount: {
-            type: String,
-            required: false,
-            default: '0.0'
-        }
     },
     watch: {
-        paramCheckoutDate(val, oldVal) {
-            if (this.checkoutEntryMode) {
-                this.form.checkoutDate = val
-            }
+        params: {
+            handler: function(val, oldVal) {
+                if (this.checkoutEntryMode) {
+                    this.form.checkoutDate = val.checkoutDate
+                    this.form.partnerCompanyID = val.partnerCompanyID
+                    this.form.companyFullName = val.companyFullName
+                    this.form.invoiceType = val.invoiceType
+                    this.form.totalAmount = val.totalAmount
+                }
+            },
+            immediate: true
         },
-        paramCompanyInfo(val, oldVal) {
-            if (this.checkoutEntryMode) {
-                this.form.partnerCompanyID = val.partnerCompanyID
-                this.form.companyFullName = val.companyFullName
-            }
-        },
-        paramTotalAmount(val, oldVal) {
-            if (this.checkoutEntryMode) {
-                this.form.totalAmount = val
-            }
-        },
-        paramInvoiceType(val, oldVal) {
-            if (this.checkoutEntryMode) {
-                this.form.invoiceType = val
-            }
-        },
-        /* ------- duelWay binding -------*/
+        /* ------- passive binding -------*/
         form: {
             handler: function (val, oldVal) {
                 this.$emit('passiveUpdateInvoiceEntry', val)
@@ -260,6 +262,8 @@ export default {
         return {
             checkoutEntryMode: false,
             invoiceEntryMode: false,
+
+            companyResetIndicator: 0,
 
             fullSearchPanelOpen: false,
 
@@ -308,6 +312,36 @@ export default {
 
         handleInvoiceAmountChange() {
             this.form.invoiceAmount = validateFloat(this.form.invoiceAmount.toString())
+        },
+
+        createInvoiceEntry(refreshBool) {
+            this.$putRequest(this.$api.createInvoiceEntry, this.form).then((res) => {
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+
+                if (refreshBool) {
+                    if (this.companyResetIndicator === 1) {
+                        this.form.partnerCompanyID = -1
+                        this.form.companyFullName = ''
+                    }
+                    this.form.invoiceType = ''
+                    this.form.invoiceNumber = ''
+                    this.form.totalAmount = 0.0
+                    this.form.invoiceAmount = 0.0
+                    this.form.invoiceIndication = ''
+                    this.form.isFollowUpIndication = 0
+                    this.form.remark = ''
+                    this.form.creationDate = new Date().format('yyyy-MM-dd').substr(0, 10)
+                    this.form.checkoutDate = ''
+                    this.form.invoiceDate = new Date().format('yyyy-MM-dd').substr(0, 10)
+                    this.form.invoiceNumberDate = new Date().format('yyyy-MM-dd').substr(0, 10)
+                }
+                else {
+                    this.$router.replace('/inbound_invoicing')
+                }
+
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
     }
 }

@@ -272,12 +272,13 @@
                     v-show="invoicePanelOpen"
                     outlined>
                 <InboundInvoiceComponent mode="checkoutEntry"
-                                         :paramCheckoutDate="form.checkoutDate"
-                                         :paramCompanyInfo="{
+                                         :params="{
+                                             checkoutDate: form.checkoutDate,
                                              partnerCompanyID: form.partnerCompanyID,
-                                             companyFullName: form.companyFullName}"
-                                         :paramInvoiceType="form.invoiceType"
-                                         :paramTotalAmount="form.totalAmount"
+                                             companyFullName: form.companyFullName,
+                                             invoiceType: form.invoiceType,
+                                             totalAmount: form.totalAmount
+                                         }"
                                          @passiveUpdateInvoiceEntry="passiveUpdateInvoiceEntryAction">
                 </InboundInvoiceComponent>
             </v-card>
@@ -434,11 +435,12 @@ export default {
                         break
                     }
                 }
-            })
+            }).catch(error => this.$ajaxErrorHandler(error))
+
             this.$getRequest(this.$api.visibleBankAccounts).then((res) => {
                 console.log(res.data)
                 this.bankAccountOptions = res.data
-            })
+            }).catch(error => this.$ajaxErrorHandler(error))
         }
     },
     data() {
@@ -620,7 +622,7 @@ export default {
                     })
 
                     this.$router.replace('/inbound_invoicing')
-                })
+                }).catch(error => this.$ajaxErrorHandler(error))
             }
         },
         modifyCheckoutEntry() {
@@ -644,7 +646,7 @@ export default {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
-                })
+                }).catch(error => this.$ajaxErrorHandler(error))
             }
         },
     }
