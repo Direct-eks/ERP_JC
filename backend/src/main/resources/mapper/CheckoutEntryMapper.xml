@@ -61,7 +61,7 @@
                p.full_name as company_full_name, p.phone as company_phone, invoice_type, payment_method,
                payment_number, payment_amount, c.bank_account_id, b.name as bank_account_name, total_amount,
                is_rounded, rounded_amount, debt, service_fee, c.remark, drawer, creation_date, checkout_date,
-               money_entry_serial, return_serial, c.department_id, is_verified, is_modified
+               money_entry_serial, return_serial, c.department_id, d.name as department_name, is_verified, is_modified
         from ((m_checkout_entry as c left join c_bank_account as b on c.bank_account_id = b.bank_account_id)
             join e_department as d on c.department_id = d.department_id)
             join c_partner_company as p on c.partner_company_id = p.partner_company_id
@@ -78,7 +78,7 @@
         select checkout_entry_serial, payment_method, payment_number, payment_amount, c.bank_account_id,
                b.name as bank_account_name, is_rounded, rounded_amount, debt, service_fee, c.remark, drawer,
                is_verified
-        from m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id
+        from m_checkout_entry as c left join c_bank_account as b on c.bank_account_id = b.bank_account_id
         where checkout_entry_serial = #{serial}
     </select>
 

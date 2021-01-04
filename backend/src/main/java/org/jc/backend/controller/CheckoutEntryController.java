@@ -76,7 +76,7 @@ public class CheckoutEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyEntry")
-    public void modifyEntry(CheckoutEntryWithProductsVO modifyVO) {
+    public void modifyEntry(@RequestBody @Validated CheckoutEntryWithProductsVO modifyVO) {
         logger.info("PATCH Request to /checkoutEntry/modifyEntry");
 
         checkoutEntryService.modifyEntry(modifyVO);
