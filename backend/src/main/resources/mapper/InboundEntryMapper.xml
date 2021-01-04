@@ -91,7 +91,7 @@
     </resultMap>
 
 
-    <select id="queryEntriesInDateRangeByTypeAndCompanyID" resultMap="entryResultMap">
+    <select id="queryEntriesInDateRangeByInvoiceTypeAndCompanyID" resultMap="entryResultMap">
         select i.inbound_entry_id, i.entry_date, i.creation_date, i.total_cost, i.invoice_type,
                i.drawer, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
                c.phone, c.full_name, d.department_id, d.name as department_name, i.warehouse_id,
@@ -240,6 +240,12 @@
     <update id="updateProductsWithCheckoutSerial">
         update e_inbound_product
         set checkout_serial = #{checkoutSerial}
+        where inbound_product_id = #{inboundProductID}
+    </update>
+
+    <update id="updateProductsWithInvoiceSerial">
+        update e_inbound_product
+        set invoice_serial = #{invoiceSerial}
         where inbound_product_id = #{inboundProductID}
     </update>
 

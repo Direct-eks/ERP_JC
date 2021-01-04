@@ -19,4 +19,7 @@ public interface InboundEntryService {
     List<InboundProductO> getProductsByCompanyIDAndInvoiceType(int companyID, String invoiceType);
 
     void updateProductsWithCheckoutSerial(List<InboundProductO> products, String checkoutSerial);
+    void updateProductsWithInvoiceSerial(List<InboundProductO> products, String invoiceSerial);
+
+    List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
 }

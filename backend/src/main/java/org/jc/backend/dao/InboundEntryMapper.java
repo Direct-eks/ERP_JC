@@ -18,8 +18,8 @@ public interface InboundEntryMapper {
     void insertNewEntry(InboundEntryDO entryDO);
     int insertNewProduct(InboundProductO productDO);
 
-    List<InboundEntryDO> queryEntriesInDateRangeByTypeAndCompanyID(String startDate, String endDate,
-                                                                   String type, int id);
+    List<InboundEntryDO> queryEntriesInDateRangeByInvoiceTypeAndCompanyID(
+            String startDate, String endDate, String type, int id);
     List<InboundProductO> queryProductsByEntryID(String id);
 
     List<InboundEntryCompleteO> selectEntryShippingInfoForCompare(String id);
@@ -37,5 +37,7 @@ public interface InboundEntryMapper {
     List<String> queryEntriesByCompanyIDAndInvoiceType(int companyID, String invoiceType);
 
     void updateProductsWithCheckoutSerial(InboundProductO productO);
+    void updateProductsWithInvoiceSerial(InboundProductO productO);
+
     List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
 }

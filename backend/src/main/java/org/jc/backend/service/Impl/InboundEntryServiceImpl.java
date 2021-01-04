@@ -88,7 +88,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         List<InboundEntryWithProductsVO> entries = new ArrayList<>();
         try {
-            List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
+            List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByInvoiceTypeAndCompanyID(
                     dateFormat.format(startDate), dateFormat.format(endDate), type, companyID);
 
             for (var entryFromDatabase : entriesFromDatabase) {
@@ -258,5 +258,27 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             throw e;
         }
 
+    }
+
+    @Transactional
+    public void updateProductsWithInvoiceSerial(List<InboundProductO> products, String invoiceSerial) {
+
+        try {
+            for (var product : products) {
+                product.setInvoiceSerial(invoiceSerial);
+                inboundEntryMapper.updateProductsWithInvoiceSerial(product);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial) {
+        return inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
     }
 }
