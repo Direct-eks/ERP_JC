@@ -42,8 +42,8 @@ import SnackMessage from "~/components/SnackMessage";
 export default {
     name: "Purchase_Order_Modify",
     components: {
-        InboundQueryDisplayComponent: () => import('../../components/InboundQueryDisplayComponent'),
-        InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryDisplayAndModifyComponent'),
+        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/InboundQueryDisplayComponent'),
+        InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryComponents/InboundEntryDisplayAndModifyComponent'),
         SnackMessage,
     },
     data() {

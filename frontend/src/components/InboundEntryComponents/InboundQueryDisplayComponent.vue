@@ -133,9 +133,11 @@ export default {
     beforeMount() {
         switch (this.displayMode) {
         case 'completion':
-        case 'modify':
         case 'query':
         case 'return':
+            break
+        case 'modify':
+            this.isModify = true
             break
         case 'purchaseOrder':
             this.isPurchaseQuery = true
@@ -145,6 +147,7 @@ export default {
     data() {
         return {
             isPurchaseQuery: false,
+            isModify: false,
 
             dateRange: [
                 new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
@@ -236,7 +239,7 @@ export default {
                     endDate: this.dateRange[1],
                     type: this.category,
                     companyID: this.companyID,
-                    forModify: false
+                    forModify: this.isModify
                 }).then((res) => {
                     console.log('received', res.data)
                     this.queryTableData = res.data

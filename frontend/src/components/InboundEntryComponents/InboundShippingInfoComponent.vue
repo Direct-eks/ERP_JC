@@ -250,7 +250,7 @@
 export default {
     name: "InboundShippingInfoComponent",
     components: {
-        RelativeCompanySearch: () => import("../components/RelativeCompanySearch"),
+        RelativeCompanySearch: () => import("../RelativeCompanySearch"),
     },
     props: {
         form: {

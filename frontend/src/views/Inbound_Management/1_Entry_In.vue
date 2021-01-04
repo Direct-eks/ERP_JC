@@ -17,7 +17,7 @@ import SnackMessage from '~/components/SnackMessage'
 export default {
     name: "Entry_In",
     components: {
-        InboundEntryCreateComponent: () => import('../../components/InboundEntryCreateComponent'),
+        InboundEntryCreateComponent: () => import('../../components/InboundEntryComponents/InboundEntryCreateComponent'),
         SnackMessage
     }
 }
