@@ -136,7 +136,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto" v-if="form.paymentMethod !== '现金' && form.paymentMethod !== ''">
-                    <v-select v-model="form.bankAccountName"
+                    <v-select v-model="form.bankAccountID"
                               :rules="rules.bankAccountID"
                               :items="bankAccountOptions"
                               item-value="bankAccountID"

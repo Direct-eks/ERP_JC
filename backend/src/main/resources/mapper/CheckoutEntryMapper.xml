@@ -62,15 +62,15 @@
                payment_number, payment_amount, c.bank_account_id, b.name as bank_account_name, total_amount,
                is_rounded, rounded_amount, debt, service_fee, c.remark, drawer, creation_date, checkout_date,
                money_entry_serial, return_serial, c.department_id, is_verified, is_modified
-        from ((m_checkout_entry as c join c_bank_account as b on c.bank_account_id = b.bank_account_id)
+        from ((m_checkout_entry as c left join c_bank_account as b on c.bank_account_id = b.bank_account_id)
             join e_department as d on c.department_id = d.department_id)
             join c_partner_company as p on c.partner_company_id = p.partner_company_id
         where (c.checkout_date between #{startDate} and #{endDate})
             <if test="companyID != -1">
                 and c.partner_company_id = #{companyID}
             </if>
-            <if test="invoiceType != null">
-                and c.invoice_type = #{invoice_type}
+            <if test="invoiceType != ''">
+                and c.invoice_type = #{invoiceType}
             </if>
     </select>
 
