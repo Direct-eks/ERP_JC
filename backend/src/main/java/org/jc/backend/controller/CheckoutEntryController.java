@@ -32,23 +32,26 @@ public class CheckoutEntryController {
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
-                            @RequestParam("isInbound") boolean isInbound) {
-        logger.info("PUT Request to /checkoutEntry/createEntry");
+                            @RequestParam("isInbound") boolean isInbound,
+                            @RequestParam(value = "isReturn", defaultValue = "false") boolean isReturn) {
+        logger.info("PUT Request to /checkoutEntry/createEntry， isInbound: " + isInbound);
 
-        checkoutEntryService.createEntry(checkoutEntryWithProductsVO, isInbound);
+        checkoutEntryService.createEntry(checkoutEntryWithProductsVO, isInbound, isReturn);
     }
 
     @ApiOperation(value = "", response = CheckoutEntryWithProductsVO.class)
     @GetMapping("/getEntriesInDateRange")
     public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(
+            @RequestParam("isInbound") boolean isInbound,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType,
             @RequestParam("forModify") boolean forModify
     ) throws GlobalException {
-        logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, startDate: " + startDateString +
-                ", endDate: " + endDateString + ", companyID: " + companyID + ", invoiceType: "+ invoiceType);
+        logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, isInbound" + isInbound +
+                ",startDate: " + startDateString + ", endDate: " + endDateString + ", companyID: " +
+                companyID + ", invoiceType: "+ invoiceType);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -65,7 +68,7 @@ public class CheckoutEntryController {
         }
 
         List<CheckoutEntryWithProductsVO> entries = checkoutEntryService.getEntriesInDateRange(
-                startDate, endDate, companyID, invoiceType);
+                isInbound, startDate, endDate, companyID, invoiceType);
 
         //filter out verified entries, if query is forModify
         if (forModify) {

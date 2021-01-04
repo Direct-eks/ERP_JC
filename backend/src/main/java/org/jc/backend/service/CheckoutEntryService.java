@@ -6,8 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface CheckoutEntryService {
-    void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO, boolean isInbound);
-    List<CheckoutEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
+    void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
+                     boolean isInbound, boolean isReturn);
+    List<CheckoutEntryWithProductsVO> getEntriesInDateRange(boolean isInbound,Date startDate, Date endDate,
                                                             int companyID, String invoiceType);
     void modifyEntry(CheckoutEntryWithProductsVO modifyVO);
 }

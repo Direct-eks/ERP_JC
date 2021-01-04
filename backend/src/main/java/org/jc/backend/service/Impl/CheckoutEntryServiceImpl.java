@@ -31,20 +31,17 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final CheckoutEntryMapper checkoutEntryMapper;
     private final MoneyEntryService moneyEntryService;
     private final InboundEntryService inboundEntryService;
-    private final InboundEntryMapper inboundEntryMapper;
     private final InvoiceEntryService invoiceEntryService;
     private final ModificationMapper modificationMapper;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     MoneyEntryService moneyEntryService,
                                     InboundEntryService inboundEntryService,
-                                    InboundEntryMapper inboundEntryMapper,
                                     InvoiceEntryService invoiceEntryService,
                                     ModificationMapper modificationMapper) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.moneyEntryService = moneyEntryService;
         this.inboundEntryService = inboundEntryService;
-        this.inboundEntryMapper = inboundEntryMapper;
         this.invoiceEntryService = invoiceEntryService;
         this.modificationMapper = modificationMapper;
     }
@@ -52,39 +49,49 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
-    public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO, boolean isInbound) {
+    public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
+                            boolean isInbound, boolean isReturn) {
 
         try {
             CheckoutEntryDO checkoutEntry = new CheckoutEntryDO();
             BeanUtils.copyProperties(checkoutEntryWithProductsVO, checkoutEntry);
 
-            int count;
-            String newCheckoutSerial;
-            if (isInbound) {
-                count = checkoutEntryMapper.countNumberOfEntriesOfToday("入结");
-                newCheckoutSerial = MyUtils.formNewSerial("入结", count);
-            }
-            else {
-                count = checkoutEntryMapper.countNumberOfEntriesOfToday("出结");
-                newCheckoutSerial = MyUtils.formNewSerial("出结", count);
-            }
+            String prefix = isInbound ? (isReturn ? "出退" : "入结") : (isReturn ? "入退" : "出结");
+            int count = checkoutEntryMapper.countNumberOfEntriesOfToday(prefix);
+            String newCheckoutSerial = MyUtils.formNewSerial(prefix, count);
 
             checkoutEntry.setCheckoutEntrySerial(newCheckoutSerial);
 
             //first create a new moneyEntry
-            String newMoneySerial = moneyEntryService.createEntryForCheckout(newCheckoutSerial, checkoutEntry);
+            String newMoneySerial = moneyEntryService.createEntryForCheckout(
+                    checkoutEntry,newCheckoutSerial, isInbound);
 
             //then create a new checkoutEntry
             checkoutEntry.setMoneyEntrySerial(newMoneySerial);
             checkoutEntryMapper.insertEntry(checkoutEntry);
 
             //update product checkoutSerial
-            inboundEntryService.updateProductsWithCheckoutSerial(
-                    checkoutEntryWithProductsVO.getCheckoutProducts(), newCheckoutSerial);
+            if (isInbound) {
+                inboundEntryService.updateProductsWithCheckoutSerial(
+                        checkoutEntryWithProductsVO.getCheckoutProducts(), newCheckoutSerial);
+            }
+            else {
+                //todo outboundEntryService
+            }
 
             //check if it is needed to create invoiceEntry
             if (checkoutEntryWithProductsVO.getInvoiceEntry() != null) {
-                invoiceEntryService.createEntryForCheckout(checkoutEntryWithProductsVO, true);
+                String newInvoiceSerial = invoiceEntryService.createEntryForCheckout(
+                        checkoutEntryWithProductsVO, true);
+
+                //update product invoiceSerial
+                if (isInbound) {
+                    inboundEntryService.updateProductsWithInvoiceSerial(
+                            checkoutEntryWithProductsVO.getCheckoutProducts(), newInvoiceSerial);
+                }
+                else {
+                    // todo outboundEntryService
+                }
             }
 
         } catch (PersistenceException e) {
@@ -96,7 +103,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
+    public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(boolean isInbound, Date startDate, Date endDate,
                                                                    int companyID, String invoiceType) {
 
         List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
@@ -104,14 +111,14 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRange(
-                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType);
+            List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRangeByInvoiceTypeAndCompanyID(
+                    isInbound, dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType);
 
             for (var entryFromDatabase : entriesFromDatabase) {
                 CheckoutEntryWithProductsVO tempEntry = new CheckoutEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
 
-                List<InboundProductO> products = inboundEntryMapper.getProductsWithCheckoutSerial(
+                List<InboundProductO> products = inboundEntryService.getProductsWithCheckoutSerial(
                         tempEntry.getCheckoutEntrySerial());
                 tempEntry.setCheckoutProducts(products);
 

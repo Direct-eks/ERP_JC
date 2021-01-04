@@ -56,7 +56,7 @@
     </resultMap>
 
 
-    <select id="getEntriesInDateRange" resultMap="checkoutEntryResultMap">
+    <select id="getEntriesInDateRangeByInvoiceTypeAndCompanyID" resultMap="checkoutEntryResultMap">
         select checkout_entry_serial, c.partner_company_id, p.abbreviated_name as company_abbreviated_name,
                p.full_name as company_full_name, p.phone as company_phone, invoice_type, payment_method,
                payment_number, payment_amount, c.bank_account_id, b.name as bank_account_name, total_amount,
@@ -66,12 +66,18 @@
             join e_department as d on c.department_id = d.department_id)
             join c_partner_company as p on c.partner_company_id = p.partner_company_id
         where (c.checkout_date between #{startDate} and #{endDate})
-            <if test="companyID != -1">
-                and c.partner_company_id = #{companyID}
-            </if>
-            <if test="invoiceType != ''">
-                and c.invoice_type = #{invoiceType}
-            </if>
+        <if test="isInbound">
+            and (checkout_entry_serial like '入结%' or checkout_entry_serial like '出退%')
+        </if>
+        <if test="!isInbound">
+            and (checkout_entry_serial like '出结%' or checkout_entry_serial like '入退%')
+        </if>
+        <if test="companyID != -1">
+            and c.partner_company_id = #{companyID}
+        </if>
+        <if test="invoiceType != ''">
+            and c.invoice_type = #{invoiceType}
+        </if>
     </select>
 
     <select id="selectEntryBySerialForCompare" resultMap="checkoutEntryResultMap">
