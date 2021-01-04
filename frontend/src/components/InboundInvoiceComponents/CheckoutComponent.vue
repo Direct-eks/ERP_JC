@@ -3,7 +3,17 @@
         <v-form ref="form">
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-model="form.departmentID"
+                    <v-text-field v-if="displayMode"
+                                  v-model="form.departmentName"
+                                  label="部门"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 150px">
+                    </v-text-field>
+                    <v-select v-else
+                              v-model="form.departmentID"
                               :rules="rules.departmentID"
                               :items="departmentOptions"
                               item-value="departmentID"
@@ -15,7 +25,8 @@
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu close-on-content-click
+                    <v-menu v-if="creationMode"
+                            close-on-content-click
                             :nudge-right="40"
                             transition="scale-transition"
                             offset-y>
@@ -37,6 +48,15 @@
                                        locale="zh-cn">
                         </v-date-picker>
                     </v-menu>
+                    <v-text-field v-else
+                                  v-model="form.checkoutDate"
+                                  label="结账日期"
+                                  hide-details="auto"
+                                  outlined
+                                  readonly
+                                  dense
+                                  style="width: 150px">
+                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.drawer"
@@ -48,7 +68,7 @@
                                   style="width: 150px">
                     </v-text-field>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" v-if="creationMode">
                     <v-dialog v-model="fullSearchPanelOpen"
                               persistent
                               scrollable
@@ -104,7 +124,17 @@
 
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-model="form.paymentMethod"
+                    <v-text-field v-if="displayMode"
+                                  v-model="form.paymentMethod"
+                                  label="单位全称"
+                                  hide-details="auto"
+                                  outlined
+                                  dense
+                                  readonly
+                                  style="width: 120px">
+                    </v-text-field>
+                    <v-select v-else
+                              v-model="form.paymentMethod"
                               :rules="rules.paymentMethod"
                               :items="paymentMethodOptions"
                               item-value="value"
@@ -121,7 +151,8 @@
                                   hide-details="auto"
                                   outlined
                                   dense
-                                  :readonly="form.paymentMethod === '现金' || form.paymentMethod === ''"
+                                  :readonly="form.paymentMethod === '现金'
+                                  || form.paymentMethod === '' || displayMode"
                                   style="width: 160px">
                     </v-text-field>
                 </v-col>
@@ -130,6 +161,7 @@
                                   label="金额"
                                   hide-details="auto"
                                   @change="handlePaymentAmountChange"
+                                  :readonly="displayMode"
                                   outlined
                                   dense
                                   style="width: 160px">
@@ -143,6 +175,7 @@
                               item-text="name"
                               label="银行"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 250px">
                     </v-select>
@@ -151,7 +184,18 @@
 
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-model="form.invoiceType"
+                    <v-text-field v-if="displayMode"
+                                  v-model="form.invoiceType"
+                                  label="结账类型"
+                                  hide-details="auto"
+                                  @change="handlePaymentAmountChange"
+                                  readonly
+                                  outlined
+                                  dense
+                                  style="width: 180px">
+                    </v-text-field>
+                    <v-select v-else
+                              v-model="form.invoiceType"
                               :items="invoiceTypeOptions"
                               item-value="value"
                               item-text="label"
@@ -167,6 +211,7 @@
                                    hide-details="auto"
                                    class="mt-0"
                                    @change="isRoundedChange"
+                                   :readonly="displayMode"
                                    row dense>
                         <v-radio label="不抹零" :value=0></v-radio>
                         <v-radio label="抹零" :value=1></v-radio>
@@ -179,6 +224,7 @@
                                   hide-details="auto"
                                   outlined
                                   @change="roundedAmountChange"
+                                  :readonly="displayMode"
                                   dense
                                   style="width: 100px">
                     </v-text-field>
@@ -210,6 +256,7 @@
                     <v-textarea v-model.number="form.remark"
                                 label="备注"
                                 hide-details="auto"
+                                :readonly="displayMode"
                                 outlined
                                 dense
                                 auto-grow
@@ -221,7 +268,8 @@
         </v-form>
 
         <v-expand-transition>
-            <v-card v-show="invoicePanelOpen"
+            <v-card v-if="creationMode"
+                    v-show="invoicePanelOpen"
                     outlined>
                 <InboundInvoiceComponent mode="checkoutEntry"
                                          :paramCheckoutDate="form.checkoutDate"
@@ -236,7 +284,7 @@
         </v-expand-transition>
 
         <v-row>
-            <v-col>
+            <v-col v-if="creationMode">
                 <v-dialog v-model="productsChoosePanelOpen"
                           persistent
                           scrollable
@@ -256,7 +304,7 @@
                 </v-dialog>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col>
+            <v-col v-if="creationMode">
                 <v-btn color="accent"
                        @click="triggerInvoice(true)">
                     开票
@@ -267,12 +315,18 @@
                 </v-btn>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col>
+            <v-col v-if="creationMode">
                 <v-btn color="primary"
                        @click="createCheckoutEntry">
                     保存
                 </v-btn>
             </v-col>
+            <v-col v-if="modifyMode">
+            <v-btn color="primary"
+                   @click="modifyCheckoutEntry">
+                保存修改
+            </v-btn>
+        </v-col>
         </v-row>
 
         <v-data-table v-model="tableRowsSelectedForDeletion"
@@ -339,6 +393,20 @@ export default {
         mode: {
             type: String,
             required: true,
+        },
+        paramForm: {
+            type: Object,
+            required: false
+        }
+    },
+    watch: {
+        paramForm: {
+            handler: function (val, oldVal) {
+                if (this.creationMode) return
+                this.form = val
+            },
+            deep: true,
+            immediate: true,
         }
     },
     beforeMount() {
@@ -348,30 +416,34 @@ export default {
             break
         case 'display':
             this.displayMode = true
+            this.creationMode = false
             break
         case 'modify':
             this.modifyMode = true
+            this.creationMode = false
             break
         }
 
-        this.$getRequest(this.$api.departmentOptions).then((res) => {
-            console.log(res.data)
-            this.departmentOptions = res.data
-            for (const item of this.departmentOptions) {
-                if (item.isDefault === 1) {
-                    this.form.departmentID = item.departmentID
-                    break
+        if (this.creationMode || this.modifyMode) {
+            this.$getRequest(this.$api.departmentOptions).then((res) => {
+                console.log(res.data)
+                this.departmentOptions = res.data
+                for (const item of this.departmentOptions) {
+                    if (item.isDefault === 1) {
+                        this.form.departmentID = item.departmentID
+                        break
+                    }
                 }
-            }
-        })
-        this.$getRequest(this.$api.visibleBankAccounts).then((res) => {
-            console.log(res.data)
-            this.bankAccountOptions = res.data
-        })
+            })
+            this.$getRequest(this.$api.visibleBankAccounts).then((res) => {
+                console.log(res.data)
+                this.bankAccountOptions = res.data
+            })
+        }
     },
     data() {
         return {
-            creationMode: false,
+            creationMode: true,
             displayMode: false,
             modifyMode: false,
 
@@ -550,7 +622,31 @@ export default {
                     this.$router.replace('/inbound_invoicing')
                 })
             }
-        }
+        },
+        modifyCheckoutEntry() {
+            if (this.$refs.form.validate()) {
+                //change drawer name for modification
+                this.form.drawer = this.$store.getters.currentUser
+
+                //fill in department name
+                this.departmentOptions.forEach(item => {
+                    if (item.departmentID === this.form.departmentID)
+                        this.form.departmentName = item.name
+                })
+
+                //fill in bankAccountName
+                this.bankAccountOptions.forEach(item => {
+                    if (item.bankAccountID === this.form.bankAccountID)
+                        this.form.bankAccountName = item.name
+                })
+
+                this.$patchRequest(this.$api.modifyCheckoutEntry, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                })
+            }
+        },
     }
 }
 </script>

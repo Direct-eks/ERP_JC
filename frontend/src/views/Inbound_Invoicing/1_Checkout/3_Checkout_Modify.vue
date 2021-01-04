@@ -1,43 +1,95 @@
 <template>
     <!--  <p>入库结账管理</p>-->
     <!--  <p>入库结账单修改</p>-->
-    <div style="text-align: left">
+    <v-card outlined>
+        <v-toolbar flat>
+            <v-toolbar-title>入库结账单修改</v-toolbar-title>
 
-    </div>
+            <template v-slot:extension>
+                <v-tabs v-model="tab" @change="handleTabChange">
+                    <v-tabs-slider></v-tabs-slider>
+                    <v-tab key="browse">浏览</v-tab>
+                    <v-tab key="detail" :disabled="currentTableRow === null">详细情况</v-tab>
+                </v-tabs>
+            </template>
+        </v-toolbar>
+
+        <v-tabs-items v-model="tab">
+
+            <v-tab-item key="browse">
+                <QueryDisplayComponent
+                    displayMode="modify"
+                    @tableClick="tableClickAction">
+                </QueryDisplayComponent>
+            </v-tab-item>
+
+            <v-tab-item key="detail" :eager="true">
+                <CheckoutComponent
+                    :paramForm="form"
+                    mode="modify">
+                </CheckoutComponent>
+            </v-tab-item>
+
+        </v-tabs-items>
+
+        <SnackMessage></SnackMessage>
+    </v-card>
 </template>
 
 <script>
-    export default {
-        name: "In_Check_Modify",
-        components: {
-            CompanySearch: () => import('~/components/CompanySearch')
-        },
-        data() {
-            return {
-                value: ['2019-09-21', '2020-5-21'],
+import SnackMessage from "~/components/SnackMessage";
 
-                fullSearchField: '',
-                fullSearchLoading: false,
-                fullSearchPanelOpen: false,
+export default {
+    name: "In_Check_Modify",
+    components: {
+        QueryDisplayComponent: () => import('~/components/InboundInvoiceComponents/CheckoutQueryDisplayComponent'),
+        CheckoutComponent: () => import('~/components/InboundInvoiceComponents/CheckoutComponent'),
+        SnackMessage,
+    },
+    data() {
+        return {
+            tab: null,
+            currentTableRow: null,
+
+            form: {
+                checkoutEntrySerial: '',
+                partnerCompanyID: -1,
+                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                invoiceType: '',
+                paymentMethod: '', paymentNumber: '', paymentAmount: '',
+                bankAccountID: -1, bankAccountName: '',
+                totalAmount: '', isRounded: 0, roundedAmount: '',
+                debt: '', serviceFee: '',
+                remark: '', drawer: '',
+                creationDate: '',
+                checkoutDate: '',
+                moneyEntrySerial: '',
+                returnSerial: '',
+                departmentID: -1, departmentName: '',
+                isVerified: 0,
+                isModified: 0,
+                checkoutProducts: [],
+                invoiceEntry: null
+            },
+        }
+    },
+    methods: {
+        handleTabChange(val) {
+            if (val === 0) {
+                this.currentTableRow = null
             }
         },
-        methods: {
-            fullSearch() {
-                this.fullSearchLoading = true;
-                setTimeout(() => {
-                    this.abbreviatedSearchPanelOpen = false //close the other search panel
-                    this.fullSearchPanelOpen = true
-                    this.fullSearchLoading = false
-                }, 300)
-            },
-            fullSearchPanelCloseAction() {
-                this.fullSearchPanelOpen = false;
-            },
-            fullSearchChoose() {
-
-            }
+        tableClickAction(val) {
+            this.currentTableRow = val
+            //create missing fields and calculate values
+            this.currentTableRow.checkoutProducts.forEach(item => {
+                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
+                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+            })
+            this.form = Object.assign(this.form, this.currentTableRow)
         }
     }
+}
 </script>
 
 <style scoped>
