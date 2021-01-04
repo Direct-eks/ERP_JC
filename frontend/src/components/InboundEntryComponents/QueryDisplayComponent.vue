@@ -223,11 +223,11 @@ export default {
         query() {
             if (this.isPurchaseQuery) {
                 console.log(this.dateRange)
-                this.$getRequest(this.$api.purchaseOrdersInDateRangeByCompanyID +
-                        'startDate=' + encodeURI(this.dateRange[0]) + '&endDate=' +
-                        encodeURI(this.dateRange[1]) + '&companyID=' +
-                        encodeURI(String(this.companyID))
-                ).then((res) => {
+                this.$getRequest(this.$api.purchaseOrdersInDateRangeByCompanyID, {
+                    startDate: this.dateRange[0],
+                    endDate: this.dateRange[1],
+                    companyID: this.companyID,
+                }).then((res) => {
                     console.log('received', res.data)
                     this.queryTableData = res.data
                 }).catch(error => this.$ajaxErrorHandler(error))
@@ -247,15 +247,15 @@ export default {
             }
         },
         queryModificationRecord() {
-            let url = this.$api.modificationRecordsBySerial + encodeURI(this.queryTableCurrentRow[0].inboundEntryID)
-            console.log(url)
-            this.$getRequest(url
+            this.$getRequest(this.$api.modificationRecordsBySerial
+                + encodeURI(this.queryTableCurrentRow[0].inboundEntryID)
             ).then((res) => {
                 console.log('received', res.data)
                 this.modificationRecords = res.data
             }).catch(error => this.$ajaxErrorHandler(error))
         },
         tableClick(val) {
+            this.modificationRecords = []
             this.queryTableCurrentRow = [val]
             this.$emit('tableClick', val)
         },
