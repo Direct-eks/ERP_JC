@@ -52,14 +52,23 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
-    public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO) {
+    public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO, boolean isInbound) {
 
         try {
             CheckoutEntryDO checkoutEntry = new CheckoutEntryDO();
             BeanUtils.copyProperties(checkoutEntryWithProductsVO, checkoutEntry);
 
-            int count = checkoutEntryMapper.countNumberOfEntriesOfToday("入结");
-            String newCheckoutSerial = MyUtils.formNewSerial("入结", count);
+            int count;
+            String newCheckoutSerial;
+            if (isInbound) {
+                count = checkoutEntryMapper.countNumberOfEntriesOfToday("入结");
+                newCheckoutSerial = MyUtils.formNewSerial("入结", count);
+            }
+            else {
+                count = checkoutEntryMapper.countNumberOfEntriesOfToday("出结");
+                newCheckoutSerial = MyUtils.formNewSerial("出结", count);
+            }
+
             checkoutEntry.setCheckoutEntrySerial(newCheckoutSerial);
 
             //first create a new moneyEntry

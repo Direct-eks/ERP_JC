@@ -642,7 +642,8 @@ export default {
                         this.form.bankAccountName = item.name
                 })
 
-                this.$patchRequest(this.$api.modifyCheckoutEntry, this.form).then((res) => {
+                this.$patchRequest(this.$api.modifyCheckoutEntry, this.form,
+                    {isInbound: true}).then((res) => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })

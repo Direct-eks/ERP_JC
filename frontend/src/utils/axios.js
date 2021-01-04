@@ -77,25 +77,28 @@ export const getRequest = (url, params) => {
         params: params
     })
 }
-export const postRequest = (url, body) => {
+export const postRequest = (url, body, params) => {
     return axios({
         method: 'post',
         url: `${base}${url}`,
-        data: body
+        data: body,
+        params: params
     })
 }
-export const putRequest = (url, body) => {
+export const putRequest = (url, body, params) => {
     return axios({
         method: 'put',
         url: `${base}${url}`,
-        data: body
+        data: body,
+        params: params
     })
 }
-export const patchRequest = (url, body) => {
+export const patchRequest = (url, body, params) => {
     return axios({
         method: 'patch',
         url: `${base}${url}`,
-        data: body
+        data: body,
+        params: params
     })
 }
 export const deleteRequest = (url, params) => {

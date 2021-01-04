@@ -31,10 +31,11 @@ public class CheckoutEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
-    public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO) {
+    public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
+                            @RequestParam("isInbound") boolean isInbound) {
         logger.info("PUT Request to /checkoutEntry/createEntry");
 
-        checkoutEntryService.createEntry(checkoutEntryWithProductsVO);
+        checkoutEntryService.createEntry(checkoutEntryWithProductsVO, isInbound);
     }
 
     @ApiOperation(value = "", response = CheckoutEntryWithProductsVO.class)
