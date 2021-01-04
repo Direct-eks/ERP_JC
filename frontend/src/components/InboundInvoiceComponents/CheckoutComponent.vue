@@ -333,7 +333,7 @@ export default {
     components: {
         CompanySearch: () => import("~/components/CompanySearch"),
         InboundInvoiceComponent: () => import("~/components/InboundInvoiceComponents/InvoiceComponent"),
-        InboundCheckoutProductsChoose: () => import("~/components/InboundInvoiceComponents/InboundCheckoutProductsChoose")
+        InboundCheckoutProductsChoose: () => import("~/components/InboundInvoiceComponents/CheckoutProductsChoose")
     },
     props: {
         mode: {
