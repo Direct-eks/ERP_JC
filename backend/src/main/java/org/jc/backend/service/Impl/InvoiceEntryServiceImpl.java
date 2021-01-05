@@ -68,7 +68,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
     }
 
     @Transactional
-    public List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceDate,
+    public List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceNumberDate,
                                                                 int companyID, int isFollowUpIndication,
                                                                 String invoiceNumber, String invoiceType, boolean isInbound) {
 
@@ -82,7 +82,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
             List<InvoiceEntryO> entriesFromDatabase = invoiceEntryMapper.getEntriesInDateRangeAndParams(
                     dateFormat.format(startDate), dateFormat.format(endDate),
-                    invoiceDate == null ? null : dateFormat.format(invoiceDate),
+                    invoiceNumberDate == null ? null : dateFormat.format(invoiceNumberDate),
                     companyID, isFollowUpIndication, invoiceNumber, invoiceType, prefix);
 
             for (var entryFromDatabase : entriesFromDatabase) {

@@ -118,6 +118,8 @@ public class InboundEntryController {
         return inboundEntryService.getProductsByCompanyIDAndInvoiceType(companyID, invoiceType);
     }
 
+    @ApiOperation(value = "", response = InboundProductO.class)
+    @GetMapping("/getCheckoutAndNotInvoicedProducts")
     public List<InboundProductO> getCheckoutAndNotInvoicedProducts(
             @RequestParam("companyID") int companyID,
             @RequestParam("invoiceType") String invoiceType

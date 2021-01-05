@@ -11,7 +11,7 @@ import java.util.List;
 public interface InvoiceEntryMapper {
     int countNumberOfEntriesOfToday(String prefix);
     void insertEntry(InvoiceEntryO invoiceEntryO);
-    List<InvoiceEntryO> getEntriesInDateRangeAndParams(String startDate, String endDate, String invoiceDate,
+    List<InvoiceEntryO> getEntriesInDateRangeAndParams(String startDate, String endDate, String invoiceNumberDate,
                                                        int companyID, int isFollowUpIndication,
                                                        String invoiceNumber, String invoiceType, String prefix);
     InvoiceEntryO selectEntryBySerialForCompare(String serial);

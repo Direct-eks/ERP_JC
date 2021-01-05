@@ -3,7 +3,6 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
-import org.jc.backend.entity.InvoiceEntryO;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
 import org.jc.backend.service.InvoiceEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -45,7 +44,7 @@ public class InvoiceEntryController {
             @RequestParam("isInbound") boolean isInbound,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam(value = "invoiceDate", defaultValue = "") String invoiceDateString,
+            @RequestParam(value = "invoiceNumberDate", defaultValue = "") String invoiceNumberDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam(value = "isFollowUpIndication", defaultValue = "-1") int isFollowUpIndication,
             @RequestParam(value = "invoiceNumber", defaultValue = "") String invoiceNumber,
@@ -53,13 +52,14 @@ public class InvoiceEntryController {
             @RequestParam("forModify") boolean forModify
     )throws GlobalException {
         logger.info("GET Request to /invoiceEntry/getEntryInDateRange, isInbound: " + isInbound + ", startDate: " +
-                startDateString + ", endDate: " + endDateString + ", invoiceDate: " + invoiceDateString + ", " +
-                "companyID: " + companyID + ", isFollowUpIndication: " + isFollowUpIndication + ", invoiceNumber: " +
+                startDateString + ", endDate: " + endDateString + ", invoiceNumberDate: " + invoiceNumberDateString +
+                ", companyID: " + companyID + ", isFollowUpIndication: " + isFollowUpIndication + ", invoiceNumber: " +
                 invoiceNumber + ", invoiceType: " + invoiceType + ", forModify: " + forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
-        Date invoiceDate = invoiceDateString.equals("") ? null : MyUtils.parseAndCheckDateString(invoiceDateString);
+        Date invoiceNumberDate = invoiceNumberDateString.equals("") ? null :
+                MyUtils.parseAndCheckDateString(invoiceNumberDateString);
 
         if (StringUtils.hasLength(invoiceType)) {
             switch (invoiceType) {
@@ -71,8 +71,8 @@ public class InvoiceEntryController {
             }
         }
 
-        List<InvoiceEntryStandAloneVO> entries = invoiceEntryService.getEntriesInDateRange(startDate, endDate, invoiceDate,
-                companyID, isFollowUpIndication, invoiceNumber, invoiceType, isInbound);
+        List<InvoiceEntryStandAloneVO> entries = invoiceEntryService.getEntriesInDateRange(startDate, endDate,
+                invoiceNumberDate, companyID, isFollowUpIndication, invoiceNumber, invoiceType, isInbound);
 
 //        if (forModify) {
 //            entries.removeIf(entry -> {})

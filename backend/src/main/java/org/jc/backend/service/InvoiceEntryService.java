@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface InvoiceEntryService {
     void createEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO, boolean isInbound);
-    List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceDate,
+    List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceNumberDate,
                                                          int companyID, int isFollowUpIndication,
                                                          String invoiceNumber, String invoiceType, boolean isInbound);
     void modifyEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO);

@@ -50,8 +50,8 @@
                drawer, creation_date, checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified
         from m_invoice_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id
         where invoice_entry_serial like #{prefix}||'%' and (creation_date between #{startDate} and #{endDate})
-        <if test="invoiceDate != null">
-            and i.invoice_date = #{invoiceDate}
+        <if test="invoiceNumberDate != null">
+            and i.invoice_number_date = #{invoiceNumberDate}
         </if>
         <if test="companyID != -1">
             and i.partner_company_ID = #{companyID}
@@ -59,7 +59,7 @@
         <if test="isFollowUpIndication != -1">
             and i.is_follow_up_indication = #{isFollowUpIndication}
         </if>
-        <if test="invoiceNumber == ''">
+        <if test="invoiceNumber != ''">
             and i.invoice_number = #{invoiceNumber}
         </if>
         <if test="invoiceType != ''">
