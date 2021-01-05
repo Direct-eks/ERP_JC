@@ -243,6 +243,32 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         return products;
     }
 
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getCheckoutAndNotInvoicedProducts(int companyID, String invoiceType) {
+
+        List<InboundProductO> products = new ArrayList<>();
+
+        try {
+            List<String> entryIDs = inboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+            for (var entryID : entryIDs) {
+                List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
+                for (var tempProduct : tempProducts) {
+                    //filter checked-out but not invoiced products
+                    if (!tempProduct.getCheckoutSerial().equals("") && tempProduct.getInvoiceSerial().equals("")) {
+                        products.add(tempProduct);
+                    }
+                }
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
+    }
+
     @Transactional
     public void updateProductsWithCheckoutSerial(List<InboundProductO> products, String checkoutSerial) {
 
@@ -280,5 +306,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     @Transactional(readOnly = true)
     public List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial) {
         return inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getProductsWithInvoiceSerial(String invoiceSerial) {
+        return inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
     }
 }

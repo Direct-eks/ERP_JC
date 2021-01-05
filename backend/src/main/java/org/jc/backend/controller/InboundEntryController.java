@@ -117,4 +117,14 @@ public class InboundEntryController {
 
         return inboundEntryService.getProductsByCompanyIDAndInvoiceType(companyID, invoiceType);
     }
+
+    public List<InboundProductO> getCheckoutAndNotInvoicedProducts(
+            @RequestParam("companyID") int companyID,
+            @RequestParam("invoiceType") String invoiceType
+    ) {
+        logger.info("GET Request to /inboundEntry/getCheckoutAndNotInvoicedProducts, companyID: " +
+                companyID + ", invoiceType: " + invoiceType);
+
+        return inboundEntryService.getCheckoutAndNotInvoicedProducts(companyID, invoiceType);
+    }
 }

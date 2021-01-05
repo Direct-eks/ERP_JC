@@ -27,6 +27,7 @@
     <resultMap id="InvoiceEntryResultMap" type="org.jc.backend.entity.InvoiceEntryO">
         <result property="invoiceEntrySerial" column="invoice_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyFullName" column="company_full_name"/>
         <result property="invoiceType" column="invoice_type"/>
         <result property="invoiceNumber" column="invoice_number"/>
         <result property="totalAmount" column="total_amount"/>
@@ -43,4 +44,44 @@
         <result property="isModified" column="is_modified"/>
     </resultMap>
 
+    <select id="getEntriesInDateRangeAndParams" resultMap="InvoiceEntryResultMap">
+        select invoice_entry_serial, i.partner_company_id, c.full_name as company_full_name, invoice_type,
+               invoice_number, total_amount, invoice_amount, invoice_indication, is_follow_up_indication, i.remark,
+               drawer, creation_date, checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified
+        from m_invoice_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id
+        where (creation_date between #{startDate} and #{endDate})
+        <if test="invoiceDate != null">
+            and i.invoice_date = #{invoiceDate}
+        </if>
+        <if test="companyID != -1">
+            and i.partner_company_ID = #{companyID}
+        </if>
+        <if test="isFollowUpIndication != -1">
+            and i.is_follow_up_indication = #{isFollowUpIndication}
+        </if>
+        <if test="invoiceNumber == ''">
+            and i.invoice_number = #{invoiceNumber}
+        </if>
+        <if test="invoiceType != ''">
+            and i.invoice_type = #{invoiceType}
+        </if>
+    </select>
+
+    <select id="selectEntryBySerialForCompare" resultMap="InvoiceEntryResultMap">
+        select invoice_entry_serial, i.partner_company_id, c.full_name as company_full_name, invoice_type,
+               invoice_number, total_amount, invoice_amount, invoice_indication, is_follow_up_indication, i.remark,
+               drawer, creation_date, checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified
+        from m_invoice_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id
+        where invoice_entry_serial = #{serial}
+    </select>
+
+    <update id="updateEntry">
+        update m_invoice_entry
+        set invoice_number = #{invoiceNumber},
+            invoice_amount = #{invoiceAmount},
+            partner_company_id = #{partnerCompanyID},
+            invoice_number_date = #{invoiceNumberDate},
+            remark = #{remark}
+        where invoice_entry_serial =#{invoiceEntrySerial}
+    </update>
 </mapper>

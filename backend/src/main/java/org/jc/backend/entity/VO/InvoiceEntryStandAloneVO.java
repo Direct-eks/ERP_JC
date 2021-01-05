@@ -1,15 +1,18 @@
-package org.jc.backend.entity;
+package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jc.backend.entity.DO.CheckoutEntryDO;
+import org.jc.backend.entity.InboundProductO;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @Getter
 @Setter
-public class InvoiceEntryO {
+public class InvoiceEntryStandAloneVO {
     private String invoiceEntrySerial;
 
     private int partnerCompanyID;
@@ -45,4 +48,6 @@ public class InvoiceEntryO {
     private String invoiceDate;
     private String invoiceNumberDate;
     private int isModified;
+
+    private List<InboundProductO> invoiceProducts;
 }

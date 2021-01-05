@@ -17,9 +17,11 @@ public interface InboundEntryService {
     void deleteEntry(String id);
 
     List<InboundProductO> getProductsByCompanyIDAndInvoiceType(int companyID, String invoiceType);
+    List<InboundProductO> getCheckoutAndNotInvoicedProducts(int companyID, String invoiceType);
 
     void updateProductsWithCheckoutSerial(List<InboundProductO> products, String checkoutSerial);
     void updateProductsWithInvoiceSerial(List<InboundProductO> products, String invoiceSerial);
 
     List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
+    List<InboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
 }
