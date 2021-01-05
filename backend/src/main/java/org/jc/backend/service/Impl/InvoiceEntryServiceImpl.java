@@ -68,17 +68,22 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
     }
 
     @Transactional
-    public List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceDate, int companyID,
-                                              int isFollowUpIndication, String invoiceNumber, String invoiceType) {
+    public List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceDate,
+                                                                int companyID, int isFollowUpIndication,
+                                                                String invoiceNumber, String invoiceType, boolean isInbound) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<InvoiceEntryStandAloneVO> entries = new ArrayList<>();
         try {
+            String prefix = isInbound ?
+                    (invoiceType.equals("增值税票") ? "入增" : "入普") :
+                    (invoiceType.equals("增值税票") ? "出增" : "出普");
+
             List<InvoiceEntryO> entriesFromDatabase = invoiceEntryMapper.getEntriesInDateRangeAndParams(
                     dateFormat.format(startDate), dateFormat.format(endDate),
                     invoiceDate == null ? null : dateFormat.format(invoiceDate),
-                    companyID, isFollowUpIndication, invoiceNumber, invoiceType);
+                    companyID, isFollowUpIndication, invoiceNumber, invoiceType, prefix);
 
             for (var entryFromDatabase : entriesFromDatabase) {
                 InvoiceEntryStandAloneVO entry = new InvoiceEntryStandAloneVO();
@@ -104,7 +109,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
         InvoiceEntryO modifiedEntry = new InvoiceEntryO();
         BeanUtils.copyProperties(invoiceEntryStandAloneVO, modifiedEntry);
-        
+
         try {
             InvoiceEntryO originEntry = invoiceEntryMapper.selectEntryBySerialForCompare(
                     modifiedEntry.getInvoiceEntrySerial());

@@ -106,13 +106,16 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(boolean isInbound, Date startDate, Date endDate,
                                                                    int companyID, String invoiceType) {
 
-        List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+        List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String prefix1 = isInbound ? "出退" : "入结";
+            String prefix2 = isInbound ? "入退" : "出结";
 
             List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRangeByInvoiceTypeAndCompanyID(
-                    isInbound, dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType);
+                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType,
+                    prefix1, prefix2);
 
             for (var entryFromDatabase : entriesFromDatabase) {
                 CheckoutEntryWithProductsVO tempEntry = new CheckoutEntryWithProductsVO();

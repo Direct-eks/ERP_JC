@@ -72,7 +72,7 @@ public class InvoiceEntryController {
         }
 
         List<InvoiceEntryStandAloneVO> entries = invoiceEntryService.getEntriesInDateRange(startDate, endDate, invoiceDate,
-                companyID, isFollowUpIndication, invoiceNumber, invoiceType);
+                companyID, isFollowUpIndication, invoiceNumber, invoiceType, isInbound);
 
 //        if (forModify) {
 //            entries.removeIf(entry -> {})

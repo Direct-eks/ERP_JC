@@ -13,7 +13,8 @@ public interface CheckoutEntryMapper {
     void insertEntry(CheckoutEntryDO checkoutEntryDO);
 
     List<CheckoutEntryDO> getEntriesInDateRangeByInvoiceTypeAndCompanyID(
-            boolean isInbound, String startDate, String endDate, int companyID, String invoiceType);
+            String startDate, String endDate, int companyID, String invoiceType,
+            String prefix1, String prefix2);
 
     CheckoutEntryDO selectEntryBySerialForCompare(String serial);
     void modifyEntry(CheckoutEntryDO modifyDO);

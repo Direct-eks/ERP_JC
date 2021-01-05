@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface InvoiceEntryService {
     void createEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO, boolean isInbound);
-    List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceDate, int companyID,
-                                              int isFollowUpIndication, String invoiceNumber, String invoiceType);
+    List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceDate,
+                                                         int companyID, int isFollowUpIndication,
+                                                         String invoiceNumber, String invoiceType, boolean isInbound);
     void modifyEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO);
 
     String createEntryForCheckout(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO, boolean isInbound);
