@@ -1,10 +1,11 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.MoneyEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.MoneyEntryO;
-import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -12,42 +13,180 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 @Service
 public class MoneyEntryServiceImpl implements MoneyEntryService {
     private static final Logger logger = LoggerFactory.getLogger(MoneyEntryServiceImpl.class);
 
     private final MoneyEntryMapper moneyEntryMapper;
+    private final ModificationMapper modificationMapper;
 
-    public MoneyEntryServiceImpl(MoneyEntryMapper moneyEntryMapper) {
+    public MoneyEntryServiceImpl(MoneyEntryMapper moneyEntryMapper,
+                                 ModificationMapper modificationMapper) {
         this.moneyEntryMapper = moneyEntryMapper;
+        this.modificationMapper = modificationMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
-    public String createEntryForCheckout(String checkoutSerial, CheckoutEntryDO checkoutEntry) {
-
-        int count = moneyEntryMapper.countNumberOfEntriesOfToday("付款");
-        String newMoneySerial = MyUtils.formNewSerial("付款", count);
-
-        MoneyEntryO moneyEntryO = new MoneyEntryO();
-
-        moneyEntryO.setCheckoutSerial(checkoutSerial);
-        moneyEntryO.setMoneyEntrySerial(newMoneySerial);
-
-        moneyEntryO.setPartnerCompanyID(checkoutEntry.getPartnerCompanyID());
-        moneyEntryO.setInvoiceIndication("正常");
-        moneyEntryO.setPaymentMethod(checkoutEntry.getPaymentMethod());
-        moneyEntryO.setPaymentNumber(checkoutEntry.getPaymentNumber());
-        moneyEntryO.setPaymentAmount(checkoutEntry.getPaymentAmount());
-        moneyEntryO.setBankAccountID(checkoutEntry.getBankAccountID());
-        moneyEntryO.setRemark("");
-        moneyEntryO.setDrawer(checkoutEntry.getDrawer());
-        moneyEntryO.setPaymentDate(checkoutEntry.getCheckoutDate());
-        moneyEntryO.setCheckoutSerial(checkoutEntry.getCheckoutEntrySerial());
-        moneyEntryO.setDepartmentID(checkoutEntry.getDepartmentID());
+    public void createEntry(MoneyEntryO moneyEntryO, boolean isInbound) {
 
         try {
+            String prefix = isInbound ? "付款" : "收款";
+            int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
+            String newMoneySerial = MyUtils.formNewSerial(prefix, count);
+
+            moneyEntryO.setMoneyEntrySerial(newMoneySerial);
+            moneyEntryMapper.insertEntry(moneyEntryO);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<MoneyEntryO> getEntriesInDateRange(Date startDate, Date endDate, int companyID,
+                                                   String paymentMethod, int bankAccountID, boolean isInbound) {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        List<MoneyEntryO> entries;
+
+        try {
+            String prefix = isInbound ? "付款" : "收款";
+            entries = moneyEntryMapper.getEntriesInDateRangeAndParams(dateFormat.format(startDate),
+                    dateFormat.format(endDate), companyID, paymentMethod, bankAccountID, prefix);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+        return entries;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MoneyEntryO> getEntryBySerial(String serialSuffix, boolean isInbound) {
+
+        List<MoneyEntryO> entry = new ArrayList<>();
+
+        try {
+            String prefix = isInbound ? "付款" : "收款";
+            entry.add(moneyEntryMapper.selectEntryBySerial(prefix + serialSuffix));
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+        return entry;
+    }
+
+    @Transactional
+    public void modifyEntry(MoneyEntryO modifiedEntry) {
+
+        try {
+            MoneyEntryO originEntry = moneyEntryMapper.selectEntryBySerial(modifiedEntry.getMoneyEntrySerial());
+
+            StringBuilder record = new StringBuilder("修改者: " + modifiedEntry.getDrawer() + "; ");
+            boolean bool = compareEntryAndFormModificationRecord(record, originEntry, modifiedEntry);
+
+            if (bool) {
+                moneyEntryMapper.modifyEntry(modifiedEntry);
+
+                modificationMapper.insertModificationRecord(new ModificationO(
+                        modifiedEntry.getMoneyEntrySerial(), record.toString()));
+            }
+            else {
+                logger.warn("nothing modified");
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+    }
+
+    private boolean compareEntryAndFormModificationRecord(StringBuilder record, MoneyEntryO originEntry,
+                                                          MoneyEntryO modifiedEntry) {
+        boolean bool = false;
+        if (!originEntry.getPaymentMethod().equals(modifiedEntry.getPaymentMethod())) {
+            bool = true;
+            record.append(String.format("付款方式: %s -> %s; ", originEntry.getPaymentMethod(),
+                    modifiedEntry.getPaymentMethod()));
+        }
+        if (originEntry.getPaymentAmount() != modifiedEntry.getPaymentAmount()) {
+            bool = true;
+            record.append(String.format("付款金额: %f -> %f; ", originEntry.getPaymentAmount(),
+                    modifiedEntry.getPaymentAmount()));
+        }
+        if (!originEntry.getPaymentNumber().equals(modifiedEntry.getPaymentNumber())) {
+            bool = true;
+            record.append(String.format("付款号码: %s -> %s; ", originEntry.getPaymentNumber(),
+                    modifiedEntry.getPaymentNumber()));
+        }
+        if (originEntry.getBankAccountID() != modifiedEntry.getBankAccountID()) {
+            bool = true;
+            record.append(String.format("银行: %s -> %s", originEntry.getBankAccountName(),
+                    modifiedEntry.getBankAccountName()));
+        }
+        if (originEntry.getDepartmentID() != modifiedEntry.getDepartmentID()) {
+            bool = true;
+            record.append(String.format("部门: %s -> %s", originEntry.getDepartmentName(),
+                    modifiedEntry.getDepartmentName()));
+        }
+        if (!originEntry.getInvoiceIndication().equals(modifiedEntry.getInvoiceIndication())) {
+            bool = true;
+            record.append(String.format("开票类型: %s -> %s; ", originEntry.getInvoiceIndication(),
+                    modifiedEntry.getInvoiceIndication()));
+        }
+        if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
+            bool = true;
+            record.append(String.format("备注: %s -> %s;", originEntry.getRemark(), modifiedEntry.getRemark()));
+        }
+
+        return bool;
+    }
+
+
+    @Transactional
+    public String createEntryForCheckout(CheckoutEntryDO checkoutEntry, String checkoutSerial, boolean isInbound) {
+
+        String newMoneySerial;
+
+        try {
+            String prefix = isInbound ? "付款" : "收款";
+            int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
+            newMoneySerial = MyUtils.formNewSerial(prefix, count);
+
+            MoneyEntryO moneyEntryO = new MoneyEntryO();
+
+            moneyEntryO.setCheckoutSerial(checkoutSerial);
+            moneyEntryO.setMoneyEntrySerial(newMoneySerial);
+
+            moneyEntryO.setPartnerCompanyID(checkoutEntry.getPartnerCompanyID());
+            moneyEntryO.setInvoiceIndication("正常");
+            moneyEntryO.setPaymentMethod(checkoutEntry.getPaymentMethod());
+            moneyEntryO.setPaymentNumber(checkoutEntry.getPaymentNumber());
+            moneyEntryO.setPaymentAmount(checkoutEntry.getPaymentAmount());
+            moneyEntryO.setBankAccountID(checkoutEntry.getBankAccountID());
+            moneyEntryO.setRemark("");
+            moneyEntryO.setDrawer(checkoutEntry.getDrawer());
+            moneyEntryO.setPaymentDate(checkoutEntry.getCheckoutDate());
+            moneyEntryO.setCheckoutSerial(checkoutEntry.getCheckoutEntrySerial());
+            moneyEntryO.setDepartmentID(checkoutEntry.getDepartmentID());
+
             moneyEntryMapper.insertEntry(moneyEntryO);
         }
         catch (PersistenceException e) {
