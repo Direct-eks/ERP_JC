@@ -31,9 +31,14 @@ const api = {
     inboundEntriesInDateRange: '/inboundEntry/getEntriesInDateRange',
     modifyEntry: '/inboundEntry/modifyEntry', // PATCH
     inboundProductsByCompanyAndInvoiceType: '/inboundEntry/getProductsByCompanyAndInvoiceType', // GET companyID= invoiceType=
+    inboundProductsCheckoutAndNotInvoiced: '/inboundEntry/getCheckoutAndNotInvoicedProducts', // GET companyID= invoiceType=
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
+    // GET isInbound, startDate, endDate, companyID, invoiceDate, invoiceNumber,
+    // invoiceType, isFollowUpIndication, forModify
+    invoiceEntriesInDateRange: '/invoiceEntry/getEntriesInDateRange',
+    modifyInvoiceEntry: '/invoiceEntry/modifyEntry', // PATCH
 
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
@@ -41,6 +46,13 @@ const api = {
 
     /* ------ /modificationRecord ------*/
     modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', // GET {serial}
+
+    /* ------ /moneyEntry ------*/
+    createMoneyEntry: '/moneyEntry/createEntry', // PUT
+    // GET isInbound, startDate, endDate, companyID, bankAccountID, paymentMethod
+    moneyEntriesInDateRange: '/moneyEntry/getEntriesInDateRange',
+    moneyEntryBySerial: '/moneyEntry/getEntryBySerial', // GET
+    modifyMoneyEntry: '/moneyEntry/modifyEntry', // PATCH
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
