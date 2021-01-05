@@ -110,8 +110,8 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
         List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
         try {
-            String prefix1 = isInbound ? "出退" : "入结";
-            String prefix2 = isInbound ? "入退" : "出结";
+            String prefix1 = isInbound ? "出退" : "入退";
+            String prefix2 = isInbound ? "入结" : "出结";
 
             List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRangeByInvoiceTypeAndCompanyID(
                     dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType,
