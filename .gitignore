@@ -34,6 +34,8 @@ electron_app/db
 electron_app/webpages/
 electron_app/springboot/
 
+electron-vue-demo/
+
 ### STS ###
 .apt_generated
 .classpath
