@@ -132,11 +132,11 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_management/quote_entry'
+                    url: '/outbound_management/quota_entry'
                 },
                 {
                     name: '查询&修改',
-                    url: '/outbound_management/quote_query'
+                    url: '/outbound_management/quota_query'
                 },
             ]
         },

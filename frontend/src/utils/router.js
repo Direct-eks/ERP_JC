@@ -104,14 +104,14 @@ const routes = [
                 component: () => import('../views/Outbound_Management/5_Query_Out')
             },
             {
-                path: 'quote_entry',
+                path: 'quota_entry',
                 name: '报价单录入',
-                component: () => import('../views/Outbound_Management/6_Quote_Entry')
+                component: () => import('../views/Outbound_Management/6_Quota_Entry')
             },
             {
-                path: 'quote_query',
+                path: 'quota_query',
                 name: '报价单查询',
-                component: () => import('../views/Outbound_Management/7_Quote_query')
+                component: () => import('../views/Outbound_Management/7_Quota_Query')
             },
             {
                 path: 'sales_order_entry',
