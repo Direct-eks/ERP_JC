@@ -185,6 +185,7 @@ export default {
         },
         query() {
             this.$getRequest(this.$api.checkoutEntriesInDateRange, {
+                isInbound: true,
                 startDate: this.dateRange[0],
                 endDate: this.dateRange[1],
                 invoiceType: this.category,
