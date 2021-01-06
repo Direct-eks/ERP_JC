@@ -2,14 +2,26 @@
     <v-row justify="center" dense>
         <v-col md="auto">
             <v-card>
-                <v-list>
-                    <v-list-item-group v-model="active" color="primary">
-                        <v-list-item v-for="(item, i) in navItem"
+                <v-list expand>
+                    <template v-for="(item, i) in navItem">
+                        <v-list-group v-if="item.children"
+                                      :key="i"
+                                      no-action>
+                            <template v-slot:activator>
+                                <v-list-item-content>{{item.name}}</v-list-item-content>
+                            </template>
+                            <v-list-item v-for="(subItem, j) in item.children"
+                                         :key="j"
+                                         :to="subItem.url">
+                                <v-list-item-content>{{subItem.name}}</v-list-item-content>
+                            </v-list-item>
+                        </v-list-group>
+                        <v-list-item v-else
                                      :key="i"
                                      :to="item.url">
                             <v-list-item-content>{{item.name}}</v-list-item-content>
                         </v-list-item>
-                    </v-list-item-group>
+                    </template>
                 </v-list>
             </v-card>
         </v-col>
@@ -30,12 +42,11 @@ export default {
     data() {
         return {
             navItem: nav.inbound_management_nav,
-            active: 0
         }
     }
 }
 </script>
 
-<style scoped lang="sass">
+<style scoped>
 
 </style>

@@ -2,7 +2,7 @@
     <v-row justify="center" dense>
         <v-col md="auto">
             <v-card>
-                <v-list>
+                <v-list expand>
                     <template v-for="(item, i) in navItem">
                         <v-list-group v-if="item.children"
                                       :key="i"

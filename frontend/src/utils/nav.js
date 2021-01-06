@@ -55,75 +55,105 @@ export default {
     ],
     inbound_management_nav: [
         {
-            name: '入库单录入',
-            url: '/inbound_management/entry_in'
+            name: '入库单',
+            url: '/inbound_management/',
+            children: [
+                {
+                    name: '录入',
+                    url: '/inbound_management/entry_in'
+                },
+                {
+                    name: '完善',
+                    url: '/inbound_management/completion_in'
+                },
+                {
+                    name: '修改',
+                    url: '/inbound_management/modify_in'
+                },
+                {
+                    name: '退货',
+                    url: '/inbound_management/return_in'
+                },
+                {
+                    name: '查询',
+                    url: '/inbound_management/query_in'
+                },
+            ]
         },
         {
-            name: '入库单完善',
-            url: '/inbound_management/completion_in'
-        },
-        {
-            name: '入库单修改',
-            url: '/inbound_management/modify_in'
-        },
-        {
-            name: '入库单退货',
-            url: '/inbound_management/return_in'
-        },
-        {
-            name: '入库单查询',
-            url: '/inbound_management/query_in'
-        },
-        {
-            name: '采购订单录入',
-            url: '/inbound_management/purchase_order_entry'
-        },
-        {
-            name: '采购订单查询',
-            url: '/inbound_management/purchase_order_query'
-        },
-        {
-            name: '采购订单修改',
-            url: '/inbound_management/purchase_order_modify'
+            name: '采购订单',
+            url: '/inbound_management/purchase_order',
+            children: [
+                {
+                    name: '录入',
+                    url: '/inbound_management/purchase_order_entry'
+                },
+                {
+                    name: '查询',
+                    url: '/inbound_management/purchase_order_query'
+                },
+                {
+                    name: '修改',
+                    url: '/inbound_management/purchase_order_modify'
+                }
+            ]
         }
     ],
     outbound_management_nav: [
         {
-            name: '出库单录入',
-            url: '/outbound_management/entry_out'
+            name: '出库单',
+            url: '/outbound_management/',
+            children: [
+                {
+                    name: '录入',
+                    url: '/outbound_management/entry_out'
+                },
+                {
+                    name: '完善',
+                    url: '/outbound_management/completion_out'
+                },
+                {
+                    name: '修改',
+                    url: '/outbound_management/modify_out'
+                },
+                {
+                    name: '退货',
+                    url: '/outbound_management/return_out'
+                },
+                {
+                    name: '查询',
+                    url: '/outbound_management/query_out'
+                },
+            ]
         },
         {
-            name: '出库单完善',
-            url: '/outbound_management/completion_out'
+            name: '报价单',
+            url: '/outbound_management/quota',
+            children: [
+                {
+                    name: '录入',
+                    url: '/outbound_management/quote_entry'
+                },
+                {
+                    name: '查询&修改',
+                    url: '/outbound_management/quote_query'
+                },
+            ]
         },
         {
-            name: '出库单修改',
-            url: '/outbound_management/modify_out'
+            name: '销售订单',
+            url: '',
+            children: [
+                {
+                    name: '录入',
+                    url: '/outbound_management/sales_order_entry'
+                },
+                {
+                    name: '查询&修改',
+                    url: '/outbound_management/sales_order_query'
+                },
+            ]
         },
-        {
-            name: '出库单退货',
-            url: '/outbound_management/return_out'
-        },
-        {
-            name: '出库单查询',
-            url: '/outbound_management/query_out'
-        },
-        {
-            name: '报价单录入',
-            url: '/outbound_management/quote_entry'
-        },
-        {
-            name: '报价单查询',
-            url: '/outbound_management/quote_query'
-        },
-        {
-            name: '销售订单录入',
-            url: '/outbound_management/sales_order_entry'
-        },
-        {
-            name: '销售订单查询',
-            url: '/outbound_management/sales_order_query'
-        }
     ],
     inbound_invoicing_nav: [
         {
@@ -141,6 +171,14 @@ export default {
                 {
                     name: '修改',
                     url: '/inbound_invoicing/inbound_checkout_modify'
+                },
+                {
+                    name: '结账未开票查询',
+                    url: '/inbound_invoicing/incomplete_invoice_query'
+                },
+                {
+                    name: '结账后退货',
+                    url: '/inbound_invoicing/inbound_checkout_return'
                 }
             ]
         },
@@ -195,10 +233,6 @@ export default {
             ]
         },
         {
-            name: '入库结账未开票查询',
-            url: '/inbound_invoicing/incomplete_invoice_query'
-        },
-        {
             name: '付运费',
             url: '/inbound_invoicing/shipping_cost',
             children: [
@@ -216,10 +250,6 @@ export default {
                 }
             ]
         },
-        {
-            name: '入库结账后退货',
-            url: '/inbound_invoicing/inbound_checkout_return'
-        }
     ],
     outbound_invoicing_nav: [
         {
@@ -237,6 +267,14 @@ export default {
                 {
                     name: '修改',
                     url: '/outbound_invoicing/outbound_check_modify'
+                },
+                {
+                    name: '结账未开票查询',
+                    url: '/outbound_invoicing/incomplete_invoice_query'
+                },
+                {
+                    name: '结账后退货',
+                    url: '/outbound_invoicing/outbound_check_invoicing_return'
                 }
             ]
         },
@@ -291,10 +329,6 @@ export default {
             ]
         },
         {
-            name: '出库结账未开票查询',
-            url: '/outbound_invoicing/incomplete_invoice_query'
-        },
-        {
             name: '付运费',
             url: '/outbound_invoicing/shipping_cost',
             children: [
@@ -312,10 +346,6 @@ export default {
                 }
             ]
         },
-        {
-            name: '出库结账后退货',
-            url: '/outbound_invoicing/outbound_check_invoicing_return'
-        }
     ],
     stock_management_nav: [
         {

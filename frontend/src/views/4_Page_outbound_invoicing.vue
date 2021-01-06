@@ -2,7 +2,7 @@
     <v-row justify="center" dense>
         <v-col md="auto">
             <v-card>
-                <v-list>
+                <v-list expand>
                     <template v-for="(item, i) in navItem">
                         <v-list-group v-if="item.children"
                                       :key="i"
@@ -35,16 +35,16 @@
 </template>
 
 <script>
-    import nav from "~/utils/nav";
+import nav from "~/utils/nav";
 
-    export default {
-        name: "Page_outbound_invoicing",
-        data() {
-            return {
-                navItem: nav.outbound_invoicing_nav
-            }
+export default {
+    name: "Page_outbound_invoicing",
+    data() {
+        return {
+            navItem: nav.outbound_invoicing_nav
         }
     }
+}
 </script>
 
 <style scoped>
