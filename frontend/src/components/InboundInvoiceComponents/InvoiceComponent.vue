@@ -236,7 +236,7 @@
             <v-spacer></v-spacer>
             <v-col>
                 <v-btn color="primary"
-                       @click="createInvoiceEntry(true)">
+                       @click="createInvoiceEntry()">
                     保存
                 </v-btn>
             </v-col>
@@ -492,27 +492,7 @@ export default {
                     message: '提交成功', color: 'success'
                 })
 
-                if (!refreshBool) {
-                    if (this.companyResetIndicator === 1) {
-                        this.form.partnerCompanyID = -1
-                        this.form.companyFullName = ''
-                    }
-                    this.form.invoiceType = ''
-                    this.form.invoiceNumber = ''
-                    this.form.totalAmount = 0.0
-                    this.form.invoiceAmount = 0.0
-                    this.form.invoiceIndication = ''
-                    this.form.isFollowUpIndication = 0
-                    this.form.remark = ''
-                    this.form.creationDate = new Date().format('yyyy-MM-dd').substr(0, 10)
-                    this.form.checkoutDate = ''
-                    this.form.invoiceDate = new Date().format('yyyy-MM-dd').substr(0, 10)
-                    this.form.invoiceNumberDate = new Date().format('yyyy-MM-dd').substr(0, 10)
-                }
-                else {
-                    this.$router.replace('/inbound_invoicing')
-                }
-
+                this.$router.replace('/inbound_invoicing')
             }).catch(error => this.$ajaxErrorHandler(error))
         },
         modifyEntry() {
