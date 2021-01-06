@@ -76,14 +76,22 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
         List<InvoiceEntryStandAloneVO> entries = new ArrayList<>();
         try {
-            String prefix = isInbound ?
-                    (invoiceType.equals("增值税票") ? "入增" : "入普") :
-                    (invoiceType.equals("增值税票") ? "出增" : "出普");
+            String prefix1, prefix2;
+            if (invoiceType.equals("")) {
+                prefix1 = isInbound ? "入增" : "出增";
+                prefix2 = isInbound ? "入普" : "出普";
+            }
+            else {
+                prefix1 = isInbound ?
+                        (invoiceType.equals("增值税票") ? "入增" : "入普") :
+                        (invoiceType.equals("增值税票") ? "出增" : "出普");
+                prefix2 = "x";
+            }
 
             List<InvoiceEntryO> entriesFromDatabase = invoiceEntryMapper.getEntriesInDateRangeAndParams(
                     dateFormat.format(startDate), dateFormat.format(endDate),
                     invoiceNumberDate == null ? null : dateFormat.format(invoiceNumberDate),
-                    companyID, isFollowUpIndication, invoiceNumber, invoiceType, prefix);
+                    companyID, isFollowUpIndication, invoiceNumber, invoiceType, prefix1, prefix2);
 
             for (var entryFromDatabase : entriesFromDatabase) {
                 InvoiceEntryStandAloneVO entry = new InvoiceEntryStandAloneVO();

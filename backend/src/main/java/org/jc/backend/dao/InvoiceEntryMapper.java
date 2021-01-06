@@ -13,7 +13,8 @@ public interface InvoiceEntryMapper {
     void insertEntry(InvoiceEntryO invoiceEntryO);
     List<InvoiceEntryO> getEntriesInDateRangeAndParams(String startDate, String endDate, String invoiceNumberDate,
                                                        int companyID, int isFollowUpIndication,
-                                                       String invoiceNumber, String invoiceType, String prefix);
+                                                       String invoiceNumber, String invoiceType,
+                                                       String prefix1, String prefix2);
     InvoiceEntryO selectEntryBySerialForCompare(String serial);
     void updateEntry(InvoiceEntryO invoiceEntryO);
 }

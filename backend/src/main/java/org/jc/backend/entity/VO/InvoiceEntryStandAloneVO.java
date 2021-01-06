@@ -2,7 +2,6 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
 
 import javax.validation.constraints.DecimalMin;
