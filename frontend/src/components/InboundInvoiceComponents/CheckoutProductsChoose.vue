@@ -47,6 +47,10 @@ import {mdiClose} from '@mdi/js'
 export default {
     name: "InboundCheckoutProductsChoose",
     props: {
+        mode: {
+            type: String,
+            required: true,
+        },
         companyID: {
             type: Number,
             required: true,
@@ -60,31 +64,66 @@ export default {
         companyID: {
             handler: function (val, oldVal) {
                 if (val === -1) return
-                this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
-                    companyID: this.companyID, invoiceType: this.invoiceType
-                }).then((res) => {
-                    console.log(res.data)
-                    this.queryTableData = res.data
-                })
+                if (this.checkoutMode) {
+                    this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+                else if (this.invoiceMode) {
+                    this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+
             },
             immediate: true
         },
         invoiceType: {
             handler: function (val, oldVal) {
                 if (this.companyID === -1) return
-                this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
-                    companyID: this.companyID, invoiceType: this.invoiceType
-                }).then((res) => {
-                    console.log(res.data)
-                    this.queryTableData = res.data
-                })
-            }
+                if (this.checkoutMode) {
+                    this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+                else if (this.invoiceMode) {
+                    this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+
+            },
+            immediate: true
+        }
+    },
+    beforeMount() {
+        switch (this.mode) {
+        case 'checkout':
+            this.checkoutMode = true
+            break
+        case 'invoice':
+            this.invoiceMode = true
+            break
         }
     },
     data() {
         return {
             mdiClosePath: mdiClose,
 
+            checkoutMode: false,
+            invoiceMode: false,
             modelCode: '',
 
             tableHeaders: [

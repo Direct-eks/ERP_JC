@@ -287,6 +287,7 @@
         <v-row>
             <v-col v-if="creationMode">
                 <v-dialog v-model="productsChoosePanelOpen"
+                          :eager="true"
                           persistent
                           scrollable
                           no-click-animation
@@ -298,7 +299,8 @@
                             根据单位助选入库产品
                         </v-btn>
                     </template>
-                    <InboundCheckoutProductsChoose :companyID="form.partnerCompanyID"
+                    <InboundCheckoutProductsChoose mode="checkout"
+                                                   :companyID="form.partnerCompanyID"
                                                    :invoiceType="form.invoiceType"
                                                    @productsChoose="productsChooseAction">
                     </InboundCheckoutProductsChoose>
@@ -330,8 +332,7 @@
         </v-col>
         </v-row>
 
-        <v-data-table v-model="tableRowsSelectedForDeletion"
-                      :headers="tableHeaders"
+        <v-data-table :headers="tableHeaders"
                       :items="form.checkoutProducts"
                       item-key="skuID"
                       height="45vh"
@@ -405,6 +406,7 @@ export default {
             handler: function (val, oldVal) {
                 if (this.creationMode) return
                 this.form = val
+                this.calculateSums()
             },
             deep: true,
             immediate: true,
@@ -518,9 +520,6 @@ export default {
                 { text: '库存单价', value: 'stockUnitPrice', width: '120px' }
             ],
 
-            deleteTableRowPopup: false,
-            tableRowsSelectedForDeletion: [],
-
             tax: 0,
             sumWithTax: 0,
             sumWithoutTax: 0,
@@ -541,28 +540,32 @@ export default {
             if (val) {
                 this.form.checkoutProducts = val
 
-                let tempTax = 0.0
-                let tempSumWithTax = 0.0
-                let tempSumWithoutTax = 0.0
-                for (let item of this.form.checkoutProducts) {
-                    const itemTotalTax = (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                    const itemTotalWithoutTax = item.unitPriceWithoutTax * item.quantity
-                    tempSumWithTax += item.unitPriceWithTax * item.quantity
-                    tempTax += itemTotalTax
-                    tempSumWithoutTax += itemTotalWithoutTax
-                    item.totalTax = itemTotalTax.toFixed(2)
-                    item.totalWithoutTax = itemTotalWithoutTax.toFixed(2)
-                }
-                this.tax = tempTax.toFixed(2)
-                this.sumWithTax = tempSumWithTax.toFixed(2)
-                this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
+                this.calculateSums()
 
-                this.form.totalAmount = tempSumWithTax.toFixed(2)
-                this.form.debt = (tempSumWithTax - Number(this.form.paymentAmount)).toFixed(2)
+                this.form.totalAmount = this.sumWithTax
+                this.form.debt = (Number(this.sumWithoutTax) -
+                    Number(this.form.paymentAmount)).toFixed(2)
             }
             this.productsChoosePanelOpen = false
         },
         /* ----- number calculation ----- */
+        calculateSums() {
+            let tempTax = 0.0
+            let tempSumWithTax = 0.0
+            let tempSumWithoutTax = 0.0
+            for (let item of this.form.checkoutProducts) {
+                const itemTotalTax = (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                const itemTotalWithoutTax = item.unitPriceWithoutTax * item.quantity
+                tempSumWithTax += item.unitPriceWithTax * item.quantity
+                tempTax += itemTotalTax
+                tempSumWithoutTax += itemTotalWithoutTax
+                item.totalTax = itemTotalTax.toFixed(2)
+                item.totalWithoutTax = itemTotalWithoutTax.toFixed(2)
+            }
+            this.tax = tempTax.toFixed(2)
+            this.sumWithTax = tempSumWithTax.toFixed(2)
+            this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
+        },
         handlePaymentAmountChange() {
             this.form.paymentAmount = validateFloat(this.form.paymentAmount.toString())
             if (this.form.isRounded === 1) {
@@ -616,7 +619,9 @@ export default {
                 return
             }
             if (this.$refs.form.validate()) {
-                this.$putRequest(this.$api.createCheckoutEntry, this.form).then((res) => {
+                this.$putRequest(this.$api.createCheckoutEntry, this.form, {
+                    isInbound: true
+                }).then((res) => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
