@@ -40,7 +40,8 @@ public class MoneyEntryController {
         moneyEntryService.createEntry(moneyEntryO, isInbound);
     }
 
-    @ApiOperation(value = "", response = MoneyEntryO.class)
+    @ApiOperation(value = "", response = MoneyEntryO.class,
+            notes = "bankAccount should be 0 when not provided, because default value is -1")
     @GetMapping("/getEntriesInDateRange")
     public List<MoneyEntryO> getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,

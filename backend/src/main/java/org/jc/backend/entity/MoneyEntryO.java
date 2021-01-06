@@ -15,6 +15,8 @@ public class MoneyEntryO {
     private int partnerCompanyID;
     //from c_partner_company
     private String companyAbbreviatedName;
+    private String companyFullName;
+    private String companyPhone;
 
     @NotNull(message = "paymentIndication null error")
     @Pattern(regexp = "^(正常|退款)$", message = "paymentIndication value error")

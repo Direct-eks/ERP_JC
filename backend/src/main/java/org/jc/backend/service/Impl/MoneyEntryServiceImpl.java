@@ -10,6 +10,7 @@ import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
-            logger.error("update failed");
+            logger.error("insert failed");
             throw e;
         }
     }
@@ -66,7 +67,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
-            logger.error("update failed");
+            logger.error("query failed");
             throw e;
         }
 
@@ -84,7 +85,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
-            logger.error("update failed");
+            logger.error("query failed");
             throw e;
         }
 
@@ -196,5 +197,39 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
         }
 
         return newMoneySerial;
+    }
+
+    @Transactional
+    public void modifyEntryForCheckout(CheckoutEntryDO checkoutEntryDO) {
+
+        MoneyEntryO modifiedEntry = new MoneyEntryO();
+        BeanUtils.copyProperties(checkoutEntryDO, modifiedEntry);
+
+        try {
+            MoneyEntryO originEntry = moneyEntryMapper.selectEntryBySerial(modifiedEntry.getMoneyEntrySerial());
+
+            StringBuilder record = new StringBuilder("修改者: " + modifiedEntry.getDrawer() + "; ");
+            //since only payment fields are needed to be compare, copy fields from originEntry
+            // in case of unwanted changes being output to modification record
+            modifiedEntry.setPaymentIndication(originEntry.getPaymentIndication());
+            modifiedEntry.setRemark(originEntry.getRemark());
+            boolean bool = compareEntryAndFormModificationRecord(record, originEntry, modifiedEntry);
+
+            if (bool) {
+                moneyEntryMapper.modifyEntry(modifiedEntry);
+
+                modificationMapper.insertModificationRecord(new ModificationO(
+                        modifiedEntry.getMoneyEntrySerial(), record.toString()));
+            }
+            else {
+                logger.warn("nothing modified");
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
     }
 }

@@ -2,7 +2,6 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.CheckoutEntryMapper;
-import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
@@ -155,6 +154,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originDO.getCheckoutEntrySerial(), record.toString()));
+
+                // check and update corresponding moneyEntry
+                moneyEntryService.modifyEntryForCheckout(modifyDO);
             }
             else {
                 logger.warn("nothing modified");

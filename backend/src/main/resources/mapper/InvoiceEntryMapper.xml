@@ -83,7 +83,8 @@
             invoice_amount = #{invoiceAmount},
             partner_company_id = #{partnerCompanyID},
             invoice_number_date = #{invoiceNumberDate},
-            remark = #{remark}
+            remark = #{remark},
+            is_modified = 1
         where invoice_entry_serial =#{invoiceEntrySerial}
     </update>
 </mapper>

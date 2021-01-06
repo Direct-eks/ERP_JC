@@ -14,4 +14,5 @@ public interface MoneyEntryService {
     void modifyEntry(MoneyEntryO moneyEntryO);
 
     String createEntryForCheckout(CheckoutEntryDO checkoutEntry, String checkoutSerial, boolean isInbound);
+    void modifyEntryForCheckout(CheckoutEntryDO checkoutEntryDO);
 }

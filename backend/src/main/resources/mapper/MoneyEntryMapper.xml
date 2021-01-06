@@ -18,7 +18,7 @@
             department_id
         )
         values (
-            #{moneyEntrySerial}, #{partnerCompanyID}, #{invoiceIndication}, #{paymentAmount}, #{paymentNumber},
+            #{moneyEntrySerial}, #{partnerCompanyID}, #{paymentIndication}, #{paymentMethod}, #{paymentNumber},
             #{paymentAmount}, #{bankAccountID}, #{remark}, #{drawer}, date('now', 'localtime'), #{paymentDate},
             #{checkoutSerial}, #{departmentID}
         )
@@ -28,6 +28,8 @@
         <result property="moneyEntrySerial" column="money_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
+        <result property="companyFullName" column="company_full_name"/>
+        <result property="companyPhone" column="company_phone"/>
         <result property="paymentIndication" column="payment_indication"/>
         <result property="paymentMethod" column="payment_method"/>
         <result property="paymentNumber" column="payment_number"/>
@@ -46,9 +48,10 @@
 
     <select id="getEntriesInDateRangeAndParams" resultMap="moneyEntryResultMap">
         select money_entry_serial, m.partner_company_id, c.abbreviated_name as company_abbreviated_name,
-            payment_indication, payment_method, payment_number, payment_amount, m.bank_account_id,
-            b.name as bank_account_name, m.remark, drawer, creation_date, payment_date, checkout_serial,
-            m.department_id, d.name as department_name, is_modified
+               c.full_name as company_full_name, c.phone as company_phone, payment_indication, payment_method,
+               payment_number, payment_amount, m.bank_account_id, b.name as bank_account_name, m.remark,
+               drawer, creation_date, payment_date, checkout_serial, m.department_id, d.name as department_name,
+               is_modified
         from ((m_money_entry as m join c_partner_company as c on m.partner_company_id = c.partner_company_id)
             left join c_bank_account as b on m.bank_account_id = b.bank_account_id)
             join e_department as d on m.department_id = d.department_id
@@ -84,7 +87,8 @@
             bank_account_id = #{bankAccountID},
             payment_indication = #{paymentIndication},
             department_id = #{departmentID},
-            remark = #{remark}
+            remark = #{remark},
+            is_modified = 1
         where money_entry_serial = #{moneyEntrySerial}
     </update>
 
