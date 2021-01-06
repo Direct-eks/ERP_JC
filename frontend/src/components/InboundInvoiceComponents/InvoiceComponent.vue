@@ -234,21 +234,6 @@
                 </v-dialog>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="auto" class="pr-0">
-                <v-radio-group v-model="companyResetIndicator"
-                               hide-details="auto"
-                               class="mt-0"
-                               row dense>
-                    <v-radio label="保持单位不变" :value=0></v-radio>
-                    <v-radio label="清空" :value=1></v-radio>
-                </v-radio-group>
-            </v-col>
-            <v-col>
-                <v-btn color="primary"
-                       @click="createInvoiceEntry(false)">
-                    存盘后新增
-                </v-btn>
-            </v-col>
             <v-col>
                 <v-btn color="primary"
                        @click="createInvoiceEntry(true)">

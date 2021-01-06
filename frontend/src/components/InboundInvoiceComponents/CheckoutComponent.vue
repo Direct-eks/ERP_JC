@@ -25,8 +25,8 @@
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu v-if="creationMode"
-                            close-on-content-click
+                    <v-menu close-on-content-click
+                            :disabled="!creationMode"
                             :nudge-right="40"
                             transition="scale-transition"
                             offset-y>
@@ -48,15 +48,6 @@
                                        locale="zh-cn">
                         </v-date-picker>
                     </v-menu>
-                    <v-text-field v-else
-                                  v-model="form.checkoutDate"
-                                  label="结账日期"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.drawer"
