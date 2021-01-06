@@ -146,10 +146,10 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             record.append(String.format("部门: %s -> %s", originEntry.getDepartmentName(),
                     modifiedEntry.getDepartmentName()));
         }
-        if (!originEntry.getInvoiceIndication().equals(modifiedEntry.getInvoiceIndication())) {
+        if (!originEntry.getPaymentIndication().equals(modifiedEntry.getPaymentIndication())) {
             bool = true;
-            record.append(String.format("开票类型: %s -> %s; ", originEntry.getInvoiceIndication(),
-                    modifiedEntry.getInvoiceIndication()));
+            record.append(String.format("开票类型: %s -> %s; ", originEntry.getPaymentIndication(),
+                    modifiedEntry.getPaymentIndication()));
         }
         if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
             bool = true;
@@ -176,7 +176,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
 
             moneyEntryO.setPartnerCompanyID(checkoutEntry.getPartnerCompanyID());
-            moneyEntryO.setInvoiceIndication("正常");
+            moneyEntryO.setPaymentIndication("正常");
             moneyEntryO.setPaymentMethod(checkoutEntry.getPaymentMethod());
             moneyEntryO.setPaymentNumber(checkoutEntry.getPaymentNumber());
             moneyEntryO.setPaymentAmount(checkoutEntry.getPaymentAmount());

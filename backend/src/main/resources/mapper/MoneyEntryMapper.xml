@@ -13,7 +13,7 @@
 
     <insert id="insertEntry">
         insert into m_money_entry(
-            money_entry_serial, partner_company_id, invoice_indication, payment_method, payment_number,
+            money_entry_serial, partner_company_id, payment_indication, payment_method, payment_number,
             payment_amount, bank_account_id, remark, drawer, creation_date, payment_date, checkout_serial,
             department_id
         )
@@ -28,7 +28,7 @@
         <result property="moneyEntrySerial" column="money_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
-        <result property="invoiceIndication" column="invoice_indication"/>
+        <result property="paymentIndication" column="payment_indication"/>
         <result property="paymentMethod" column="payment_method"/>
         <result property="paymentNumber" column="payment_number"/>
         <result property="paymentAmount" column="payment_amount"/>
@@ -46,7 +46,7 @@
 
     <select id="getEntriesInDateRangeAndParams" resultMap="moneyEntryResultMap">
         select money_entry_serial, m.partner_company_id, c.abbreviated_name as company_abbreviated_name,
-            invoice_indication, payment_method, payment_number, payment_amount, m.bank_account_id,
+            payment_indication, payment_method, payment_number, payment_amount, m.bank_account_id,
             b.name as bank_account_name, m.remark, drawer, creation_date, payment_date, checkout_serial,
             m.department_id, d.name as department_name, is_modified
         from ((m_money_entry as m join c_partner_company as c on m.partner_company_id = c.partner_company_id)
@@ -67,7 +67,7 @@
 
     <select id="selectEntryBySerial" resultMap="moneyEntryResultMap">
         select money_entry_serial, m.partner_company_id, c.abbreviated_name as company_abbreviated_name,
-               invoice_indication, payment_method, payment_number, payment_amount, m.bank_account_id,
+               payment_indication, payment_method, payment_number, payment_amount, m.bank_account_id,
                b.name as bank_account_name, m.remark, drawer, creation_date, payment_date, checkout_serial,
                m.department_id, d.name as department_name, is_modified
         from ((m_money_entry as m join c_partner_company as c on m.partner_company_id = c.partner_company_id)
@@ -82,7 +82,7 @@
             payment_amount = #{paymentAmount},
             payment_number = #{paymentNumber},
             bank_account_id = #{bankAccountID},
-            invoice_indication = #{invoiceIndication},
+            payment_indication = #{paymentIndication},
             department_id = #{departmentID},
             remark = #{remark}
         where money_entry_serial = #{moneyEntrySerial}
