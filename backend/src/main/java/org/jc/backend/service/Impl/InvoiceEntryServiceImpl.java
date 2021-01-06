@@ -162,7 +162,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         }
         if (!originEntry.getInvoiceNumberDate().equals(modifiedEntry.getInvoiceNumberDate())) {
             bool = true;
-            record.append(String.format("发票开具日期: %s -> %s", originEntry.getInvoiceNumberDate(),
+            record.append(String.format("发票开具日期: %s -> %s; ", originEntry.getInvoiceNumberDate(),
                     modifiedEntry.getInvoiceNumberDate()));
         }
         if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
