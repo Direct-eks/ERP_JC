@@ -484,25 +484,29 @@ export default {
             this.sumWithTax = tempSumWithTax.toFixed(2)
             this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
         },
-        createInvoiceEntry(refreshBool) {
-            this.$putRequest(this.$api.createInvoiceEntry, this.form, {
-                isInbound: true,
-            }).then((res) => {
-                this.$store.commit('setSnackbar', {
-                    message: '提交成功', color: 'success'
-                })
+        createInvoiceEntry() {
+            if (this.$refs.form.validate()) {
+                this.$putRequest(this.$api.createInvoiceEntry, this.form, {
+                    isInbound: true,
+                }).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
 
-                this.$router.replace('/inbound_invoicing')
-            }).catch(error => this.$ajaxErrorHandler(error))
+                    this.$router.replace('/inbound_invoicing')
+                }).catch(error => this.$ajaxErrorHandler(error))
+            }
         },
         modifyEntry() {
-            this.$patchRequest(this.$api.modifyInvoiceEntry, this.form).then((res) => {
-                this.$store.commit('setSnackbar', {
-                    message: '提交成功', color: 'success'
-                })
+            if (this.$refs.form.validate()) {
+                this.$patchRequest(this.$api.modifyInvoiceEntry, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
 
-                this.$router.replace('/inbound_invoicing')
-            })
+                    this.$router.replace('/inbound_invoicing')
+                }).catch(error => this.$ajaxErrorHandler(error))
+            }
         }
     }
 }

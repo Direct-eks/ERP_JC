@@ -1,49 +1,26 @@
 <template>
     <!--  <p>入库结账管理</p>-->
     <!--  <p>付款单录入</p>-->
-    <div id="all">
+    <v-card outlined>
+        <v-card-title>付款单录入</v-card-title>
 
-    </div>
+        <PaymentComponent mode="create">
+        </PaymentComponent>
+
+        <SnackMessage></SnackMessage>
+    </v-card>
 </template>
 
 <script>
-    export default {
-        name: "Pay_Entry",
-        components: {
-            CompanySearch: () => import('~/components/CompanySearch')
-        },
-        data() {
-            return {
-                // 单位助选 data
-                fullSearchField: '',
-                fullSearchLoading: false,
-                fullSearchPanelOpen: false,
-            }
-        },
-        updated: function () {
-            this.$nextTick(function () {
-                // Code that will run only after the
-                // entire view has been re-rendered
-                this.abbreviatedSearchLoading = false
-                this.fullSearchLoading = false
-                this.modelSearchLoading = false
-                console.log('deactivate loading')
-            })
-        },
-        methods: {
-            fullSearch() {
-                this.fullSearchLoading = true;
-                this.abbreviatedSearchPanelOpen = false //close the other search panel
-                this.fullSearchPanelOpen = true
-            },
-            fullSearchPanelCloseAction() {
-                this.fullSearchPanelOpen = false
-            },
-            fullSearchChooseAction() {
+import SnackMessage from "~/components/SnackMessage";
 
-            },
-        }
+export default {
+    name: "Pay_Entry",
+    components: {
+        PaymentComponent: () => import('~/components/InboundInvoiceComponents/PaymentComponent'),
+        SnackMessage
     }
+}
 </script>
 
 <style scoped>

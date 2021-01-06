@@ -598,7 +598,8 @@ export default {
         },
 
         createCheckoutEntry() {
-            console.log(this.form)
+            if (!this.$refs.form.validate()) return
+
             if (!this.invoicePanelOpen) {
                 this.form.invoiceEntry = null
             }
@@ -609,42 +610,40 @@ export default {
                 })
                 return
             }
-            if (this.$refs.form.validate()) {
-                this.$putRequest(this.$api.createCheckoutEntry, this.form, {
-                    isInbound: true
-                }).then((res) => {
-                    this.$store.commit('setSnackbar', {
-                        message: '提交成功', color: 'success'
-                    })
 
-                    this.$router.replace('/inbound_invoicing')
-                }).catch(error => this.$ajaxErrorHandler(error))
-            }
+            this.$putRequest(this.$api.createCheckoutEntry, this.form, {
+                isInbound: true
+            }).then((res) => {
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+
+                this.$router.replace('/inbound_invoicing')
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
         modifyCheckoutEntry() {
-            if (this.$refs.form.validate()) {
-                //change drawer name for modification
-                this.form.drawer = this.$store.getters.currentUser
+            if (!this.$refs.form.validate()) return
+            //change drawer name for modification
+            this.form.drawer = this.$store.getters.currentUser
 
-                //fill in department name
-                this.departmentOptions.forEach(item => {
-                    if (item.departmentID === this.form.departmentID)
-                        this.form.departmentName = item.name
+            //fill in department name
+            this.departmentOptions.forEach(item => {
+                if (item.departmentID === this.form.departmentID)
+                    this.form.departmentName = item.name
+            })
+
+            //fill in bankAccountName
+            this.bankAccountOptions.forEach(item => {
+                if (item.bankAccountID === this.form.bankAccountID)
+                    this.form.bankAccountName = item.name
+            })
+
+            this.$patchRequest(this.$api.modifyCheckoutEntry, this.form,
+                {isInbound: true}).then((res) => {
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
                 })
-
-                //fill in bankAccountName
-                this.bankAccountOptions.forEach(item => {
-                    if (item.bankAccountID === this.form.bankAccountID)
-                        this.form.bankAccountName = item.name
-                })
-
-                this.$patchRequest(this.$api.modifyCheckoutEntry, this.form,
-                    {isInbound: true}).then((res) => {
-                    this.$store.commit('setSnackbar', {
-                        message: '提交成功', color: 'success'
-                    })
-                }).catch(error => this.$ajaxErrorHandler(error))
-            }
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
     }
 }
