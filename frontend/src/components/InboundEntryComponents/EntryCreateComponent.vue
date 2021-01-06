@@ -516,7 +516,6 @@ export default {
             allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
 
             form: {
-                inboundEntryID: '',
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 totalCost: 0.0, invoiceType: '',

@@ -240,8 +240,8 @@
             </v-row>
         </v-form>
 
-        <v-row>
-            <v-col v-if="inboundEntryModifyMode || purchaseOrderModifyMode">
+        <v-row v-if="inboundEntryModifyMode || purchaseOrderModifyMode">
+            <v-col>
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="red lighten-1"
@@ -270,13 +270,7 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col v-if="!inboundEntryModifyMode && !purchaseOrderModifyMode">
-                <v-btn color="warning"
-                       @click="enableModify">
-                    激活修改
-                </v-btn>
-            </v-col>
-            <v-col v-if="inboundEntryModifyMode || purchaseOrderModifyMode">
+            <v-col>
                 <v-btn color="primary"
                        @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
                     保存修改
@@ -432,57 +426,33 @@ export default {
             required: true
         }
     },
-    watch: {
-        form: {
-            handler(newVal, oldVal) {
-                //because of pass by reference, only disable modify when there is a real change
-                if (JSON.stringify(newVal) === '{}') {
-                    this.disableModify()
-                    return
-                }
-
-                let tax = 0.0
-                let sumWithTax = 0.0
-                let sumWithoutTax = 0.0
-                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode) {
-                    for (let item of newVal.inboundProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
-                }
-                else if (this.purchaseOrderDisplayMode || this.purchaseOrderModifyMode) {
-                    for (let item of newVal.purchaseOrderProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
-                }
-                this.tax = tax.toFixed(2)
-                this.sumWithTax = sumWithTax.toFixed(2)
-                this.sumWithoutTax = sumWithoutTax.toFixed(2)
-            },
-        }
-    },
     beforeMount() {
         switch (this.displayMode) {
-        case 'inboundEntry':
+        case 'inboundEntryDisplay':
             this.inboundEntryDisplayMode = true
             break
-        case 'purchaseOrder':
+        case 'purchaseOrderDisplay':
             this.purchaseOrderDisplayMode = true
             break
+        case 'inboundEntryModify':
+            this.inboundEntryModifyMode = true
+            break
+        case 'purchaseOrderModify':
+            this.purchaseOrderModifyMode = true
+            break
         }
-
-        this.$getRequest(this.$api.departmentOptions).then((res) => {
-            console.log(res.data)
-            this.departmentOptions = res.data
-        }).catch((error) => this.$ajaxErrorHandler(error))
-
-        this.$getRequest(this.$api.warehouseOptions).then((res) => {
-            console.log(res.data)
-            this.warehouseOptions = res.data
-        }).catch((error) => this.$ajaxErrorHandler(error))
+        if (this.inboundEntryModifyMode || this.purchaseOrderModifyMode) {
+            this.$getRequest(this.$api.departmentOptions).then((res) => {
+                console.log(res.data)
+                this.departmentOptions = res.data
+            }).catch((error) => this.$ajaxErrorHandler(error))
+        }
+        if (this.purchaseOrderModifyMode) {
+            this.$getRequest(this.$api.warehouseOptions).then((res) => {
+                console.log(res.data)
+                this.warehouseOptions = res.data
+            }).catch((error) => this.$ajaxErrorHandler(error))
+        }
     },
     data() {
         return {
@@ -586,26 +556,6 @@ export default {
                 })
             }
         },
-        enableModify() {
-            if (this.inboundEntryDisplayMode) {
-                this.inboundEntryModifyMode = true
-                this.inboundEntryDisplayMode = false
-            }
-            else if (this.purchaseOrderDisplayMode) {
-                this.purchaseOrderModifyMode = true
-                this.purchaseOrderDisplayMode = false
-            }
-        },
-        disableModify() {
-            if (this.inboundEntryModifyMode) {
-                this.inboundEntryModifyMode = false
-                this.inboundEntryDisplayMode = true
-            }
-            else if (this.purchaseOrderModifyMode) {
-                this.purchaseOrderModifyMode = false
-                this.purchaseOrderDisplayMode = true
-            }
-        },
         saveEntryModification() {
             if (this.$refs.form.validate()) {
                 //change drawer name for modification
@@ -661,6 +611,34 @@ export default {
             return result
         },
     },
+    watch: {
+        form: {
+            handler(newVal, oldVal) {
+                let tax = 0.0
+                let sumWithTax = 0.0
+                let sumWithoutTax = 0.0
+                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode) {
+                    for (let item of newVal.inboundProducts) {
+                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                        sumWithTax += item.unitPriceWithTax * item.quantity
+                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                    }
+                }
+                else if (this.purchaseOrderDisplayMode || this.purchaseOrderModifyMode) {
+                    for (let item of newVal.purchaseOrderProducts) {
+                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
+                        sumWithTax += item.unitPriceWithTax * item.quantity
+                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                    }
+                }
+                this.tax = tax.toFixed(2)
+                this.sumWithTax = sumWithTax.toFixed(2)
+                this.sumWithoutTax = sumWithoutTax.toFixed(2)
+            },
+            deep: true,
+            immediate: true
+        }
+    }
 }
 </script>
 
