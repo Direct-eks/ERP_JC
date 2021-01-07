@@ -105,15 +105,15 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
-    @GetMapping("/getProductsByCompanyAndInvoiceType")
-    public List<InboundProductO> getProductsByCompanyAndInvoiceType(
+    @GetMapping("/getNotCheckedOutProducts")
+    public List<InboundProductO> getNotCheckedOutProducts(
             @RequestParam("companyID") int companyID,
             @RequestParam("invoiceType") String invoiceType
     ) {
-        logger.info("GET Request to /inboundEntry/getProductsByInvoiceType, companyID: " +
+        logger.info("GET Request to /inboundEntry/getNotCheckedOutProducts, companyID: " +
                 companyID + ", invoiceType: " + invoiceType);
 
-        return inboundEntryService.getProductsByCompanyIDAndInvoiceType(companyID, invoiceType);
+        return inboundEntryService.getNotCheckedOutProducts(companyID, invoiceType);
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)

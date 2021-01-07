@@ -65,7 +65,7 @@ export default {
             handler: function (val, oldVal) {
                 if (val === -1) return
                 if (this.checkoutMode) {
-                    this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
+                    this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
                         companyID: this.companyID, invoiceType: this.invoiceType
                     }).then((res) => {
                         console.log(res.data)
@@ -88,7 +88,7 @@ export default {
             handler: function (val, oldVal) {
                 if (this.companyID === -1) return
                 if (this.checkoutMode) {
-                    this.$getRequest(this.$api.inboundProductsByCompanyAndInvoiceType, {
+                    this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
                         companyID: this.companyID, invoiceType: this.invoiceType
                     }).then((res) => {
                         console.log(res.data)

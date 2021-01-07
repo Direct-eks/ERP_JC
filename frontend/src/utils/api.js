@@ -30,7 +30,7 @@ const api = {
     // GET startDate= endDate= type= forModify=bool companyID=int
     inboundEntriesInDateRange: '/inboundEntry/getEntriesInDateRange',
     modifyEntry: '/inboundEntry/modifyEntry', // PATCH
-    inboundProductsByCompanyAndInvoiceType: '/inboundEntry/getProductsByCompanyAndInvoiceType', // GET companyID= invoiceType=
+    inboundProductsNotCheckedOut: '/inboundEntry/getNotCheckedOutProducts', // GET companyID= invoiceType=
     inboundProductsCheckoutAndNotInvoiced: '/inboundEntry/getCheckoutAndNotInvoicedProducts', // GET companyID= invoiceType=
 
     /* ------ /invoiceEntry ------*/

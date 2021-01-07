@@ -28,7 +28,7 @@ public interface InboundEntryMapper {
     void updateProduct(InboundProductO inboundProductModifyO);
     void deleteProductByID(int id);
 
-    void deleteEntry(String id);
+    void deleteEntryByID(String id);
     void deleteProductsByEntryID(String id);
 
     List<String> queryEntriesByCompanyIDAndInvoiceType(int companyID, String invoiceType);

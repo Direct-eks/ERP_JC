@@ -210,7 +210,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     public void deleteEntry(String id) {
         try {
             inboundEntryMapper.deleteProductsByEntryID(id);
-            inboundEntryMapper.deleteEntry(id);
+            inboundEntryMapper.deleteEntryByID(id);
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production mode
             logger.error("Deletion failed");
@@ -219,7 +219,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
-    public List<InboundProductO> getProductsByCompanyIDAndInvoiceType(int companyID, String invoiceType) {
+    public List<InboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType) {
 
         List<InboundProductO> products = new ArrayList<>();
 
@@ -228,7 +228,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             for (var entryID : entryIDs) {
                 List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
                 for (var tempProduct : tempProducts) {
-                    //filter out checkout products
+                    //filter out checked-out products
                     if (tempProduct.getCheckoutSerial().equals("")) {
                         products.add(tempProduct);
                     }
@@ -306,11 +306,33 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     public List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial) {
-        return inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
+
+        List<InboundProductO> products;
+        try {
+            products = inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
     }
 
     @Transactional(readOnly = true)
     public List<InboundProductO> getProductsWithInvoiceSerial(String invoiceSerial) {
-        return inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
+
+        List<InboundProductO> products;
+        try {
+            products = inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);;
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
     }
 }
