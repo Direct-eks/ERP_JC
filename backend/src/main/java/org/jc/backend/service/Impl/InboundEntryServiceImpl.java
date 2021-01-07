@@ -245,7 +245,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
-    public List<InboundProductO> getCheckoutAndNotInvoicedProducts(int companyID, String invoiceType) {
+    public List<InboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType) {
 
         List<InboundProductO> products = new ArrayList<>();
 

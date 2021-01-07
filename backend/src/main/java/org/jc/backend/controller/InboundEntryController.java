@@ -125,6 +125,6 @@ public class InboundEntryController {
         logger.info("GET Request to /inboundEntry/getCheckoutAndNotInvoicedProducts, companyID: " +
                 companyID + ", invoiceType: " + invoiceType);
 
-        return inboundEntryService.getCheckoutAndNotInvoicedProducts(companyID, invoiceType);
+        return inboundEntryService.getCheckoutButNotInvoicedProducts(companyID, invoiceType);
     }
 }
