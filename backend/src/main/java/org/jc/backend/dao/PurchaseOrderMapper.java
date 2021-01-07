@@ -16,6 +16,7 @@ public interface PurchaseOrderMapper {
     int insertNewOrderProduct(PurchaseOrderProductO product);
 
     List<PurchaseOrderEntryDO> queryEntriesInDateRangeByCompanyID(String startDate, String endDate, int id);
+    List<PurchaseOrderEntryDO> queryEntriesByCompanyID(int id);
     List<PurchaseOrderProductO> queryProductsByEntryID(String id);
 
     PurchaseOrderEntryDO selectEntryForCompare(String id);

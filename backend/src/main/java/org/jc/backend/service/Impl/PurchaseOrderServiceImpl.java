@@ -96,6 +96,33 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Transactional
+    public List<PurchaseOrderEntryWithProductsVO> getOrdersByCompanyID(int id) {
+
+        List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
+        try {
+            List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesByCompanyID(id);
+
+            for (var entryFromDatabase : entriesFromDatabase) {
+                PurchaseOrderEntryWithProductsVO tempEntry = new PurchaseOrderEntryWithProductsVO();
+                BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+
+                List<PurchaseOrderProductO> products = purchaseOrderMapper.queryProductsByEntryID(
+                        tempEntry.getPurchaseOrderEntryID());
+                tempEntry.setPurchaseOrderProducts(products);
+
+                entries.add(tempEntry);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Query error");
+            throw e;
+        }
+
+        return entries;
+    }
+
+    @Transactional
     public void modifyOrder(PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
         //extract entryDO
         PurchaseOrderEntryDO currentEntry = new PurchaseOrderEntryDO();
@@ -167,4 +194,5 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             throw e;
         }
     }
+
 }

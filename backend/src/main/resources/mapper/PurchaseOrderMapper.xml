@@ -88,6 +88,18 @@
         order by p.purchase_order_entry_id desc
     </select>
 
+    <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
+        select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
+               p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name, c.phone,
+               c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
+               w.name as warehouse_name, p.remark, p.is_modified
+        from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
+            join e_department as d on p.department_id = d.department_id)
+            join w_warehouse as w on p.warehouse_id = w.warehouse_id
+        where p.partner_company_id = #{id}
+        order by p.purchase_order_entry_id desc
+    </select>
+
     <select id="queryProductsByEntryID" resultMap="productResultMap">
         select purchase_order_product_id, purchase_order_entry_id, p.sku_id,
                sku.new_code, sku.old_code, sku.unit_name, sku.factory_code,

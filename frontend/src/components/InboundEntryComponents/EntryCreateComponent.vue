@@ -252,6 +252,7 @@
         <v-row dense>
             <v-col v-if="inboundEntryMode">
                 <v-dialog v-model="purchaseOrderPanelOpen"
+                          :eager="true"
                           persistent
                           scrollable
                           no-click-animation

@@ -65,11 +65,9 @@ export default {
         companyID: {
             handler: function (val, oldVal) {
                 if (val === -1) return
-                this.$getRequest(this.$api.purchaseOrdersInDateRangeByCompanyID, {
-                    startDate: '2018-01-01',
-                    endDate: new Date().format("yyyy-MM-dd").substr(0, 10),
-                    companyID: this.companyID
-                }).then((res) => {
+                this.$getRequest(this.$api.purchaseOrdersByCompanyID +
+                    encodeURI(String(this.companyID))
+                ).then((res) => {
                     console.log('received', res.data)
                     this.queryTableData = res.data
                 }).catch((error) => this.$ajaxErrorHandler(error))

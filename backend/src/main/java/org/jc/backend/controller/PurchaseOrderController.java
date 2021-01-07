@@ -53,6 +53,14 @@ public class PurchaseOrderController {
         return purchaseOrderService.getOrdersInDateRangeByCompanyID(startDate, endDate, companyID);
     }
 
+    @ApiOperation(value = "", response = PurchaseOrderEntryWithProductsVO.class)
+    @GetMapping("/getOrdersByCompanyID/{id}")
+    public List<PurchaseOrderEntryWithProductsVO> getOrdersByCompanyID(@PathVariable("id") int id) {
+        logger.info("GET Request to /purchaseOrder/getOrdersByCompanyID, id: " + id);
+
+        return purchaseOrderService.getOrdersByCompanyID(id);
+    }
+
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyOrder")
     public void modifyOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
@@ -68,4 +76,5 @@ public class PurchaseOrderController {
 
         purchaseOrderService.deleteOrder(id);
     }
+
 }
