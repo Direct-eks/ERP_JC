@@ -3,6 +3,8 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -99,5 +101,29 @@ public class OutboundEntryController {
         logger.info("DELETE Request to /outboundEntry/deleteEntry, id: " + id);
 
         outboundEntryService.deleteEntry(id);
+    }
+
+    @ApiOperation(value = "", response = OutboundProductO.class)
+    @GetMapping("/getNotCheckedOutProducts")
+    public List<OutboundProductO> getNotCheckedOutProducts(
+            @RequestParam("companyID") int companyID,
+            @RequestParam("invoiceType") String invoiceType
+    ) {
+        logger.info("GET Request to /outboundEntry/getNotCheckedOutProducts, companyID: " +
+                companyID + ", invoiceType: " + invoiceType);
+
+        return outboundEntryService.getNotCheckedOutProducts(companyID, invoiceType);
+    }
+
+    @ApiOperation(value = "", response = OutboundProductO.class)
+    @GetMapping("/getCheckoutAndNotInvoicedProducts")
+    public List<OutboundProductO> getCheckoutAndNotInvoicedProducts(
+            @RequestParam("companyID") int companyID,
+            @RequestParam("invoiceType") String invoiceType
+    ) {
+        logger.info("GET Request to /outboundEntry/getCheckoutAndNotInvoicedProducts, companyID: " +
+                companyID + ", invoiceType: " + invoiceType);
+
+        return outboundEntryService.getCheckoutButNotInvoicedProducts(companyID, invoiceType);
     }
 }
