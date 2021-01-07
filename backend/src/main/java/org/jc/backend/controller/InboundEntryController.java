@@ -3,9 +3,7 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
-import org.jc.backend.entity.InboundEntryCompleteO;
 import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.VO.InboundEntryModifyVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -84,18 +82,18 @@ public class InboundEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/completeEntry")
-    public void completeEntry(@RequestBody @Validated InboundEntryCompleteO completionO) {
+    public void completeEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         logger.info("PATCH Request to /inboundEntry/completeEntry");
 
-        inboundEntryService.completeEntry(completionO);
+        inboundEntryService.completeEntry(inboundEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyEntry")
-    public void modifyEntry(@RequestBody @Validated InboundEntryModifyVO modificationVO) {
+    public void modifyEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         logger.info("PATCH Request to /inboundEntry/modifyEntry");
 
-        inboundEntryService.modifyEntry(modificationVO);
+        inboundEntryService.modifyEntry(inboundEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = void.class)

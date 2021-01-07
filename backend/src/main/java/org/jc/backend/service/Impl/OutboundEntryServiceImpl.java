@@ -4,13 +4,10 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
+import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
-import org.jc.backend.entity.DO.OutboundEntryModifyDO;
-import org.jc.backend.entity.OutboundEntryCompleteO;
-import org.jc.backend.entity.OutboundProductModifyO;
 import org.jc.backend.entity.OutboundProductO;
-import org.jc.backend.entity.VO.OutboundEntryModifyVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -19,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,189 +30,176 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     private final OutboundEntryMapper outboundEntryMapper;
     private final ModificationMapper modificationMapper;
 
-    public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper, ModificationMapper modificationMapper) {
+    public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper,
+                                    ModificationMapper modificationMapper) {
         this.outboundEntryMapper = outboundEntryMapper;
         this.modificationMapper = modificationMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
 
+    @Transactional
     public void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalException {
+
         OutboundEntryDO newEntry = new OutboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
         List<OutboundProductO> newProducts = entryWithProductsVO.getOutboundProducts();
 
-        int count = outboundEntryMapper.countNumberOfEntriesOfToday();
-        String newSerial = MyUtils.formNewSerial("销出", count);
-
-        newEntry.setOutboundEntryID(newSerial);
         try {
-            outboundEntryMapper.insertNewEntry(newEntry);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            logger.error("");
-            throw new GlobalException("");//todo
-        }
+            int count = outboundEntryMapper.countNumberOfEntriesOfToday();
+            String newSerial = MyUtils.formNewSerial("销出", count);
 
-        for (var product : newProducts) {
-            product.setOutboundEntryID(newSerial);
-            try {
+            newEntry.setOutboundEntryID(newSerial);
+            outboundEntryMapper.insertNewEntry(newEntry);
+
+            for (var product : newProducts) {
+                product.setOutboundEntryID(newSerial);
                 int id = outboundEntryMapper.insertNewProduct(product);
                 logger.info("Insert new outbound product id: " + id);
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                logger.error("");
-                //todo
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("insert failed");
+            throw e;
         }
 
-        //todo: deduct stock
     }
 
-    public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate, String type, int id) {
+    @Transactional(readOnly = true)
+    public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
+                                                                                     String type, int id) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
-                dateFormat.format(startDate), dateFormat.format(endDate), type, id);
-
         List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
-        for (var entryFromDatabase : entriesFromDatabase) {
-            OutboundEntryWithProductsVO tempEntry = new OutboundEntryWithProductsVO();
-            BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+        try {
+            List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
+                    dateFormat.format(startDate), dateFormat.format(endDate), type, id);
 
-            try {
+            for (var entryFromDatabase : entriesFromDatabase) {
+                OutboundEntryWithProductsVO tempEntry = new OutboundEntryWithProductsVO();
+                BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+
                 List<OutboundProductO> products = outboundEntryMapper.queryProductsByEntryID(
                         tempEntry.getOutboundEntryID());
                 tempEntry.setOutboundProducts(products);
-            } catch (PersistenceException e) {
-                logger.error("");
-                //todo
+
+                entries.add(tempEntry);
             }
 
-            entries.add(tempEntry);
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("query failed");
+            throw e;
         }
 
         return entries;
     }
 
-    public void completeEntry(OutboundEntryCompleteO completeO) {
-        OutboundEntryCompleteO currentInfo = completeO;
+    @Transactional
+    public void completeEntry(OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
 
-        String id = completeO.getOutboundEntryID();
-        OutboundEntryCompleteO originInfo;
+        OutboundEntryDO currentInfo = new OutboundEntryDO();
+        BeanUtils.copyProperties(outboundEntryWithProductsVO, currentInfo);
+
+        String id = currentInfo.getOutboundEntryID();
+
+        OutboundEntryDO originInfo;
         try {
-            originInfo = (outboundEntryMapper.selectEntryShippingInfoForCompare(id)).get(0);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            //todo
-            return;
-        }
+            originInfo = outboundEntryMapper.selectEntryShippingInfoForCompare(id);
 
-        StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
-        boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
+            StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
+            boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
+                    record, currentInfo, originInfo);
 
-        if (bool) {
-            try {
+            if (bool) {
                 outboundEntryMapper.updateShippingInfo(currentInfo);
 
                 logger.info("Completion: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originInfo.getOutboundEntryID(), record.toString()));
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
+            else {
+                logger.warn("Nothing changed!");
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Completion failed");
+            throw e;
         }
-        else {
-            logger.info("Nothing changed");
-        }
+
     }
 
-    public void modifyEntry(OutboundEntryModifyVO modifyVO) {
-        OutboundEntryModifyDO currentEntry = new OutboundEntryModifyDO();
-        BeanUtils.copyProperties(modifyVO, currentEntry);
+    @Transactional
+    public void modifyEntry(OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
 
-        List<OutboundProductModifyO> currentProducts = modifyVO.getOutboundProducts();
+        OutboundEntryDO currentEntry = new OutboundEntryDO();
+        BeanUtils.copyProperties(outboundEntryWithProductsVO, currentEntry);
+
+        List<OutboundProductO> currentProducts = outboundEntryWithProductsVO.getOutboundProducts();
 
         String id = currentEntry.getOutboundEntryID();
         logger.info("Serial to be changed: " + id);
-        OutboundEntryModifyDO originEntry;
-        List<OutboundProductModifyO> originProducts;
+        OutboundEntryDO originEntry;
+        List<OutboundProductO> originProducts;
         try {
-            originEntry = (outboundEntryMapper.selectEntryForCompare(id)).get(0);
+            originEntry = outboundEntryMapper.selectEntryForCompare(id);
             originProducts = outboundEntryMapper.selectProductsForCompare(id);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            //todo
-            return;
-        }
 
-        StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-        boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
+            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(
+                    record, currentEntry, originEntry);
 
-        if (bool1) {
-            try {
+            if (bool1) {
                 logger.info("");//todo
                 outboundEntryMapper.updateEntry(currentEntry);
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
-        }
 
-        boolean bool2 = false;
-        for (var originProduct : originProducts) {
-            boolean found = false;
-            for (var currentProduct : currentProducts) {
-                if (currentProduct.getOutboundProductID() == originProduct.getOutboundProductID()) {
-                    boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
-                            record, currentProduct, originProduct);
+            boolean bool2 = false;
+            for (var originProduct : originProducts) {
+                boolean found = false;
+                for (var currentProduct : currentProducts) {
+                    if (currentProduct.getOutboundProductID() == originProduct.getOutboundProductID()) {
+                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                                record, currentProduct, originProduct);
 
-                    if (bool3) {
-                        bool2 = true;
-                        try {
-                            logger.info("");//todo
+                        if (bool3) {
+                            bool2 = true;
                             outboundEntryMapper.updateProduct(currentProduct);
-                        } catch (PersistenceException e) {
-                            e.printStackTrace();
-                            //todo
                         }
+                        found = true;
+                        break;
                     }
-                    found = true;
-                    break;
                 }
-            }
-            if (!found) {
-                try {
+                if (!found) {
                     outboundEntryMapper.deleteProductByID(originProduct.getOutboundProductID());
-                } catch (PersistenceException e) {
-                    e.printStackTrace();
-                    //todo
                 }
             }
-        }
 
-        if (bool1 || bool2) {
-            logger.info("Modification: " + record);
-            try {
+            if (bool1 || bool2) {
+                logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getOutboundEntryID(), record.toString()));
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-                //todo
             }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("update failed");
+            throw e;
         }
 
-        //todo: deduct stock
     }
 
+    @Transactional
     public void deleteEntry(String id) {
         try {
             outboundEntryMapper.deleteProductsByEntryID(id);
             outboundEntryMapper.deleteEntry(id);
         } catch (PersistenceException e) {
-            logger.error("");
-            //todo
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("Deletion failed");
+            throw e;
         }
 
         //todo: deduct stock

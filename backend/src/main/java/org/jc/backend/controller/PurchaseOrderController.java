@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
-import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -56,10 +55,10 @@ public class PurchaseOrderController {
 
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyOrder")
-    public void modifyOrder(@RequestBody @Validated PurchaseOrderModifyVO modificationVO) {
+    public void modifyOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
         logger.info("PATCH Request to /purchaseOrder/modifyOrder");
 
-        purchaseOrderService.modifyOrder(modificationVO);
+        purchaseOrderService.modifyOrder(purchaseOrderEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = void.class)

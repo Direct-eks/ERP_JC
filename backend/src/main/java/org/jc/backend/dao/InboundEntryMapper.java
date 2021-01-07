@@ -2,9 +2,6 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
-import org.jc.backend.entity.DO.InboundEntryModifyDO;
-import org.jc.backend.entity.InboundEntryCompleteO;
-import org.jc.backend.entity.InboundProductModifyO;
 import org.jc.backend.entity.InboundProductO;
 import org.springframework.stereotype.Repository;
 
@@ -22,13 +19,13 @@ public interface InboundEntryMapper {
             String startDate, String endDate, String type, int id);
     List<InboundProductO> queryProductsByEntryID(String id);
 
-    List<InboundEntryCompleteO> selectEntryShippingInfoForCompare(String id);
-    void updateShippingInfo(InboundEntryCompleteO completionO);
+    InboundEntryDO selectEntryShippingInfoForCompare(String id);
+    void updateShippingInfo(InboundEntryDO completionO);
 
-    List<InboundEntryModifyDO> selectEntryForCompare(String id);
-    List<InboundProductModifyO> selectProductsForCompare(String id);
-    void updateEntry(InboundEntryModifyDO inboundEntryModifyDO);
-    void updateProduct(InboundProductModifyO inboundProductModifyO);
+    InboundEntryDO selectEntryForCompare(String id);
+    List<InboundProductO> selectProductsForCompare(String id);
+    void updateEntry(InboundEntryDO inboundEntryModifyDO);
+    void updateProduct(InboundProductO inboundProductModifyO);
     void deleteProductByID(int id);
 
     void deleteEntry(String id);

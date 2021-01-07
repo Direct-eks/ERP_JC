@@ -1,9 +1,9 @@
 package org.jc.backend.utils;
 
 import org.jc.backend.entity.*;
-import org.jc.backend.entity.DO.InboundEntryModifyDO;
-import org.jc.backend.entity.DO.OutboundEntryModifyDO;
-import org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO;
+import org.jc.backend.entity.DO.InboundEntryDO;
+import org.jc.backend.entity.DO.OutboundEntryDO;
+import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,8 +20,8 @@ public class IOModificationUtils {
      */
     public static boolean shippingInfoCompareAndFormModificationRecord(
             StringBuilder record,
-            InboundEntryCompleteO modifiedShippingInfo,
-            InboundEntryCompleteO originShippingInfo
+            InboundEntryDO modifiedShippingInfo,
+            InboundEntryDO originShippingInfo
     ) {
         boolean bool = false;
         if (modifiedShippingInfo.getShippingCost() != originShippingInfo.getShippingCost()) {
@@ -60,11 +60,11 @@ public class IOModificationUtils {
 
     public static boolean shippingInfoCompareAndFormModificationRecord(
             StringBuilder record,
-            OutboundEntryCompleteO modifiedShippingInfo,
-            OutboundEntryCompleteO originShippingInfo
+            OutboundEntryDO modifiedShippingInfo,
+            OutboundEntryDO originShippingInfo
     ) {
-        InboundEntryCompleteO modifiedO = new InboundEntryCompleteO();
-        InboundEntryCompleteO originO = new InboundEntryCompleteO();
+        InboundEntryDO modifiedO = new InboundEntryDO();
+        InboundEntryDO originO = new InboundEntryDO();
         BeanUtils.copyProperties(modifiedShippingInfo, modifiedO);
         BeanUtils.copyProperties(originShippingInfo, originO);
 
@@ -80,8 +80,8 @@ public class IOModificationUtils {
      */
     public static boolean entryCompareAndFormModificationRecord(
             StringBuilder record,
-            InboundEntryModifyDO modifiedEntry,
-            InboundEntryModifyDO originEntry
+            InboundEntryDO modifiedEntry,
+            InboundEntryDO originEntry
     ) {
         boolean bool = false;
         if (originEntry.getTotalCost() != modifiedEntry.getTotalCost()) {
@@ -113,8 +113,8 @@ public class IOModificationUtils {
      */
     public static boolean entryCompareAndFormModificationRecord(
             StringBuilder record,
-            OutboundEntryModifyDO modifiedEntry,
-            OutboundEntryModifyDO originEntry
+            OutboundEntryDO modifiedEntry,
+            OutboundEntryDO originEntry
     ) {
         boolean bool = false;
         if (modifiedEntry.getTotalAmount() != originEntry.getTotalAmount()) {
@@ -122,14 +122,14 @@ public class IOModificationUtils {
             record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalAmount(),
                     modifiedEntry.getTotalAmount()));
         }
-        if (!modifiedEntry.getDeliverMethod().equals(originEntry.getDeliverMethod())) {
+        if (!modifiedEntry.getDeliveryMethod().equals(originEntry.getDeliveryMethod())) {
             bool = true;
-            record.append(String.format("提货方式: %s -> %s; ", originEntry.getDeliverMethod(),
-                    modifiedEntry.getDeliverMethod()));
+            record.append(String.format("提货方式: %s -> %s; ", originEntry.getDeliveryMethod(),
+                    modifiedEntry.getDeliveryMethod()));
         }
 
-        InboundEntryModifyDO modifyDO = new InboundEntryModifyDO();
-        InboundEntryModifyDO originDO = new InboundEntryModifyDO();
+        InboundEntryDO modifyDO = new InboundEntryDO();
+        InboundEntryDO originDO = new InboundEntryDO();
         BeanUtils.copyProperties(modifiedEntry, modifyDO);
         BeanUtils.copyProperties(originEntry, originDO);
 
@@ -147,8 +147,8 @@ public class IOModificationUtils {
      */
     public static boolean entryCompareAndFormModificationRecord(
             StringBuilder record,
-            PurchaseOrderEntryModifyDO modifiedEntry,
-            PurchaseOrderEntryModifyDO originEntry
+            PurchaseOrderEntryDO modifiedEntry,
+            PurchaseOrderEntryDO originEntry
     ) {
         boolean bool = false;
         if (!modifiedEntry.getExecutionStatus().equals(originEntry.getExecutionStatus())) {
@@ -160,8 +160,8 @@ public class IOModificationUtils {
             record.append(String.format("仓库: %s -> " + "%s; ", originEntry.getWarehouseName(), modifiedEntry.getWarehouseName()));
         }
 
-        InboundEntryModifyDO modifyDO = new InboundEntryModifyDO();
-        InboundEntryModifyDO originDO = new InboundEntryModifyDO();
+        InboundEntryDO modifyDO = new InboundEntryDO();
+        InboundEntryDO originDO = new InboundEntryDO();
         BeanUtils.copyProperties(modifiedEntry, modifyDO);
         BeanUtils.copyProperties(originEntry, originDO);
 
@@ -179,8 +179,8 @@ public class IOModificationUtils {
      */
     public static boolean productsCompareAndFormModificationRecord(
             StringBuilder record,
-            InboundProductModifyO modifiedProduct,
-            InboundProductModifyO originProduct
+            InboundProductO modifiedProduct,
+            InboundProductO originProduct
     ) {
         String modelCode = StringUtils.hasLength(modifiedProduct.getNewCode()) ?
                 modifiedProduct.getNewCode() : modifiedProduct.getOldCode();
@@ -217,11 +217,11 @@ public class IOModificationUtils {
 
     public static boolean productsCompareAndFormModificationRecord(
             StringBuilder record,
-            OutboundProductModifyO modifiedProduct,
-            OutboundProductModifyO originProduct
+            OutboundProductO modifiedProduct,
+            OutboundProductO originProduct
     ) {
-        InboundProductModifyO product1 = new InboundProductModifyO();
-        InboundProductModifyO product2 = new InboundProductModifyO();
+        InboundProductO product1 = new InboundProductO();
+        InboundProductO product2 = new InboundProductO();
         BeanUtils.copyProperties(modifiedProduct, product1);
         BeanUtils.copyProperties(originProduct, product2);
         return productsCompareAndFormModificationRecord(record, product1, product2);
@@ -229,11 +229,11 @@ public class IOModificationUtils {
 
     public static boolean productsCompareAndFormModificationRecord(
             StringBuilder record,
-            PurchaseOrderProductModifyO modifiedProduct,
-            PurchaseOrderProductModifyO originProduct
+            PurchaseOrderProductO modifiedProduct,
+            PurchaseOrderProductO originProduct
     ) {
-        InboundProductModifyO product1 = new InboundProductModifyO();
-        InboundProductModifyO product2 = new InboundProductModifyO();
+        InboundProductO product1 = new InboundProductO();
+        InboundProductO product2 = new InboundProductO();
         BeanUtils.copyProperties(modifiedProduct, product1);
         BeanUtils.copyProperties(originProduct, product2);
         return productsCompareAndFormModificationRecord(record, product1, product2);

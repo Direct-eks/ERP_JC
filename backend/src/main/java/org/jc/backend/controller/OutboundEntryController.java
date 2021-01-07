@@ -3,8 +3,6 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
-import org.jc.backend.entity.OutboundEntryCompleteO;
-import org.jc.backend.entity.VO.OutboundEntryModifyVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -39,15 +37,17 @@ public class OutboundEntryController {
     }
 
     @ApiOperation(value = "", response = OutboundEntryWithProductsVO.class)
-    @GetMapping("/getEntriesInDateRangeByCompanyID")
-    public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByCompanyID(
+    @GetMapping("/getEntriesInDateRange")
+    public List<OutboundEntryWithProductsVO> getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
-            @RequestParam("type") String type
+            @RequestParam("type") String type,
+            @RequestParam("forModify") boolean forModify
     ) throws GlobalException {
-        logger.info("GET Request to /outboundEntry/getEntriesInDateRangeByCompanyID, start date: " +
-                startDateString + ", end date： " + endDateString + ", companyID: " + companyID);
+        logger.info("GET Request to /outboundEntry/getEntriesInDateRange, start date: " +
+                startDateString + ", end date： " + endDateString + ", companyID: " + companyID +
+                ", type: " + type + ", forModify: " + forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -60,23 +60,37 @@ public class OutboundEntryController {
                 throw new GlobalException("Invalid type error");
         }
 
-        return outboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(startDate, endDate, type, companyID);
+        List<OutboundEntryWithProductsVO> entries = outboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(
+                startDate, endDate, type, companyID);
+
+        if (forModify) {
+            entries.removeIf(entry -> {
+                for (var product : entry.getOutboundProducts()) {
+                    if (!product.getCheckoutSerial().equals("")) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        return entries;
     }
 
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/completeEntry")
-    public void completeEntry(@RequestBody @Validated OutboundEntryCompleteO completionO) {
+    public void completeEntry(@RequestBody @Validated OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
         logger.info("PATCH Request to /outboundEntry/completeEntry");
 
-        outboundEntryService.completeEntry(completionO);
+        outboundEntryService.completeEntry(outboundEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyEntry")
-    public void modifyEntry(@RequestBody @Validated OutboundEntryModifyVO modificationVO) {
+    public void modifyEntry(@RequestBody @Validated OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
         logger.info("PATCH Request to /outboundEntry/modifyEntry");
 
-        outboundEntryService.modifyEntry(modificationVO);
+        outboundEntryService.modifyEntry(outboundEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = void.class)

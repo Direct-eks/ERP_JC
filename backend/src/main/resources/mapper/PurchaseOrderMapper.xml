@@ -4,6 +4,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.PurchaseOrderMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+        select count(purchase_order_entry_id)
+        from e_purchase_order_entry
+        where entry_date = date('now', 'localtime')
+    </select>
+
+    <insert id="insertNewOrderEntry">
+        insert into e_purchase_order_entry(
+            purchase_order_entry_id, entry_date, creation_date, total_cost, invoice_type,
+            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark
+        )
+        values (
+            #{purchaseOrderEntryID}, #{entryDate}, date('now', 'localtime'), #{totalCost}, #{invoiceType},
+            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark}
+        )
+    </insert>
+
+    <insert id="insertNewOrderProduct" useGeneratedKeys="true" keyProperty="purchaseOrderProductID"
+            keyColumn="purchase_order_product_id">
+        insert into e_purchase_order_product(
+            purchase_order_entry_id, sku_id, quantity, remark, warehouse_stock_id, warehouse_id,
+            tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price
+        )
+        values (
+            #{purchaseOrderEntryID}, #{skuID}, #{quantity}, #{remark}, #{warehouseStockID},
+            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice}
+        )
+    </insert>
+
+
     <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.PurchaseOrderEntryDO">
         <result property="purchaseOrderEntryID" column="purchase_order_entry_id"/>
         <result property="entryDate" column="entry_date"/>
@@ -43,35 +73,6 @@
     </resultMap>
 
 
-    <select id="countNumberOfEntriesOfToday" resultType="int">
-        select count(purchase_order_entry_id)
-        from e_purchase_order_entry
-        where entry_date = date('now', 'localtime')
-    </select>
-
-    <insert id="insertNewOrderEntry">
-        insert into e_purchase_order_entry(
-            purchase_order_entry_id, entry_date, creation_date, total_cost, invoice_type,
-            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark
-        )
-        values (
-            #{purchaseOrderEntryID}, #{entryDate}, #{creationDate}, #{totalCost}, #{invoiceType},
-            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark}
-        )
-    </insert>
-
-    <insert id="insertNewOrderProduct" useGeneratedKeys="true" keyProperty="purchaseOrderProductID"
-            keyColumn="purchase_order_product_id">
-        insert into e_purchase_order_product(
-            purchase_order_entry_id, sku_id, quantity, remark, warehouse_stock_id, warehouse_id,
-            tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price
-        )
-        values (
-            #{purchaseOrderEntryID}, #{skuID}, #{quantity}, #{remark}, #{warehouseStockID},
-            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice}
-        )
-    </insert>
-
     <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
         select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
                p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name, c.phone,
@@ -103,34 +104,7 @@
     </select>
 
 
-    <resultMap id="modifyEntryResultMap" type="org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO">
-        <result property="purchaseOrderEntryID" column="purchase_order_entry_id"/>
-        <result property="totalCost" column="total_cost"/>
-        <result property="invoiceType" column="invoice_type"/>
-        <result property="executionStatus" column="execution_status"/>
-        <result property="drawer" column="drawer"/>
-        <result property="departmentID" column="department_id"/>
-        <result property="warehouseID" column="warehouse_id"/>
-        <result property="remark" column="remark"/>
-        <result property="isModified" column="is_modified"/>
-        <result property="departmentName" column="department_name"/>
-        <result property="warehouseName" column="warehouse_name"/>
-    </resultMap>
-
-    <resultMap id="modifyProductResultMap" type="org.jc.backend.entity.PurchaseOrderProductModifyO">
-        <result property="purchaseOrderProductID" column="purchase_order_product_id"/>
-        <result property="purchaseOrderEntryID" column="purchase_order_entry_id"/>
-        <result property="quantity" column="quantity"/>
-        <result property="remark" column="remark"/>
-        <result property="taxRate" column="tax_rate"/>
-        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
-        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
-        <result property="newCode" column="new_code"/>
-        <result property="oldCode" column="old_code"/>
-    </resultMap>
-
-
-    <select id="selectEntryForCompare" resultMap="modifyEntryResultMap">
+    <select id="selectEntryForCompare" resultMap="entryResultMap">
         select purchase_order_entry_id, total_cost, invoice_type, execution_status, drawer,
                p.department_id, p.warehouse_id, p.remark, d.name as department_name, w.name as warehouse_name
         from (e_purchase_order_entry as p join e_department as d on p.department_id = d.department_id)
@@ -138,7 +112,7 @@
         where purchase_order_entry_id = #{id}
     </select>
 
-    <select id="selectProductsForCompare" resultMap="modifyProductResultMap">
+    <select id="selectProductsForCompare" resultMap="productResultMap">
         select purchase_order_product_id, purchase_order_entry_id, quantity, p.remark, tax_rate,
                unit_price_without_tax, unit_price_with_tax, m.new_code, m.old_code
         from e_purchase_order_product as p join (w_sku as s join w_model as m on s.model_id = m.model_id)
@@ -146,25 +120,25 @@
         where purchase_order_entry_id = #{id}
     </select>
 
-    <update id="updateOrderEntry" parameterType="org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO">
+    <update id="updateOrderEntry">
         update e_purchase_order_entry
-        set total_cost=#{totalCost},
-            invoice_type=#{invoiceType},
-            execution_status=#{executionStatus},
-            department_id=#{departmentID},
-            warehouse_id=#{warehouseID},
-            remark=#{remark},
-            is_modified=#{isModified}
+        set total_cost = #{totalCost},
+            invoice_type = #{invoiceType},
+            execution_status = #{executionStatus},
+            department_id = #{departmentID},
+            warehouse_id = #{warehouseID},
+            remark = #{remark},
+            is_modified = 1
         where purchase_order_entry_id = #{purchaseOrderEntryID}
     </update>
 
-    <update id="updateOrderProduct" parameterType="org.jc.backend.entity.PurchaseOrderProductModifyO">
+    <update id="updateOrderProduct">
         update e_purchase_order_product
-        set quantity=#{quantity},
-            remark=#{remark},
-            tax_rate=#{taxRate},
-            unit_price_without_tax=#{unitPriceWithoutTax},
-            unit_price_with_tax=#{unitPriceWithTax}
+        set quantity = #{quantity},
+            remark = #{remark},
+            tax_rate = #{taxRate},
+            unit_price_without_tax = #{unitPriceWithoutTax},
+            unit_price_with_tax = #{unitPriceWithTax}
         where purchase_order_product_id = #{purchaseOrderProductID}
     </update>
 

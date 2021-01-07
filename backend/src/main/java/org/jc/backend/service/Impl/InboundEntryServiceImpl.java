@@ -6,8 +6,6 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
-import org.jc.backend.entity.DO.InboundEntryModifyDO;
-import org.jc.backend.entity.VO.InboundEntryModifyVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -112,18 +110,22 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional
-    public void completeEntry(InboundEntryCompleteO currentInfo) {
+    public void completeEntry(InboundEntryWithProductsVO inboundEntryWithProductsVO) {
+
+        InboundEntryDO currentInfo = new InboundEntryDO();
+        BeanUtils.copyProperties(inboundEntryWithProductsVO, currentInfo);
 
         String id = currentInfo.getInboundEntryID();
 
-        InboundEntryCompleteO originInfo;
+        InboundEntryDO originInfo;
         try {
             //query database for compare
-            originInfo = (inboundEntryMapper.selectEntryShippingInfoForCompare(id)).get(0);
+            originInfo = inboundEntryMapper.selectEntryShippingInfoForCompare(id);
 
             // check changes to shipping info
             StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
-            boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(record, currentInfo, originInfo);
+            boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
+                    record, currentInfo, originInfo);
 
             if (bool) {
                 inboundEntryMapper.updateShippingInfo(currentInfo);
@@ -144,22 +146,21 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional
-    public void modifyEntry(InboundEntryModifyVO modificationVO) {
+    public void modifyEntry(InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         //extract entryDO
-        InboundEntryModifyDO currentEntry = new InboundEntryModifyDO();
-        BeanUtils.copyProperties(modificationVO, currentEntry);
-        currentEntry.setIsModified(1);
+        InboundEntryDO currentEntry = new InboundEntryDO();
+        BeanUtils.copyProperties(inboundEntryWithProductsVO, currentEntry);
 
         //extract List<productO>
-        List<InboundProductModifyO> currentProducts = modificationVO.getInboundProducts();
+        List<InboundProductO> currentProducts = inboundEntryWithProductsVO.getInboundProducts();
 
         //query database for compare
         String id = currentEntry.getInboundEntryID();
         logger.info("Serial to be changed: " + id);
-        InboundEntryModifyDO originEntry;
-        List<InboundProductModifyO> originProducts;
+        InboundEntryDO originEntry;
+        List<InboundProductO> originProducts;
         try {
-            originEntry = (inboundEntryMapper.selectEntryForCompare(id)).get(0);
+            originEntry = inboundEntryMapper.selectEntryForCompare(id);
             originProducts = inboundEntryMapper.selectProductsForCompare(id);
 
             //compare entry

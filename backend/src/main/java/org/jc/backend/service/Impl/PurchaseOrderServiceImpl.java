@@ -5,11 +5,8 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.PurchaseOrderMapper;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
-import org.jc.backend.entity.DO.PurchaseOrderEntryModifyDO;
-import org.jc.backend.entity.PurchaseOrderProductModifyO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.PurchaseOrderProductO;
-import org.jc.backend.entity.VO.PurchaseOrderModifyVO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -99,22 +96,21 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Transactional
-    public void modifyOrder(PurchaseOrderModifyVO modificationVO) {
+    public void modifyOrder(PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
         //extract entryDO
-        PurchaseOrderEntryModifyDO currentEntry = new PurchaseOrderEntryModifyDO();
-        BeanUtils.copyProperties(modificationVO, currentEntry);
-        currentEntry.setIsModified(1);
+        PurchaseOrderEntryDO currentEntry = new PurchaseOrderEntryDO();
+        BeanUtils.copyProperties(purchaseOrderEntryWithProductsVO, currentEntry);
 
         //extract List<productO>
-        List<PurchaseOrderProductModifyO> currentProducts = modificationVO.getPurchaseOrderProducts();
+        List<PurchaseOrderProductO> currentProducts = purchaseOrderEntryWithProductsVO.getPurchaseOrderProducts();
 
         //query database for compare
         String id = currentEntry.getPurchaseOrderEntryID();
         logger.info("Serial to be changed: " + id);
-        PurchaseOrderEntryModifyDO originEntry;
-        List<PurchaseOrderProductModifyO> originProducts;
+        PurchaseOrderEntryDO originEntry;
+        List<PurchaseOrderProductO> originProducts;
         try {
-            originEntry = (purchaseOrderMapper.selectEntryForCompare(id)).get(0);
+            originEntry = purchaseOrderMapper.selectEntryForCompare(id);
             originProducts = purchaseOrderMapper.selectProductsForCompare(id);
 
             //compare entry

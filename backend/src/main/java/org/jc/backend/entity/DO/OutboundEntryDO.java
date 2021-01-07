@@ -10,7 +10,7 @@ public class OutboundEntryDO {
     private String shipmentDate;
     private String creationDate;
     private double totalAmount;
-    private String deliverMethod;
+    private String deliveryMethod;
     private String invoiceType;
     private String drawer;
 
