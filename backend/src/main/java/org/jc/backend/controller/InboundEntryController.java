@@ -104,6 +104,12 @@ public class InboundEntryController {
         inboundEntryService.deleteEntry(id);
     }
 
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/returnEntryProducts")
+    public void returnEntryProducts() {
+
+    }
+
     @ApiOperation(value = "", response = InboundProductO.class)
     @GetMapping("/getNotCheckedOutProducts")
     public List<InboundProductO> getNotCheckedOutProducts(
