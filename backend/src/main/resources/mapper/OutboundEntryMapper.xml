@@ -187,7 +187,7 @@
         where outbound_product_id = #{id}
     </update>
 
-    <delete id="deleteEntry">
+    <delete id="deleteEntryByID">
         delete from e_outbound_entry
         where outbound_entry_id = #{id}
     </delete>
@@ -196,5 +196,54 @@
         delete from e_outbound_product
         where outbound_entry_id = #{id}
     </delete>
+
+
+    <select id="queryEntriesByCompanyIDAndInvoiceType" resultType="String">
+        select outbound_entry_id
+        from e_outbound_entry
+        where partner_company_id = #{companyID} and invoice_type = #{invoiceType}
+    </select>
+
+    <update id="updateProductsWithCheckoutSerial">
+        update e_outbound_product
+        set checkout_serial = #{checkoutSerial}
+        where outbound_product_id = #{outboundProductID}
+    </update>
+
+    <update id="updateProductsWithInvoiceSerial">
+        update e_outbound_product
+        set invoice_serial = #{invoiceSerial}
+        where outbound_product_id = #{outboundProductID}
+    </update>
+
+    <select id="getProductsWithCheckoutSerial" resultMap="productResultMap">
+        select outbound_product_id, outbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+               sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
+               warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
+               return_status, checkout_serial, invoice_serial
+        from e_outbound_product as p join (
+            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
+                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
+                          on s.model_id = m.model_id
+        ) as sku on p.sku_id = sku.sku_id
+        where p.checkout_serial = #{checkoutSerial}
+        order by outbound_product_id
+    </select>
+
+    <select id="getProductsWithInvoiceSerial" resultMap="productResultMap">
+        select outbound_product_id, outbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+               sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
+               warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
+               return_status, checkout_serial, invoice_serial
+        from e_outbound_product as p join (
+            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
+                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
+                          on s.model_id = m.model_id
+        ) as sku on p.sku_id = sku.sku_id
+        where p.invoice_serial = #{invoiceSerial}
+        order by outbound_product_id
+    </select>
 
 </mapper>

@@ -60,7 +60,7 @@ public class OutboundEntryController {
                 throw new GlobalException("Invalid type error");
         }
 
-        List<OutboundEntryWithProductsVO> entries = outboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(
+        List<OutboundEntryWithProductsVO> entries = outboundEntryService.getEntriesInDateRange(
                 startDate, endDate, type, companyID);
 
         if (forModify) {

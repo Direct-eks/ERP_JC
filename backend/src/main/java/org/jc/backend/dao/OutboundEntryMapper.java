@@ -27,6 +27,14 @@ public interface OutboundEntryMapper {
     void updateProduct(OutboundProductO outboundProductModifyO);
     void deleteProductByID(int id);
 
-    void deleteEntry(String id);
+    void deleteEntryByID(String id);
     void deleteProductsByEntryID(String id);
+
+    List<String> queryEntriesByCompanyIDAndInvoiceType(int companyID, String invoiceType);
+
+    void updateProductsWithCheckoutSerial(OutboundProductO productO);
+    void updateProductsWithInvoiceSerial(OutboundProductO productO);
+
+    List<OutboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
+    List<OutboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
 }

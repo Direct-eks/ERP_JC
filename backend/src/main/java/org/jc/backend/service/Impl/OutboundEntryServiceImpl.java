@@ -4,7 +4,6 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
-import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
@@ -67,8 +66,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     }
 
     @Transactional(readOnly = true)
-    public List<OutboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
-                                                                                     String type, int id) {
+    public List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
+                                                                   String type, int id) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
@@ -195,7 +194,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     public void deleteEntry(String id) {
         try {
             outboundEntryMapper.deleteProductsByEntryID(id);
-            outboundEntryMapper.deleteEntry(id);
+            outboundEntryMapper.deleteEntryByID(id);
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production mode
             logger.error("Deletion failed");
@@ -203,5 +202,121 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         }
 
         //todo: deduct stock
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType) {
+
+        List<OutboundProductO> products = new ArrayList<>();
+
+        try {
+            List<String> entryIDs = outboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+            for (var entryID : entryIDs) {
+                List<OutboundProductO> tempProducts = outboundEntryMapper.queryProductsByEntryID(entryID);
+                for (var tempProduct : tempProducts) {
+                    if (tempProduct.getCheckoutSerial().equals("")) {
+                        products.add(tempProduct);
+                    }
+                }
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in productsion
+            logger.error("query failed");
+            throw e;
+        }
+
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType) {
+
+        List<OutboundProductO> products = new ArrayList<>();
+
+        try {
+            List<String> entryIDs = outboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+            for (var entryID : entryIDs) {
+                List<OutboundProductO> tempProducts = outboundEntryMapper.queryProductsByEntryID(entryID);
+                for (var tempProduct : tempProducts) {
+                    if (!tempProduct.getCheckoutSerial().equals("") && tempProduct.getInvoiceSerial().equals("")) {
+                        products.add(tempProduct);
+                    }
+                }
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
+    }
+
+    @Transactional
+    public void updateProductsWithCheckoutSerial(List<OutboundProductO> products, String checkoutSerial) {
+
+        try {
+            for (var product : products) {
+                product.setCheckoutSerial(checkoutSerial);
+                outboundEntryMapper.updateProductsWithCheckoutSerial(product);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+    }
+
+    @Transactional
+    public void updateProductsWithInvoiceSerial(List<OutboundProductO> products, String invoiceSerial) {
+
+        try {
+            for (var product : products) {
+                product.setInvoiceSerial(invoiceSerial);
+                outboundEntryMapper.updateProductsWithInvoiceSerial(product);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutboundProductO> getProductsWithCheckoutSerial(String checkoutSerial){
+
+        List<OutboundProductO> products;
+        try {
+            products = outboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutboundProductO> getProductsWithInvoiceSerial(String invoiceSerial){
+
+        List<OutboundProductO> products;
+        try {
+            products = outboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("Query failed");
+            throw e;
+        }
+
+        return products;
     }
 }
