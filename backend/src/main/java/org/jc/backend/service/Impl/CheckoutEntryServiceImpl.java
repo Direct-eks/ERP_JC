@@ -6,11 +6,9 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
+import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
-import org.jc.backend.service.CheckoutEntryService;
-import org.jc.backend.service.InboundEntryService;
-import org.jc.backend.service.InvoiceEntryService;
-import org.jc.backend.service.MoneyEntryService;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,19 +26,22 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private static final Logger logger = LoggerFactory.getLogger(CheckoutEntryServiceImpl.class);
 
     private final CheckoutEntryMapper checkoutEntryMapper;
-    private final MoneyEntryService moneyEntryService;
     private final InboundEntryService inboundEntryService;
+    private final OutboundEntryService outboundEntryService;
+    private final MoneyEntryService moneyEntryService;
     private final InvoiceEntryService invoiceEntryService;
     private final ModificationMapper modificationMapper;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
-                                    MoneyEntryService moneyEntryService,
                                     InboundEntryService inboundEntryService,
+                                    OutboundEntryService outboundEntryService,
+                                    MoneyEntryService moneyEntryService,
                                     InvoiceEntryService invoiceEntryService,
                                     ModificationMapper modificationMapper) {
         this.checkoutEntryMapper = checkoutEntryMapper;
-        this.moneyEntryService = moneyEntryService;
         this.inboundEntryService = inboundEntryService;
+        this.outboundEntryService = outboundEntryService;
+        this.moneyEntryService = moneyEntryService;
         this.invoiceEntryService = invoiceEntryService;
         this.modificationMapper = modificationMapper;
     }
@@ -72,10 +73,11 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             //update product checkoutSerial
             if (isInbound) {
                 inboundEntryService.updateProductsWithCheckoutSerial(
-                        checkoutEntryWithProductsVO.getCheckoutProducts(), newCheckoutSerial);
+                        checkoutEntryWithProductsVO.getInboundCheckoutProducts(), newCheckoutSerial);
             }
             else {
-                //todo outboundEntryService
+                outboundEntryService.updateProductsWithCheckoutSerial(
+                        checkoutEntryWithProductsVO.getOutboundCheckoutProducts(), newCheckoutSerial);
             }
 
             //check if it is needed to create invoiceEntry
@@ -86,10 +88,11 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 //update product invoiceSerial
                 if (isInbound) {
                     inboundEntryService.updateProductsWithInvoiceSerial(
-                            checkoutEntryWithProductsVO.getCheckoutProducts(), newInvoiceSerial);
+                            checkoutEntryWithProductsVO.getInboundCheckoutProducts(), newInvoiceSerial);
                 }
                 else {
-                    // todo outboundEntryService
+                    outboundEntryService.updateProductsWithInvoiceSerial(
+                            checkoutEntryWithProductsVO.getOutboundCheckoutProducts(), newInvoiceSerial);
                 }
             }
 
@@ -113,16 +116,22 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             String prefix2 = isInbound ? "入结" : "出结";
 
             List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRangeByInvoiceTypeAndCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType,
-                    prefix1, prefix2);
+                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType, prefix1, prefix2);
 
             for (var entryFromDatabase : entriesFromDatabase) {
                 CheckoutEntryWithProductsVO tempEntry = new CheckoutEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
 
-                List<InboundProductO> products = inboundEntryService.getProductsWithCheckoutSerial(
-                        tempEntry.getCheckoutEntrySerial());
-                tempEntry.setCheckoutProducts(products);
+                if (isInbound) {
+                    List<InboundProductO> products = inboundEntryService.getProductsWithCheckoutSerial(
+                            tempEntry.getCheckoutEntrySerial());
+                    tempEntry.setInboundCheckoutProducts(products);
+                }
+                else {
+                    List<OutboundProductO> products = outboundEntryService.getProductsWithCheckoutSerial(
+                            tempEntry.getCheckoutEntrySerial());
+                    tempEntry.setOutboundCheckoutProducts(products);
+                }
 
                 entries.add(tempEntry);
             }
