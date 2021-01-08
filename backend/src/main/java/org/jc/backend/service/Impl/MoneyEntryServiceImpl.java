@@ -40,7 +40,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
         try {
             String prefix = isInbound ? "付款" : "收款";
             int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
-            String newMoneySerial = MyUtils.formNewSerial(prefix, count);
+            String newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
 
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
             moneyEntryMapper.insertEntry(moneyEntryO);
@@ -164,29 +164,28 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
     @Transactional
     public String createEntryForCheckout(CheckoutEntryDO checkoutEntry, String checkoutSerial, boolean isInbound) {
 
+        MoneyEntryO moneyEntryO = new MoneyEntryO();
+        moneyEntryO.setPartnerCompanyID(checkoutEntry.getPartnerCompanyID());
+        moneyEntryO.setPaymentIndication("正常");
+        moneyEntryO.setPaymentMethod(checkoutEntry.getPaymentMethod());
+        moneyEntryO.setPaymentNumber(checkoutEntry.getPaymentNumber());
+        moneyEntryO.setPaymentAmount(checkoutEntry.getPaymentAmount());
+        moneyEntryO.setBankAccountID(checkoutEntry.getBankAccountID());
+        moneyEntryO.setRemark("");
+        moneyEntryO.setDrawer(checkoutEntry.getDrawer());
+        moneyEntryO.setPaymentDate(checkoutEntry.getCheckoutDate());
+        moneyEntryO.setCheckoutSerial(checkoutEntry.getCheckoutEntrySerial());
+        moneyEntryO.setDepartmentID(checkoutEntry.getDepartmentID());
+
         String newMoneySerial;
 
         try {
             String prefix = isInbound ? "付款" : "收款";
             int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
-            newMoneySerial = MyUtils.formNewSerial(prefix, count);
-
-            MoneyEntryO moneyEntryO = new MoneyEntryO();
+            newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
 
             moneyEntryO.setCheckoutSerial(checkoutSerial);
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
-
-            moneyEntryO.setPartnerCompanyID(checkoutEntry.getPartnerCompanyID());
-            moneyEntryO.setPaymentIndication("正常");
-            moneyEntryO.setPaymentMethod(checkoutEntry.getPaymentMethod());
-            moneyEntryO.setPaymentNumber(checkoutEntry.getPaymentNumber());
-            moneyEntryO.setPaymentAmount(checkoutEntry.getPaymentAmount());
-            moneyEntryO.setBankAccountID(checkoutEntry.getBankAccountID());
-            moneyEntryO.setRemark("");
-            moneyEntryO.setDrawer(checkoutEntry.getDrawer());
-            moneyEntryO.setPaymentDate(checkoutEntry.getCheckoutDate());
-            moneyEntryO.setCheckoutSerial(checkoutEntry.getCheckoutEntrySerial());
-            moneyEntryO.setDepartmentID(checkoutEntry.getDepartmentID());
 
             moneyEntryMapper.insertEntry(moneyEntryO);
         }

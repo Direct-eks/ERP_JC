@@ -46,7 +46,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         try {
             // calculate the number of entries have been created for today's date, and generate new serial
             int count = purchaseOrderMapper.countNumberOfEntriesOfToday();
-            String newSerial = MyUtils.formNewSerial("采订", count);
+            String newSerial = MyUtils.formNewSerial("采订", count, newEntry.getEntryDate());
 
             newEntry.setPurchaseOrderEntryID(newSerial);
             purchaseOrderMapper.insertNewOrderEntry(newEntry);

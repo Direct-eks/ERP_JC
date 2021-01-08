@@ -57,7 +57,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
             String prefix = isInbound ? (isReturn ? "出退" : "入结") : (isReturn ? "入退" : "出结");
             int count = checkoutEntryMapper.countNumberOfEntriesOfToday(prefix);
-            String newCheckoutSerial = MyUtils.formNewSerial(prefix, count);
+            String newCheckoutSerial = MyUtils.formNewSerial(prefix, count, checkoutEntry.getCheckoutDate());
 
             checkoutEntry.setCheckoutEntrySerial(newCheckoutSerial);
 

@@ -48,7 +48,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         try {
             int count = inboundEntryMapper.countNumberOfEntriesOfToday();
-            String newSerial = MyUtils.formNewSerial("购入", count);
+            String newSerial = MyUtils.formNewSerial("购入", count, newEntry.getEntryDate());
 
             newEntry.setInboundEntryID(newSerial);
             inboundEntryMapper.insertNewEntry(newEntry);

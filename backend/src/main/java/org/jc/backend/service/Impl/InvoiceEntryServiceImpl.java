@@ -52,7 +52,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
                     (invoiceEntryO.getInvoiceType().equals("增值税票") ? "出增" : "出普");
 
             int count = invoiceEntryMapper.countNumberOfEntriesOfToday(prefix);
-            String newSerial = MyUtils.formNewSerial(prefix, count);
+            String newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntryO.getInvoiceDate());
 
             invoiceEntryO.setInvoiceEntrySerial(newSerial);
             invoiceEntryMapper.insertEntry(invoiceEntryO);
@@ -177,6 +177,8 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
     @Transactional
     public String createEntryForCheckout(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO, boolean isInbound) {
 
+        InvoiceEntryO invoiceEntry = new InvoiceEntryO();
+        BeanUtils.copyProperties(checkoutEntryWithProductsVO.getInvoiceEntry(), invoiceEntry);
         String newSerial;
 
         try {
@@ -185,10 +187,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
                     (checkoutEntryWithProductsVO.getInvoiceType().equals("增值税票") ? "出增" : "出普");
 
             int count = invoiceEntryMapper.countNumberOfEntriesOfToday(prefix);
-            newSerial = MyUtils.formNewSerial(prefix, count);
-
-            InvoiceEntryO invoiceEntry = new InvoiceEntryO();
-            BeanUtils.copyProperties(checkoutEntryWithProductsVO.getInvoiceEntry(), invoiceEntry);
+            newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntry.getInvoiceDate());
 
             invoiceEntry.setInvoiceEntrySerial(newSerial);
             invoiceEntry.setCheckoutDate(checkoutEntryWithProductsVO.getCheckoutDate());
