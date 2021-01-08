@@ -3,10 +3,12 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.PurchaseOrderMapper;
+import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.PurchaseOrderProductO;
+import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -28,10 +30,14 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     private final PurchaseOrderMapper purchaseOrderMapper;
     private final ModificationMapper modificationMapper;
+    private final WarehouseStockMapper warehouseStockMapper;
 
-    public PurchaseOrderServiceImpl(PurchaseOrderMapper purchaseOrderMapper, ModificationMapper modificationMapper) {
+    public PurchaseOrderServiceImpl(PurchaseOrderMapper purchaseOrderMapper,
+                                    ModificationMapper modificationMapper,
+                                    WarehouseStockMapper warehouseStockMapper) {
         this.purchaseOrderMapper = purchaseOrderMapper;
         this.modificationMapper = modificationMapper;
+        this.warehouseStockMapper = warehouseStockMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -53,6 +59,17 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
             for (var product : newProducts) {
                 product.setPurchaseOrderEntryID(newSerial);
+
+                //check warehouseStock for existence, if not, create new one
+                if (product.getWarehouseStockID() == -1 ||
+                        warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID()) == null) {
+                    WarehouseStockO newWarehouseStock = new WarehouseStockO();
+                    newWarehouseStock.setSkuID(product.getSkuID());
+                    newWarehouseStock.setWarehouseID(product.getWarehouseID());
+                    int newID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    product.setWarehouseStockID(newID);
+                }
+
                 int id = purchaseOrderMapper.insertNewOrderProduct(product);
                 logger.info("Insert new purchase product id: " + id);
             }
@@ -139,6 +156,25 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         try {
             originEntry = purchaseOrderMapper.selectEntryForCompare(id);
             originProducts = purchaseOrderMapper.selectProductsForCompare(id);
+
+            //first check if warehouse is changed, if so, check warehouse_stock and update all products
+            if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
+                for (var product : currentProducts) {
+                    WarehouseStockO warehouseStock = warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID());
+                    int newWarehouseStockID;
+                    if (warehouseStock == null) {
+                        WarehouseStockO newWarehouseStock = new WarehouseStockO();
+                        newWarehouseStock.setSkuID(product.getSkuID());
+                        newWarehouseStock.setWarehouseID(currentEntry.getWarehouseID());
+                        newWarehouseStockID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    }
+                    else {
+                        newWarehouseStockID = warehouseStock.getWarehouseStockID();
+                    }
+                    product.setWarehouseID(currentEntry.getWarehouseID());
+                    product.setWarehouseStockID(newWarehouseStockID);
+                }
+            }
 
             //compare entry
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record

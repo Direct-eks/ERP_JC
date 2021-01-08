@@ -20,11 +20,11 @@ public class SalesOrderEntryDO {
     private String companyFullName;
     private String companyPhone;
 
-    private int department_id;
+    private int departmentID;
     //from e_department
     private String departmentName;
 
-    private int warehouse_id;
+    private int warehouseID;
     //from w_warehouse
     private String warehouseName;
 

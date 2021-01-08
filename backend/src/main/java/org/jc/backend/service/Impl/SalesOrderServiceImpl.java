@@ -3,12 +3,14 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.SalesOrderMapper;
+import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.DO.SalesOrderEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.PurchaseOrderProductO;
 import org.jc.backend.entity.SalesOrderProductO;
 import org.jc.backend.entity.VO.SalesOrderEntryWithProductsVO;
+import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.SalesOrderService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -29,11 +31,14 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
     private final SalesOrderMapper salesOrderMapper;
     private final ModificationMapper modificationMapper;
+    private final WarehouseStockMapper warehouseStockMapper;
 
     public SalesOrderServiceImpl(SalesOrderMapper salesOrderMapper,
-                                 ModificationMapper modificationMapper) {
+                                 ModificationMapper modificationMapper,
+                                 WarehouseStockMapper warehouseStockMapper) {
         this.salesOrderMapper = salesOrderMapper;
         this.modificationMapper = modificationMapper;
+        this.warehouseStockMapper = warehouseStockMapper;
     }
 
     /* -------
@@ -138,6 +143,25 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         try {
             originEntry = salesOrderMapper.selectEntryForCompare(id);
             originProducts = salesOrderMapper.selectProductsForCompare(id);
+
+            //first check if warehouse is changed, if so, check warehouse_stock and update all products
+            if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
+                for (var product : currentProducts) {
+                    WarehouseStockO warehouseStock = warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID());
+                    int newWarehouseStockID;
+                    if (warehouseStock == null) {
+                        WarehouseStockO newWarehouseStock = new WarehouseStockO();
+                        newWarehouseStock.setSkuID(product.getSkuID());
+                        newWarehouseStock.setWarehouseID(currentEntry.getWarehouseID());
+                        newWarehouseStockID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    }
+                    else {
+                        newWarehouseStockID = warehouseStock.getWarehouseStockID();
+                    }
+                    product.setWarehouseID(currentEntry.getWarehouseID());
+                    product.setWarehouseStockID(newWarehouseStockID);
+                }
+            }
 
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
             boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);

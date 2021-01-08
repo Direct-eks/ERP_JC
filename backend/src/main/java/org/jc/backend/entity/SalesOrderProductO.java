@@ -12,7 +12,7 @@ public class SalesOrderProductO {
     private int salesOrderProductID;
     private String salesOrderEntryID;
 
-    private String skuID;
+    private int skuID;
     //from w_model, w_measurement_unit, w_factory_brand
     private String newCode;
     private String oldCode;

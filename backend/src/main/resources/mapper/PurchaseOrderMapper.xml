@@ -148,6 +148,8 @@
         update e_purchase_order_product
         set quantity = #{quantity},
             remark = #{remark},
+            warehouse_stock_id = #{warehouseStockID},
+            warehouse_id = #{warehouseID},
             tax_rate = #{taxRate},
             unit_price_without_tax = #{unitPriceWithoutTax},
             unit_price_with_tax = #{unitPriceWithTax}

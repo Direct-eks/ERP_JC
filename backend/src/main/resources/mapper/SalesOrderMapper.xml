@@ -47,9 +47,9 @@
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyFullName" column="company_full_name"/>
         <result property="companyPhone" column="company_phone"/>
-        <result property="department_id" column="department_id"/>
+        <result property="departmentID" column="department_id"/>
         <result property="departmentName" column="department_name"/>
-        <result property="warehouse_id" column="warehouse_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
         <result property="warehouseName" column="warehouse_name"/>
         <result property="remark" column="remark"/>
         <result property="isModified" column="is_modified"/>
@@ -149,6 +149,8 @@
         update e_sales_order_product
         set quantity = #{quantity},
             remark = #{remark},
+            warehouse_stock_id = #{warehouseStockID},
+            warehouse_id = #{warehouseID},
             tax_rate = #{taxRate},
             unit_price_without_tax = #{unitPriceWithoutTax},
             unit_price_with_tax = #{unitPriceWithTax}
