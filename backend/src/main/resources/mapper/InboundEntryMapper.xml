@@ -7,7 +7,7 @@
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(inbound_entry_id)
         from e_inbound_entry
-        where creation_date = date('now', 'localtime')
+        where entry_date = date('now', 'localtime')
     </select>
 
     <insert id="insertNewEntry">
