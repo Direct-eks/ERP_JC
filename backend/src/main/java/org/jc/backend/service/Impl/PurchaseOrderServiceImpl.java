@@ -95,7 +95,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return entries;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PurchaseOrderEntryWithProductsVO> getOrdersByCompanyID(int id) {
 
         List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
