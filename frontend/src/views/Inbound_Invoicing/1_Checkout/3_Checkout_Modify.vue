@@ -68,7 +68,7 @@ export default {
                 departmentID: -1, departmentName: '',
                 isVerified: 0,
                 isModified: 0,
-                checkoutProducts: [],
+                inboundCheckoutProducts: [],
                 invoiceEntry: null
             },
         }
@@ -82,7 +82,7 @@ export default {
         tableClickAction(val) {
             this.currentTableRow = val
             //create missing fields and calculate values
-            this.currentTableRow.checkoutProducts.forEach(item => {
+            this.currentTableRow.inboundCheckoutProducts.forEach(item => {
                 item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
                 item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
             })

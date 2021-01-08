@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.InvoiceEntryO;
+import org.jc.backend.entity.OutboundProductO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
@@ -61,7 +62,8 @@ public class CheckoutEntryWithProductsVO {
     private int isVerified;
     private int isModified;
 
-    private List<InboundProductO> checkoutProducts;
+    private List<InboundProductO> inboundCheckoutProducts;
+    private List<OutboundProductO> outboundCheckoutProducts;
 
     @Valid
     private InvoiceEntryO invoiceEntry;

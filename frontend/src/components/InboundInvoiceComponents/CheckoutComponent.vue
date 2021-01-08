@@ -68,7 +68,7 @@
                         <template v-slot:activator="{on}">
                             <v-btn color="accent"
                                    v-on="on"
-                                   :disabled="fullSearchPanelOpen || form.checkoutProducts.length !== 0">
+                                   :disabled="fullSearchPanelOpen || form.inboundCheckoutProducts.length !== 0">
                                 单位助选
                             </v-btn>
                         </template>
@@ -191,7 +191,7 @@
                               item-value="value"
                               item-text="label"
                               label="结账类型"
-                              :readonly="form.checkoutProducts.length !== 0"
+                              :readonly="form.inboundCheckoutProducts.length !== 0"
                               hide-details="auto"
                               outlined dense
                               style="width: 180px">
@@ -324,7 +324,7 @@
         </v-row>
 
         <v-data-table :headers="tableHeaders"
-                      :items="form.checkoutProducts"
+                      :items="form.inboundCheckoutProducts"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -334,7 +334,7 @@
                       hide-default-footer
                       locale="zh-cn">
             <template v-slot:item.index="{ item }">
-                {{form.checkoutProducts.indexOf(item) + 1}}
+                {{ form.inboundCheckoutProducts.indexOf(item) + 1 }}
             </template>
         </v-data-table>
 
@@ -465,7 +465,7 @@ export default {
                 departmentID: -1, departmentName: '',
                 isVerified: 0,
                 isModified: 0,
-                checkoutProducts: [],
+                inboundCheckoutProducts: [],
                 invoiceEntry: null
             },
 
@@ -529,7 +529,7 @@ export default {
         },
         productsChooseAction(val) {
             if (val) {
-                this.form.checkoutProducts = val
+                this.form.inboundCheckoutProducts = val
 
                 this.calculateSums()
 
@@ -544,7 +544,7 @@ export default {
             let tempTax = 0.0
             let tempSumWithTax = 0.0
             let tempSumWithoutTax = 0.0
-            for (let item of this.form.checkoutProducts) {
+            for (let item of this.form.inboundCheckoutProducts) {
                 const itemTotalTax = (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
                 const itemTotalWithoutTax = item.unitPriceWithoutTax * item.quantity
                 tempSumWithTax += item.unitPriceWithTax * item.quantity
@@ -604,7 +604,7 @@ export default {
                 this.form.invoiceEntry = null
             }
 
-            if (this.form.checkoutProducts.length === 0) {
+            if (this.form.inboundCheckoutProducts.length === 0) {
                 this.$store.commit('setSnackbar', {
                     message: '请录入结账商品', color: 'warning'
                 })
