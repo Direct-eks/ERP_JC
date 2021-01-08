@@ -6,10 +6,12 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.InvoiceEntryO;
 import org.jc.backend.entity.ModificationO;
+import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.InvoiceEntryService;
+import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +31,16 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
     private final InvoiceEntryMapper invoiceEntryMapper;
     private final ModificationMapper modificationMapper;
     private final InboundEntryService inboundEntryService;
+    private final OutboundEntryService outboundEntryService;
 
     public InvoiceEntryServiceImpl(InvoiceEntryMapper invoiceEntryMapper,
                                    ModificationMapper modificationMapper,
-                                   InboundEntryService inboundEntryService) {
+                                   InboundEntryService inboundEntryService,
+                                   OutboundEntryService outboundEntryService) {
         this.invoiceEntryMapper = invoiceEntryMapper;
         this.modificationMapper = modificationMapper;
         this.inboundEntryService = inboundEntryService;
+        this.outboundEntryService = outboundEntryService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -57,8 +62,15 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
             invoiceEntryO.setInvoiceEntrySerial(newSerial);
             invoiceEntryMapper.insertEntry(invoiceEntryO);
 
-            inboundEntryService.updateProductsWithInvoiceSerial(
-                    invoiceEntryStandAloneVO.getInvoiceProducts(), newSerial);
+            if (isInbound) {
+                inboundEntryService.updateProductsWithInvoiceSerial(
+                        invoiceEntryStandAloneVO.getInboundInvoiceProducts(), newSerial);
+            }
+            else {
+                outboundEntryService.updateProductsWithInvoiceSerial(
+                        invoiceEntryStandAloneVO.getOutboundInvoiceProducts(), newSerial);
+            }
+
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("insert failed");
@@ -97,9 +109,17 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
                 InvoiceEntryStandAloneVO entry = new InvoiceEntryStandAloneVO();
                 BeanUtils.copyProperties(entryFromDatabase, entry);
 
-                List<InboundProductO> products = inboundEntryService.getProductsWithInvoiceSerial(
-                        entryFromDatabase.getInvoiceEntrySerial());
-                entry.setInvoiceProducts(products);
+                if (isInbound) {
+                    List<InboundProductO> products = inboundEntryService.getProductsWithInvoiceSerial(
+                            entryFromDatabase.getInvoiceEntrySerial());
+                    entry.setInboundInvoiceProducts(products);
+                }
+                else {
+                    List<OutboundProductO> products = outboundEntryService.getProductsWithInvoiceSerial(
+                            entryFromDatabase.getInvoiceEntrySerial());
+                    entry.setOutboundInvoiceProducts(products);
+                }
+
                 entries.add(entry);
             }
 

@@ -3,6 +3,7 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.OutboundProductO;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
@@ -48,5 +49,6 @@ public class InvoiceEntryStandAloneVO {
     private String invoiceNumberDate;
     private int isModified;
 
-    private List<InboundProductO> invoiceProducts;
+    private List<InboundProductO> inboundInvoiceProducts;
+    private List<OutboundProductO> outboundInvoiceProducts;
 }

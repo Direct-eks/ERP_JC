@@ -78,7 +78,7 @@
                               item-value="value"
                               item-text="label"
                               label="结账类型"
-                              :readonly="form.invoiceProducts.length !== 0"
+                              :readonly="form.inboundInvoiceProducts.length !== 0"
                               hide-details="auto"
                               outlined dense
                               style="width: 180px">
@@ -252,7 +252,7 @@
 
         <v-data-table v-if="!checkoutEntryMode"
                       :headers="tableHeaders"
-                      :items="form.invoiceProducts"
+                      :items="form.inboundInvoiceProducts"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -262,7 +262,7 @@
                       hide-default-footer
                       locale="zh-cn">
             <template v-slot:item.index="{ item }">
-                {{form.invoiceProducts.indexOf(item) + 1}}
+                {{ form.inboundInvoiceProducts.indexOf(item) + 1 }}
             </template>
         </v-data-table>
 
@@ -401,7 +401,7 @@ export default {
                 invoiceNumberDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 isModified: 0,
 
-                invoiceProducts: [],
+                inboundInvoiceProducts: [],
             },
 
             rules: {
@@ -461,7 +461,7 @@ export default {
         },
         productsChooseAction(val) {
             if (val) {
-                this.form.invoiceProducts = val
+                this.form.inboundInvoiceProducts = val
                 this.calculateSums()
                 this.form.totalAmount = this.sumWithTax
             }
@@ -471,7 +471,7 @@ export default {
             let tempTax = 0.0
             let tempSumWithTax = 0.0
             let tempSumWithoutTax = 0.0
-            for (let item of this.form.invoiceProducts) {
+            for (let item of this.form.inboundInvoiceProducts) {
                 const itemTotalTax = (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
                 const itemTotalWithoutTax = item.unitPriceWithoutTax * item.quantity
                 tempSumWithTax += item.unitPriceWithTax * item.quantity
