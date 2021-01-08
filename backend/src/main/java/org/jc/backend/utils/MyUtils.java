@@ -39,12 +39,14 @@ public class MyUtils {
     /**
      * form a new serial out of provided params
      * @param base beginning of the serial, like "采订"
-     * @param currentCount the number of entries of today, of such kind
+     * @param currentCount the number of entries of passed 'date', of such kind
+     * @param date the date
      * @return new formed serial String
      */
-    public static String formNewSerial(String base, int currentCount) {
+    public static String formNewSerial(String base, int currentCount, String date) {
 
-        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+//        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String dateString = date;
         dateString = dateString.substring(2).replaceAll("-", "");
         String newSerial = String.format("%s%s-%03d", base, dateString, currentCount + 1);
         logger.info("New serial: " + newSerial);
