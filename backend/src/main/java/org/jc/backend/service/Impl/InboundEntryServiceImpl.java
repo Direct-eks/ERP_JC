@@ -58,8 +58,9 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 product.setInboundEntryID(newSerial);
 
                 //check warehouseStock for existence, if not, create new one
-                if (product.getWarehouseStockID() == -1 ||
-                        warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID()) == null) {
+                if (product.getWarehouseStockID() == -1
+                        || warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(
+                                product.getWarehouseID(), product.getSkuID()) == null) {
                     WarehouseStockO newWarehouseStock = new WarehouseStockO();
                     newWarehouseStock.setSkuID(product.getSkuID());
                     newWarehouseStock.setWarehouseID(product.getWarehouseID());

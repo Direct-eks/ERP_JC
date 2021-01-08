@@ -22,7 +22,11 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    public WarehouseStockO getWarehouseStocksBySku(int id) {
+    public List<WarehouseStockO> getWarehouseStocksBySku(int id) {
         return warehouseStockMapper.queryWarehouseStocksBySku(id);
+    }
+
+    public WarehouseStockO getWarehouseStockByWarehouseAndSku(int warehouse, int sku) {
+        return warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouse, sku);
     }
 }

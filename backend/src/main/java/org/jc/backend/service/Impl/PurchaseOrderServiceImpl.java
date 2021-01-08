@@ -160,7 +160,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             //first check if warehouse is changed, if so, check warehouse_stock and update all products
             if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
                 for (var product : currentProducts) {
-                    WarehouseStockO warehouseStock = warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID());
+                    WarehouseStockO warehouseStock = warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(
+                            product.getWarehouseID(), product.getSkuID());
                     int newWarehouseStockID;
                     if (warehouseStock == null) {
                         WarehouseStockO newWarehouseStock = new WarehouseStockO();
