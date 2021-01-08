@@ -4,5 +4,170 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.SalesOrderMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+        select count(sales_order_entry_id)
+        from e_sales_order_entry
+        where creation_date = date('now', 'localtime')
+    </select>
+
+    <insert id="insertNewOrderEntry">
+        insert into e_sales_order_entry(
+            sales_order_entry_id, shipment_date, creation_date, total_amount, invoice_type,
+            execution_status, drawer, partner_company_id, department_id, warehouse_id, remark
+        )
+        values (
+            #{salesOrderEntryID}, #{shipmentDate}, date('now', 'localtime'), #{totalAmount},
+            #{invoiceType}, #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID},
+            #{warehouseID}, #{remark}
+        )
+    </insert>
+
+    <insert id="insertNewOrderProduct" useGeneratedKeys="true" keyProperty="salesOrderProductID"
+        keyColumn="sales_order_product_id">
+        insert into e_sales_order_product(
+            sales_order_entry_id, sku_id, quantity, remark, warehouse_stock_id, warehouse_id,
+            tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price
+        )
+        values (
+            #{salesOrderEntryID}, #{skuID}, #{quantity}, #{remark}, #{warehouseStockID},
+            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice}
+        )
+    </insert>
+
+
+    <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.SalesOrderEntryDO">
+        <result property="salesOrderEntryID" column="sales_order_entry_id"/>
+        <result property="shipmentDate" column="shipment_date"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="executionStatus" column="execution_status"/>
+        <result property="drawer" column="drawer"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
+        <result property="companyFullName" column="company_full_name"/>
+        <result property="companyPhone" column="company_phone"/>
+        <result property="department_id" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="warehouse_id" column="warehouse_id"/>
+        <result property="warehouseName" column="warehouse_name"/>
+        <result property="remark" column="remark"/>
+        <result property="isModified" column="is_modified"/>
+    </resultMap>
+
+    <resultMap id="productResultMap" type="org.jc.backend.entity.SalesOrderProductO">
+        <result property="salesOrderProductID" column="sales_order_product_id"/>
+        <result property="salesOrderEntryID" column="sales_order_entry_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+        <result property="stockUnitPrice" column="stock_unit_price"/>
+    </resultMap>
+
+
+    <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
+        select s.sales_order_entry_id, s.shipment_date, s.creation_date, s.total_amount, s.invoice_type,
+        s.execution_status, s.drawer, s.partner_company_id, c.abbreviated_name as company_abbreviated_name,
+        c.full_name as company_full_name, c.phone as company_phone, s.department_id, d.name as department_name,
+        s.warehouse_id, w.name as warehouse_name, s.remark, s.is_modified
+        from ((e_sales_order_entry as s join c_partner_company as c on s.partner_company_id = c.partner_company_id)
+            join e_department as d on s.department_id = d.department_id)
+            join w_warehouse as w on s.warehouse_id = w.warehouse_id
+        where s.shipment_date between #{startDate} and #{endDate}
+        <if test="id != -1">
+            and s.partner_company_id = #{id}
+        </if>
+        order by s.sales_order_entry_id desc
+    </select>
+
+    <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
+        select s.sales_order_entry_id, s.shipment_date, s.creation_date, s.total_amount, s.invoice_type,
+        s.execution_status, s.drawer, s.partner_company_id, c.abbreviated_name as company_abbreviated_name,
+        c.full_name as company_full_name, c.phone as company_phone, s.department_id, d.name as department_name,
+        s.warehouse_id, w.name as warehouse_name, s.remark, s.is_modified
+        from ((e_sales_order_entry as s join c_partner_company as c on s.partner_company_id = c.partner_company_id)
+            join e_department as d on s.department_id = d.department_id)
+            join w_warehouse as w on s.warehouse_id = w.warehouse_id
+        where s.partner_company_id = #{id}
+        order by s.sales_order_entry_id desc
+    </select>
+
+    <select id="queryProductsByEntryID" resultMap="productResultMap">
+        select sales_order_product_id, sales_order_entry_id, s.sku_id,
+               sku.new_code, sku.old_code, sku.unit_name, sku.factory_code,
+               quantity, remark, warehouse_stock_id, warehouse_id, tax_rate,
+               unit_price_without_tax, unit_price_with_tax, stock_unit_price
+        from e_sales_order_product as s join (
+            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
+                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
+                          on s.model_id = m.model_id
+        ) as sku on s.sku_id = sku.sku_id
+        where sales_order_entry_id = #{id}
+        order by sales_order_product_id
+    </select>
+
+
+    <select id="selectEntryForCompare" resultMap="entryResultMap">
+        select sales_order_entry_id, total_amount, invoice_type, execution_status, drawer,
+               s.department_id, s.warehouse_id, s.remark, d.name as department_name, w.name as warehouse_name
+        from (e_sales_order_entry as s join e_department as d on s.department_id = d.department_id)
+                 join w_warehouse as w on s.warehouse_id = w.warehouse_id
+        where sales_order_entry_id = #{id}
+    </select>
+
+    <select id="selectProductsForCompare" resultMap="productResultMap">
+        select sales_order_product_id, sales_order_entry_id, quantity, p.remark, tax_rate,
+               unit_price_without_tax, unit_price_with_tax, m.new_code, m.old_code
+        from e_sales_order_product as p join (w_sku as s join w_model as m on s.model_id = m.model_id)
+                                                on p.sku_id = s.sku_id
+        where sales_order_entry_id = #{id}
+    </select>
+
+    <update id="updateOrderEntry">
+        update e_sales_order_entry
+        set total_amount = #{totalAmount},
+            invoice_type = #{invoiceType},
+            execution_status = #{executionStatus},
+            department_id = #{departmentID},
+            warehouse_id = #{warehouseID},
+            remark = #{remark},
+            is_modified = 1
+        where sales_order_entry_id = #{salesOrderEntryID}
+    </update>
+
+    <update id="updateOrderProduct">
+        update e_sales_order_product
+        set quantity = #{quantity},
+            remark = #{remark},
+            tax_rate = #{taxRate},
+            unit_price_without_tax = #{unitPriceWithoutTax},
+            unit_price_with_tax = #{unitPriceWithTax}
+        where sales_order_product_id = #{salesOrderProductID}
+    </update>
+
+    <delete id="deleteOrderProductByID">
+        delete from e_sales_order_product
+        where sales_order_product_id = #{id}
+    </delete>
+
+    <delete id="deleteOrderEntry">
+        delete from e_sales_order_entry
+        where sales_order_entry_id = #{id}
+    </delete>
+
+    <delete id="deleteOrderProductsByEntryID">
+        delete from e_sales_order_product
+        where sales_order_entry_id = #{id}
+    </delete>
 
 </mapper>

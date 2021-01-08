@@ -4,6 +4,7 @@ import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
+import org.jc.backend.entity.DO.SalesOrderEntryDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -170,6 +171,27 @@ public class IOModificationUtils {
         return bool || bool2;
     }
 
+    public static boolean entryCompareAndFormModificationRecord(
+            StringBuilder record,
+            SalesOrderEntryDO modifiedEntry,
+            SalesOrderEntryDO originEntry
+    ) {
+        boolean bool = false;
+        if (modifiedEntry.getTotalAmount() != originEntry.getTotalAmount()) {
+            bool = true;
+            record.append(String.format("总金额: %f -> %f", originEntry.getTotalAmount(), modifiedEntry.getTotalAmount()));
+        }
+
+        PurchaseOrderEntryDO modifyDO = new PurchaseOrderEntryDO();
+        PurchaseOrderEntryDO originDO = new PurchaseOrderEntryDO();
+        BeanUtils.copyProperties(modifiedEntry, modifyDO);
+        BeanUtils.copyProperties(originEntry, originDO);
+
+        boolean bool2 = entryCompareAndFormModificationRecord(record, modifyDO, originDO);
+
+        return bool || bool2;
+    }
+
     /**
      * compare product fields and form modification record
      * @param record the StringBuilder where the modification record is appended
@@ -231,6 +253,18 @@ public class IOModificationUtils {
             StringBuilder record,
             PurchaseOrderProductO modifiedProduct,
             PurchaseOrderProductO originProduct
+    ) {
+        InboundProductO product1 = new InboundProductO();
+        InboundProductO product2 = new InboundProductO();
+        BeanUtils.copyProperties(modifiedProduct, product1);
+        BeanUtils.copyProperties(originProduct, product2);
+        return productsCompareAndFormModificationRecord(record, product1, product2);
+    }
+
+    public static boolean productsCompareAndFormModificationRecord(
+            StringBuilder record,
+            SalesOrderProductO modifiedProduct,
+            SalesOrderProductO originProduct
     ) {
         InboundProductO product1 = new InboundProductO();
         InboundProductO product2 = new InboundProductO();
