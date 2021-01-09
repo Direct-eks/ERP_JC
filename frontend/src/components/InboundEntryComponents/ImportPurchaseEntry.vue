@@ -77,7 +77,7 @@ export default {
     },
     data() {
         return {
-            mdiClosPath: mdiClose,
+            mdiClosePath: mdiClose,
 
             purchaseQueryTableHeaders: [
                 {text: '采购订单', value: 'purchaseOrderEntryID', width: '80px'},
