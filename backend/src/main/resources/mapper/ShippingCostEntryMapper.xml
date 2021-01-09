@@ -5,40 +5,78 @@
 <mapper namespace="org.jc.backend.dao.ShippingCostEntryMapper">
 
     <select id="countNumberOfEntriesOfToday" resultType="int">
-
+        select count(shipping_cost_entry_serial)
+        from m_shipping_cost_entry
+        where checkout_date = date('now', 'localtime')
     </select>
 
     <insert id="insertEntry">
-
+        insert into m_shipping_cost_entry(
+            shipping_cost_entry_serial, partner_company_id, is_tax_deduction, invoice_number,
+            total_amount, invoice_amount, shipping_payment_type, remark, drawer, creation_date,
+            checkout_date, in_or_out, invoice_date
+        )
+        values (
+            #{shippingCostEntrySerial}, #{partnerCompanyID}, #{isTaxDeduction}, #{invoiceNumber},
+            #{totalAmount}, #{invoiceAmount}, #{shippingPaymentType}, #{remark}, #{drawer},
+            #{creationDate}, #{checkoutDate}, #{inOrOut}, #{invoiceDate}
+        )
     </insert>
 
     <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.ShippingCostEntryDO">
-        <result property="shippingCostEntrySerial" column=""/>
-        <result property="partnerCompanyID" column=""/>
-        <result property="isTaxDeduction" column=""/>
-        <result property="invoiceNumber" column=""/>
-        <result property="totalAmount" column=""/>
-        <result property="invoiceAmount" column=""/>
-        <result property="shippingPaymentType" column=""/>
-        <result property="remark" column=""/>
-        <result property="drawer" column=""/>
-        <result property="creationDate" column=""/>
-        <result property="checkoutDate" column=""/>
-        <result property="inOrOut" column=""/>
-        <result property="invoiceDate" column=""/>
-        <result property="isModified" column=""/>
+        <result property="shippingCostEntrySerial" column="shipping_cost_entry_serial"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
+        <result property="companyFullName" column="company_full_name"/>
+        <result property="phone" column="company_phone"/>
+        <result property="isTaxDeduction" column="is_tax_deduction"/>
+        <result property="invoiceNumber" column="invoice_number"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="invoiceAmount" column="invoice_amount"/>
+        <result property="shippingPaymentType" column="shipping_payment_type"/>
+        <result property="remark" column="remark"/>
+        <result property="drawer" column="drawer"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="checkoutDate" column="checkout_date"/>
+        <result property="inOrOut" column="in_or_out"/>
+        <result property="invoiceDate" column="invoice_date"/>
+        <result property="isModified" column="is_modified"/>
     </resultMap>
 
     <select id="getEntriesInDateRangeAndParams" resultMap="entryResultMap">
-
+        select shipping_cost_entry_serial, s.partner_company_id,
+               c.abbreviated_name as company_abbreviated_name, c.full_name as company_full_name,
+               c.phone as company_phone, is_tax_deduction, invoice_number, total_amount,
+               invoice_amount, shipping_payment_type, s.remark, drawer, creation_date,
+               checkout_date, in_or_out, invoice_date, is_modified
+        from m_shipping_cost_entry as s join c_partner_company as c
+            on s.partner_company_id = c.partner_company_id
+        where s.checkout_date between #{startDate} and #{endDate}
     </select>
 
-    <select id="selectEntryBySerial" resultMap="entryResultMap">
-
+    <select id="selectEntryBySerialForCompare" resultMap="entryResultMap">
+        select shipping_cost_entry_serial, s.partner_company_id,
+               c.abbreviated_name as company_abbreviated_name, c.full_name as company_full_name,
+               c.phone as company_phone, is_tax_deduction, invoice_number, total_amount,
+               invoice_amount, shipping_payment_type, s.remark, drawer, creation_date,
+               checkout_date, in_or_out, invoice_date, is_modified
+        from m_shipping_cost_entry as s join c_partner_company as c
+            on s.partner_company_id = c.partner_company_id
+        where s.shipping_cost_entry_serial = #{shippingCostEntrySerial}
     </select>
 
     <update id="modifyEntry">
-
+        update m_shipping_cost_entry
+        set partner_company_id = #{partnerCompanyID},
+            is_tax_deduction = #{isTaxDeduction},
+            total_amount = #{totalAmount},
+            invoice_number = #{invoiceNumber},
+            invoice_amount = #{invoiceAmount},
+            invoice_date = #{invoiceDate},
+            shipping_payment_type = #{shippingPaymentType},
+            remark = #{remark},
+            is_modified = 1
+        where shipping_cost_entry_serial = #{shippingCostEntrySerial}
     </update>
 
 </mapper>

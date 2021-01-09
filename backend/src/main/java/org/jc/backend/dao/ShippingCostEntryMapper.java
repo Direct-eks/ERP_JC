@@ -2,7 +2,6 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.ShippingCostEntryDO;
-import org.jc.backend.entity.MoneyEntryO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +13,6 @@ public interface ShippingCostEntryMapper {
     void insertEntry(ShippingCostEntryDO shippingCostEntryDO);
     List<ShippingCostEntryDO> getEntriesInDateRangeAndParams(String startDate, String endDate,
                                                      int companyID, String prefix);
-    MoneyEntryO selectEntryBySerial(String serial);
+    ShippingCostEntryDO selectEntryBySerialForCompare(String serial);
     void modifyEntry(ShippingCostEntryDO shippingCostEntryDO);
 }

@@ -3,6 +3,7 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.entity.DO.ShippingCostEntryDO;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
 import org.jc.backend.service.ShippingCostEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -37,6 +38,8 @@ public class ShippingCostEntryController {
         shippingCostEntryService.createEntry(shippingCostEntryVO, isInbound);
     }
 
+    @ApiOperation(value = "", response = ShippingCostEntryVO.class)
+    @GetMapping("/getEntriesInDateRange")
     public List<ShippingCostEntryVO> getEntriesInDateRange(
             @RequestParam("isInbound") boolean isInbound,
             @RequestParam("startDate") String startDateString,
