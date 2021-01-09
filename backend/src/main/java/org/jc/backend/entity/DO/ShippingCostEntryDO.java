@@ -7,11 +7,13 @@ import lombok.Setter;
 @Setter
 public class ShippingCostEntryDO {
     private String shippingCostEntrySerial;
+
     private int partnerCompanyID;
     //from c_partner_company
     private String companyAbbreviatedName;
     private String companyFullName;
     private String phone;
+
     private int isTaxDeduction;
     private String invoiceNumber;
     private double totalAmount;
