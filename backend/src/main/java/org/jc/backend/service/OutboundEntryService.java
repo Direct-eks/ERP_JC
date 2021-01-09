@@ -26,4 +26,5 @@ public interface OutboundEntryService {
     List<OutboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
 
     void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO);
+    List<OutboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial);
 }

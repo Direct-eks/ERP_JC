@@ -4,5 +4,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.ShippingCostEntryMapper">
 
+    <select id="countNumberOfEntriesOfToday" resultType="int">
+
+    </select>
+
+    <insert id="insertEntry">
+
+    </insert>
+
+    <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.ShippingCostEntryDO">
+        <result property="shippingCostEntrySerial" column=""/>
+        <result property="partnerCompanyID" column=""/>
+        <result property="isTaxDeduction" column=""/>
+        <result property="invoiceNumber" column=""/>
+        <result property="totalAmount" column=""/>
+        <result property="invoiceAmount" column=""/>
+        <result property="shippingPaymentType" column=""/>
+        <result property="remark" column=""/>
+        <result property="drawer" column=""/>
+        <result property="creationDate" column=""/>
+        <result property="checkoutDate" column=""/>
+        <result property="inOrOut" column=""/>
+        <result property="invoiceDate" column=""/>
+        <result property="isModified" column=""/>
+    </resultMap>
+
+    <select id="getEntriesInDateRangeAndParams" resultMap="entryResultMap">
+
+    </select>
+
+    <select id="selectEntryBySerial" resultMap="entryResultMap">
+
+    </select>
+
+    <update id="modifyEntry">
+
+    </update>
 
 </mapper>

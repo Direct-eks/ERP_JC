@@ -350,4 +350,21 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         }
 
     }
+
+    @Transactional(readOnly = true)
+    public List<InboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial) {
+
+        List<InboundEntryDO> entries;
+        try {
+            entries = inboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+        return entries;
+    }
+
 }

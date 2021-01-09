@@ -2,12 +2,9 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ShippingCostEntryMapper;
-import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.ShippingCostEntryDO;
-import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.OutboundEntryService;
@@ -19,6 +16,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -88,10 +87,51 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
     public List<ShippingCostEntryVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                            int companyID, boolean isInbound) {
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        List<ShippingCostEntryVO> entries = new ArrayList<>();
+        try {
+            String prefix = isInbound ? "付运" : "收运";
+
+            List<ShippingCostEntryDO> entriesFromDatabase = shippingCostEntryMapper.getEntriesInDateRangeAndParams(
+                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, prefix);
+
+            for (var entryFromDatabase : entriesFromDatabase) {
+                ShippingCostEntryVO tempEntry = new ShippingCostEntryVO();
+                BeanUtils.copyProperties(entryFromDatabase, tempEntry);
+
+                String serial = tempEntry.getShippingCostEntrySerial();
+                if (isInbound) {
+                    List<InboundEntryDO> inboundEntries = inboundEntryService.getEntriesWithShippingCostSerial(serial);
+                    tempEntry.setInboundEntries(inboundEntries);
+                }
+                else {
+                    List<OutboundEntryDO> outboundEntries = outboundEntryService.getEntriesWithShippingCostSerial(serial);
+                    tempEntry.setOutboundEntries(outboundEntries);
+                }
+
+                entries.add(tempEntry);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return entries;
     }
 
     @Transactional
     public void modifyEntry(ShippingCostEntryVO shippingCostEntryVO) {
+
+        try {
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
 
     }
 }

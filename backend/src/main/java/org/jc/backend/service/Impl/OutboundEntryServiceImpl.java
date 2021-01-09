@@ -333,4 +333,20 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         }
 
     }
+
+    @Transactional(readOnly = true)
+    public List<OutboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial) {
+
+        List<OutboundEntryDO> entries;
+        try {
+            entries = outboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+        return entries;
+    }
 }

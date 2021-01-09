@@ -251,4 +251,16 @@
         where inbound_entry_id = #{inboundEntryID}
     </update>
 
+    <select id="getEntriesWithShippingCostSerial" resultMap="entryResultMap">
+        select i.inbound_entry_id, i.entry_date, i.creation_date, i.partner_company_id,
+        c.abbreviated_name as company_abbreviated_name, c.phone, c.full_name, i.remark,
+        i.classification, i.shipping_cost, i.shipping_cost_type, i.shipping_quantity,
+        i.shipping_number, i.shipping_method_id, r.abbreviated_name as relevant_company_name,
+        i.shipping_cost_serial
+        from (e_inbound_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id)
+            left join c_relevant_company as r on i.shipping_method_id = r.relevant_company_id
+        where i.shipping_cost_serial = #{shippingCostSerial}
+        order by i.inbound_entry_id desc
+    </select>
+
 </mapper>
