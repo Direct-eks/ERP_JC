@@ -336,4 +336,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         return products;
     }
+
+    @Transactional
+    public void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO) {
+
+        try {
+            inboundEntryMapper.updateEntryWithShippingCostSerial(inboundEntryDO);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+    }
 }

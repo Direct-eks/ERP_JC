@@ -245,4 +245,10 @@
         order by inbound_product_id
     </select>
 
+    <update id="updateEntryWithShippingCostSerial">
+        update e_inbound_entry
+        set shipping_cost_serial = #{shippingCostSerial}
+        where inbound_entry_id = #{inboundEntryID}
+    </update>
+
 </mapper>

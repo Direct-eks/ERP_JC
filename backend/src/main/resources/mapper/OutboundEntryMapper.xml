@@ -246,4 +246,10 @@
         order by outbound_product_id
     </select>
 
+    <update id="updateEntryWithShippingCostSerial">
+        update e_outbound_entry
+        set shipping_cost_serial = #{shippingCostSerial}
+        where outbound_entry_id = #{outboundEntryID}
+    </update>
+
 </mapper>

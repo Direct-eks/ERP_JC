@@ -37,4 +37,6 @@ public interface OutboundEntryMapper {
 
     List<OutboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
     List<OutboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
+
+    void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO);
 }

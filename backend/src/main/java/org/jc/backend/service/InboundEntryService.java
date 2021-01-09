@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 
@@ -22,4 +23,6 @@ public interface InboundEntryService {
 
     List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
     List<InboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
+
+    void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO);
 }

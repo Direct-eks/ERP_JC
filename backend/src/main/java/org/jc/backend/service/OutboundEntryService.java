@@ -1,6 +1,7 @@
 package org.jc.backend.service;
 
 import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 
@@ -23,4 +24,6 @@ public interface OutboundEntryService {
 
     List<OutboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
     List<OutboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
+
+    void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO);
 }

@@ -319,4 +319,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
         return products;
     }
+
+    @Transactional
+    public void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO) {
+
+        try {
+            outboundEntryMapper.updateEntryWithShippingCostSerial(outboundEntryDO);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+
+    }
 }

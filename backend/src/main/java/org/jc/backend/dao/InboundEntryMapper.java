@@ -38,4 +38,6 @@ public interface InboundEntryMapper {
 
     List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial);
     List<InboundProductO> getProductsWithInvoiceSerial(String invoiceSerial);
+
+    void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO);
 }
