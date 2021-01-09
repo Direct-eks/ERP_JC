@@ -10,18 +10,24 @@ import org.springframework.util.StringUtils;
 public class IOModificationUtils {
 
     /**
-     * compare shipping info fields and form modification record
+     * compare shipping info fields and form modification record,
+     * since inbound and outbound entry share the same shipping info fields,
+     * T will be always treated as InboundEntryDO.
      * @param record the StringBuilder where the modification record is appended
-     * @param modifiedShippingInfo the modified shippingInfo object to be compared with @originEntry
-     * @param originShippingInfo the original shippingInfo object to be compared with @originEntry
+     * @param modifiedInfo the modified shippingInfo object to be compared with @originEntry
+     * @param originInfo the original shippingInfo object to be compared with @originEntry
      * @return true if any of the fields is changed, false if everything remains unchanged
      */
-    public static boolean shippingInfoCompareAndFormModificationRecord(
-            StringBuilder record,
-            InboundEntryDO modifiedShippingInfo,
-            InboundEntryDO originShippingInfo
+    public static <T> boolean shippingInfoCompareAndFormModificationRecord(
+            StringBuilder record, T modifiedInfo, T originInfo
     ) {
+        InboundEntryDO modifiedShippingInfo = new InboundEntryDO();
+        InboundEntryDO originShippingInfo = new InboundEntryDO();
+        BeanUtils.copyProperties(modifiedInfo, modifiedShippingInfo);
+        BeanUtils.copyProperties(originInfo, originShippingInfo);
+
         boolean bool = false;
+
         if (modifiedShippingInfo.getShippingCost() != originShippingInfo.getShippingCost()) {
             bool = true;
             record.append(String.format("运费: %f -> %f; ",
@@ -56,74 +62,88 @@ public class IOModificationUtils {
         return bool;
     }
 
-    public static boolean shippingInfoCompareAndFormModificationRecord(
-            StringBuilder record,
-            OutboundEntryDO modifiedShippingInfo,
-            OutboundEntryDO originShippingInfo
-    ) {
-        InboundEntryDO modifiedO = new InboundEntryDO();
-        InboundEntryDO originO = new InboundEntryDO();
-        BeanUtils.copyProperties(modifiedShippingInfo, modifiedO);
-        BeanUtils.copyProperties(originShippingInfo, originO);
-
-        return shippingInfoCompareAndFormModificationRecord(record, modifiedO, originO);
-    }
-
     /**
-     * compare entry fields and form modification record
+     * compare entry fields and form modification record,
+     * the different fields in objects will be compared first, then objects will
+     * be transformed into InboundEntryDO, and compare the fields that they all share.
+     * Note that totalCost only exist in PurchaseEntry and InboundEntry, but for
+     * SalesOrder and OutboundEntry, those two will always equal, thus does not
+     * matter even if it is not put in a if statement separately
      * @param record the StringBuilder where the modification record is appended
      * @param modifiedEntry the modified entry object to be compared with @originEntry
      * @param originEntry the origin entry queried from database for compare
      * @return true if any of the fields is changed, false if everything remains unchanged
      */
-    public static boolean entryCompareAndFormModificationRecord(
-            StringBuilder record,
-            InboundEntryDO modifiedEntry,
-            InboundEntryDO originEntry
+    public static <T> boolean entryCompareAndFormModificationRecord(
+            StringBuilder record, T modifiedEntry, T originEntry
     ) {
         boolean bool = false;
-        if (originEntry.getTotalCost() != modifiedEntry.getTotalCost()) {
-            bool = true;
-            record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(), modifiedEntry.getTotalCost()));
-        }
-        if (!originEntry.getInvoiceType().equals(modifiedEntry.getInvoiceType())) {
-            bool = true;
-            record.append(String.format("单据类型: %s -> %s; ", originEntry.getInvoiceType(), modifiedEntry.getInvoiceType()));
-        }
-        if (originEntry.getDepartmentID() != modifiedEntry.getDepartmentID()) {
-            bool = true;
-            record.append(String.format("部门: %s -> %s; ", originEntry.getDepartmentName(), modifiedEntry.getDepartmentName()));
-        }
-        if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
-            bool = true;
-            record.append(String.format("备注: %s -> %s;", originEntry.getRemark(), modifiedEntry.getRemark()));
-        }
 
-        return bool;
-    }
-
-    /**
-     * compare entry fields and form modification record,
-     * for PurchaseOrderEntryModifyDO, there are one more field than
-     * InboundEntryModifyDO, so that field is handled here, and then objects
-     * will be transformed to InboundEntryModifyDO and call overloaded method
-     * entryCompareAndFormModificationRecord()
-     */
-    public static boolean entryCompareAndFormModificationRecord(
-            StringBuilder record,
-            OutboundEntryDO modifiedEntry,
-            OutboundEntryDO originEntry
-    ) {
-        boolean bool = false;
-        if (modifiedEntry.getTotalAmount() != originEntry.getTotalAmount()) {
-            bool = true;
-            record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalAmount(),
-                    modifiedEntry.getTotalAmount()));
+        if (modifiedEntry instanceof PurchaseOrderEntryDO) {
+            if (!((PurchaseOrderEntryDO)modifiedEntry).getExecutionStatus()
+                    .equals(((PurchaseOrderEntryDO)originEntry).getExecutionStatus())) {
+                bool = true;
+                record.append(String.format("状态: %s -> %s; ",
+                        ((PurchaseOrderEntryDO)originEntry).getExecutionStatus(),
+                        ((PurchaseOrderEntryDO)modifiedEntry).getExecutionStatus()));
+            }
+            if (((PurchaseOrderEntryDO)modifiedEntry).getWarehouseID() !=
+                    ((PurchaseOrderEntryDO)originEntry).getWarehouseID()) {
+                bool = true;
+                record.append(String.format("仓库: %s -> " + "%s; ",
+                        ((PurchaseOrderEntryDO)originEntry).getWarehouseName(),
+                        ((PurchaseOrderEntryDO)modifiedEntry).getWarehouseName()));
+            }
         }
-        if (!modifiedEntry.getDeliveryMethod().equals(originEntry.getDeliveryMethod())) {
-            bool = true;
-            record.append(String.format("提货方式: %s -> %s; ", originEntry.getDeliveryMethod(),
-                    modifiedEntry.getDeliveryMethod()));
+        else if (modifiedEntry instanceof  SalesOrderEntryDO) {
+            if (((SalesOrderEntryDO)modifiedEntry).getTotalAmount() !=
+                    ((SalesOrderEntryDO)originEntry).getTotalAmount()) {
+                bool = true;
+                record.append(String.format("总金额: %f -> %f",
+                        ((SalesOrderEntryDO)originEntry).getTotalAmount(),
+                        ((SalesOrderEntryDO)modifiedEntry).getTotalAmount()));
+            }
+        }
+        else if (modifiedEntry instanceof OutboundEntryDO) {
+            if (((OutboundEntryDO)modifiedEntry).getTotalAmount() !=
+                    ((OutboundEntryDO)originEntry).getTotalAmount()) {
+                bool = true;
+                record.append(String.format("总金额: %f -> %f; ",
+                        ((OutboundEntryDO)originEntry).getTotalAmount(),
+                        ((OutboundEntryDO)modifiedEntry).getTotalAmount()));
+            }
+            if (!((OutboundEntryDO)modifiedEntry).getDeliveryMethod()
+                    .equals(((OutboundEntryDO)originEntry).getDeliveryMethod())) {
+                bool = true;
+                record.append(String.format("提货方式: %s -> %s; ",
+                        ((OutboundEntryDO)originEntry).getDeliveryMethod(),
+                        ((OutboundEntryDO)modifiedEntry).getDeliveryMethod()));
+            }
+        }
+        else if (modifiedEntry instanceof QuotaEntryDO) {
+            //all fields of QuotaEntryDo are handled here
+            if (((QuotaEntryDO)modifiedEntry).getTotalAmount() !=
+                    ((QuotaEntryDO)originEntry).getTotalAmount()) {
+                bool = true;
+                record.append(String.format("总金额: %f -> %f",
+                        ((QuotaEntryDO)originEntry).getTotalAmount(),
+                        ((QuotaEntryDO)modifiedEntry).getTotalAmount()));
+            }
+            if (!((QuotaEntryDO)modifiedEntry).getInvoiceType()
+                    .equals(((QuotaEntryDO)originEntry).getInvoiceType())) {
+                bool = true;
+                record.append(String.format("单据类型: %s -> %s; ",
+                        ((QuotaEntryDO)originEntry).getInvoiceType(),
+                        ((QuotaEntryDO)modifiedEntry).getInvoiceType()));
+            }
+            if (!((QuotaEntryDO)modifiedEntry).getRemark()
+                    .equals(((QuotaEntryDO)originEntry).getRemark())) {
+                bool = true;
+                record.append(String.format("备注: %s -> %s;",
+                        ((QuotaEntryDO)originEntry).getRemark(),
+                        ((QuotaEntryDO)modifiedEntry).getRemark()));
+            }
+            return bool;
         }
 
         InboundEntryDO modifyDO = new InboundEntryDO();
@@ -131,98 +151,45 @@ public class IOModificationUtils {
         BeanUtils.copyProperties(modifiedEntry, modifyDO);
         BeanUtils.copyProperties(originEntry, originDO);
 
-        boolean bool2 = entryCompareAndFormModificationRecord(record, modifyDO, originDO);
-
-        return bool || bool2;
-    }
-
-    /**
-     * compare entry fields and form modification record,
-     * for PurchaseOrderEntryModifyDO, there are two more fields than
-     * InboundEntryModifyDO, so those two fields are handled here, and then objects
-     * will be transformed to InboundEntryModifyDO and call overloaded method
-     * entryCompareAndFormModificationRecord()
-     */
-    public static boolean entryCompareAndFormModificationRecord(
-            StringBuilder record,
-            PurchaseOrderEntryDO modifiedEntry,
-            PurchaseOrderEntryDO originEntry
-    ) {
-        boolean bool = false;
-        if (!modifiedEntry.getExecutionStatus().equals(originEntry.getExecutionStatus())) {
+        if (originDO.getTotalCost() != modifyDO.getTotalCost()) {
             bool = true;
-            record.append(String.format("状态: %s -> %s; ", originEntry.getExecutionStatus(), modifiedEntry.getExecutionStatus()));
+            record.append(String.format("总金额: %f -> %f; ", originDO.getTotalCost(), modifyDO.getTotalCost()));
         }
-        if (modifiedEntry.getWarehouseID() != originEntry.getWarehouseID()) {
+        if (!originDO.getInvoiceType().equals(modifyDO.getInvoiceType())) {
             bool = true;
-            record.append(String.format("仓库: %s -> " + "%s; ", originEntry.getWarehouseName(), modifiedEntry.getWarehouseName()));
+            record.append(String.format("单据类型: %s -> %s; ", originDO.getInvoiceType(), modifyDO.getInvoiceType()));
         }
-
-        InboundEntryDO modifyDO = new InboundEntryDO();
-        InboundEntryDO originDO = new InboundEntryDO();
-        BeanUtils.copyProperties(modifiedEntry, modifyDO);
-        BeanUtils.copyProperties(originEntry, originDO);
-
-        boolean bool2 = entryCompareAndFormModificationRecord(record, modifyDO, originDO);
-
-        return bool || bool2;
-    }
-
-    public static boolean entryCompareAndFormModificationRecord(
-            StringBuilder record,
-            SalesOrderEntryDO modifiedEntry,
-            SalesOrderEntryDO originEntry
-    ) {
-        boolean bool = false;
-        if (modifiedEntry.getTotalAmount() != originEntry.getTotalAmount()) {
+        if (originDO.getDepartmentID() != modifyDO.getDepartmentID()) {
             bool = true;
-            record.append(String.format("总金额: %f -> %f", originEntry.getTotalAmount(), modifiedEntry.getTotalAmount()));
+            record.append(String.format("部门: %s -> %s; ", originDO.getDepartmentName(), modifyDO.getDepartmentName()));
         }
-
-        PurchaseOrderEntryDO modifyDO = new PurchaseOrderEntryDO();
-        PurchaseOrderEntryDO originDO = new PurchaseOrderEntryDO();
-        BeanUtils.copyProperties(modifiedEntry, modifyDO);
-        BeanUtils.copyProperties(originEntry, originDO);
-
-        boolean bool2 = entryCompareAndFormModificationRecord(record, modifyDO, originDO);
-
-        return bool || bool2;
-    }
-
-    public static boolean entryCompareAndFormModificationRecord(
-            StringBuilder record,
-            QuotaEntryDO modifiedEntry,
-            QuotaEntryDO originEntry
-    ) {
-        boolean bool = false;
-        if (modifiedEntry.getTotalAmount() != originEntry.getTotalAmount()) {
+        if (!originDO.getRemark().equals(modifyDO.getRemark())) {
             bool = true;
-            record.append(String.format("总金额: %f -> %f", originEntry.getTotalAmount(), modifiedEntry.getTotalAmount()));
-        }
-        if (!modifiedEntry.getInvoiceType().equals(originEntry.getInvoiceType())) {
-            bool = true;
-            record.append(String.format("单据类型: %s -> %s; ", originEntry.getInvoiceType(), modifiedEntry.getInvoiceType()));
-        }
-        if (!modifiedEntry.getRemark().equals(originEntry.getRemark())) {
-            bool = true;
-            record.append(String.format("备注: %s -> %s;", originEntry.getRemark(), modifiedEntry.getRemark()));
+            record.append(String.format("备注: %s -> %s;", originDO.getRemark(), modifyDO.getRemark()));
         }
 
         return bool;
     }
 
     /**
-     * compare product fields and form modification record
+     * compare product fields and form modification record,
+     * all purchaseProduct, inboundProduct, salesOrderProducts, outboundProduct
+     * and quotaProduct are compared by transforming into InboundProductO
      * @param record the StringBuilder where the modification record is appended
-     * @param modifiedProduct the modified product object to be compared with @originProduct
-     * @param originProduct the origin product queried from database for compare
+     * @param modifiedO the modified product object to be compared with @originO
+     * @param originO the origin product queried from database for compare
      * @return true if any of the fields is changed, false if everything remains unchanged
      */
-    public static boolean productsCompareAndFormModificationRecord(
+    public static <T> boolean productsCompareAndFormModificationRecord(
             StringBuilder record,
-            InboundProductO modifiedProduct,
-            InboundProductO originProduct
+            T modifiedO,
+            T originO
     ) {
+        InboundProductO modifiedProduct = new InboundProductO();
+        InboundProductO originProduct = new InboundProductO();
+        BeanUtils.copyProperties(modifiedO, modifiedProduct);
+        BeanUtils.copyProperties(originO, originProduct);
+
         String modelCode = StringUtils.hasLength(modifiedProduct.getNewCode()) ?
                 modifiedProduct.getNewCode() : modifiedProduct.getOldCode();
         //compare product
@@ -254,54 +221,6 @@ public class IOModificationUtils {
         }
 
         return bool;
-    }
-
-    public static boolean productsCompareAndFormModificationRecord(
-            StringBuilder record,
-            OutboundProductO modifiedProduct,
-            OutboundProductO originProduct
-    ) {
-        InboundProductO product1 = new InboundProductO();
-        InboundProductO product2 = new InboundProductO();
-        BeanUtils.copyProperties(modifiedProduct, product1);
-        BeanUtils.copyProperties(originProduct, product2);
-        return productsCompareAndFormModificationRecord(record, product1, product2);
-    }
-
-    public static boolean productsCompareAndFormModificationRecord(
-            StringBuilder record,
-            PurchaseOrderProductO modifiedProduct,
-            PurchaseOrderProductO originProduct
-    ) {
-        InboundProductO product1 = new InboundProductO();
-        InboundProductO product2 = new InboundProductO();
-        BeanUtils.copyProperties(modifiedProduct, product1);
-        BeanUtils.copyProperties(originProduct, product2);
-        return productsCompareAndFormModificationRecord(record, product1, product2);
-    }
-
-    public static boolean productsCompareAndFormModificationRecord(
-            StringBuilder record,
-            SalesOrderProductO modifiedProduct,
-            SalesOrderProductO originProduct
-    ) {
-        InboundProductO product1 = new InboundProductO();
-        InboundProductO product2 = new InboundProductO();
-        BeanUtils.copyProperties(modifiedProduct, product1);
-        BeanUtils.copyProperties(originProduct, product2);
-        return productsCompareAndFormModificationRecord(record, product1, product2);
-    }
-
-    public static boolean productsCompareAndFormModificationRecord(
-            StringBuilder record,
-            QuotaProductO modifiedProduct,
-            QuotaProductO originProduct
-    ) {
-        InboundProductO product1 = new InboundProductO();
-        InboundProductO product2 = new InboundProductO();
-        BeanUtils.copyProperties(modifiedProduct, product1);
-        BeanUtils.copyProperties(originProduct, product2);
-        return productsCompareAndFormModificationRecord(record, product1, product2);
     }
 
 }
