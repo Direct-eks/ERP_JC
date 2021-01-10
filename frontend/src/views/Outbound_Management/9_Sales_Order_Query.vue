@@ -1,120 +1,88 @@
 <template>
     <!--  <p>出库管理</p>-->
     <!--  <p>销售订单查询</p>-->
-    <div style="text-align: left">
-        <el-row style="margin: 10px">
-            <strong>销售订单查询</strong>
-        </el-row>
-        <el-tabs type="border-card">
-            <el-tab-pane label="浏览">
-                <el-form>
-                    <el-form-item>
-                        <label style="margin-right: 5px">选择日期</label>
-                        <el-date-picker style="width: 250px"
-                                        v-model="value"
-                                        type="daterange"
-                                        readonly
-                                        name="选择日期"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        format="yyyy-MM-dd"
-                                        :default-time="['00:00:00', '23:59:59']">
-                        </el-date-picker>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="info" @click="fullSearch()" :loading="fullSearchLoading"
-                                   :disabled="fullSearchPanelOpen === true">选择单位
-                        </el-button>
-                        <el-input
-                                style="width: 400px"
-                                placeholder="wh"
-                                v-model="value1">
-                        </el-input>
-                        <label style="margin-right: 5px; margin-left: 10px;">类别</label>
-                        <el-select v-model="value" placeholder="请选择" style="width: 150px">
-                            <el-option
-                                    v-for="item in options"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <el-button type="danger">清空</el-button>
-                    </el-form-item>
+    <v-card outlined>
+        <v-toolbar flat>
+            <v-toolbar-title>销售订单查询</v-toolbar-title>
 
-                    <el-collapse-transition>
-                        <company-search v-if="fullSearchPanelOpen" @searchCloseAction="fullSearchPanelCloseAction"
-                                        @chooseAction="fullSearchChoose"></company-search>
-                    </el-collapse-transition>
+            <template v-slot:extension>
+                <v-tabs v-model="tab" @change="handleTabChange">
+                    <v-tabs-slider></v-tabs-slider>
+                    <v-tab key="browse">浏览</v-tab>
+                    <v-tab key="detail" :disabled="currentTableRow === null">详细情况</v-tab>
+                </v-tabs>
+            </template>
+        </v-toolbar>
 
-                </el-form>
-                <el-row>
-                    <el-button type="info">查询</el-button>
+        <v-tabs-items v-model="tab">
 
-                </el-row>
+            <v-tab-item key="browse">
+                <OutboundQueryDisplayComponent
+                    displayMode="salesOrder"
+                    @tableClick="tableClickAction">
+                </OutboundQueryDisplayComponent>
+            </v-tab-item>
 
-                <el-table
-                        :data="tableData"
-                        stripe
-                        highlight-current-row
-                        style="width: 100%"
-                        height="300">
-                    <el-table-column fixed prop="date" label="入库单号" width="80"></el-table-column>
-                    <el-table-column prop="name" label="单位简称" width="120"></el-table-column>
-                    <el-table-column prop="province" label="仓库" width="120"></el-table-column>
-                    <el-table-column prop="city" label="部门" width="120"></el-table-column>
-                    <el-table-column prop="address" label="入库类别" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="预计单据类型" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="总金额" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="运输方式" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="运单号" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="运费" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="备注" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="开单人" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="开单日期" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="运费标志" width="120"></el-table-column>
-                    <el-table-column prop="zip" label="对应单据" width="120"></el-table-column>
-                </el-table>
-            </el-tab-pane>
-            <el-tab-pane label="详细情况">
+            <v-tab-item key="detail" :eager="true">
+                <OutboundEntryDisplayAndModifyComponent
+                    :form="form"
+                    displayMode="salesOrderDisplay">
+                </OutboundEntryDisplayAndModifyComponent>
+            </v-tab-item>
 
-            </el-tab-pane>
-        </el-tabs>
-    </div>
+        </v-tabs-items>
+
+        <SnackMessage></SnackMessage>
+    </v-card>
 </template>
 
 <script>
-    export default {
-        name: "Sales_Order_Query",
-        components: {
-            CompanySearch: () => import('~/components/CompanySearch')
-        },
-        data() {
-            return {
-                value: ['2019-09-21', '2020-5-21'],
+import SnackMessage from "~/components/SnackMessage";
 
-                fullSearchField: '',
-                fullSearchLoading: false,
-                fullSearchPanelOpen: false,
-            }
-        },
-        methods: {
-            fullSearch() {
-                this.fullSearchLoading = true;
-                setTimeout(() => {
-                    this.abbreviatedSearchPanelOpen = false //close the other search panel
-                    this.fullSearchPanelOpen = true
-                    this.fullSearchLoading = false
-                }, 300)
-            },
-            fullSearchPanelCloseAction() {
-                this.fullSearchPanelOpen = false;
-            },
-            fullSearchChoose() {
+export default {
+    name: "Sales_Order_Query",
+    components: {
+        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
+        OutboundEntryDisplayAndModifyComponent: () => import('../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
+        SnackMessage,
+    },
+    data() {
+        return {
+            tab: null,
+            currentTableRow: null,
 
+            form: {
+                shipmentDate: '',
+                creationDate: '',
+                totalAmount: 0.0, deliveryMethod: '', invoiceType: '',
+                drawer: '',
+                partnerCompanyID: -1,
+                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                departmentID: -1, departmentName: '',
+                warehouseID: -1, warehouseName: '',
+                remark: '',
+                executionStatus: '',
+                salesOrderProducts: [],
             }
         }
+    },
+    methods: {
+        handleTabChange(val) {
+            if (val === 0) {
+                this.currentTableRow = null
+            }
+        },
+        tableClickAction(val) {
+            this.currentTableRow = val
+            //create missing fields and calculate values
+            this.currentTableRow.outboundProducts.forEach(item => {
+                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
+                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+            })
+            this.form = Object.assign(this.form, this.currentTableRow)
+        }
     }
+}
 </script>
 
 <style scoped>

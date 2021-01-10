@@ -6,28 +6,28 @@
             <v-toolbar-title>出库单查询</v-toolbar-title>
 
             <template v-slot:extension>
-                <v-tabs v-model="tab">
+                <v-tabs v-model="tab" @change="handleTabChange">
                     <v-tabs-slider></v-tabs-slider>
-                    <v-tab key="浏览">浏览</v-tab>
-                    <v-tab key="详细情况">详细情况</v-tab>
+                    <v-tab key="browse">浏览</v-tab>
+                    <v-tab key="detail" :disabled="currentTableRow === null">详细情况</v-tab>
                 </v-tabs>
             </template>
         </v-toolbar>
 
         <v-tabs-items v-model="tab">
 
-            <v-tab-item key="浏览">
+            <v-tab-item key="browse">
                 <OutboundQueryDisplayComponent
                     displayMode="query"
                     @tableClick="tableClickAction">
                 </OutboundQueryDisplayComponent>
             </v-tab-item>
 
-            <v-tab-item key="详细情况">
-                <OutboundEntryDisplayComponent
-                    :chosenEntryForDetail="currentTableRow"
-                    editMode="query">
-                </OutboundEntryDisplayComponent>
+            <v-tab-item key="detail" :eager="true">
+                <OutboundEntryDisplayAndModifyComponent
+                    :form="form"
+                    displayMode="outboundEntryDisplay">
+                </OutboundEntryDisplayAndModifyComponent>
             </v-tab-item>
 
         </v-tabs-items>
@@ -42,47 +42,47 @@ import SnackMessage from "~/components/SnackMessage";
 export default {
     name: "Query_Out",
     components: {
-        OutboundEntryDisplayComponent: () => import('../../components/OutboundEntryComponents/OutboundEntryDisplayComponent'),
-        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/OutboundQueryDisplayComponent'),
+        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
+        OutboundEntryDisplayAndModifyComponent: () => import('../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
         SnackMessage,
     },
     data() {
         return {
             tab: null,
-            currentTableRow: null
+            currentTableRow: null,
+
+            form: {
+                shipmentDate: '',
+                creationDate: '',
+                totalAmount: 0.0, deliveryMethod: '', invoiceType: '',
+                drawer: '',
+                partnerCompanyID: -1,
+                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                departmentID: -1, departmentName: '',
+                warehouseID: -1, warehouseName: '',
+                remark: '',
+                classification: '',
+                shippingCost: 0, shippingCostType: '',
+                shippingQuantity: 0, shippingNumber: '',
+                shippingMethodID: -1, relevantCompanyName: '',
+                outboundProducts: [],
+            }
         }
     },
     methods: {
+        handleTabChange(val) {
+            if (val === 0) {
+                this.currentTableRow = null
+            }
+        },
         tableClickAction(val) {
-            //todo query missing fields and products
-            if (val.shippingMethod === -1) { // check if shipping method is null, if null, no need to query
-                this.$postRequest(this.$api.entryProductByEntry, {
-                    entryID: val.entryID
-                }).then((res) => {
-                    console.log('received', res.data)
-                    val.products = res.data
-
-                    this.currentTableRow = val
-                })
-            }
-            else {
-                this.$postRequest(this.$api.shippingInfoByEntry, {
-                    shippingMethodID: val.shippingMethodID
-                }).then((res) => {
-                    console.log('received', res.data)
-                    val.shippingMethod = res.data
-
-                    this.$postRequest(this.$api.entryProductByEntry, {
-                        entryID: val.entryID
-                    }).then((res) => {
-                        console.log('received', res.data)
-                        val.products =  res.data
-
-                        this.currentTableRow = val
-                    })
-
-                })
-            }
+            this.currentTableRow = val
+            //create missing fields and calculate values
+            this.currentTableRow.outboundProducts.forEach(item => {
+                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
+                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+            })
+            this.form = Object.assign(this.form, this.currentTableRow)
         }
     }
 }
