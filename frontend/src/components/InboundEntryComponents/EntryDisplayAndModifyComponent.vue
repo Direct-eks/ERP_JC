@@ -567,7 +567,7 @@ export default {
                         this.form.departmentName = item.name
                 })
 
-                this.$patchRequest(this.$api.modifyEntry, this.form).then(() => {
+                this.$patchRequest(this.$api.modifyInboundEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
