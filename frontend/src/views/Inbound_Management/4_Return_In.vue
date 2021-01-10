@@ -3,7 +3,7 @@
 <!--    <p>入库单退货</p>-->
     <v-card outlined>
         <v-toolbar flat>
-            <v-toolbar-title>入库单完善</v-toolbar-title>
+            <v-toolbar-title>入库单退货</v-toolbar-title>
 
             <template v-slot:extension>
                 <v-tabs v-model="tab">
