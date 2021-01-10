@@ -276,9 +276,9 @@
                             查询该单位销售订单
                         </v-btn>
                     </template>
-                    <OutboundImportSalesOrder>
-<!--                        :companyID="form.partnerCompanyID"-->
-<!--                        @purchaseOrderChoose="purchaseOrderChooseAction">-->
+                    <OutboundImportSalesOrder mode="salesOrder"
+                                              :companyID="form.partnerCompanyID"
+                                              @salesOrderChoose="salesOrderChooseAction">
                     </OutboundImportSalesOrder>
                 </v-dialog>
             </v-col>
@@ -296,9 +296,9 @@
                             查询该单位报价单
                         </v-btn>
                     </template>
-                    <OutboundImportSalesOrder>
-                        <!--                        :companyID="form.partnerCompanyID"-->
-                        <!--                        @purchaseOrderChoose="purchaseOrderChooseAction">-->
+                    <OutboundImportSalesOrder mode="quota"
+                                              :companyID="form.partnerCompanyID"
+                                              @quotaChoose="quotaChooseAction">
                     </OutboundImportSalesOrder>
                 </v-dialog>
             </v-col>
@@ -502,7 +502,7 @@ export default {
         CompanySearch: () => import("~/components/CompanySearch"),
         ModelSearch: () => import("~/components/OutboundEntryComponents/ModelSearch"),
         RelativeCompanySearch: () => import("~/components/RelativeCompanySearch"),
-        OutboundImportSalesOrder: () => import("~/components/OutboundEntryComponents/ImportSalesOrder")
+        OutboundImportSalesOrder: () => import("~/components/OutboundEntryComponents/ImportOrder")
     },
     props: {
         editMode: {
@@ -657,13 +657,16 @@ export default {
             }
             this.relativeCompanySearchPanelOpen = false
         },
-        /* ------- sales order import -------*/
+        /* ------- sales order / quota import -------*/
         salesOrderChooseAction(val) {
             // todo
             if (val) {
                 this.tableData = val
             }
             this.salesOrderPanelOpen = false
+        },
+        quotaChooseAction(val) {
+
         },
         /* ------- model search -------*/
         modelSearchCloseAction() {

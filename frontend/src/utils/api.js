@@ -69,6 +69,20 @@ const api = {
     purchaseOrdersByCompanyID: '/purchaseOrder/getOrdersByCompanyID/', // GET companyID
     modifyPurchaseOrder: '/purchaseOrder/modifyOrder', // PATCH
 
+    /* ------ /quotaEntry ------*/
+    createQuota: '/quotaEntry/createOrder', // PUT
+    // GET startDate= endDate= companyID=int
+    quotaInDateRangeByCompanyID: '/quotaEntry/getOrdersInDateRangeByCompanyID', // GET
+    quotaByCompanyID: '/quotaEntry/getOrdersByCompanyID/', // GET companyID
+    modifyQuota: '/quotaEntry/modifyOrder', // PATCH
+
+    /* ------ /salesOrder ------*/
+    createSalesOrder: '/salesOrder/createOrder', // PUT
+    // GET startDate= endDate= companyID=int
+    salesOrdersInDateRangeByCompanyID: '/salesOrder/getOrdersInDateRangeByCompanyID', // GET
+    salesOrdersByCompanyID: '/salesOrder/getOrdersByCompanyID/', // GET companyID
+    modifySalesOrder: '/salesOrder/modifyOrder', // PATCH
+
     /* ------ /sku ------*/
     fullSkuByModel: '/sku/getFullSkuByModel/', // GET {id}
 
