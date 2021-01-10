@@ -114,14 +114,24 @@ const routes = [
                 component: () => import('../views/Outbound_Management/7_Quota_Query')
             },
             {
+                path: 'quota_modify',
+                name: '报价单修改',
+                component: () => import('../views/Outbound_Management/8_Quota_Modify')
+            },
+            {
                 path: 'sales_order_entry',
                 name: '销售订单录入',
-                component: () => import('../views/Outbound_Management/8_Sales_Order_Entry')
+                component: () => import('../views/Outbound_Management/9_Sales_Order_Entry')
             },
             {
                 path: 'sales_order_query',
                 name: '销售订单查询',
-                component: () => import('../views/Outbound_Management/9_Sales_Order_Query')
+                component: () => import('../views/Outbound_Management/10_Sales_Order_Query')
+            },
+            {
+                path: 'sales_order_modify',
+                name: '销售订单修改',
+                component: () => import('../views/Outbound_Management/11_Sales_Order_Modify')
             }
         ]
     },

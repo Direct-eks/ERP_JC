@@ -135,22 +135,30 @@ export default {
                     url: '/outbound_management/quota_entry'
                 },
                 {
-                    name: '查询&修改',
+                    name: '查询',
                     url: '/outbound_management/quota_query'
+                },
+                {
+                    name: '修改',
+                    url: '/outbound_management/quota_modify'
                 },
             ]
         },
         {
             name: '销售订单',
-            url: '',
+            url: '/outbound_management/sales_order',
             children: [
                 {
                     name: '录入',
                     url: '/outbound_management/sales_order_entry'
                 },
                 {
-                    name: '查询&修改',
+                    name: '查询',
                     url: '/outbound_management/sales_order_query'
+                },
+                {
+                    name: '修改',
+                    url: '/outbound_management/sales_order_modify'
                 },
             ]
         },
