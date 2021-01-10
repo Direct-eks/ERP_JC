@@ -24,10 +24,10 @@
             </v-tab-item>
 
             <v-tab-item key="detail" :eager="true">
-                <OutboundEntryDisplayAndModifyComponent
+                <OutboundShippingInfoChangeComponent
                     :form="form"
                     displayMode="outboundEntryComplete">
-                </OutboundEntryDisplayAndModifyComponent>
+                </OutboundShippingInfoChangeComponent>
             </v-tab-item>
 
         </v-tabs-items>
@@ -43,7 +43,7 @@ export default {
     name: "Completion_Out",
     components: {
         OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
-        OutboundEntryDisplayAndModifyComponent: () => import('../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
+        OutboundShippingInfoChangeComponent: () => import('../../components/OutboundEntryComponents/ShippingInfoComponent'),
         SnackMessage,
     },
     data() {
