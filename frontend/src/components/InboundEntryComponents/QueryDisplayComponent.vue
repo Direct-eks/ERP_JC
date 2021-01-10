@@ -218,6 +218,7 @@ export default {
         },
         clearSearchFields() {
             this.category = ''
+            this.companyID = -1
             this.companyName = ''
         },
         query() {
@@ -247,9 +248,15 @@ export default {
             }
         },
         queryModificationRecord() {
-            this.$getRequest(this.$api.modificationRecordsBySerial
-                + encodeURI(this.queryTableCurrentRow[0].inboundEntryID)
-            ).then((res) => {
+            let url
+            if (this.isPurchaseQuery) {
+                url = encodeURI(this.queryTableCurrentRow[0].purchaseOrderEntryID)
+            }
+            else {
+                url = encodeURI(this.queryTableCurrentRow[0].inboundEntryID)
+            }
+
+            this.$getRequest(this.$api.modificationRecordsBySerial + url).then((res) => {
                 console.log('received', res.data)
                 this.modificationRecords = res.data
             }).catch(error => this.$ajaxErrorHandler(error))
