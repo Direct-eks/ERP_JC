@@ -230,32 +230,32 @@ const routes = [
             {
                 path: 'outbound_check_entry',
                 name: '出库结账单录入',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Check_Entry" */'../views/Outbound_Invoicing/1_Outbound_Check/1_Out_Check_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Check_Entry" */'../views/Outbound_Invoicing/1_Outbound_Check/1_Checkout_Entry')
             },
             {
                 path: 'outbound_check_query',
                 name: '出库结账单查询',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Check_Query" */'../views/Outbound_Invoicing/1_Outbound_Check/2_Out_Check_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Check_Query" */'../views/Outbound_Invoicing/1_Outbound_Check/2_Checkout_Query')
             },
             {
                 path: 'outbound_check_modify',
                 name: '出库结账单修改',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Check_Modify" */'../views/Outbound_Invoicing/1_Outbound_Check/3_Out_Check_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Check_Modify" */'../views/Outbound_Invoicing/1_Outbound_Check/3_Checkout_Modify')
             },
             {
                 path: 'outbound_check_invoicing_entry',
                 name: '出库结账单开票录入',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Check_Inv_Entry" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/1_Out_Check_Inv_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Check_Inv_Entry" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/1_Invoice_Entry')
             },
             {
                 path: 'outbound_check_invoicing_query',
                 name: '出库结账单开票查询',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Check_Inv_Query" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/2_Out_Check_Inv_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Check_Inv_Query" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/2_Invoice_Query')
             },
             {
                 path: 'outbound_check_invoicing_modify',
                 name: '出库结账单开票修改',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Check_Inv_Modify" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/3_Out_Check_Inv_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Check_Inv_Modify" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/3_Invoice_Modify')
             },
             {
                 path: 'receipt_entry',
