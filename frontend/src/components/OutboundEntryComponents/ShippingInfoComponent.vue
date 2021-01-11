@@ -274,7 +274,7 @@ export default {
                 let tax = 0.0
                 let sumWithTax = 0.0
                 let sumWithoutTax = 0.0
-                for (let item of newVal.inboundProducts) {
+                for (let item of newVal.outboundProducts) {
                     tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
                     sumWithTax += item.unitPriceWithTax * item.quantity
                     sumWithoutTax += item.unitPriceWithoutTax * item.quantity
@@ -330,7 +330,7 @@ export default {
             this.relativeCompanySearchPanelOpen = false
         },
         saveShippingInfoChange() {
-            this.form.totalCost = this.totalCost
+            this.form.totalAmount = this.totalAmount
             this.$patchRequest(this.$api.completeInboundEntry, this.form).then((res) => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
