@@ -98,13 +98,18 @@
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
+            <template v-slot:item.salesOrderEntryID="{ item }">
+                <v-chip :color="item.isModified === 1 ? 'red' : null">
+                    {{ item.salesOrderEntryID }}
+                </v-chip>
+            </template>
         </v-data-table>
 
         <v-data-table v-else
                       v-model="queryTableCurrentRow"
                       :headers="quotaQueryTableHeaders"
                       :items="queryTableData"
-                      item-key="salesOrderEntryID"
+                      item-key="quotaEntryID"
                       @click:row="tableClick"
                       height="45vh"
                       calculate-widths
@@ -114,6 +119,11 @@
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
+            <template v-slot:item.quotaEntryID="{ item }">
+                <v-chip :color="item.isModified === 1 ? 'red' : null">
+                    {{ item.quotaEntryID }}
+                </v-chip>
+            </template>
         </v-data-table>
 
         <v-divider></v-divider>
@@ -176,9 +186,9 @@ export default {
             companyName: '',
             companySearchPanelOpen: false,
 
-            category: '销售',
+            category: '销出',
             categoryOptions: [
-                { value: '销售', label: '销售' },
+                { value: '销出', label: '销出' },
                 { value: '入退', label: '入退' }
             ],
 
@@ -200,7 +210,7 @@ export default {
                 {text: '运费标志', value: 'shippingCostType', width: '60px'}
             ],
             salesQueryTableHeaders: [
-                {text: '出库单号', value: 'outboundEntryID', width: '80px'},
+                {text: '销订单号', value: 'salesOrderEntryID', width: '80px'},
                 {text: '订单状态', value: 'executionStatus', width: '65px'},
                 {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
                 {text: '仓库', value: 'warehouseName', width: '65'},
@@ -213,7 +223,7 @@ export default {
                 {text: '创建日期', value: 'creationDate', width: '80px'},
             ],
             quotaQueryTableHeaders: [
-                {text: '出库单号', value: 'outboundEntryID', width: '80px'},
+                {text: '报价单号', value: 'quotaEntryID', width: '80px'},
                 {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
                 {text: '预计单据类型', value: 'invoiceType', width: '60px'},
                 {text: '总金额', value: 'totalAmount', width: '85px'},
@@ -254,7 +264,7 @@ export default {
         query() {
             if (this.isSalesOrder) {
                 console.log(this.dateRange)
-                this.$getRequest(this.$api.purchaseOrdersInDateRangeByCompanyID, {
+                this.$getRequest(this.$api.salesOrdersInDateRangeByCompanyID, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     companyID: this.companyID,
@@ -264,10 +274,28 @@ export default {
                 }).catch(error => this.$ajaxErrorHandler(error))
             }
             else if (this.isQuota) {
-
+                console.log(this.dateRange)
+                this.$getRequest(this.$api.quotaInDateRangeByCompanyID, {
+                    startDate: this.dateRange[0],
+                    endDate: this.dateRange[1],
+                    companyID: this.companyID,
+                }).then((res) => {
+                    console.log('received', res.data)
+                    this.queryTableData = res.data
+                }).catch(error => this.$ajaxErrorHandler(error))
             }
             else {
-
+                console.log(this.dateRange)
+                this.$getRequest(this.$api.outboundEntriesInDateRange, {
+                    startDate: this.dateRange[0],
+                    endDate: this.dateRange[1],
+                    companyID: this.companyID,
+                    type: this.category,
+                    forModify: false,
+                }).then((res) => {
+                    console.log('received', res.data)
+                    this.queryTableData = res.data
+                }).catch(error => this.$ajaxErrorHandler(error))
             }
         },
         queryModificationRecord() {

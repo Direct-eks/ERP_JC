@@ -182,7 +182,7 @@ export default {
             let tempProducts = val.purchaseOrderProducts
             for (let item of tempProducts) {
                 item.totalWithoutTax = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item.totalTax = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+                item.totalTax = (item.quantity * (item.unitPriceWithTax - item.totalWithoutTax)).toFixed(2)
             }
             this.entryProductsData = tempProducts
         },

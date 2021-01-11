@@ -394,7 +394,7 @@
                 {{tableData.indexOf(item) + 1}}
             </template>
             <template v-slot:item.quantity="{ item }">
-                <v-edit-dialog :return-value="item.quantity"
+                <v-edit-dialog :return-value.sync="item.quantity"
                                persistent
                                large
                                save-text="确认"
@@ -410,7 +410,7 @@
                 </v-edit-dialog>
             </template>
             <template v-slot:item.unitPriceWithTax="{ item }">
-                <v-edit-dialog :return-value="item.unitPriceWithTax"
+                <v-edit-dialog :return-value.sync="item.unitPriceWithTax"
                                persistent
                                large
                                save-text="确认"
@@ -426,7 +426,7 @@
                 </v-edit-dialog>
             </template>
             <template v-slot:item.unitPriceWithoutTax="{ item }">
-                <v-edit-dialog :return-value="item.unitPriceWithoutTax"
+                <v-edit-dialog :return-value.sync="item.unitPriceWithoutTax"
                                persistent
                                large
                                save-text="确认"
@@ -442,7 +442,7 @@
                 </v-edit-dialog>
             </template>
             <template v-slot:item.remark="{ item }">
-                <v-edit-dialog :return-value="item.remark"
+                <v-edit-dialog :return-value.sync="item.remark"
                                persistent
                                large
                                save-text="确认"
@@ -569,7 +569,7 @@ export default {
                 departmentID: -1, departmentName: '',
                 warehouseID: -1, warehouseName: '',
                 remark: '',
-                classification: '购入',
+                classification: '销出',
                 executionStatus: '执行',
                 shippingCost: 0, shippingCostType: '无',
                 shippingQuantity: 0, shippingNumber: '',
@@ -683,6 +683,17 @@ export default {
             }
             this.tableData.push(val)
 
+            let tempSumWithTax = 0
+            let tempSumWithoutTax = 0
+            this.tableData.forEach((item) => {
+                // calculate for total
+                tempSumWithTax += item.unitPriceWithTax * item.quantity
+                tempSumWithoutTax += item.unitPriceWithoutTax * item.quantity
+            })
+            this.sumWithTax = tempSumWithTax.toFixed(2)
+            this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
+            this.tax = (tempSumWithTax - tempSumWithoutTax).toFixed(2)
+
             this.$store.commit('setSnackbar', {
                 message: '添加成功', color: 'success'
             })
@@ -697,8 +708,8 @@ export default {
         handleQuantityChange(row) {
             // calculate for each row
             row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
-            row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
-            row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
+            row.totalWithoutTax = (Number(row.quantity) * Number(row.unitPriceWithoutTax)).toFixed(2)
+            row.totalTax = (Number(row.quantity) * (Number(row.unitPriceWithTax) - Number(row.unitPriceWithoutTax))).toFixed(2)
 
             let tempSumWithTax = 0
             let tempSumWithoutTax = 0
@@ -736,13 +747,59 @@ export default {
             }
         },
         saveAsOutboundEntry(bool) {
+            if (this.$refs.form.validate()) {
+                this.form.outboundProducts = this.tableData
 
+                this.$putRequest(this.$api.createOutboundEntry, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+
+                    if (bool) { // continue to add without exit, reset fields
+                        this.form.shippingCost = 0.0
+                        this.form.shippingCostType = '无运费'
+                        this.form.shippingQuantity = 0
+                        this.form.shippingNumber = ''
+                        this.form.shippingMethodID = -1
+                        this.form.relevantCompanyName = ''
+                        this.form.totalAmount = 0.0
+                        this.form.remark = ''
+                        this.form.inboundProducts = []
+
+                        this.tableData = []
+                        this.tax = 0.0
+                        this.sumWithoutTax = 0.0
+                        this.sumWithTax = 0.0
+                        this.tableRowsSelectedForDeletion = []
+                    } else {
+                        this.$router.replace('/outbound_management')
+                    }
+                }).catch((error) => this.$ajaxErrorHandler(error))
+            }
         },
         saveAsSalesOrder() {
+            if (this.$refs.form.validate()) {
+                this.form.salesOrderProducts = this.tableData
 
+                this.$putRequest(this.$api.createSalesOrder, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/outbound_management')
+                }).catch((error) => this.$ajaxErrorHandler(error))
+            }
         },
         saveAsQuota() {
+            if (this.$refs.form.validate()) {
+                this.form.quotaProducts = this.tableData
 
+                this.$putRequest(this.$api.createQuota, this.form).then((res) => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/outbound_management')
+                }).catch((error) => this.$ajaxErrorHandler(error))
+            }
         }
     },
     computed: {
@@ -763,7 +820,7 @@ export default {
                 sum += parseFloat(this.form.shippingCost)
                 break
             }
-            this.form.totalCost = sum
+            this.form.totalAmount = sum
             return sum
         }
     }

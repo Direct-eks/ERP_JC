@@ -482,25 +482,29 @@ export default {
                     }
                 }
 
+                const quantity = Number(this.warehouseStockCurrentRow[0].quantity)
+                const unitPriceWithTax = Number(this.warehouseStockCurrentRow[0].unitPriceWithTax)
+                const unitPriceWithoutTax = Number(this.warehouseStockCurrentRow[0].unitPriceWithTax) / 1.16
+                const totalWithoutTax = unitPriceWithoutTax * quantity
+                const totalTax = (unitPriceWithTax - unitPriceWithoutTax) * quantity
                 this.$emit('modelSearchChoose', {
                     skuID: this.skuTableCurrentRow[0].skuID,
                     newCode: this.skuTableCurrentRow[0].newCode,
                     oldCode: this.skuTableCurrentRow[0].oldCode,
                     unitName: this.skuTableCurrentRow[0].unitName,
                     factoryCode: this.skuTableCurrentRow[0].factoryCode,
-                    quantity: this.warehouseStockCurrentRow[0].quantity,
+                    quantity: quantity,
                     stockQuantity: stockQuantity,
                     remark: '',
                     warehouseStockID: warehouseStockID,
                     warehouseID: this.warehouseID,
                     taxRate: 0.16, //todo
-                    unitPriceWithoutTax:
-                        (Number(this.warehouseStockCurrentRow[0].unitPriceWithTax) * 1.16).toFixed(2),
-                    unitPriceWithTax: this.warehouseStockCurrentRow[0].unitPriceWithTax,
+                    unitPriceWithoutTax: unitPriceWithoutTax.toFixed(2),
+                    unitPriceWithTax: unitPriceWithTax.toFixed(2),
                     stockUnitPrice: stockUnitPrice,
                     //statistic fields
-                    totalWithoutTax: 0.0,
-                    totalTax: 0.0
+                    totalWithoutTax: totalWithoutTax.toFixed(2),
+                    totalTax: totalTax.toFixed(2),
                 })
                 this.modelTableCurrentRow = []
                 this.skuTableCurrentRow = []
