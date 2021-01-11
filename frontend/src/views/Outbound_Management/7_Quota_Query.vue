@@ -72,7 +72,7 @@ export default {
         tableClickAction(val) {
             this.currentTableRow = val
             //create missing fields and calculate values
-            this.currentTableRow.outboundProducts.forEach(item => {
+            this.currentTableRow.quotaProducts.forEach(item => {
                 item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
                 item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
             })
