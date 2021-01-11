@@ -12,13 +12,14 @@
 </template>
 
 <script>
-import SnackMessage from '~/components/SnackMessage'
 
 export default {
     name: "Entry_In",
     components: {
-        InboundEntryCreateComponent: () => import('../../components/InboundEntryComponents/EntryCreateComponent'),
-        SnackMessage
+        InboundEntryCreateComponent: () => import(
+            /* webpackChunkName: "InboundEntryCreateComponent" */
+            '../../components/InboundEntryComponents/EntryCreateComponent'
+        ),
     }
 }
 </script>

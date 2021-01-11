@@ -12,13 +12,13 @@
 </template>
 
 <script>
-import SnackMessage from "~/components/SnackMessage";
-
 export default {
     name: "In_Checkout_Entry",
     components: {
-        InboundCheckoutComponent: () => import("../../../components/InboundInvoiceComponents/CheckoutComponent"),
-        SnackMessage
+        InboundCheckoutComponent: () => import(
+            /* webpackChunkName: "InboundCheckoutComponent" */
+            '~/components/InboundInvoiceComponents/CheckoutComponent'
+        ),
     }
 }
 </script>

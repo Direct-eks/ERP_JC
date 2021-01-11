@@ -19,293 +19,293 @@ const routes = [
     },
     {
         path: '/login',
-        component: () => import( '../views/Login')
+        component: () => import(/* webpackChunkName: "Login" */'../views/Login')
     },
     {
         path : '/home',
         name: 'home',
-        component: () => import('../components/Start')
+        component: () => import(/* webpackChunkName: "Start" */'../components/Start')
     },
     {
         path: '/inbound_management',
         name: '',
-        component: () => import( '../views/1_Page_inbound_management'),
+        component: () => import(/* webpackChunkName: "1_Page_inbound_management" */'../views/1_Page_inbound_management'),
         children: [
             {
                 path: 'entry_in',
                 name: '入库单录入',
-                component: () => import('../views/Inbound_Management/1_Entry_In')
+                component: () => import(/* webpackChunkName: "Inbound_Management1_Entry_In" */'../views/Inbound_Management/1_Entry_In')
             },
             {
                 path: 'completion_in',
                 name: '入库单完善',
-                component: () => import('../views/Inbound_Management/2_Completion_In')
+                component: () => import(/* webpackChunkName: "Inbound_Management2_Completion_In" */'../views/Inbound_Management/2_Completion_In')
             },
             {
                 path: 'modify_in',
                 name: '入库单修改',
-                component: () => import('../views/Inbound_Management/3_Modify_In')
+                component: () => import(/* webpackChunkName: "Inbound_Management3_Modify_In" */'../views/Inbound_Management/3_Modify_In')
             },
             {
                 path: 'return_in',
                 name: '入库单退货',
-                component: () => import('../views/Inbound_Management/4_Return_In')
+                component: () => import(/* webpackChunkName: "Inbound_Management4_Return_In" */'../views/Inbound_Management/4_Return_In')
             },
             {
                 path: 'query_in',
                 name: '入库单查询',
-                component: () => import('../views/Inbound_Management/5_Query_In')
+                component: () => import(/* webpackChunkName: "Inbound_Management5_Query_In" */'../views/Inbound_Management/5_Query_In')
             },
             {
                 path: 'purchase_order_entry',
                 name: '采购订单录入',
-                component: () => import('../views/Inbound_Management/6_Purchase_Order_Entry')
+                component: () => import(/* webpackChunkName: "Inbound_Management6_Purchase_Order_Entry" */'../views/Inbound_Management/6_Purchase_Order_Entry')
             },
             {
                 path: 'purchase_order_query',
                 name: '采购订单查询',
-                component: () => import('../views/Inbound_Management/7_Purchase_Order_Query')
+                component: () => import(/* webpackChunkName: "Inbound_Management7_Purchase_Order_Query" */'../views/Inbound_Management/7_Purchase_Order_Query')
             },
             {
                 path: 'purchase_order_modify',
                 name: '采购订单修改',
-                component: () => import('../views/Inbound_Management/8_Purchase_Order_Modify')
+                component: () => import(/* webpackChunkName: "Inbound_Management8_Purchase_Order_Modify" */'../views/Inbound_Management/8_Purchase_Order_Modify')
             }
         ]
     },
     {
         path: '/outbound_management',
         name: '',
-        component: () => import('../views/2_Page_outbound_management'),
+        component: () => import(/* webpackChunkName: "2_Page_outbound_management" */'../views/2_Page_outbound_management'),
         children: [
             {
                 path: 'entry_out',
                 name: '出库单录入',
-                component: () => import('../views/Outbound_Management/1_Entry_Out')
+                component: () => import(/* webpackChunkName: "Outbound_Management1_Entry_Out" */'../views/Outbound_Management/1_Entry_Out')
             },
             {
                 path: 'completion_out',
                 name: '出库单完善',
-                component: () => import('../views/Outbound_Management/2_Completion_Out')
+                component: () => import(/* webpackChunkName: "Outbound_Management2_Completion_Out" */'../views/Outbound_Management/2_Completion_Out')
             },
             {
                 path: 'modify_out',
                 name: '出库单修改',
-                component: () => import('../views/Outbound_Management/3_Modify_Out')
+                component: () => import(/* webpackChunkName: "Outbound_Management3_Modify_Out" */'../views/Outbound_Management/3_Modify_Out')
             },
             {
                 path: 'return_out',
                 name: '出库单退货',
-                component: () => import('../views/Outbound_Management/4_Return_Out')
+                component: () => import(/* webpackChunkName: "Outbound_Management4_Return_Out" */'../views/Outbound_Management/4_Return_Out')
             },
             {
                 path: 'query_out',
                 name: '出库单查询',
-                component: () => import('../views/Outbound_Management/5_Query_Out')
+                component: () => import(/* webpackChunkName: "Outbound_Management5_Query_Out" */'../views/Outbound_Management/5_Query_Out')
             },
             {
                 path: 'quota_entry',
                 name: '报价单录入',
-                component: () => import('../views/Outbound_Management/6_Quota_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Management6_Quota_Entry" */'../views/Outbound_Management/6_Quota_Entry')
             },
             {
                 path: 'quota_query',
                 name: '报价单查询',
-                component: () => import('../views/Outbound_Management/7_Quota_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Management7_Quota_Query" */'../views/Outbound_Management/7_Quota_Query')
             },
             {
                 path: 'quota_modify',
                 name: '报价单修改',
-                component: () => import('../views/Outbound_Management/8_Quota_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Management8_Quota_Modify" */'../views/Outbound_Management/8_Quota_Modify')
             },
             {
                 path: 'sales_order_entry',
                 name: '销售订单录入',
-                component: () => import('../views/Outbound_Management/9_Sales_Order_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Management9_Sales_Order_Entry" */'../views/Outbound_Management/9_Sales_Order_Entry')
             },
             {
                 path: 'sales_order_query',
                 name: '销售订单查询',
-                component: () => import('../views/Outbound_Management/10_Sales_Order_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Management10_Sales_Order_Query" */'../views/Outbound_Management/10_Sales_Order_Query')
             },
             {
                 path: 'sales_order_modify',
                 name: '销售订单修改',
-                component: () => import('../views/Outbound_Management/11_Sales_Order_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Management11_Sales_Order_Modify" */'../views/Outbound_Management/11_Sales_Order_Modify')
             }
         ]
     },
     {
         path: '/inbound_invoicing',
         name: '',
-        component: () => import('../views/3_Page_inbound_invoicing'),
+        component: () => import(/* webpackChunkName: "3_Page_inbound_invoicing" */'../views/3_Page_inbound_invoicing'),
         children: [
             {
                 path: 'inbound_checkout_entry',
                 name: '入库结账单录入',
-                component: () => import('../views/Inbound_Invoicing/1_Checkout/1_Checkout_Entry')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing1_Checkout_Entry" */'../views/Inbound_Invoicing/1_Checkout/1_Checkout_Entry')
             },
             {
                 path: 'inbound_checkout_query',
                 name: '入库结账单查询',
-                component: () => import('../views/Inbound_Invoicing/1_Checkout/2_Checkout_Query')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing2_Checkout_Query" */'../views/Inbound_Invoicing/1_Checkout/2_Checkout_Query')
             },
             {
                 path: 'inbound_checkout_modify',
                 name: '入库结账单修改',
-                component: () => import('../views/Inbound_Invoicing/1_Checkout/3_Checkout_Modify')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing3_Checkout_Modify" */'../views/Inbound_Invoicing/1_Checkout/3_Checkout_Modify')
             },
             {
                 path: 'inbound_invoice_entry',
                 name: '入库结账单开票录入',
-                component: () => import('../views/Inbound_Invoicing/2_Invoice/1_Invoice_Entry')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing1_Invoice_Entry" */'../views/Inbound_Invoicing/2_Invoice/1_Invoice_Entry')
             },
             {
                 path: 'inbound_invoice_query',
                 name: '入库结账单开票查询',
-                component: () => import('../views/Inbound_Invoicing/2_Invoice/2_Invoice_Query')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing2_Invoice_Query" */'../views/Inbound_Invoicing/2_Invoice/2_Invoice_Query')
             },
             {
                 path: 'inbound_invoice_modify',
                 name: '入库结账单开票修改',
-                component: () => import('../views/Inbound_Invoicing/2_Invoice/3_Invoice_Modify')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing3_Invoice_Modify" */'../views/Inbound_Invoicing/2_Invoice/3_Invoice_Modify')
             },
             {
                 path: 'payment_entry',
                 name: '付款单录入',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/1_Payment_Entry')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing1_Payment_Entry" */'../views/Inbound_Invoicing/3_Payment/1_Payment_Entry')
             },
             {
                 path: 'payment_query',
                 name: '付款单查询',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/3_Payment_Query')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing3_Payment_Query" */'../views/Inbound_Invoicing/3_Payment/3_Payment_Query')
             },
             {
                 path: 'payment_modify',
                 name: '付款单修改',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/2_Payment_Modify')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing2_Payment_Modify" */'../views/Inbound_Invoicing/3_Payment/2_Payment_Modify')
             },
             {
                 path: 'incomplete_payment_detail',
                 name: '入库未结账明细',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/4_Incomplete_Payment_Detail')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing4_Incomplete_Payment_Detail" */'../views/Inbound_Invoicing/3_Payment/4_Incomplete_Payment_Detail')
             },
             {
                 path: 'incomplete_payment_ledger',
                 name: '入库未结账总账',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/5_Incomplete_Payment_Ledger')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing5_Incomplete_Payment_Ledger" */'../views/Inbound_Invoicing/3_Payment/5_Incomplete_Payment_Ledger')
             },
             {
                 path: 'incomplete_invoice_query',
                 name: '入库结账未开票查询',
-                component: () => import('../views/Inbound_Invoicing/3_Payment/6_Incomplete_Invoice_Query')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing6_Incomplete_Invoice_Query" */'../views/Inbound_Invoicing/3_Payment/6_Incomplete_Invoice_Query')
             },
             {
                 path: 'shipping_cost_checkout',
                 name: 'IN付运费结账',
-                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/1_Shipping_Cost_Checkout')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing1_Shipping_Cost_Checkout" */'../views/Inbound_Invoicing/4_Shipping_Cost/1_Shipping_Cost_Checkout')
             },
             {
                 path: 'shipping_cost_query',
                 name: 'IN付运费查询',
-                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/2_Shipping_Cost_Query')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing2_Shipping_Cost_Query" */'../views/Inbound_Invoicing/4_Shipping_Cost/2_Shipping_Cost_Query')
             },
             {
                 path: 'shipping_cost_modify',
                 name: 'IN付运费修改',
-                component: () => import('../views/Inbound_Invoicing/4_Shipping_Cost/3_Shipping_Cost_Modify')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing3_Shipping_Cost_Modify" */'../views/Inbound_Invoicing/4_Shipping_Cost/3_Shipping_Cost_Modify')
             },
             {
                 path: 'inbound_checkout_return',
                 name: '入库结账后退货',
-                component: () => import('../views/Inbound_Invoicing/5_Checkout_Return')
+                component: () => import(/* webpackChunkName: "Inbound_Invoicing5_Checkout_Return" */'../views/Inbound_Invoicing/5_Checkout_Return')
             }
         ]
     },
     {
         path: '/outbound_invoicing',
         name: '',
-        component: () => import('../views/4_Page_outbound_invoicing'),
+        component: () => import(/* webpackChunkName: "4_Page_outbound_invoicing" */'../views/4_Page_outbound_invoicing'),
         children: [
             {
                 path: 'outbound_check_entry',
                 name: '出库结账单录入',
-                component: () => import('../views/Outbound_Invoicing/1_Outbound_Check/1_Out_Check_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Check_Entry" */'../views/Outbound_Invoicing/1_Outbound_Check/1_Out_Check_Entry')
             },
             {
                 path: 'outbound_check_query',
                 name: '出库结账单查询',
-                component: () => import('../views/Outbound_Invoicing/1_Outbound_Check/2_Out_Check_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Check_Query" */'../views/Outbound_Invoicing/1_Outbound_Check/2_Out_Check_Query')
             },
             {
                 path: 'outbound_check_modify',
                 name: '出库结账单修改',
-                component: () => import('../views/Outbound_Invoicing/1_Outbound_Check/3_Out_Check_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Check_Modify" */'../views/Outbound_Invoicing/1_Outbound_Check/3_Out_Check_Modify')
             },
             {
                 path: 'outbound_check_invoicing_entry',
                 name: '出库结账单开票录入',
-                component: () => import('../views/Outbound_Invoicing/2_Outbound_Invoicing/1_Out_Check_Inv_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Check_Inv_Entry" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/1_Out_Check_Inv_Entry')
             },
             {
                 path: 'outbound_check_invoicing_query',
                 name: '出库结账单开票查询',
-                component: () => import('../views/Outbound_Invoicing/2_Outbound_Invoicing/2_Out_Check_Inv_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Check_Inv_Query" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/2_Out_Check_Inv_Query')
             },
             {
                 path: 'outbound_check_invoicing_modify',
                 name: '出库结账单开票修改',
-                component: () => import('../views/Outbound_Invoicing/2_Outbound_Invoicing/3_Out_Check_Inv_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Check_Inv_Modify" */'../views/Outbound_Invoicing/2_Outbound_Invoicing/3_Out_Check_Inv_Modify')
             },
             {
                 path: 'receipt_entry',
                 name: '收款单录入',
-                component: () => import('../views/Outbound_Invoicing/3_Receipt/1_Rec_Entry')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Rec_Entry" */'../views/Outbound_Invoicing/3_Receipt/1_Rec_Entry')
             },
             {
                 path: 'receipt_query',
                 name: '收款单查询',
-                component: () => import('../views/Outbound_Invoicing/3_Receipt/3_Rec_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Rec_Query" */'../views/Outbound_Invoicing/3_Receipt/3_Rec_Query')
             },
             {
                 path: 'receipt_modify',
                 name: '收款单修改',
-                component: () => import('../views/Outbound_Invoicing/3_Receipt/2_Rec_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Rec_Modify" */'../views/Outbound_Invoicing/3_Receipt/2_Rec_Modify')
             },
             {
                 path: 'incomplete_receipt_detail',
                 name: '出库未结账明细',
-                component: () => import('../views/Outbound_Invoicing/3_Receipt/4_Incomplete_Rec_Detail')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing4_Incomplete_Rec_Detail" */'../views/Outbound_Invoicing/3_Receipt/4_Incomplete_Rec_Detail')
             },
             {
                 path: 'incomplete_receipt_ledger',
                 name: '出库未结账总账',
-                component: () => import('../views/Outbound_Invoicing/3_Receipt/5_Incomplete_Rec_Ledger')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing5_Incomplete_Rec_Ledger" */'../views/Outbound_Invoicing/3_Receipt/5_Incomplete_Rec_Ledger')
             },
             {
                 path: 'incomplete_invoice_query',
                 name: '出库结账未开票查询',
-                component: () => import('../views/Outbound_Invoicing/3_Receipt/6_Incomplete_Invoice_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing6_Incomplete_Invoice_Query" */'../views/Outbound_Invoicing/3_Receipt/6_Incomplete_Invoice_Query')
             },
             {
                 path: 'cost_bill',
                 name: 'OUT付运费结账',
-                component: () => import('../views/Outbound_Invoicing/4_Shipping_Cost/1_Out_Cost_Bill')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Cost_Bill" */'../views/Outbound_Invoicing/4_Shipping_Cost/1_Out_Cost_Bill')
             },
             {
                 path: 'cost_query',
                 name: 'OUT付运费查询',
-                component: () => import('../views/Outbound_Invoicing/4_Shipping_Cost/2_Out_Cost_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Cost_Query" */'../views/Outbound_Invoicing/4_Shipping_Cost/2_Out_Cost_Query')
             },
             {
                 path: 'cost_modify',
                 name: 'OUT付运费修改',
-                component: () => import('../views/Outbound_Invoicing/4_Shipping_Cost/3_Out_Cost_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Cost_Modify" */'../views/Outbound_Invoicing/4_Shipping_Cost/3_Out_Cost_Modify')
             },
             {
                 path: 'outbound_check_invoicing_return',
                 name: '出库结账后退货',
-                component: () => import('../views/Outbound_Invoicing/5_Out_Check_Inv_Return')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing5_Out_Check_Inv_Return" */'../views/Outbound_Invoicing/5_Out_Check_Inv_Return')
             }
         ]
     },

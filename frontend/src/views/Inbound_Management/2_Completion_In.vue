@@ -36,14 +36,17 @@
 </template>
 
 <script>
-import SnackMessage from '~/components/SnackMessage'
-
 export default {
     name: "Completion_In",
     components: {
-        InboundShippingInfoChangeComponent: () => import('../../components/InboundEntryComponents/ShippingInfoComponent'),
-        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/QueryDisplayComponent'),
-        SnackMessage,
+        InboundShippingInfoChangeComponent: () => import(
+            /* webpackChunkName: "InboundShippingInfoComponent" */
+            '../../components/InboundEntryComponents/ShippingInfoComponent'
+        ),
+        InboundQueryDisplayComponent: () => import(
+            /* webpackChunkName: "InboundQueryDisplayComponent" */
+            '../../components/InboundEntryComponents/QueryDisplayComponent'
+        ),
     },
     data() {
         return {

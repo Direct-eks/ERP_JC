@@ -37,14 +37,17 @@
 </template>
 
 <script>
-import SnackMessage from "~/components/SnackMessage";
-
 export default {
     name: "Completion_Out",
     components: {
-        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
-        OutboundShippingInfoChangeComponent: () => import('../../components/OutboundEntryComponents/ShippingInfoComponent'),
-        SnackMessage,
+        OutboundQueryDisplayComponent: () => import(
+            /* webpackChunkName: "OutboundQueryDisplayComponent" */
+            '../../components/OutboundEntryComponents/QueryDisplayComponent'
+        ),
+        OutboundShippingInfoChangeComponent: () => import(
+            /* webpackChunkName: "OutboundShippingInfoComponent" */
+            '../../components/OutboundEntryComponents/ShippingInfoComponent'
+        ),
     },
     data() {
         return {

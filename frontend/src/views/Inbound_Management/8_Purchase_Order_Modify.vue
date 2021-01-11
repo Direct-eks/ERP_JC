@@ -37,14 +37,11 @@
 </template>
 
 <script>
-import SnackMessage from "~/components/SnackMessage";
-
 export default {
     name: "Purchase_Order_Modify",
     components: {
         InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/QueryDisplayComponent'),
         InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryComponents/EntryDisplayAndModifyComponent'),
-        SnackMessage,
     },
     data() {
         return {

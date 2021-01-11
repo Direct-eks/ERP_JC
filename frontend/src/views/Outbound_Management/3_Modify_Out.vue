@@ -37,14 +37,14 @@
 </template>
 
 <script>
-import SnackMessage from "~/components/SnackMessage";
-
 export default {
     name: "Modify_Out",
     components: {
         OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
-        OutboundEntryDisplayAndModifyComponent: () => import('../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
-        SnackMessage,
+        OutboundEntryDisplayAndModifyComponent: () => import(
+            /* webpackChunkName: "OutboundDisplayAndModifyComponent" */
+            '../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'
+        ),
     },
     data() {
         return {

@@ -37,14 +37,14 @@
 </template>
 
 <script>
-import SnackMessage from "~/components/SnackMessage";
-
 export default {
-    name: "Pay_Modify",
+    name: 'Pay_Modify',
     components: {
-        QueryDisplayComponent: () => import('~/components/InboundInvoiceComponents/PaymentQueryDisplayComponent'),
+        QueryDisplayComponent: () => import(
+            /* webpackChunkName: "InboundPaymentQueryDisplayComponent" */
+            '~/components/InboundInvoiceComponents/PaymentQueryDisplayComponent'
+        ),
         PaymentComponent: () => import('~/components/InboundInvoiceComponents/PaymentComponent'),
-        SnackMessage,
     },
     data() {
         return {

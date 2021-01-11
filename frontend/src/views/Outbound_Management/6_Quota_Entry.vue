@@ -12,13 +12,10 @@
 </template>
 
 <script>
-import SnackMessage from "~/components/SnackMessage";
-
 export default {
     name: "Quote_Entry",
     components: {
         OutboundEntryCreateComponent: () => import('../../components/OutboundEntryComponents/EntryCreateComponent'),
-        SnackMessage
     }
 }
 </script>
