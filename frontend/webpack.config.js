@@ -109,19 +109,33 @@ module.exports = (options = {}) => ({
         new bundleAnalyzerPlugin(),
         new MiniCssExtractPlugin({
             filename: '[name].[hash].css',
-            chunkFilename: '[id].[hash].css'
+            chunkFilename: '[id].[hash].css',
+            ignoreOrder: true,
         })
     ],
     optimization: {
         usedExports: true,
         runtimeChunk: "single",
         splitChunks: {
-            chunks: 'async',
+            chunks: 'all',
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendors',
-                    chunks: "all"
+                    chunks: "all",
+                    priority: 10
+                },
+                vuetify: {
+                    name: 'vuetifyModules',
+                    test: /[\\/]node_modules[\\/]vuetify[\\/]/,
+                    priority: 20
+                },
+                commons: {
+                    name: 'commonModules',
+                    test: resolve('src/components'),
+                    minChunks: 2,
+                    priority: 5,
+                    reuseExistingChunk: true
                 },
                 styles: {
                     name: 'styles',
