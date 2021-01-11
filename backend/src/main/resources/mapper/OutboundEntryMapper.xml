@@ -43,7 +43,7 @@
         <result property="shipmentDate" column="shipment_date"/>
         <result property="creationDate" column="creation_date"/>
         <result property="totalAmount" column="total_amount"/>
-        <result property="deliveryMethod" column="deliver_method"/>
+        <result property="deliveryMethod" column="delivery_method"/>
         <result property="invoiceType" column="invoice_type"/>
         <result property="drawer" column="drawer"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
@@ -73,8 +73,8 @@
         <result property="outboundProductID" column="outbound_product_id"/>
         <result property="outboundEntryID" column="outbound_entry_id"/>
         <result property="skuID" column="sku_id"/>
-        <result property="newModelCode" column="new_code"/>
-        <result property="oldModelCode" column="old_code"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
         <result property="unitName" column="unit_name"/>
         <result property="factoryCode" column="factory_code"/>
         <result property="quantity" column="quantity"/>
@@ -164,12 +164,13 @@
 
     <update id="updateEntry">
         update e_outbound_entry
-        set total_amount = #{totalCost},
+        set total_amount = #{totalAmount},
+            delivery_method = #{deliveryMethod},
             invoice_type = #{invoiceType},
             department_id = #{departmentID},
             remark = #{remark},
             is_modified = 1
-        where outbound_entry_id = #{inboundEntryID}
+        where outbound_entry_id = #{outboundEntryID}
     </update>
 
     <update id="updateProduct">
@@ -179,7 +180,7 @@
             tax_rate = #{taxRate},
             unit_price_without_tax = #{unitPriceWithoutTax},
             unit_price_with_tax = #{unitPriceWithTax}
-        where outbound_product_id = #{inboundProductID}
+        where outbound_product_id = #{outboundProductID}
     </update>
 
     <update id="deleteProductByID">

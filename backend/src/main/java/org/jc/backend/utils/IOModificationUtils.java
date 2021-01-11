@@ -90,7 +90,7 @@ public class IOModificationUtils {
             if (((PurchaseOrderEntryDO)modifiedEntry).getWarehouseID() !=
                     ((PurchaseOrderEntryDO)originEntry).getWarehouseID()) {
                 bool = true;
-                record.append(String.format("仓库: %s -> " + "%s; ",
+                record.append(String.format("仓库: %s -> %s; ",
                         ((PurchaseOrderEntryDO)originEntry).getWarehouseName(),
                         ((PurchaseOrderEntryDO)modifiedEntry).getWarehouseName()));
             }
@@ -99,7 +99,7 @@ public class IOModificationUtils {
             if (((SalesOrderEntryDO)modifiedEntry).getTotalAmount() !=
                     ((SalesOrderEntryDO)originEntry).getTotalAmount()) {
                 bool = true;
-                record.append(String.format("总金额: %f -> %f",
+                record.append(String.format("总金额: %f -> %f; ",
                         ((SalesOrderEntryDO)originEntry).getTotalAmount(),
                         ((SalesOrderEntryDO)modifiedEntry).getTotalAmount()));
             }
@@ -125,7 +125,7 @@ public class IOModificationUtils {
             if (((QuotaEntryDO)modifiedEntry).getTotalAmount() !=
                     ((QuotaEntryDO)originEntry).getTotalAmount()) {
                 bool = true;
-                record.append(String.format("总金额: %f -> %f",
+                record.append(String.format("总金额: %f -> %f; ",
                         ((QuotaEntryDO)originEntry).getTotalAmount(),
                         ((QuotaEntryDO)modifiedEntry).getTotalAmount()));
             }
@@ -196,27 +196,27 @@ public class IOModificationUtils {
         boolean bool = false;
         if (modifiedProduct.getQuantity() != originProduct.getQuantity()) {
             bool = true;
-            record.append(String.format("型号%s 数量: %d -> %d; ", modelCode,
-                    originProduct.getQuantity(), originProduct.getQuantity()));
+            record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
+                    originProduct.getQuantity(), modifiedProduct.getQuantity()));
         }
         if (!modifiedProduct.getRemark().equals(originProduct.getRemark())) {
             bool = true;
-            record.append(String.format("型号%s 备注: %s -> %s; ", modelCode,
+            record.append(String.format("型号(%s) 备注: %s -> %s; ", modelCode,
                     originProduct.getRemark(), modifiedProduct.getRemark()));
         }
         if (modifiedProduct.getTaxRate() != originProduct.getTaxRate()) {
             bool = true;
-            record.append(String.format("型号%s 税率: %f -> %f; ", modelCode,
+            record.append(String.format("型号(%s) 税率: %f -> %f; ", modelCode,
                     originProduct.getTaxRate(), modifiedProduct.getTaxRate()));
         }
         if (modifiedProduct.getUnitPriceWithoutTax() != originProduct.getUnitPriceWithoutTax()) {
             bool = true;
-            record.append(String.format("型号%s 单价: %f -> %f; ", modelCode,
+            record.append(String.format("型号(%s) 单价: %f -> %f; ", modelCode,
                     originProduct.getUnitPriceWithoutTax(), modifiedProduct.getUnitPriceWithoutTax()));
         }
         if (modifiedProduct.getUnitPriceWithTax() != originProduct.getUnitPriceWithTax()) {
             bool = true;
-            record.append(String.format("型号%s 税价: %f -> %f; ", modelCode,
+            record.append(String.format("型号(%s) 税价: %f -> %f; ", modelCode,
                     originProduct.getUnitPriceWithTax(), modifiedProduct.getUnitPriceWithTax()));
         }
 
