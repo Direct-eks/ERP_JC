@@ -28,16 +28,14 @@ module.exports = (options = {}) => ({
             },
             {
                 test: /\.js$/,
-                // use: ['babel-loader'],
                 exclude: /node_modules/,
                 use: [
                     {
                         loader: 'babel-loader',
                         options: {
-                            // 'babelrc': false,
-                            plugins: [
-                                "@babel/plugin-syntax-dynamic-import"
-                            ]
+                            'babelrc': false,
+                            presets: ["@babel/preset-env"],
+                            plugins: ["@babel/plugin-syntax-dynamic-import"],
                         }
                     }
                 ]
@@ -52,7 +50,6 @@ module.exports = (options = {}) => ({
                             esModule: false
                         }
                     },
-                    'postcss-loader',
                     {
                         loader: 'sass-loader',
                         // Requires sass-loader@^8.0.0
