@@ -12,7 +12,6 @@
 </template>
 
 <script>
-
 export default {
     name: "Entry_In",
     components: {
