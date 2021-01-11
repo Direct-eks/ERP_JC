@@ -33,32 +33,32 @@
 
 
     <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.QuotaEntryDO">
-        <result property="quotaEntryID" column=""/>
-        <result property="creationDate" column=""/>
-        <result property="totalAmount" column=""/>
-        <result property="invoiceType" column=""/>
-        <result property="drawer" column=""/>
-        <result property="partnerCompanyID" column=""/>
-        <result property="companyAbbreviatedName" column=""/>
-        <result property="companyFullName" column=""/>
-        <result property="companyPhone" column=""/>
-        <result property="remark" column=""/>
-        <result property="isModified" column=""/>
+        <result property="quotaEntryID" column="quota_entry_id"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="drawer" column="drawer"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
+        <result property="companyFullName" column="company_full_name"/>
+        <result property="companyPhone" column="company_phone"/>
+        <result property="remark" column="remark"/>
+        <result property="isModified" column="is_modified"/>
     </resultMap>
 
     <resultMap id="productResultMap" type="org.jc.backend.entity.QuotaProductO">
-        <result property="quotaProductID" column=""/>
-        <result property="quotaEntryID" column=""/>
-        <result property="skuID" column=""/>
-        <result property="newCode" column=""/>
-        <result property="oldCode" column=""/>
-        <result property="unitName" column=""/>
-        <result property="factoryCode" column=""/>
-        <result property="quantity" column=""/>
-        <result property="remark" column=""/>
-        <result property="taxRate" column=""/>
-        <result property="unitPriceWithoutTax" column=""/>
-        <result property="unitPriceWithTax" column=""/>
+        <result property="quotaProductID" column="quota_product_id"/>
+        <result property="quotaEntryID" column="quota_entry_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
     </resultMap>
 
 
