@@ -644,7 +644,7 @@ export default {
             // calculate for each row
             row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
             row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
-            row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
+            row.totalTax = (row.quantity * (row.unitPriceWithTax - row.unitPriceWithoutTax)).toFixed(2)
 
             let tempSumWithTax = 0
             let tempSumWithoutTax = 0
@@ -692,18 +692,6 @@ export default {
                     })
 
                     if (bool) { // continue to add without exit, reset fields
-                        for (const item of this.warehouseOptions) {
-                            if (item.isDefault === 1) {
-                                this.form.warehouseID = item.warehouseID
-                                break
-                            }
-                        }
-                        for (const item of this.departmentOptions) {
-                            if (item.isDefault === 1) {
-                                this.form.departmentID = item.departmentID
-                                break
-                            }
-                        }
                         this.form.shippingCost = 0.0
                         this.form.shippingCostType = '无运费'
                         this.form.shippingQuantity = 0
