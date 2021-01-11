@@ -13,8 +13,8 @@
     },
     "private": true,
     "scripts": {
-        "dev": "set NODE_ENV=development && webpack-dev-server --inline --hot --env.dev",
-        "build": "rimraf dist && webpack -p --progress --hide-modules --mode=production"
+        "dev": "webpack-dev-server --config webpack.dev.js",
+        "build": "rimraf dist && webpack -p --progress --hide-modules --config webpack.prod.js"
     },
     "dependencies": {
         "@mdi/js": "^5.8.55",
@@ -51,6 +51,7 @@
         "webpack": "^4.43.0",
         "webpack-bundle-analyzer": "^3.8.0",
         "webpack-cli": "^3.3.12",
-        "webpack-dev-server": "^3.11.0"
+        "webpack-dev-server": "^3.11.0",
+        "webpack-merge": "^5.7.3"
     }
 }

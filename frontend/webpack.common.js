@@ -1,24 +1,13 @@
-const { resolve } = require('path')
+const path = require('path')
 // const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const url = require('url')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const publicPath = ''
-
-const bundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-
-module.exports = (options = {}) => ({
+module.exports = {
     entry: {
-        index: './src/main.js'
-    },
-    output: {
-        path: resolve(__dirname, 'dist'),
-        filename: options.dev ? '[name].js' : 'bundle.js',
-        chunkFilename: "[name].bundle.js",
-        publicPath: options.dev ? '/assets/' : publicPath
+        index: path.join(__dirname, 'src/main.js'),
     },
     module: {
         rules: [
@@ -78,25 +67,9 @@ module.exports = (options = {}) => ({
     },
     resolve: {
         alias: {
-            '~': resolve(__dirname, 'src')
+            '~': path.resolve(__dirname, 'src')
         },
         extensions: ['.js', '.vue', '.json', '.css']
-    },
-    devtool: options.dev ? 'eval-source-map' : 'source-map',
-    devServer: {
-        host: '127.0.0.1',
-        port: 8080,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:8088',
-                changeOrigin: true,
-                pathRewrite: { '/api': '' }
-            }
-        },
-        historyApiFallback: {
-            index: url.parse(options.dev ? '/assets/' : publicPath).pathname
-        },
-        hot: true
     },
     plugins: [
         new VueLoaderPlugin(),
@@ -105,45 +78,10 @@ module.exports = (options = {}) => ({
             template: 'src/assets/index.html',
             favicon: 'src/assets/favicon.png'
         }),
-        // eslint-disable-next-line new-cap
-        new bundleAnalyzerPlugin(),
         new MiniCssExtractPlugin({
             filename: '[name].[hash].css',
             chunkFilename: '[id].[hash].css',
             ignoreOrder: true,
         })
     ],
-    optimization: {
-        usedExports: true,
-        runtimeChunk: "single",
-        splitChunks: {
-            chunks: 'all',
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    chunks: "all",
-                    priority: 10
-                },
-                vuetify: {
-                    name: 'vuetifyModules',
-                    test: /[\\/]node_modules[\\/]vuetify[\\/]/,
-                    priority: 20
-                },
-                commons: {
-                    name: 'commonModules',
-                    test: resolve('src/components'),
-                    minChunks: 2,
-                    priority: 5,
-                    reuseExistingChunk: true
-                },
-                styles: {
-                    name: 'styles',
-                    test: /\.css$/,
-                    chunks: "all",
-                    enforce: true
-                }
-            }
-        }
-    }
-})
+}
