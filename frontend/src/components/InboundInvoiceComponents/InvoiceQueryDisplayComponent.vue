@@ -170,6 +170,10 @@ export default {
             type: String,
             required: true,
         },
+        isInbound: {
+            type: Boolean,
+            required: true
+        },
     },
     beforeMount() {
         switch (this.displayMode) {
@@ -208,23 +212,23 @@ export default {
             ],
 
             queryTableHeaders: [
-                {text: '开票单号', value: 'checkoutEntrySerial', width: '80px'},
-                {text: '开票单位', value: 'companyFullName', width: '120px'},
-                {text: '开票类型', value: 'invoiceType', width: '65'},
-                {text: '发票日期', value: 'invoiceNumberDate', width: '80px'},
-                {text: '发票号码', value: 'invoiceNumber', width: '60px'},
-                {text: '开票金额', value: 'invoiceAmount', width: '60px'},
-                {text: '结账金额', value: 'totalAmount', width: '85px'},
-                {text: '开单人', value: 'drawer', width: '65px'},
-                {text: '备注', value: 'remark', width: '120px'},
-                {text: '开单日期', value: 'invoiceDate', width: '120px'},
+                { text: '开票单号', value: 'checkoutEntrySerial', width: '120px' },
+                { text: '开票单位', value: 'companyFullName', width: '120px' },
+                { text: '开票类型', value: 'invoiceType', width: '65' },
+                { text: '发票日期', value: 'invoiceNumberDate', width: '80px' },
+                { text: '发票号码', value: 'invoiceNumber', width: '60px' },
+                { text: '开票金额', value: 'invoiceAmount', width: '60px' },
+                { text: '结账金额', value: 'totalAmount', width: '85px' },
+                { text: '开单人', value: 'drawer', width: '65px' },
+                { text: '备注', value: 'remark', width: '120px' },
+                { text: '开单日期', value: 'invoiceDate', width: '120px' },
             ],
             queryTableData: [],
             queryTableCurrentRow: [],
 
             modificationRecordTableHeader: [
-                {text: '修改日期', value: 'modificationDate', width: '180px'},
-                {text: '修改明细', value: 'recordContent', width: ''}
+                { text: '修改日期', value: 'modificationDate', width: '180px' },
+                { text: '修改明细', value: 'recordContent', width: '' }
             ],
             modificationRecords: []
         }
@@ -256,7 +260,7 @@ export default {
         },
         query() {
             this.$getRequest(this.$api.invoiceEntriesInDateRange, {
-                isInbound: true,
+                isInbound: this.isInbound,
                 startDate: this.dateRange[0],
                 endDate: this.dateRange[1],
                 invoiceNumberDate: this.invoiceNumberDate,

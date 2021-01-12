@@ -112,6 +112,10 @@ export default {
             type: String,
             required: true,
         },
+        isInbound: {
+            type: Boolean,
+            required: true
+        },
     },
     beforeMount() {
         switch (this.displayMode) {
@@ -143,18 +147,18 @@ export default {
             ],
 
             queryTableHeaders: [
-                {text: '入库结账单号', value: 'checkoutEntrySerial', width: '80px'},
-                {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
-                {text: '结账类型', value: 'invoiceType', width: '65'},
-                {text: '入库单运费合计', value: '', width: '80px'},
-                {text: '应付总金额', value: 'totalAmount', width: '60px'},
-                {text: '余额', value: 'debt', width: '60px'},
-                {text: '付款方式', value: 'paymentMethod', width: '85px'},
-                {text: '付款金额', value: 'paymentAmount', width: '100px'},
-                {text: '付款号码', value: 'paymentNumber', width: '100px'},
-                {text: '开单人', value: 'drawer', width: '65px'},
-                {text: '备注', value: 'remark', width: '120px'},
-                {text: '开单日期', value: 'checkoutDate', width: '60px'},
+                { text: this.isInbound ? '入库结账单号' : '出库结账单号', value: 'checkoutEntrySerial', width: '80px' },
+                { text: '单位简称', value: 'companyAbbreviatedName', width: '120px' },
+                { text: '结账类型', value: 'invoiceType', width: '65' },
+                { text: this.isInbound ? '入库单运费合计' : '出库单运费合计', value: '', width: '80px' },
+                { text: this.isInbound ? '应付总金额' : '应收总金额', value: 'totalAmount', width: '60px' },
+                { text: '余额', value: 'debt', width: '60px' },
+                { text: this.isInbound ? '付款方式' : '收款方式', value: 'paymentMethod', width: '85px' },
+                { text: this.isInbound ? '付款金额' : '收款金额', value: 'paymentAmount', width: '100px' },
+                { text: this.isInbound ? '付款号码' : '收款号码', value: 'paymentNumber', width: '100px' },
+                { text: '开单人', value: 'drawer', width: '65px' },
+                { text: '备注', value: 'remark', width: '120px' },
+                { text: '开单日期', value: 'checkoutDate', width: '60px' },
             ],
             queryTableData: [],
             queryTableCurrentRow: [],
@@ -185,7 +189,7 @@ export default {
         },
         query() {
             this.$getRequest(this.$api.checkoutEntriesInDateRange, {
-                isInbound: true,
+                isInbound: this.isInbound,
                 startDate: this.dateRange[0],
                 endDate: this.dateRange[1],
                 invoiceType: this.category,

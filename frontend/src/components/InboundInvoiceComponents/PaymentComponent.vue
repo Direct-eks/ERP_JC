@@ -281,6 +281,10 @@ export default {
             type: String,
             required: true
         },
+        isInbound: {
+            type: Boolean,
+            required: true
+        },
         paramForm: {
             type: Object,
             required: false
@@ -288,7 +292,7 @@ export default {
     },
     watch: {
         paramForm: {
-            handler: function(val, oldVal) {
+            handler: function(val) {
                 // restore mode, in case changed before
                 switch (this.mode) {
                 case 'display':
@@ -417,7 +421,7 @@ export default {
         createEntry(exitBool) {
             if (!this.$refs.form.validate()) return
             this.$putRequest(this.$api.createMoneyEntry, this.form, {
-                isInbound: true,
+                isInbound: this.isInbound,
             }).then((res) => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'

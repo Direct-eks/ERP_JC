@@ -1,7 +1,7 @@
 <template>
     <v-card height="85vh">
         <v-card-title>
-            入库商品助选
+            {{ panelTitle }}
             <v-spacer></v-spacer>
             <v-col cols="auto">
                 <v-text-field v-model="modelCode"
@@ -24,7 +24,7 @@
             <v-data-table v-model="queryTableCurrentRows"
                           :headers="tableHeaders"
                           :items="queryTableData"
-                          item-key="inboundProductID"
+                          :item-key="isInbound ? 'inboundProductID' : 'outboundProductID'"
                           @click:row="tableChoose"
                           :search="modelCode"
                           height="65vh"
@@ -51,6 +51,10 @@ export default {
             type: String,
             required: true,
         },
+        isInbound: {
+            type: Boolean,
+            required: true,
+        },
         companyID: {
             type: Number,
             required: true,
@@ -62,48 +66,16 @@ export default {
     },
     watch: {
         companyID: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 if (val === -1) return
-                if (this.checkoutMode) {
-                    this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
-                        companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
-                }
-                else if (this.invoiceMode) {
-                    this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
-                        companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
-                }
-
+                this.queryProducts()
             },
             immediate: true
         },
         invoiceType: {
-            handler: function (val, oldVal) {
+            handler: function () {
                 if (this.companyID === -1) return
-                if (this.checkoutMode) {
-                    this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
-                        companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
-                }
-                else if (this.invoiceMode) {
-                    this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
-                        companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
-                }
-
+                this.queryProducts()
             },
             immediate: true
         }
@@ -117,6 +89,13 @@ export default {
             this.invoiceMode = true
             break
         }
+
+        if (this.isInbound) {
+            this.panelTitle = this.checkoutMode ? '入库商品助选' : '入库未结账商品助选'
+        }
+        else {
+            this.panelTitle = this.isInbound ? '出库商品助选' : '出库未结账商品助选'
+        }
     },
     data() {
         return {
@@ -124,24 +103,74 @@ export default {
 
             checkoutMode: false,
             invoiceMode: false,
+            panelTitle: '',
+
             modelCode: '',
 
             tableHeaders: [
-                {text: '序号', value: 'index', width: '60px', filterable: false},
-                {text: '新代号', value: 'newCode', width: '100px'},
-                {text: '旧代号', value: 'oldCode', width: '100px'},
-                {text: '厂牌', value: 'factoryCode', width: '65px', filterable: false},
-                {text: '入库数量', value: 'quantity', width: '80px', filterable: false},
-                {text: '单位', value: 'unitName', width: '60px', filterable: false},
-                {text: '含税单价', value: 'unitPriceWithTax', width: '80px', filterable: false},
-                {text: '不含税单价', value: 'unitPriceWithoutTax', width: '80px', filterable: false},
-                {text: '备注', value: 'remark', width: '120px', filterable: false},
+                { text: '序号', value: 'index', width: '60px', filterable: false },
+                {
+                    text: this.isInbound ? '入库单序号' : '出库单序号',
+                    value: this.isInbound ? 'inboundEntryID' : 'outboundEntryID',
+                    width: '120px',
+                    filterable: false
+                },
+                { text: '新代号', value: 'newCode', width: '100px' },
+                { text: '旧代号', value: 'oldCode', width: '100px' },
+                { text: '厂牌', value: 'factoryCode', width: '65px', filterable: false },
+                {
+                    text: this.isInbound ? '入库数量' : '出库数量',
+                    value: 'quantity', width: '80px',
+                    filterable: false
+                },
+                { text: '单位', value: 'unitName', width: '60px', filterable: false },
+                { text: '含税单价', value: 'unitPriceWithTax', width: '80px', filterable: false },
+                { text: '不含税单价', value: 'unitPriceWithoutTax', width: '80px', filterable: false },
+                { text: '备注', value: 'remark', width: '120px', filterable: false },
             ],
             queryTableData: [],
             queryTableCurrentRows: [],
         }
     },
     methods: {
+        queryProducts() {
+            if (this.isInbound) {
+                if (this.checkoutMode) {
+                    this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+                else if (this.invoiceMode) {
+                    this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+            }
+            else {
+                if (this.checkoutMode) {
+                    this.$getRequest(this.$api.outboundProductsNotCheckedOut, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+                else if (this.invoiceMode) {
+                    this.$getRequest(this.$api.outboundProductsCheckoutAndNotInvoiced, {
+                        companyID: this.companyID, invoiceType: this.invoiceType
+                    }).then((res) => {
+                        console.log(res.data)
+                        this.queryTableData = res.data
+                    })
+                }
+            }
+        },
         tableChoose(val) {
             if (this.queryTableCurrentRows.includes(val))
                 this.queryTableCurrentRows.slice(this.queryTableCurrentRows.indexOf(val), 1)

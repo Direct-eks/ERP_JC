@@ -125,6 +125,10 @@ export default {
             type: String,
             required: true,
         },
+        isInbound: {
+            type: Boolean,
+            required: true
+        },
     },
     beforeMount() {
         switch (this.displayMode) {
@@ -167,25 +171,25 @@ export default {
             ],
 
             queryTableHeaders: [
-                {text: '付款单号', value: 'moneyEntrySerial', width: '80px'},
-                {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
-                {text: '付款方式', value: 'paymentMethod', width: '80px'},
-                {text: '付款金额', value: 'paymentAmount', width: '80px'},
-                {text: '付款号码', value: 'paymentNumber', width: '60px'},
-                {text: '银行', value: 'bankAccountName', width: '60px'},
-                {text: '结账单据', value: 'checkoutSerial', width: '85px'},
-                {text: '部门', value: 'departmentName', width: '100px'},
-                {text: '付款类型', value: 'paymentIndication', width: '100px'},
-                {text: '开单人', value: 'drawer', width: '65px'},
-                {text: '备注', value: 'remark', width: '120px'},
-                {text: '开单日期', value: 'paymentDate', width: '60px'},
+                { text: this.isInbound ? '付款单号' : '收款单号', value: 'moneyEntrySerial', width: '80px' },
+                { text: '单位简称', value: 'companyAbbreviatedName', width: '120px' },
+                { text: this.isInbound ? '付款方式' : '收款方式', value: 'paymentMethod', width: '80px' },
+                { text: this.isInbound ? '付款金额' : '收款金额', value: 'paymentAmount', width: '80px' },
+                { text: this.isInbound ? '付款号码' : '收款号码', value: 'paymentNumber', width: '60px' },
+                { text: '银行', value: 'bankAccountName', width: '60px' },
+                { text: '结账单据', value: 'checkoutSerial', width: '85px' },
+                { text: '部门', value: 'departmentName', width: '100px' },
+                { text: this.isInbound ? '付款类型' : '收款类型', value: 'paymentIndication', width: '100px' },
+                { text: '开单人', value: 'drawer', width: '65px' },
+                { text: '备注', value: 'remark', width: '120px' },
+                { text: '开单日期', value: 'paymentDate', width: '60px' },
             ],
             queryTableData: [],
             queryTableCurrentRow: [],
 
             modificationRecordTableHeader: [
-                {text: '修改日期', value: 'modificationDate', width: '180px'},
-                {text: '修改明细', value: 'recordContent', width: ''}
+                { text: '修改日期', value: 'modificationDate', width: '180px' },
+                { text: '修改明细', value: 'recordContent', width: '' }
             ],
             modificationRecords: []
         }
@@ -212,7 +216,7 @@ export default {
         },
         query() {
             this.$getRequest(this.$api.moneyEntriesInDateRange, {
-                isInbound: true,
+                isInbound: this.isInbound,
                 startDate: this.dateRange[0],
                 endDate: this.dateRange[1],
                 companyID: this.companyID,

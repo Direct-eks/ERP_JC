@@ -34,7 +34,7 @@
                             <v-text-field v-model="form.checkoutDate"
                                           :rules="rules.checkoutDate"
                                           v-on="on"
-                                          label="结账日期"
+                                          :label="checkoutDateTitle"
                                           hide-details="auto"
                                           outlined
                                           readonly
@@ -68,7 +68,9 @@
                         <template v-slot:activator="{on}">
                             <v-btn color="accent"
                                    v-on="on"
-                                   :disabled="fullSearchPanelOpen || form.inboundCheckoutProducts.length !== 0">
+                                   :disabled="fullSearchPanelOpen ||
+                                       isInbound ? form.inboundCheckoutProducts.length !== 0 :
+                                                    form.outboundCheckoutProducts.length !== 0">
                                 单位助选
                             </v-btn>
                         </template>
@@ -130,7 +132,7 @@
                               :items="paymentMethodOptions"
                               item-value="value"
                               item-text="label"
-                              label="付款方式"
+                              :label="paymentMethodTitle"
                               hide-details="auto"
                               outlined dense
                               style="width: 120px">
@@ -191,7 +193,8 @@
                               item-value="value"
                               item-text="label"
                               label="结账类型"
-                              :readonly="form.inboundCheckoutProducts.length !== 0"
+                              :readonly="isInbound ? form.inboundCheckoutProducts.length !== 0 :
+                                                    form.outboundCheckoutProducts.length !== 0"
                               hide-details="auto"
                               outlined dense
                               style="width: 180px">
@@ -262,16 +265,17 @@
             <v-card v-if="creationMode"
                     v-show="invoicePanelOpen"
                     outlined>
-                <InboundInvoiceComponent mode="checkoutEntry"
-                                         :params="{
-                                             checkoutDate: form.checkoutDate,
-                                             partnerCompanyID: form.partnerCompanyID,
-                                             companyFullName: form.companyFullName,
-                                             invoiceType: form.invoiceType,
-                                             totalAmount: form.totalAmount
-                                         }"
-                                         @passiveUpdateInvoiceEntry="passiveUpdateInvoiceEntryAction">
-                </InboundInvoiceComponent>
+                <InvoiceComponent mode="checkoutEntry"
+                                  :isInbound="true"
+                                  :params="{
+                                        checkoutDate: form.checkoutDate,
+                                        partnerCompanyID: form.partnerCompanyID,
+                                        companyFullName: form.companyFullName,
+                                        invoiceType: form.invoiceType,
+                                        totalAmount: form.totalAmount
+                                  }"
+                                  @passiveUpdateInvoiceEntry="passiveUpdateInvoiceEntryAction">
+                </InvoiceComponent>
             </v-card>
         </v-expand-transition>
 
@@ -287,14 +291,15 @@
                         <v-btn color="accent"
                                v-on="on"
                                :disabled="productsChoosePanelOpen || form.partnerCompanyID === -1">
-                            根据单位助选入库产品
+                            {{ productChooseButtonTitle }}
                         </v-btn>
                     </template>
-                    <InboundCheckoutProductsChoose mode="checkout"
-                                                   :companyID="form.partnerCompanyID"
-                                                   :invoiceType="form.invoiceType"
-                                                   @productsChoose="productsChooseAction">
-                    </InboundCheckoutProductsChoose>
+                    <CheckoutProductsChoose mode="checkout"
+                                            :isInbound="true"
+                                            :companyID="form.partnerCompanyID"
+                                            :invoiceType="form.invoiceType"
+                                            @productsChoose="productsChooseAction">
+                    </CheckoutProductsChoose>
                 </v-dialog>
             </v-col>
             <v-spacer></v-spacer>
@@ -324,7 +329,8 @@
         </v-row>
 
         <v-data-table :headers="tableHeaders"
-                      :items="form.inboundCheckoutProducts"
+                      :items="isInbound ? form.inboundCheckoutProducts :
+                                                form.outboundCheckoutProducts"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -334,7 +340,8 @@
                       hide-default-footer
                       locale="zh-cn">
             <template v-slot:item.index="{ item }">
-                {{ form.inboundCheckoutProducts.indexOf(item) + 1 }}
+                {{ isInbound ? form.inboundCheckoutProducts.indexOf(item) + 1 :
+                                    form.outboundCheckoutProducts.indexOf(item) + 1 }}
             </template>
         </v-data-table>
 
@@ -376,16 +383,20 @@ function validateFloat(value) {
 }
 
 export default {
-    name: "InboundCheckoutComponent",
+    name: "CheckoutComponent",
     components: {
         CompanySearch: () => import("~/components/CompanySearch"),
-        InboundInvoiceComponent: () => import("~/components/InboundInvoiceComponents/InvoiceComponent"),
-        InboundCheckoutProductsChoose: () => import("~/components/InboundInvoiceComponents/CheckoutProductsChoose")
+        InvoiceComponent: () => import("~/components/InboundInvoiceComponents/InvoiceComponent"),
+        CheckoutProductsChoose: () => import("~/components/InboundInvoiceComponents/CheckoutProductsChoose")
     },
     props: {
         mode: {
             type: String,
             required: true,
+        },
+        isInbound: {
+            type: Boolean,
+            required: true
         },
         paramForm: {
             type: Object,
@@ -400,7 +411,6 @@ export default {
                 this.calculateSums()
             },
             deep: true,
-            immediate: true,
         }
     },
     beforeMount() {
@@ -410,11 +420,9 @@ export default {
             break
         case 'display':
             this.displayMode = true
-            this.creationMode = false
             break
         case 'modify':
             this.modifyMode = true
-            this.creationMode = false
             break
         }
 
@@ -438,9 +446,13 @@ export default {
     },
     data() {
         return {
-            creationMode: true,
+            creationMode: false,
             displayMode: false,
             modifyMode: false,
+
+            checkoutDateTitle: this.isInbound ? '入库结账日期' : '出库结账日期',
+            paymentMethodTitle: this.isInbound ? '付款方式' : '收款方式',
+            productChooseButtonTitle: this.isInbound ? '根据单位助选入库产品' : '根据单位助选出库产品',
 
             fullSearchPanelOpen: false,
             productsChoosePanelOpen: false,
@@ -466,6 +478,7 @@ export default {
                 isVerified: 0,
                 isModified: 0,
                 inboundCheckoutProducts: [],
+                outboundCheckoutProducts: [],
                 invoiceEntry: null
             },
 
@@ -496,10 +509,19 @@ export default {
 
             tableHeaders: [
                 { text: '序号', value: 'index', width: '60px' },
+                {
+                    text: this.isInbound ? '入库单号' : '出库单号',
+                    value: this.isInbound ? 'inboundEntryID' : 'outboundEntryID',
+                    width: '120px'
+                },
                 { text: '新代号', value: 'newCode', width: '100px' },
                 { text: '旧代号', value: 'oldCode', width: '100px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px' },
-                { text: '入库数量', value: 'quantity', width: '80px' },
+                {
+                    text: this.isInbound ? '入库数量' : '出库数量',
+                    value: 'quantity',
+                    width: '80px'
+                },
                 { text: '单位', value: 'unitName', width: '60px' },
                 { text: '含税单价', value: 'unitPriceWithTax', width: '80px' },
                 { text: '无税单价', value: 'unitPriceWithoutTax', width: '80px' },
@@ -529,7 +551,12 @@ export default {
         },
         productsChooseAction(val) {
             if (val) {
-                this.form.inboundCheckoutProducts = val
+                if (this.isInbound) {
+                    this.form.inboundCheckoutProducts = val
+                }
+                else {
+                    this.form.outboundCheckoutProducts = val
+                }
 
                 this.calculateSums()
 
@@ -544,7 +571,8 @@ export default {
             let tempTax = 0.0
             let tempSumWithTax = 0.0
             let tempSumWithoutTax = 0.0
-            for (let item of this.form.inboundCheckoutProducts) {
+            let products = this.isInbound ? this.form.inboundCheckoutProducts : this.form.outboundCheckoutProducts
+            products.forEach((item) => {
                 const itemTotalTax = (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
                 const itemTotalWithoutTax = item.unitPriceWithoutTax * item.quantity
                 tempSumWithTax += item.unitPriceWithTax * item.quantity
@@ -552,7 +580,7 @@ export default {
                 tempSumWithoutTax += itemTotalWithoutTax
                 item.totalTax = itemTotalTax.toFixed(2)
                 item.totalWithoutTax = itemTotalWithoutTax.toFixed(2)
-            }
+            })
             this.tax = tempTax.toFixed(2)
             this.sumWithTax = tempSumWithTax.toFixed(2)
             this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
@@ -604,7 +632,8 @@ export default {
                 this.form.invoiceEntry = null
             }
 
-            if (this.form.inboundCheckoutProducts.length === 0) {
+            if (this.isInbound ? this.form.inboundCheckoutProducts.length === 0
+                : this.form.outboundCheckoutProducts.length === 0) {
                 this.$store.commit('setSnackbar', {
                     message: '请录入结账商品', color: 'warning'
                 })
@@ -612,7 +641,7 @@ export default {
             }
 
             this.$putRequest(this.$api.createCheckoutEntry, this.form, {
-                isInbound: true
+                isInbound: this.isInbound
             }).then((res) => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
