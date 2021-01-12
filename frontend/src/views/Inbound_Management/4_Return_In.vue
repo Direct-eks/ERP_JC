@@ -24,7 +24,10 @@
             </v-tab-item>
 
             <v-tab-item key="detail" :eager="true">
-<!--                todo-->
+                <InboundEntryDisplayAndModifyComponent
+                    :form="form"
+                    displayMode="inboundEntryReturn">
+                </InboundEntryDisplayAndModifyComponent>
             </v-tab-item>
 
         </v-tabs-items>
@@ -38,6 +41,7 @@ export default {
     name: "Return_In",
     components: {
         InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/QueryDisplayComponent'),
+        InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryComponents/EntryDisplayAndModifyComponent'),
     },
     data() {
         return {
@@ -74,6 +78,8 @@ export default {
             this.currentTableRow.inboundProducts.forEach(item => {
                 item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
                 item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+                item['originalQuantity'] = item.quantity
+                item['returnQuantity'] = ''
             })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
