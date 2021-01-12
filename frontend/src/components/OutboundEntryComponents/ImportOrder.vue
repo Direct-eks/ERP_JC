@@ -12,25 +12,9 @@
         <v-card-text>
             <v-data-table v-if="isSalesOrderMode"
                           v-model="queryTableCurrentRow"
-                          :headers="salesQueryTableHeaders"
+                          :headers="isSalesOrderMode ? salesQueryTableHeaders : quotaQueryTableHeaders"
                           :items="queryTableData"
-                          item-key="salesOrderEntryID"
-                          @click:row="tableClick"
-                          height="25vh"
-                          calculate-widths
-                          disable-sort
-                          show-select
-                          single-select
-                          fixed-header
-                          hide-default-footer
-                          locale="zh-cn">
-            </v-data-table>
-
-            <v-data-table v-else
-                          v-model="queryTableCurrentRow"
-                          :headers="quotaQueryTableHeaders"
-                          :items="queryTableData"
-                          item-key="quotaEntryID"
+                          :item-key="isSalesOrderMode ? 'salesOrderEntryID' : 'quotaEntryID'"
                           @click:row="tableClick"
                           height="25vh"
                           calculate-widths
@@ -84,7 +68,7 @@ export default {
     },
     watch: {
         companyID: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 if (val === -1) return
                 if (this.isSalesOrderMode) {
                     this.$getRequest(this.$api.salesOrdersByCompanyID +
@@ -174,7 +158,8 @@ export default {
     },
     methods: {
         close() {
-            this.$emit('purchaseOrderChoose', null)
+            if (this.isSalesOrderMode) this.$emit('salesOrderChoose', null)
+            else if (this.isQuotaMode) this.$emit('quotaOrder', null)
         },
         tableClick(val) {
             this.queryTableCurrentRow = [val]

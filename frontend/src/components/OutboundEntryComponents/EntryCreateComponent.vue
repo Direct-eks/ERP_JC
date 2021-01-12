@@ -662,11 +662,17 @@ export default {
             // todo
             if (val) {
                 this.tableData = val
+                this.handleQuantityChange()
             }
             this.salesOrderPanelOpen = false
         },
         quotaChooseAction(val) {
-
+            // todo
+            if (val) {
+                this.tableData = val
+                this.handleQuantityChange()
+            }
+            this.quotaPanelOpen = false
         },
         /* ------- model search -------*/
         modelSearchCloseAction() {

@@ -171,14 +171,15 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="form.deliveryMethod"
-                                  label="提货方式"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 100px">
-                    </v-text-field>
+                    <v-select v-model="form.deliveryMethod"
+                              :items="deliveryMethodOptions"
+                              item-value="value"
+                              item-text="label"
+                              label="提货方式"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 150px">
+                    </v-select>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model.number="totalAmount"
@@ -270,7 +271,7 @@ export default {
     },
     watch: {
         form: {
-            handler(newVal, oldVal) {
+            handler(newVal) {
                 let tax = 0.0
                 let sumWithTax = 0.0
                 let sumWithoutTax = 0.0
@@ -313,6 +314,13 @@ export default {
             //extract to prevent infinite update on form watcher
             totalAmount: 0.0,
 
+            deliveryMethodOptions: [
+                {value: '自提', label: '自提'},
+                {value: '送货', label: '送货'},
+                {value: '代办发货', label: '代办发货'},
+                {value: '发货代收款', label: '发货代收款'}
+            ],
+
             tax: 0.0,
             sumWithTax: 0.0,
             sumWithoutTax: 0.0
@@ -322,20 +330,18 @@ export default {
         /*------- relative company search -------*/
         relativeCompanyChooseAction(val) {
             if (val) {
-                this.form.relevantCompanyName = val.hasOwnProperty('abbreviatedName') ?
-                    val.abbreviatedName : ''
-                this.form.shippingMethodID = val.hasOwnProperty('companyID') ?
-                    val.companyID : -1
+                this.form.relevantCompanyName = val.abbreviatedName
+                this.form.shippingMethodID = val.companyID
             }
             this.relativeCompanySearchPanelOpen = false
         },
         saveShippingInfoChange() {
             this.form.totalAmount = this.totalAmount
-            this.$patchRequest(this.$api.completeInboundEntry, this.form).then((res) => {
+            this.$patchRequest(this.$api.completeOutboundEntry, this.form).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
-                this.$router.replace('/inbound_management')
+                this.$router.replace('/outbound_management')
             }).catch((error) => this.$ajaxErrorHandler(error))
         }
     },

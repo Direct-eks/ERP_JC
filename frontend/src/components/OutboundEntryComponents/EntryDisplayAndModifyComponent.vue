@@ -214,19 +214,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto" v-if="outboundEntryDisplayMode || outboundEntryModifyMode">
-                    <v-select v-if="outboundEntryModifyMode"
-                              v-model="form.deliveryMethod"
-                              :rules="rules.deliveryMethod"
-                              :items="deliveryMethodOptions"
-                              item-value="value"
-                              item-text="label"
-                              label="提货方式"
-                              hide-details="auto"
-                              outlined dense
-                              style="width: 150px">
-                    </v-select>
-                    <v-text-field v-else
-                                  v-model.number="form.deliveryMethod"
+                    <v-text-field v-model.number="form.deliveryMethod"
                                   label="提货方式"
                                   hide-details="auto"
                                   outlined
@@ -307,7 +295,7 @@
             </v-col>
             <v-col v-if="quotaModifyMode">
                 <v-btn color="primary"
-                       @click="quotaModifyMode()">
+                       @click="saveQuotaModification()">
                     保存修改
                 </v-btn>
             </v-col>
@@ -466,7 +454,7 @@ export default {
     },
     watch: {
         form: {
-            handler(newVal, oldVal) {
+            handler(newVal) {
                 let tax = 0.0
                 let sumWithTax = 0.0
                 let sumWithoutTax = 0.0
@@ -557,12 +545,6 @@ export default {
 
             warehouseOptions: [],
             departmentOptions: [],
-            deliveryMethodOptions: [
-                {value: '自提', label: '自提'},
-                {value: '送货', label: '送货'},
-                {value: '代办发货', label: '代办发货'},
-                {value: '发货代收款', label: '发货代收款'}
-            ],
             executionStatusOptions: [
                 {value: '执行', label: '执行'},
                 {value: '中止', label: '中止'}
@@ -669,7 +651,7 @@ export default {
                         this.form.departmentName = item.name
                 })
 
-                this.$patchRequest(this.$api.modifyOutboundEntry, this.form).then((res) => {
+                this.$patchRequest(this.$api.modifyOutboundEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
@@ -706,7 +688,7 @@ export default {
                 //change drawer name for modification
                 this.form.drawer = this.$store.getters.currentUser
 
-                this.$patchRequest(this.$api.modifyQuota, this.form).then((res) => {
+                this.$patchRequest(this.$api.modifyQuota, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
@@ -714,7 +696,6 @@ export default {
                 }).catch(error => this.$ajaxErrorHandler(error))
             }
         }
-
     },
     computed: {
         rowDeletionConfirm() {
