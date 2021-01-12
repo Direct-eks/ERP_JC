@@ -30,7 +30,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(sa|sc|c)ss$/,
+                test: /\.(sa|sc)ss$/,
                 use: [
                     MiniCssExtractPlugin.loader,
                     {
@@ -53,6 +53,17 @@ module.exports = {
                         },
                     },
                 ],
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            esModule: false
+                        }
+                    },
+                ]
             },
             {
                 test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,

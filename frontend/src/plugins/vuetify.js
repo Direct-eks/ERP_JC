@@ -3,7 +3,13 @@ import Vuetify from 'vuetify/lib'
 
 Vue.use(Vuetify)
 
-const opts = {
+import zhHans from 'vuetify/es5/locale/zh-Hans'
+
+if (process.env.NODE_ENV === "production") {
+    Vuetify.config.silent = true
+}
+
+export default new Vuetify({
     icons: {
         iconfont: 'mdiSvg'
     },
@@ -19,7 +25,9 @@ const opts = {
                 success: '#4caf50'
             }
         }
+    },
+    lang: {
+        locales: {zhHans},
+        current: 'zhHans'
     }
-}
-
-export default new Vuetify(opts)
+})

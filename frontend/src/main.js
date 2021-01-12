@@ -27,8 +27,8 @@ Vue.prototype.$api = api
 Vue.prototype.$ajaxErrorHandler = AjaxErrorHandler
 
 
-if (process.env.NODE_ENV === "dev") {
-    
+if (process.env.NODE_ENV === "development") {
+
 }
 
 if (process.env.NODE_ENV === "production") {
