@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -215,6 +216,63 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production mode
             logger.error("Deletion failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    public void returnEntry(InboundEntryWithProductsVO returnVO) {
+
+        InboundEntryDO modifiedEntry = new InboundEntryDO();
+        BeanUtils.copyProperties(returnVO, modifiedEntry);
+        List<InboundProductO> modifiedProducts = returnVO.getInboundProducts();
+
+        try {
+            String id = modifiedEntry.getInboundEntryID();
+            InboundEntryDO originEntry = inboundEntryMapper.selectEntryForCompare(id);
+
+            StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
+            boolean bool = false;
+            if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
+                bool = true;
+                record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(),
+                        modifiedEntry.getRemark()));
+            }
+            if (originEntry.getTotalCost() != modifiedEntry.getTotalCost()) {
+                bool = true;
+                record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(),
+                        modifiedEntry.getTotalCost()));
+            }
+            if (bool) {
+                inboundEntryMapper.updateEntry(modifiedEntry);
+            }
+
+            boolean bool2 = false;
+            List<InboundProductO> originProducts = inboundEntryMapper.selectProductsForCompare(id);
+            for (var modifiedProduct : modifiedProducts) {
+                String modelCode = StringUtils.hasLength(modifiedProduct.getNewCode()) ?
+                        modifiedProduct.getNewCode() : modifiedProduct.getOldCode();
+                //compare product
+                for (var originProduct : originProducts) {
+                    if (originProduct.getInboundProductID() == modifiedProduct.getInboundProductID()) {
+                        if (modifiedProduct.getQuantity() != originProduct.getQuantity()) {
+                            bool2 = true;
+                            record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
+                                    originProduct.getQuantity(), modifiedProduct.getQuantity()));
+                            inboundEntryMapper.returnProductByID(modifiedProduct);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (bool || bool2) {
+                modificationMapper.insertModificationRecord(new ModificationO(id, record.toString()));
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production mode
+            logger.error("update failed");
             throw e;
         }
     }

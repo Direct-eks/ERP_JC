@@ -3,7 +3,6 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalException;
-import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
@@ -105,8 +104,10 @@ public class OutboundEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/returnEntryProducts")
-    public void returnEntryProducts() {
+    public void returnEntryProducts(@RequestBody @Validated OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
+        logger.info("DELETE Request to /outboundEntry/returnEntryProducts");
 
+        outboundEntryService.returnEntry(outboundEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = OutboundProductO.class)

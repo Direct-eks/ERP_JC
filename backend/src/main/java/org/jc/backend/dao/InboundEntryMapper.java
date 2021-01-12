@@ -27,6 +27,7 @@ public interface InboundEntryMapper {
     void updateEntry(InboundEntryDO inboundEntryModifyDO);
     void updateProduct(InboundProductO inboundProductModifyO);
     void deleteProductByID(int id);
+    void returnProductByID(InboundProductO returnProductO);
 
     void deleteEntryByID(String id);
     void deleteProductsByEntryID(String id);

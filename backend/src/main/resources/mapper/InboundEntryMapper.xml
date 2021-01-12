@@ -187,6 +187,12 @@
         where inbound_product_id = #{id}
     </update>
 
+    <update id="returnProductByID">
+        update e_inbound_product
+        set quantity = #{quantity}
+        where inbound_product_id = #{inboundProductID}
+    </update>
+
     <delete id="deleteEntryByID">
         delete from e_inbound_entry
         where inbound_entry_id = #{id}

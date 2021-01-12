@@ -106,8 +106,10 @@ public class InboundEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/returnEntryProducts")
-    public void returnEntryProducts() {
+    public void returnEntryProducts(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
+        logger.info("DELETE Request to /inboundEntry/returnEntryProducts");
 
+        inboundEntryService.returnEntry(inboundEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
