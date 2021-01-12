@@ -1,5 +1,5 @@
 <template>
-    <v-row justify="center" dense>
+    <v-row justify="center" class="light-green" dense>
         <v-col md="auto">
             <v-card>
                 <v-list expand>
