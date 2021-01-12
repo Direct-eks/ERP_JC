@@ -670,7 +670,12 @@ export default {
             }
         },
         saveEntryReturn() {
-            //todo
+            this.$postRequest(this.$api.returnInboundEntry, this.form).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+                this.$router.replace('/inbound_management')
+            }).catch((error) => this.$ajaxErrorHandler(error))
         }
     },
     computed: {

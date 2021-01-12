@@ -32,6 +32,7 @@ const api = {
     modifyInboundEntry: '/inboundEntry/modifyEntry', // PATCH
     inboundProductsNotCheckedOut: '/inboundEntry/getNotCheckedOutProducts', // GET companyID= invoiceType=
     inboundProductsCheckoutAndNotInvoiced: '/inboundEntry/getCheckoutAndNotInvoicedProducts', // GET companyID= invoiceType=
+    returnInboundEntry: '/inboundEntry/returnEntryProducts', // POST
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
@@ -61,6 +62,7 @@ const api = {
     outboundProductsNotCheckedOut: '/outboundEntry/getNotCheckedOutProducts',
     outboundProductsCheckoutAndNotInvoiced: '/outboundEntry/getCheckoutAndNotInvoicedProducts',
     modifyOutboundEntry: '/outboundEntry/modifyEntry',
+    returnOutboundEntry: '/outboundEntry/returnEntryProducts', // POST
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
