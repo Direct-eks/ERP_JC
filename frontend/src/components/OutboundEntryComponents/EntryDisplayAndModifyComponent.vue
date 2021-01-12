@@ -242,8 +242,8 @@
                                 outlined
                                 dense
                                 auto-grow
-                                :readonly="outboundEntryDisplayMode || salesOrderDisplayMode
-                                || quotaDisplayMode"
+                                :readonly="(!outboundEntryReturnMode && outboundEntryDisplayMode)
+                                            || salesOrderDisplayMode || quotaDisplayMode"
                                 rows="1"
                                 counter="200">
                     </v-textarea>
@@ -296,6 +296,12 @@
             <v-col v-if="quotaModifyMode">
                 <v-btn color="primary"
                        @click="saveQuotaModification()">
+                    保存修改
+                </v-btn>
+            </v-col>
+            <v-col v-if="outboundEntryReturnMode">
+                <v-btn color="primary"
+                       @click="saveEntryReturn()">
                     保存修改
                 </v-btn>
             </v-col>
@@ -385,6 +391,38 @@
             </template>
         </v-data-table>
 
+        <v-data-table v-else-if="outboundEntryReturnMode"
+                      :headers="returnTableHeaders"
+                      :items="form.outboundProducts"
+                      item-key="skuID"
+                      height="45vh"
+                      calculate-widths
+                      disable-sort
+                      fixed-header
+                      disable-pagination
+                      hide-default-footer
+                      locale="zh-cn">
+            <template v-slot:item.index="{ item }">
+                {{ form.outboundProducts.indexOf(item) + 1 }}
+            </template>
+            <template v-slot:item.returnQuantity="{ item }">
+                <v-edit-dialog :return-value="item.returnQuantity"
+                               persistent
+                               large
+                               save-text="确认"
+                               cancel-text="取消"
+                               @save="handleReturnQuantityChange(item)">
+                    {{item.returnQuantity}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.returnQuantity"
+                                      single-line
+                                      counter="8">
+                        </v-text-field>
+                    </template>
+                </v-edit-dialog>
+            </template>
+        </v-data-table>
+
         <v-data-table v-else
                       :headers="tableHeaders"
                       :items="outboundEntryDisplayMode ? form.outboundProducts :
@@ -458,7 +496,7 @@ export default {
                 let tax = 0.0
                 let sumWithTax = 0.0
                 let sumWithoutTax = 0.0
-                if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode) {
+                if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
                     for (let item of newVal.outboundProducts) {
                         tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
                         sumWithTax += item.unitPriceWithTax * item.quantity
@@ -507,6 +545,10 @@ export default {
         case 'salesOrderDisplay':
             this.salesOrderDisplayMode = true
             break
+        case 'outboundEntryReturn':
+            this.outboundEntryReturnMode = true
+            this.outboundEntryDisplayMode = true
+            break
         }
 
         if (this.outboundEntryModifyMode || this.salesOrderModifyMode) {
@@ -536,6 +578,7 @@ export default {
             salesOrderModifyMode: false,
             quotaDisplayMode: false,
             quotaModifyMode: false,
+            outboundEntryReturnMode: false,
 
             rules: {
                 warehouseID: [v => !!v || '请选择仓库'],
@@ -560,7 +603,7 @@ export default {
                 {text: '新代号', value: 'newCode', width: '100px'},
                 {text: '旧代号', value: 'oldCode', width: '100px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
-                {text: '入库数量', value: 'quantity', width: '80px'},
+                {text: '出库数量', value: 'quantity', width: '80px'},
                 {text: '单位', value: 'unitName', width: '60px'},
                 {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
                 {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
@@ -570,6 +613,23 @@ export default {
                 {text: '备注', value: 'remark', width: '120px'},
                 {text: '库存数量', value: 'stockQuantity', width: '120px'},
                 {text: '库存单价', value: 'stockUnitPrice', width: '120px'}
+            ],
+
+            returnTableHeaders: [
+                {text: '序号', value: 'index', width: '60px'},
+                {text: '新代号', value: 'newCode', width: '100px'},
+                {text: '旧代号', value: 'oldCode', width: '100px'},
+                {text: '厂牌', value: 'factoryCode', width: '65px'},
+                {text: '出库数量', value: 'originalQuantity', width: '80px'},
+                {text: '退货数量', value: 'returnQuantity', width: '80px'},
+                {text: '现有数量', value: 'quantity', width: '80px'},
+                {text: '单位', value: 'unitName', width: '60px'},
+                {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
+                {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
+                {text: '无税金额', value: 'totalWithoutTax', width: '80px'},
+                {text: '税率', value: 'taxRate', width: '65px'},
+                {text: '税额', value: 'totalTax', width: '80px'},
+                {text: '备注', value: 'remark', width: '120px'},
             ],
 
             deleteTableRowPopup: false,
@@ -589,7 +649,7 @@ export default {
             row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
 
             let tempSumWithTax = 0
-            if (this.outboundEntryModifyMode) {
+            if (this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
                 this.form.outboundProducts.forEach((item) => {
                     tempSumWithTax += item.unitPriceWithTax * item.quantity
                 })
@@ -605,8 +665,8 @@ export default {
                 })
             }
 
-            this.form.totalAmount = this.form.shippingCostType === '代垫' ?
-                tempSumWithTax + this.form.shippingCost : tempSumWithTax
+            this.form.totalAmount = (this.form.shippingCostType === '代垫' ?
+                tempSumWithTax + this.form.shippingCost : tempSumWithTax).toFixed(2)
         },
         handlePriceWithTaxChange(row) {
             row.unitPriceWithTax = validateFloat(row.unitPriceWithTax.toString())
@@ -616,6 +676,11 @@ export default {
         handlePriceWithoutTaxChange(row) {
             row.unitPriceWithoutTax = validateFloat(row.unitPriceWithoutTax.toString())
             row.unitPriceWithTax = (row.unitPriceWithoutTax * 1.16).toFixed(2)
+            this.handleQuantityChange(row)
+        },
+        handleReturnQuantityChange(row) {
+            row.originalQuantity = row.originalQuantity.toString().replace(/[^\d]/g, "")
+            row.quantity = Number(row.originalQuantity) - Number(row.returnQuantity)
             this.handleQuantityChange(row)
         },
         /*------- table & entry submission -------*/
@@ -695,6 +760,14 @@ export default {
                     this.$router.replace('/outbound_management')
                 }).catch(error => this.$ajaxErrorHandler(error))
             }
+        },
+        saveEntryReturn() {
+            this.$postRequest(this.$api.returnOutboundEntry, this.form).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+                this.$router.replace('/outbound_management')
+            }).catch((error) => this.$ajaxErrorHandler(error))
         }
     },
     computed: {

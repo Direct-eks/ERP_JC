@@ -78,6 +78,8 @@ export default {
             this.currentTableRow.outboundProducts.forEach(item => {
                 item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
                 item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+                item['originalQuantity'] = item.quantity
+                item['returnQuantity'] = ''
             })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
