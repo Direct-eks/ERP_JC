@@ -604,7 +604,8 @@ export default {
             this.handleQuantityChange(row)
         },
         handleReturnQuantityChange(row) {
-            row.quantity = row.originalQuantity - Number(row.returnQuantity)
+            row.originalQuantity = row.originalQuantity.toString().replace(/[^\d]/g, "")
+            row.quantity = Number(row.originalQuantity) - Number(row.returnQuantity)
             this.handleQuantityChange(row)
         },
         /*------- table & entry submission -------*/
