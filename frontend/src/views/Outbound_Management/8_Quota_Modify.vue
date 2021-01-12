@@ -40,8 +40,8 @@
 export default {
     name: "8_Quota_Modify",
     components: {
-        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
-        OutboundEntryDisplayAndModifyComponent: () => import('../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
+        OutboundQueryDisplayComponent: () => import('~/components/OutboundEntryComponents/QueryDisplayComponent'),
+        OutboundEntryDisplayAndModifyComponent: () => import('~/components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
     },
     data() {
         return {

@@ -15,7 +15,7 @@
 export default {
     name: "Quote_Entry",
     components: {
-        OutboundEntryCreateComponent: () => import('../../components/OutboundEntryComponents/EntryCreateComponent'),
+        OutboundEntryCreateComponent: () => import('~/components/OutboundEntryComponents/EntryCreateComponent'),
     }
 }
 </script>

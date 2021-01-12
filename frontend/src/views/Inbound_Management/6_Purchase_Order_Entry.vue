@@ -15,7 +15,7 @@
 export default {
     name: "Purchase_Order_Entry",
     components: {
-        InboundEntryCreateComponent: () => import('../../components/InboundEntryComponents/EntryCreateComponent'),
+        InboundEntryCreateComponent: () => import('~/components/InboundEntryComponents/EntryCreateComponent'),
     }
 }
 </script>

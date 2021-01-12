@@ -41,11 +41,11 @@ export default {
     components: {
         InboundShippingInfoChangeComponent: () => import(
             /* webpackChunkName: "InboundShippingInfoComponent" */
-            '../../components/InboundEntryComponents/ShippingInfoComponent'
+            '~/components/InboundEntryComponents/ShippingInfoComponent'
         ),
         InboundQueryDisplayComponent: () => import(
             /* webpackChunkName: "InboundQueryDisplayComponent" */
-            '../../components/InboundEntryComponents/QueryDisplayComponent'
+            '~/components/InboundEntryComponents/QueryDisplayComponent'
         ),
     },
     data() {

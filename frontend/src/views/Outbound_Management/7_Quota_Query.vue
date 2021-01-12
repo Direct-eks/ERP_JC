@@ -40,8 +40,8 @@
 export default {
     name: "Quote_Query",
     components: {
-        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
-        OutboundEntryDisplayAndModifyComponent: () => import('../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
+        OutboundQueryDisplayComponent: () => import('~/components/OutboundEntryComponents/QueryDisplayComponent'),
+        OutboundEntryDisplayAndModifyComponent: () => import('~/components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
     },
     data() {
         return {

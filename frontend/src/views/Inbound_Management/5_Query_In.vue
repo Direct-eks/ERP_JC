@@ -40,8 +40,8 @@
 export default {
     name: "Query_In",
     components: {
-        InboundQueryDisplayComponent: () => import('../../components/InboundEntryComponents/QueryDisplayComponent'),
-        InboundEntryDisplayAndModifyComponent: () => import('../../components/InboundEntryComponents/EntryDisplayAndModifyComponent'),
+        InboundQueryDisplayComponent: () => import('~/components/InboundEntryComponents/QueryDisplayComponent'),
+        InboundEntryDisplayAndModifyComponent: () => import('~/components/InboundEntryComponents/EntryDisplayAndModifyComponent'),
     },
     data() {
         return {

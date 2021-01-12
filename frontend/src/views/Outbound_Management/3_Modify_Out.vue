@@ -40,10 +40,10 @@
 export default {
     name: "Modify_Out",
     components: {
-        OutboundQueryDisplayComponent: () => import('../../components/OutboundEntryComponents/QueryDisplayComponent'),
+        OutboundQueryDisplayComponent: () => import('~/components/OutboundEntryComponents/QueryDisplayComponent'),
         OutboundEntryDisplayAndModifyComponent: () => import(
             /* webpackChunkName: "OutboundDisplayAndModifyComponent" */
-            '../../components/OutboundEntryComponents/EntryDisplayAndModifyComponent'
+            '~/components/OutboundEntryComponents/EntryDisplayAndModifyComponent'
         ),
     },
     data() {

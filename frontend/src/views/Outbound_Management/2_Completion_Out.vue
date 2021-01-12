@@ -42,11 +42,11 @@ export default {
     components: {
         OutboundQueryDisplayComponent: () => import(
             /* webpackChunkName: "OutboundQueryDisplayComponent" */
-            '../../components/OutboundEntryComponents/QueryDisplayComponent'
+            '~/components/OutboundEntryComponents/QueryDisplayComponent'
         ),
         OutboundShippingInfoChangeComponent: () => import(
             /* webpackChunkName: "OutboundShippingInfoComponent" */
-            '../../components/OutboundEntryComponents/ShippingInfoComponent'
+            '~/components/OutboundEntryComponents/ShippingInfoComponent'
         ),
     },
     data() {

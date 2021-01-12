@@ -17,7 +17,7 @@ export default {
     components: {
         OutboundEntryCreateComponent: () => import(
             /* webpackChunkName: "OutboundEntryCreateComponent" */
-            '../../components/OutboundEntryComponents/EntryCreateComponent'
+            '~/components/OutboundEntryComponents/EntryCreateComponent'
         ),
     }
 }
