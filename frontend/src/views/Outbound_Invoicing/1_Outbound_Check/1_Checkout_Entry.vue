@@ -4,7 +4,8 @@
     <v-card outlined>
         <v-card-title>出库结账单录入</v-card-title>
 
-        <InboundCheckoutComponent mode="create">
+        <InboundCheckoutComponent mode="create"
+                                  :isInbound="false">
         </InboundCheckoutComponent>
 
         <SnackMessage></SnackMessage>
@@ -15,16 +16,8 @@
 export default {
     name: "Out_Check_Entry",
     components: {
-
+        InboundCheckoutComponent: () => import('~/components/InvoiceComponents/CheckoutComponent'),
     },
-    data() {
-        return {
-
-        }
-    },
-    methods: {
-
-    }
 }
 </script>
 
