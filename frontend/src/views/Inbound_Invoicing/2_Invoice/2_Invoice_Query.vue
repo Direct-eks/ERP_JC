@@ -19,6 +19,7 @@
             <v-tab-item key="browse">
                 <QueryDisplayComponent
                     displayMode="query"
+                    :isInbound="true"
                     @tableClick="tableClickAction">
                 </QueryDisplayComponent>
             </v-tab-item>
@@ -26,7 +27,8 @@
             <v-tab-item key="detail" :eager="true">
                 <InvoiceComponent
                     :paramForm="form"
-                    mode="display">
+                    mode="display"
+                    :isInbound="true">
                 </InvoiceComponent>
             </v-tab-item>
 
@@ -42,9 +44,9 @@ export default {
     components: {
         QueryDisplayComponent: () => import(
             /* webpackChunkName: "InboundInvoiceQueryDisplayComponent" */
-            '~/components/InboundInvoiceComponents/InvoiceQueryDisplayComponent'
+            '~/components/InvoiceComponents/InvoiceQueryDisplayComponent'
         ),
-        InvoiceComponent: () => import('~/components/InboundInvoiceComponents/InvoiceComponent'),
+        InvoiceComponent: () => import('~/components/InvoiceComponents/InvoiceComponent'),
     },
     data() {
         return {

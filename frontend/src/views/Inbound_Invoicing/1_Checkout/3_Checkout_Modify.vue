@@ -19,6 +19,7 @@
             <v-tab-item key="browse">
                 <QueryDisplayComponent
                     displayMode="modify"
+                    :isInbound="true"
                     @tableClick="tableClickAction">
                 </QueryDisplayComponent>
             </v-tab-item>
@@ -26,7 +27,8 @@
             <v-tab-item key="detail" :eager="true">
                 <CheckoutComponent
                     :paramForm="form"
-                    mode="modify">
+                    mode="modify"
+                    :isInbound="true">
                 </CheckoutComponent>
             </v-tab-item>
 
@@ -40,8 +42,8 @@
 export default {
     name: "In_Check_Modify",
     components: {
-        QueryDisplayComponent: () => import('~/components/InboundInvoiceComponents/CheckoutQueryDisplayComponent'),
-        CheckoutComponent: () => import('~/components/InboundInvoiceComponents/CheckoutComponent'),
+        QueryDisplayComponent: () => import('~/components/InvoiceComponents/CheckoutQueryDisplayComponent'),
+        CheckoutComponent: () => import('~/components/InvoiceComponents/CheckoutComponent'),
     },
     data() {
         return {

@@ -4,7 +4,8 @@
     <v-card outlined>
         <v-card-title>入库结账单开票录入</v-card-title>
 
-        <InboundInvoiceComponent mode="invoiceEntry">
+        <InboundInvoiceComponent mode="invoiceEntry"
+                                 :isInbound="true">
         </InboundInvoiceComponent>
 
         <SnackMessage></SnackMessage>
@@ -17,7 +18,7 @@ export default {
     components: {
         InboundInvoiceComponent: () => import(
             /* webpackChunkName: "InboundInvoiceComponent" */
-            '~/components/InboundInvoiceComponents/InvoiceComponent'
+            '~/components/InvoiceComponents/InvoiceComponent'
         ),
     },
 

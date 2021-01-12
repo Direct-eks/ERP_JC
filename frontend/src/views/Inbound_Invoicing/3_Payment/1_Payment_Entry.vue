@@ -4,7 +4,8 @@
     <v-card outlined>
         <v-card-title>付款单录入</v-card-title>
 
-        <PaymentComponent mode="create">
+        <PaymentComponent mode="create"
+                          :isInbound="true">
         </PaymentComponent>
 
         <SnackMessage></SnackMessage>
@@ -17,7 +18,7 @@ export default {
     components: {
         PaymentComponent: () => import(
             /* webpackChunkName: "InboundPaymentComponent" */
-            '~/components/InboundInvoiceComponents/PaymentComponent'
+            '~/components/InvoiceComponents/PaymentComponent'
         ),
     }
 }

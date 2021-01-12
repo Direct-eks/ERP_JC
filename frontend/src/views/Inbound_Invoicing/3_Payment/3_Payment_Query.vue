@@ -19,6 +19,7 @@
             <v-tab-item key="browse">
                 <QueryDisplayComponent
                     displayMode="modify"
+                    :isInbound="true"
                     @tableClick="tableClickAction">
                 </QueryDisplayComponent>
             </v-tab-item>
@@ -26,7 +27,8 @@
             <v-tab-item key="detail" :eager="true">
                 <PaymentComponent
                     :paramForm="form"
-                    mode="modify">
+                    mode="modify"
+                    :isInbound="true">
                 </PaymentComponent>
             </v-tab-item>
 
@@ -40,8 +42,8 @@
 export default {
     name: "Pay_Query",
     components: {
-        QueryDisplayComponent: () => import('~/components/InboundInvoiceComponents/PaymentQueryDisplayComponent'),
-        PaymentComponent: () => import('~/components/InboundInvoiceComponents/PaymentComponent'),
+        QueryDisplayComponent: () => import('~/components/InvoiceComponents/PaymentQueryDisplayComponent'),
+        PaymentComponent: () => import('~/components/InvoiceComponents/PaymentComponent'),
     },
     data() {
         return {

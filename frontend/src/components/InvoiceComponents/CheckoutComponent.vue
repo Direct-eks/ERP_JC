@@ -386,8 +386,8 @@ export default {
     name: "CheckoutComponent",
     components: {
         CompanySearch: () => import("~/components/CompanySearch"),
-        InvoiceComponent: () => import("~/components/InboundInvoiceComponents/InvoiceComponent"),
-        CheckoutProductsChoose: () => import("~/components/InboundInvoiceComponents/CheckoutProductsChoose")
+        InvoiceComponent: () => import("~/components/InvoiceComponents/InvoiceComponent"),
+        CheckoutProductsChoose: () => import("~/components/InvoiceComponents/CheckoutProductsChoose")
     },
     props: {
         mode: {
