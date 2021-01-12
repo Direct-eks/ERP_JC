@@ -19,7 +19,7 @@ public class ShippingCostEntryVO {
     //from c_partner_company
     private String companyAbbreviatedName;
     private String companyFullName;
-    private String phone;
+    private String companyPhone;
 
     private int isTaxDeduction;
 

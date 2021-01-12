@@ -12,7 +12,7 @@ public class ShippingCostEntryDO {
     //from c_partner_company
     private String companyAbbreviatedName;
     private String companyFullName;
-    private String phone;
+    private String companyPhone;
 
     private int isTaxDeduction;
     private String invoiceNumber;

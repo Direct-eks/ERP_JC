@@ -28,7 +28,7 @@
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyFullName" column="company_full_name"/>
-        <result property="phone" column="company_phone"/>
+        <result property="companyPhone" column="company_phone"/>
         <result property="isTaxDeduction" column="is_tax_deduction"/>
         <result property="invoiceNumber" column="invoice_number"/>
         <result property="totalAmount" column="total_amount"/>
