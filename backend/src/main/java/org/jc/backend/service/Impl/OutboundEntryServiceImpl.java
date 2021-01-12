@@ -406,4 +406,31 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
         return entries;
     }
+
+    @Transactional(readOnly = true)
+    public List<OutboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
+            int companyID, String shippingCostType) {
+
+        List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
+        try {
+            List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.getEntriesByCompanyAndShippingCostType(
+                    companyID, shippingCostType);
+
+            for (var entryFromDatabase : entriesFromDatabase) {
+                //filter out all entries which has already checked-out shipping cost
+                if (entryFromDatabase.getShippingCostSerial().equals("")) {
+                    OutboundEntryWithProductsVO entry = new OutboundEntryWithProductsVO();
+                    BeanUtils.copyProperties(entryFromDatabase, entry);
+                    entries.add(entry);
+                }
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return entries;
+    }
 }

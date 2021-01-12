@@ -133,4 +133,24 @@ public class OutboundEntryController {
 
         return outboundEntryService.getCheckoutButNotInvoicedProducts(companyID, invoiceType);
     }
+
+    @ApiOperation(value = "", response = OutboundEntryWithProductsVO.class)
+    @GetMapping("/getEntriesByCompanyAndShippingCostType")
+    public List<OutboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
+            @RequestParam("companyID") int companyID,
+            @RequestParam("shippingCostType") String shippingCostType
+    ) throws GlobalParamException {
+        logger.info("GET Request to /outboundEntry/getEntriesByCompanyAndShippingCostType, companyID: " +
+                companyID + ", shippingCostType: " + shippingCostType);
+
+        switch (shippingCostType) {
+            case "自付":
+            case "代垫":
+                break;
+            default:
+                throw new GlobalParamException("Invalid shippingCostType param");
+        }
+
+        return outboundEntryService.getEntriesByCompanyAndShippingCostType(companyID, shippingCostType);
+    }
 }

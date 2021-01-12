@@ -41,4 +41,7 @@ public interface OutboundEntryMapper {
 
     void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO);
     List<OutboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial);
+
+    List<OutboundEntryDO> getEntriesByCompanyAndShippingCostType(
+            int companyID, String shippingCostType);
 }

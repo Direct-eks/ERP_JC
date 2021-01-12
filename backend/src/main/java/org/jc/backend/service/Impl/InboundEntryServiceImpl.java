@@ -425,4 +425,30 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         return entries;
     }
 
+    @Transactional(readOnly = true)
+    public List<InboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
+            int companyID, String shippingCostType) {
+
+        List<InboundEntryWithProductsVO> entries = new ArrayList<>();
+        try {
+            List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.getEntriesByCompanyAndShippingCostType(
+                    companyID, shippingCostType);
+
+            for (var entryFromDatabase : entriesFromDatabase) {
+                //filter out all entries which has already checked-out shipping cost
+                if (entryFromDatabase.getShippingCostSerial().equals("")) {
+                    InboundEntryWithProductsVO entry = new InboundEntryWithProductsVO();
+                    BeanUtils.copyProperties(entryFromDatabase, entry);
+                    entries.add(entry);
+                }
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return entries;
+    }
 }

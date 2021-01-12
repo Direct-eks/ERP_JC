@@ -42,4 +42,7 @@ public interface InboundEntryMapper {
 
     void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO);
     List<InboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial);
+
+    List<InboundEntryDO> getEntriesByCompanyAndShippingCostType(
+            int companyID, String shippingCostType);
 }

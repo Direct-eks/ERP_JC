@@ -27,4 +27,6 @@ public interface InboundEntryService {
 
     void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO);
     List<InboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial);
+
+    List<InboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(int companyID, String shippingCostType);
 }
