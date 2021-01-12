@@ -33,8 +33,8 @@ public class ShippingCostEntryVO {
     private double invoiceAmount;
 
     @NotNull(message = "shippingPaymentType null error")
-    @Pattern(regexp = "^(代垫|自付)$", message = "shippingPaymentType value error")
-    private String shippingPaymentType;
+    @Pattern(regexp = "^(代垫|自付)$", message = "shippingCostType value error")
+    private String shippingCostType;
 
     @NotNull(message = "remark null error")
     private String remark;

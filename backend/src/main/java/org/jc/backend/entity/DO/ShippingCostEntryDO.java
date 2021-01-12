@@ -18,7 +18,7 @@ public class ShippingCostEntryDO {
     private String invoiceNumber;
     private double totalAmount;
     private double invoiceAmount;
-    private String shippingPaymentType;
+    private String shippingCostType;
     private String remark;
     private String drawer;
     private String creationDate;
