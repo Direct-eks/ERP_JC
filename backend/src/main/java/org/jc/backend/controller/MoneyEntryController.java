@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -50,7 +50,7 @@ public class MoneyEntryController {
             @RequestParam(value = "paymentMethod", defaultValue = "") String paymentMethod,
             @RequestParam(value = "bankAccountID", defaultValue = "0") int bankAccountID,
             @RequestParam(value = "isInbound") boolean isInbound
-    ) throws GlobalException {
+    ) throws GlobalParamException {
         logger.info("GET Request to /moneyEntry/getEntriesInDateRange, startDate: " + startDateString +
                         ", endDate: " + endDateString + ", companyID: " + companyID + ", paymentMethod: " +
                         paymentMethod + ", bankAccountID: " + bankAccountID);
@@ -67,7 +67,7 @@ public class MoneyEntryController {
                 case "其他":
                     break;
                 default:
-                    throw new GlobalException("Invalid invoiceType param");
+                    throw new GlobalParamException("Invalid invoiceType param");
             }
         }
 
@@ -80,14 +80,14 @@ public class MoneyEntryController {
     public List<MoneyEntryO> getEntryBySerial(
             @RequestParam("serial") String serial,
             @RequestParam("isInbound") boolean isInbound
-    ) throws GlobalException {
+    ) throws GlobalParamException {
         logger.info("GET Request to /moneyEntry/getEntryBySerial");
 
         String serialSuffix = StringUtils.trimAllWhitespace(serial);
 
         Pattern pattern = Pattern.compile("^[0-9]{6}$");
         Matcher matcher = pattern.matcher(serialSuffix);
-        if (!matcher.matches()) throw new GlobalException("Invalid serial", 400);
+        if (!matcher.matches()) throw new GlobalParamException("Invalid serial", 400);
 
         return moneyEntryService.getEntryBySerial(serial, isInbound);
     }

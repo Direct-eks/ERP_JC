@@ -1,6 +1,6 @@
 package org.jc.backend.utils;
 
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,9 @@ public class MyUtils {
      * parse Date to verify passed param
      * @param dateString String to be parsed, format yyyy-MM-dd
      * @return Date parsed
-     * @throws GlobalException if there is an error parsing dateString
+     * @throws GlobalParamException if there is an error parsing dateString
      */
-    public static Date parseAndCheckDateString(String dateString) throws GlobalException {
+    public static Date parseAndCheckDateString(String dateString) throws GlobalParamException {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -30,7 +30,7 @@ public class MyUtils {
         } catch (ParseException e) {
             String errorInfo = "Invalid date String: " + dateString;
             logger.info(errorInfo);
-            throw new GlobalException(errorInfo);
+            throw new GlobalParamException(errorInfo);
         }
 
         return date;

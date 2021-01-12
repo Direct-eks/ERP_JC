@@ -5,14 +5,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GlobalException extends Exception {
+public class GlobalParamException extends Exception {
     private int errorCode;
 
-    public GlobalException(String errorMessage) {
+    public GlobalParamException(String errorMessage) {
         super(errorMessage);
     }
 
-    public GlobalException(String errorMessage, int errorCode) {
+    public GlobalParamException(String errorMessage, int errorCode) {
         super(errorMessage);
         this.errorCode = errorCode;
     }

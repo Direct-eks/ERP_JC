@@ -2,8 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
-import org.jc.backend.entity.DO.ShippingCostEntryDO;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
 import org.jc.backend.service.ShippingCostEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -46,7 +45,7 @@ public class ShippingCostEntryController {
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam("forModify") boolean forModify
-    ) throws GlobalException {
+    ) throws GlobalParamException {
         logger.info("GET Request to /shippingCostEntry/getEntriesInDateRange, isInbound: " + isInbound +
                 ", startDate: " + startDateString + ", endDate: " + endDateString + ", companyID: " + companyID +
                 ", forModify: " + forModify);

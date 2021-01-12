@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.QuotaEntryWithProductsVO;
 import org.jc.backend.service.QuotaEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -42,7 +42,7 @@ public class QuotaEntryController {
     public List<QuotaEntryWithProductsVO> getQuotasInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalException {
+            @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalParamException {
         logger.info("GET Request to /quotaEntry/getOrdersInDateRangeByCompanyID, start date: " +
                 startDateString + ", end date： " + endDateString + ", id: " + companyID);
 

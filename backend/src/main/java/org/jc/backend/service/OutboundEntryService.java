@@ -1,6 +1,6 @@
 package org.jc.backend.service;
 
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface OutboundEntryService {
-    void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalException;
+    void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException;
     List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                             String type, int id);
     void completeEntry(OutboundEntryWithProductsVO outboundEntryWithProductsVO);

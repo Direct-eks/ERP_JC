@@ -1,6 +1,5 @@
 package org.jc.backend.service;
 
-import org.jc.backend.config.exception.GlobalException;
 import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;

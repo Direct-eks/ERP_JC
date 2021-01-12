@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.MyUtils;
@@ -43,7 +43,7 @@ public class PurchaseOrderController {
     public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalException {
+            @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalParamException {
         logger.info("GET Request to /purchaseOrder/getOrdersInDateRangeByCompanyID, start date: " +
                 startDateString + ", end date： " + endDateString + ", id: " + companyID);
 

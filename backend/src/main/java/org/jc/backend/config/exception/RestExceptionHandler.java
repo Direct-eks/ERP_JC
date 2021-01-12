@@ -19,10 +19,10 @@ public class RestExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
 
-    @ExceptionHandler(value = GlobalException.class)
+    @ExceptionHandler(value = GlobalParamException.class)
     @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionResult handleInternalError(GlobalException e) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResult handleInternalError(GlobalParamException e) {
         logger.error(e.getMessage());
         return new ExceptionResult(e.getErrorCode(), e.getMessage());
     }

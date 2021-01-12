@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
@@ -45,7 +45,7 @@ public class InboundEntryController {
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam("type") String type,
             @RequestParam("forModify") boolean forModify
-    ) throws GlobalException {
+    ) throws GlobalParamException {
         logger.info("GET Request to /inboundEntry/getEntriesInDateRange, start date: " +
                 startDateString + ", end date： " + endDateString + ", companyID: " + companyID +
                 ", type: " + type + ", forModify:" + forModify);
@@ -58,7 +58,7 @@ public class InboundEntryController {
             case "出退":
                 break;
             default:
-                throw new GlobalException("Invalid type param");
+                throw new GlobalParamException("Invalid type param");
         }
 
         List<InboundEntryWithProductsVO> entries = inboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(

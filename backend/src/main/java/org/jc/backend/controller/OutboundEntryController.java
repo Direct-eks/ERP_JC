@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
@@ -31,7 +31,7 @@ public class OutboundEntryController {
 
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
-    public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO inboundEntryVO) throws GlobalException {
+    public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO inboundEntryVO) throws GlobalParamException {
         logger.info("PUT Request to /outboundEntry/createEntry");
 
         outboundEntryService.createEntry(inboundEntryVO);
@@ -45,7 +45,7 @@ public class OutboundEntryController {
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam("type") String type,
             @RequestParam("forModify") boolean forModify
-    ) throws GlobalException {
+    ) throws GlobalParamException {
         logger.info("GET Request to /outboundEntry/getEntriesInDateRange, start date: " +
                 startDateString + ", end date： " + endDateString + ", companyID: " + companyID +
                 ", type: " + type + ", forModify: " + forModify);
@@ -58,7 +58,7 @@ public class OutboundEntryController {
             case "入退":
                 break;
             default:
-                throw new GlobalException("Invalid type error");
+                throw new GlobalParamException("Invalid type error");
         }
 
         List<OutboundEntryWithProductsVO> entries = outboundEntryService.getEntriesInDateRange(

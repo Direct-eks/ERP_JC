@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -48,7 +48,7 @@ public class CheckoutEntryController {
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType,
             @RequestParam("forModify") boolean forModify
-    ) throws GlobalException {
+    ) throws GlobalParamException {
         logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, isInbound" + isInbound +
                 ",startDate: " + startDateString + ", endDate: " + endDateString + ", companyID: " +
                 companyID + ", invoiceType: "+ invoiceType);
@@ -63,7 +63,7 @@ public class CheckoutEntryController {
                 case "收据":
                     break;
                 default:
-                    throw new GlobalException("Invalid invoiceType param");
+                    throw new GlobalParamException("Invalid invoiceType param");
             }
         }
 

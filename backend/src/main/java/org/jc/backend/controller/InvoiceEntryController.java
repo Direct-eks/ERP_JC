@@ -2,7 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
 import org.jc.backend.service.InvoiceEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -50,7 +50,7 @@ public class InvoiceEntryController {
             @RequestParam(value = "invoiceNumber", defaultValue = "") String invoiceNumber,
             @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType,
             @RequestParam("forModify") boolean forModify
-    )throws GlobalException {
+    )throws GlobalParamException {
         logger.info("GET Request to /invoiceEntry/getEntryInDateRange, isInbound: " + isInbound + ", startDate: " +
                 startDateString + ", endDate: " + endDateString + ", invoiceNumberDate: " + invoiceNumberDateString +
                 ", companyID: " + companyID + ", isFollowUpIndication: " + isFollowUpIndication + ", invoiceNumber: " +
@@ -67,7 +67,7 @@ public class InvoiceEntryController {
                 case "普票":
                     break;
                 default:
-                    throw new GlobalException("Invalid invoiceType param");
+                    throw new GlobalParamException("Invalid invoiceType param");
             }
         }
 
