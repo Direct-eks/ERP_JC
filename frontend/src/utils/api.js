@@ -33,6 +33,8 @@ const api = {
     inboundProductsNotCheckedOut: '/inboundEntry/getNotCheckedOutProducts', // GET companyID= invoiceType=
     inboundProductsCheckoutAndNotInvoiced: '/inboundEntry/getCheckoutAndNotInvoicedProducts', // GET companyID= invoiceType=
     returnInboundEntry: '/inboundEntry/returnEntryProducts', // POST
+    // GET companyID= shippingCostType=
+    inboundEntriesByCompanyAndShippingCostType: '/inboundEntry/getEntriesByCompanyAndShippingCostType',
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
@@ -63,6 +65,8 @@ const api = {
     outboundProductsCheckoutAndNotInvoiced: '/outboundEntry/getCheckoutAndNotInvoicedProducts',
     modifyOutboundEntry: '/outboundEntry/modifyEntry',
     returnOutboundEntry: '/outboundEntry/returnEntryProducts', // POST
+    // GET companyID= shippingCostType=
+    outboundEntriesByCompanyAndShippingCostType: '/outboundEntry/getEntriesByCompanyAndShippingCostType',
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
