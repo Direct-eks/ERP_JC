@@ -253,10 +253,10 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
             record.append(String.format("开票日期: %s -> %s; ", originEntry.getInvoiceDate(),
                     modifiedEntry.getInvoiceDate()));
         }
-        if (!modifiedEntry.getShippingPaymentType().equals(originEntry.getShippingPaymentType())) {
+        if (!modifiedEntry.getShippingCostType().equals(originEntry.getShippingCostType())) {
             bool = true;
-            record.append(String.format("运费标志: %s -> %s; ", originEntry.getShippingPaymentType(),
-                    modifiedEntry.getShippingPaymentType()));
+            record.append(String.format("运费标志: %s -> %s; ", originEntry.getShippingCostType(),
+                    modifiedEntry.getShippingCostType()));
         }
         if (!modifiedEntry.getRemark().equals(originEntry.getRemark())) {
             bool = true;
