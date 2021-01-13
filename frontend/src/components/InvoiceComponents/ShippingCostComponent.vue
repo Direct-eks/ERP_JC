@@ -110,8 +110,8 @@
                             transition="scale-transition"
                             offset-y>
                         <template v-slot:activator="{on}">
-                            <v-text-field v-model="form.invoiceNumberDate"
-                                          :rules="rules.invoiceNumberDate"
+                            <v-text-field v-model="form.invoiceDate"
+                                          :rules="rules.invoiceDate"
                                           v-on="on"
                                           label="发票开具日期"
                                           hide-details="auto"
@@ -120,7 +120,7 @@
                                           dense>
                             </v-text-field>
                         </template>
-                        <v-date-picker v-model="form.invoiceNumberDate"
+                        <v-date-picker v-model="form.invoiceDate"
                                        no-title
                                        :max="allowedMaxDate"
                                        :first-day-of-week="0"
@@ -454,7 +454,8 @@ export default {
 
             rules: {
                 company: [v => !!v || '请选择单位'],
-                taxDeduction: [v => !!v || '请选择抵扣类型'],
+                invoiceDate: [v => !!v || '请选择开票日期'],
+                taxDeduction: [v => v !== -1 || '请选择抵扣类型'],
                 shippingCostType: [v => !!v || '请选择运费标志'],
             },
 
