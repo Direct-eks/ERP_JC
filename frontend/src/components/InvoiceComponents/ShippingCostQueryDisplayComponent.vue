@@ -38,7 +38,7 @@
                 <v-col cols="auto">
                     <v-btn class="mr-4"
                            color="warning"
-                           @click="clearSearchFields">
+                           @click="companyName = '';companyID = -1">
                         清空
                     </v-btn>
                     <v-btn class="mr-4"
@@ -161,9 +161,6 @@ export default {
                     val.companyID : ''
             }
             this.companySearchPanelOpen = false
-        },
-        clearSearchFields() {
-            this.companyName = ''
         },
         query() {
             this.$getRequest(this.$api.shippingCostEntryInDateRange, {

@@ -4,6 +4,7 @@
     <v-card outlined>
         <v-toolbar flat>
             <v-toolbar-title>付运费查询</v-toolbar-title>
+            <v-card-subtitle>入库自付/代垫，出库自付运费查询</v-card-subtitle>
 
             <template v-slot:extension>
                 <v-tabs v-model="tab" @change="handleTabChange">
@@ -44,7 +45,7 @@ export default {
     components: {
         QueryDisplayComponent: () => import(
             /* webpackChunkName: "ShippingCostQueryDisplayComponent" */
-            '~/components/InvoiceComponents/CheckoutQueryDisplayComponent'
+            '~/components/InvoiceComponents/ShippingCostQueryDisplayComponent'
         ),
         ShippingCostComponent: () => import("~/components/InvoiceComponents/ShippingCostComponent"),
     },
