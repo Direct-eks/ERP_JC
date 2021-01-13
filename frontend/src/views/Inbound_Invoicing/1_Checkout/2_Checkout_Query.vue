@@ -43,7 +43,7 @@ export default {
     name: "In_Check_Query",
     components: {
         QueryDisplayComponent: () => import(
-            /* webpackChunkName: "InboundCheckoutQueryDisplayComponent" */
+            /* webpackChunkName: "CheckoutQueryDisplayComponent" */
             '~/components/InvoiceComponents/CheckoutQueryDisplayComponent'
         ),
         CheckoutComponent: () => import('~/components/InvoiceComponents/CheckoutComponent'),

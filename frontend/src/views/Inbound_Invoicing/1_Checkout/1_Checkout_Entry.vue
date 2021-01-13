@@ -17,7 +17,7 @@ export default {
     name: "In_Checkout_Entry",
     components: {
         InboundCheckoutComponent: () => import(
-            /* webpackChunkName: "InboundCheckoutComponent" */
+            /* webpackChunkName: "CheckoutComponent" */
             '~/components/InvoiceComponents/CheckoutComponent'
         ),
     }
