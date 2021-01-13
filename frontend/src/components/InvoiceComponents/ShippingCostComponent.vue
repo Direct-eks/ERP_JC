@@ -446,7 +446,7 @@ export default {
                 remark: '', drawer: this.$store.getters.currentUser,
                 creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 checkoutDate: new Date().format("yyyy-MM-dd").substr(0, 10),
-                inOrOut: this.isInbound ? '入' : '出',
+                inOrOut: this.isInbound ? 1 : 0,
                 invoiceDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 isModified: 0,
 
@@ -505,22 +505,26 @@ export default {
         },
 
         inboundEntryChooseHandle(val) {
-            if (val) this.form.inboundEntries = JSON.parse(JSON.stringify(val))
+            if (val) {
+                this.form.inboundEntries = JSON.parse(JSON.stringify(val))
+                this.calculateShippingCost()
+            }
             this.inboundEntryPanel = false
-            this.calculateShippingCost()
         },
         outboundEntryChooseHandle(val) {
-            if (val) this.form.outboundEntries = JSON.parse(JSON.stringify(val))
+            if (val) {
+                this.form.outboundEntries = JSON.parse(JSON.stringify(val))
+                this.calculateShippingCost()
+            }
             this.outboundEntryPanel = false
-            this.calculateShippingCost()
         },
         calculateShippingCost() {
-            this.totalAmount = 0
+            this.form.totalAmount = 0
             this.form.inboundEntries.forEach((item) => {
-                this.totalAmount += Number(item.shippingCost)
+                this.form.totalAmount += Number(item.shippingCost)
             })
             this.form.outboundEntries.forEach((item) => {
-                this.totalAmount += Number(item.shippingCost)
+                this.form.totalAmount += Number(item.shippingCost)
             })
         },
         handleDeleteTable1Row() {
@@ -551,20 +555,36 @@ export default {
         },
 
         createEntry() {
-            if (this.$ref.form.validate()) {
-                this.$putRequest(this.$api.createShippingCostEntry, this.form).then(() => {
+            if (this.$refs.form.validate()) {
+                this.$putRequest(this.$api.createShippingCostEntry, this.form, {
+                    isInbound: this.isInbound
+                }).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    if (this.isInbound) {
+                        this.$router.replace('/inbound_invoicing')
+                    }
+                    else {
+                        this.$router.replace('/outbound_invoicing')
+                    }
                 }).catch(error => this.$ajaxErrorHandler(error))
             }
         },
         modifyEntry() {
-            this.$patchRequest(this.$api.modifyShippingCostEntry, this.form).then(() => {
-                this.$store.commit('setSnackbar', {
-                    message: '提交成功', color: 'success'
-                })
-            }).catch(error => this.$ajaxErrorHandler(error))
+            if (this.$refs.form.validate()) {
+                this.$patchRequest(this.$api.modifyShippingCostEntry, this.form).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    if (this.isInbound) {
+                        this.$router.replace('/inbound_invoicing')
+                    }
+                    else {
+                        this.$router.replace('/outbound_invoicing')
+                    }
+                }).catch(error => this.$ajaxErrorHandler(error))
+            }
         },
     },
     computed: {
