@@ -89,6 +89,11 @@ const api = {
     salesOrdersByCompanyID: '/salesOrder/getOrdersByCompanyID/', // GET companyID
     modifySalesOrder: '/salesOrder/modifyOrder', // PATCH
 
+    /* ------ /shippingCostEntry ------*/
+    createShippingCostEntry: '/shippingCostEntry/createEntry',
+    shippingCostEntryInDateRange: '/shippingCostEntry/getEntriesInDateRange',
+    modifyShippingCostEntry: '/shippingCostEntry/modifyEntry',
+
     /* ------ /sku ------*/
     fullSkuByModel: '/sku/getFullSkuByModel/', // GET {id}
 
