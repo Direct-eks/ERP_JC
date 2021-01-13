@@ -18,6 +18,8 @@ const api = {
     companyAreas: '/company/getCompanyAreas', // GET
     companiesByCategory: '/company/getCompaniesByCategory/', // GET
 
+    selfCompany: '/company/getSelfCompany', // GET
+
     relevantCompanyCategories: '/company/getRelevantCompanyCategories', // GET
     relevantCompaniesByCategory: '/company/getRelevantCompaniesByCategory/', // GET {id}
 

@@ -81,7 +81,7 @@
                         <template v-slot:activator="{on}">
                             <v-btn color="accent"
                                    v-on="on"
-                                   :disabled="fullSearchPanelOpen">
+                                   :disabled="fullSearchPanelOpen || disableCompanySearch">
                                 单位助选
                             </v-btn>
                         </template>
@@ -130,7 +130,7 @@
                 </v-col>
                 <v-col cols="auto">
                     <v-select v-if="createMode || modifyMode"
-                              v-model="form.invoiceIndication"
+                              v-model="form.isTaxDeduction"
                               :items="taxDeductionOptions"
                               :rules="rules.taxDeduction"
                               item-value="value"
@@ -141,8 +141,8 @@
                               style="width: 120px">
                     </v-select>
                     <v-text-field v-else
-                                  v-model="form.invoiceIndication"
-                                  label="开票标志"
+                                  v-model="form.isTaxDeduction"
+                                  label="抵扣标志"
                                   hide-details="auto"
                                   outlined
                                   readonly
@@ -175,7 +175,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="createMode"
+                    <v-select v-if="createMode && isInbound"
                               v-model="form.shippingCostType"
                               :items="shippingCostTypeOptions"
                               :rules="rules.shippingCostType"
@@ -199,7 +199,7 @@
                 </v-col>
             </v-row>
 
-            <v-row>
+            <v-row dense>
                 <v-col>
                     <v-textarea v-model.number="form.remark"
                                 label="备注"
@@ -215,17 +215,15 @@
             </v-row>
         </v-form>
 
-        <v-row v-if="createMode">
+        <v-row dense>
             <v-spacer></v-spacer>
-            <v-col>
+            <v-col v-if="createMode">
                 <v-btn color="primary"
                        @click="createEntry()">
                     保存
                 </v-btn>
             </v-col>
-        </v-row>
-        <v-row v-if="modifyMode">
-            <v-col>
+            <v-col v-if="modifyMode">
                 <v-btn color="primary"
                        @click="modifyEntry()">
                     保存修改
@@ -233,9 +231,10 @@
             </v-col>
         </v-row>
 
-        <v-row class="d-flex">
-            <v-col>
+        <v-row class="d-flex" dense>
+            <v-col v-if="showInboundTable">
                 <v-card outlined>
+                    <v-card-title class="text-subtitle-1 pt-1 pb-0">入库运费</v-card-title>
                     <v-data-table v-model="table1Selection"
                                   :headers="tableHeaders1"
                                   :items="form.inboundEntries"
@@ -252,9 +251,8 @@
                             {{ form.inboundEntries.indexOf(item) + 1 }}
                         </template>
                     </v-data-table>
-                </v-card>
-                <v-row>
-                    <v-col cols="auto">
+
+                    <v-card-actions>
                         <v-dialog v-model="inboundEntryPanel"
                                   :eager="true"
                                   max-width="50vw"
@@ -269,8 +267,7 @@
                                          @inboundEntryChoose="inboundEntryChooseHandle">
                             </EntryChoose>
                         </v-dialog>
-                    </v-col>
-                    <v-col cols="auto">
+
                         <v-dialog v-model="deleteTable1RowPopup"
                                   max-width="300px"
                                   persistent>
@@ -279,7 +276,7 @@
                             </template>
                             <v-card>
                                 <v-card-title>确认删除？</v-card-title>
-                                <v-card-text>{{rowDeletionConfirm1}}</v-card-text>
+                                <v-card-text>{{ rowDeletionConfirm1 }}</v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn color="primary" @click="deleteTable1RowPopup = false">
@@ -291,11 +288,12 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
-                    </v-col>
-                </v-row>
+                    </v-card-actions>
+                </v-card>
             </v-col>
-            <v-col>
+            <v-col v-if="showOutboundTable">
                 <v-card outlined>
+                    <v-card-title class="text-subtitle-1 pt-1 pb-0">出库运费</v-card-title>
                     <v-data-table v-model="table2Selection"
                                   :headers="tableHeaders2"
                                   :items="form.outboundEntries"
@@ -312,16 +310,15 @@
                             {{ form.outboundEntries.indexOf(item) + 1 }}
                         </template>
                     </v-data-table>
-                </v-card>
-                <v-row>
-                    <v-col cols="auto">
+
+                    <v-card-actions>
                         <v-dialog v-model="outboundEntryPanel"
                                   :eager="true"
                                   max-width="50vw"
                                   no-click-animation
                                   persistent>
                             <template v-slot:activator="{ on }">
-                                <v-btn color="accent" v-on="on">增加</v-btn>
+                                <v-btn class="mr-6" color="accent" v-on="on">增加</v-btn>
                             </template>
                             <EntryChoose :isInbound="false"
                                          :companyID="form.partnerCompanyID"
@@ -329,8 +326,6 @@
                                          @outboundEntryChoose="outboundEntryChooseHandle">
                             </EntryChoose>
                         </v-dialog>
-                    </v-col>
-                    <v-col cols="auto">
                         <v-dialog v-model="deleteTable2RowPopup"
                                   max-width="300px"
                                   persistent>
@@ -339,7 +334,7 @@
                             </template>
                             <v-card>
                                 <v-card-title>确认删除？</v-card-title>
-                                <v-card-text>{{rowDeletionConfirm2}}</v-card-text>
+                                <v-card-text>{{ rowDeletionConfirm2 }}</v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn color="primary" @click="deleteTable2RowPopup = false">
@@ -351,8 +346,8 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
-                    </v-col>
-                </v-row>
+                    </v-card-actions>
+                </v-card>
             </v-col>
         </v-row>
 
@@ -393,12 +388,27 @@ export default {
         }
     },
     watch: {
-
+        'form.shippingCostType'(val) {
+            if (val === '自付') {
+                this.disableCompanySearch = true
+                this.$getRequest(this.$api.selfCompany).then((res) => {
+                    console.log('received', res.data)
+                    this.form.partnerCompanyID = res.data.companyID
+                    this.form.companyAbbreviatedName = res.data.abbreviatedName
+                    this.form.companyFullName = res.data.fullName
+                    this.form.companyPhone = res.data.phone
+                })
+            }
+            else if (val === '代垫') {
+                this.disableCompanySearch = false
+            }
+        }
     },
     beforeMount() {
         switch (this.mode) {
         case 'create':
             this.createMode = true
+            if (!this.isInbound) this.form.shippingCostType = '代垫'
             break
         case 'modify':
             this.modifyMode = true
@@ -413,6 +423,8 @@ export default {
             createMode: false,
             displayMode: false,
             modifyMode: false,
+
+            disableCompanySearch: false,
 
             fullSearchPanelOpen: false,
             inboundEntryPanel: false,
@@ -451,8 +463,8 @@ export default {
                 { value: '代垫', label: '代垫' }
             ],
             taxDeductionOptions: [
-                { value: '否', label: '否' },
-                { value: '抵扣', label: '抵扣' }
+                { value: 0, label: '否' },
+                { value: 1, label: '抵扣' }
             ],
 
 
@@ -534,13 +546,30 @@ export default {
         },
 
         createEntry() {
-
+            if (this.$ref.form.validate()) {
+                this.$putRequest(this.$api.createShippingCostEntry, this.form).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                }).catch(error => this.$ajaxErrorHandler(error))
+            }
         },
         modifyEntry() {
-
+            this.$patchRequest(this.$api.modifyShippingCostEntry, this.form).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
     },
     computed: {
+        showInboundTable() {
+            return this.isInbound
+        },
+        showOutboundTable() {
+            return (this.isInbound && this.form.shippingCostType === '自付') ||
+                    (!this.isInbound && this.form.shippingCostType === '代垫')
+        },
         rowDeletionConfirm1() {
             let result = '确认删除以下序号的行: '
             this.table1Selection.forEach(item => {
