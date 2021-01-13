@@ -254,7 +254,7 @@
                         </template>
                     </v-data-table>
 
-                    <v-card-actions>
+                    <v-card-actions v-if="createMode || modifyMode">
                         <v-dialog v-model="inboundEntryPanel"
                                   :eager="true"
                                   max-width="50vw"
@@ -313,7 +313,7 @@
                         </template>
                     </v-data-table>
 
-                    <v-card-actions>
+                    <v-card-actions v-if="createMode || modifyMode">
                         <v-dialog v-model="outboundEntryPanel"
                                   :eager="true"
                                   max-width="50vw"
@@ -390,6 +390,13 @@ export default {
         }
     },
     watch: {
+        paramForm: {
+            handler: function (val) {
+                if (this.createMode) return
+                this.form = val
+            },
+            deep: true,
+        },
         'form.shippingCostType'(val) {
             if (val === '自付') {
                 this.disableCompanySearch = true
@@ -506,14 +513,24 @@ export default {
 
         inboundEntryChooseHandle(val) {
             if (val) {
-                this.form.inboundEntries = JSON.parse(JSON.stringify(val))
+                if (this.createMode) {
+                    this.form.inboundEntries = JSON.parse(JSON.stringify(val))
+                }
+                if (this.modifyMode) {
+                    this.form.inboundEntries.push(JSON.parse(JSON.stringify(val)))
+                }
                 this.calculateShippingCost()
             }
             this.inboundEntryPanel = false
         },
         outboundEntryChooseHandle(val) {
             if (val) {
-                this.form.outboundEntries = JSON.parse(JSON.stringify(val))
+                if (this.createMode) {
+                    this.form.outboundEntries = JSON.parse(JSON.stringify(val))
+                }
+                if (this.modifyMode) {
+                    this.form.outboundEntries.push(JSON.parse(JSON.stringify(val)))
+                }
                 this.calculateShippingCost()
             }
             this.outboundEntryPanel = false
