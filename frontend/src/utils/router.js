@@ -290,17 +290,17 @@ const routes = [
             {
                 path: 'cost_bill',
                 name: 'OUT付运费结账',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Cost_Bill" */'../views/Outbound_Invoicing/4_Shipping_Cost/1_Out_Cost_Bill')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing1_Out_Cost_Bill" */'../views/Outbound_Invoicing/4_Shipping_Cost/1_Shipping_Cost_Checkout')
             },
             {
                 path: 'cost_query',
                 name: 'OUT付运费查询',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Cost_Query" */'../views/Outbound_Invoicing/4_Shipping_Cost/2_Out_Cost_Query')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing2_Out_Cost_Query" */'../views/Outbound_Invoicing/4_Shipping_Cost/2_Shipping_Cost_Query')
             },
             {
                 path: 'cost_modify',
                 name: 'OUT付运费修改',
-                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Cost_Modify" */'../views/Outbound_Invoicing/4_Shipping_Cost/3_Out_Cost_Modify')
+                component: () => import(/* webpackChunkName: "Outbound_Invoicing3_Out_Cost_Modify" */'../views/Outbound_Invoicing/4_Shipping_Cost/3_Shipping_Cost_Modify')
             },
             {
                 path: 'outbound_check_invoicing_return',
