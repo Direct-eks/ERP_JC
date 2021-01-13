@@ -405,7 +405,7 @@ export default {
     },
     watch: {
         paramForm: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 if (this.creationMode) return
                 this.form = val
                 this.calculateSums()
@@ -642,7 +642,7 @@ export default {
 
             this.$putRequest(this.$api.createCheckoutEntry, this.form, {
                 isInbound: this.isInbound
-            }).then((res) => {
+            }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
@@ -668,7 +668,7 @@ export default {
             })
 
             this.$patchRequest(this.$api.modifyCheckoutEntry, this.form,
-                {isInbound: true}).then((res) => {
+                {isInbound: true}).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
