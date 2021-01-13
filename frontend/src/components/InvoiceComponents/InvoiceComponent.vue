@@ -78,7 +78,7 @@
                               item-value="value"
                               item-text="label"
                               label="结账类型"
-                              :readonly="this.isInbound ? form.inboundInvoiceProducts.length !== 0 :
+                              :readonly="isInbound ? form.inboundInvoiceProducts.length !== 0 :
                                                           form.outboundInvoiceProducts.length !== 0"
                               hide-details="auto"
                               outlined dense
