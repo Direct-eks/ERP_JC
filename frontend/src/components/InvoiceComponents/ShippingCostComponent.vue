@@ -517,7 +517,9 @@ export default {
                     this.form.inboundEntries = JSON.parse(JSON.stringify(val))
                 }
                 if (this.modifyMode) {
-                    this.form.inboundEntries.push(JSON.parse(JSON.stringify(val)))
+                    val.forEach((item) => {
+                        this.form.inboundEntries.push(JSON.parse(JSON.stringify(item)))
+                    })
                 }
                 this.calculateShippingCost()
             }
@@ -529,7 +531,9 @@ export default {
                     this.form.outboundEntries = JSON.parse(JSON.stringify(val))
                 }
                 if (this.modifyMode) {
-                    this.form.outboundEntries.push(JSON.parse(JSON.stringify(val)))
+                    val.forEach((item) => {
+                        this.form.outboundEntries.push(JSON.parse(JSON.stringify(item)))
+                    })
                 }
                 this.calculateShippingCost()
             }
