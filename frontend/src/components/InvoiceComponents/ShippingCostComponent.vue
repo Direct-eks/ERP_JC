@@ -81,7 +81,9 @@
                         <template v-slot:activator="{on}">
                             <v-btn color="accent"
                                    v-on="on"
-                                   :disabled="fullSearchPanelOpen || disableCompanySearch">
+                                   :disabled="fullSearchPanelOpen || disableCompanySearch
+                                                || form.inboundEntries.length !== 0
+                                                || form.outboundEntries.length !== 0">
                                 单位助选
                             </v-btn>
                         </template>
@@ -490,7 +492,9 @@ export default {
         /* ------- full name company search -------*/
         fullSearchChooseAction(val) {
             if (val) {
+                this.form.companyAbbreviatedName = val.abbreviatedName
                 this.form.companyFullName = val.fullName
+                this.form.companyPhone = val.phone
                 this.form.partnerCompanyID = val.companyID
             }
             this.fullSearchPanelOpen = false
