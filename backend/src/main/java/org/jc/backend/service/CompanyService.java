@@ -12,6 +12,8 @@ public interface CompanyService {
     List<CompanyCategoryO> getCompanyCategories();
     List<CompanyO> getCompaniesByCategory(int id);
 
+    CompanyO getSelfCompany();
+
     List<RelevantCompanyCategoryO> getRelevantCompanyCategories();
     List<RelevantCompanyO> getRelevantCompaniesByCategory(int id);
 }

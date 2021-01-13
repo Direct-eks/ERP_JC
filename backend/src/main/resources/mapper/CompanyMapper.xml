@@ -33,7 +33,9 @@
 
 
     <select id="queryCompanyByFuzzySearch" resultMap="CompanyResultMap">
-        select partner_company_id, sequence_number, brand_code, abbreviated_name, area_id, phone, address, fax, classification, full_name, contact_person, contact_number, remark, is_active, zipcode, email, website
+        select partner_company_id, sequence_number, brand_code, abbreviated_name,
+               area_id, phone, address, fax, classification, full_name, contact_person,
+               contact_number, remark, is_active, zipcode, email, website
         from c_partner_company
         where
         <choose>
@@ -55,9 +57,19 @@
     </select>
 
     <select id="queryCompaniesByCategory" resultMap="CompanyResultMap">
-        select partner_company_id, sequence_number, brand_code, abbreviated_name, area_id, phone, address, fax, classification, full_name, contact_person, contact_number, remark, is_active, zipcode, email, website
+        select partner_company_id, sequence_number, brand_code, abbreviated_name,
+               area_id, phone, address, fax, classification, full_name, contact_person,
+               contact_number, remark, is_active, zipcode, email, website
         from c_partner_company
         where area_id = #{id}
+    </select>
+
+    <select id="querySelfCompany" resultMap="CompanyResultMap">
+        select partner_company_id, sequence_number, brand_code, abbreviated_name,
+               area_id, phone, address, fax, classification, full_name, contact_person,
+               contact_number, remark, is_active, zipcode, email, website
+        from c_partner_company
+        where partner_company_id = 1
     </select>
 
 

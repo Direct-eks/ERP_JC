@@ -16,6 +16,8 @@ public interface CompanyMapper {
     List<CompanyCategoryO> queryCompanyCategories();
     List<CompanyO> queryCompaniesByCategory(int id);
 
+    CompanyO querySelfCompany();
+
     List<RelevantCompanyCategoryO> queryRelevantCompanyCategories();
     List<RelevantCompanyO> queryRelevantCompaniesByCategory(int id);
 }

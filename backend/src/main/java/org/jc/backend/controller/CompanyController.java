@@ -55,6 +55,14 @@ public class CompanyController {
         return companyService.getCompaniesByCategory(id);
     }
 
+    @ApiOperation(value = "", response = CompanyO.class)
+    @GetMapping("/getSelfCompany")
+    public CompanyO getSelfCompany() {
+        logger.info("GET Request to /company/getSelfCompany");
+
+        return companyService.getSelfCompany();
+    }
+
 
     @ApiOperation(value = "", response = RelevantCompanyCategoryO.class)
     @GetMapping("/getRelevantCompanyCategories")

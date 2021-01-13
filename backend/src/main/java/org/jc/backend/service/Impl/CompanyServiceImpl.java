@@ -9,7 +9,7 @@ import org.jc.backend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,23 +26,32 @@ public class CompanyServiceImpl implements CompanyService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
+    @Transactional(readOnly = true)
     public List<CompanyO> getCompanyByFuzzySearch(String phone, String name) {
         return companyMapper.queryCompanyByFuzzySearch(phone, name);
     }
 
+    @Transactional(readOnly = true)
     public List<CompanyCategoryO> getCompanyCategories() {
         return companyMapper.queryCompanyCategories();
     }
-
+    
+    @Transactional(readOnly = true)
     public List<CompanyO>getCompaniesByCategory(int id) {
          return companyMapper.queryCompaniesByCategory(id);
     }
 
+    @Transactional(readOnly = true)
+    public CompanyO getSelfCompany() {
+        return companyMapper.querySelfCompany();
+    }
 
+    @Transactional(readOnly = true)
     public List<RelevantCompanyCategoryO> getRelevantCompanyCategories() {
         return companyMapper.queryRelevantCompanyCategories();
     }
 
+    @Transactional(readOnly = true)
     public List<RelevantCompanyO> getRelevantCompaniesByCategory(int id) {
         return companyMapper.queryRelevantCompaniesByCategory(id);
     }
