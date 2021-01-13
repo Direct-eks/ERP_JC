@@ -277,7 +277,10 @@
                r.abbreviated_name as relevant_company_name, i.shipping_cost_serial, i.is_modified
         from (e_inbound_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id)
             left join c_relevant_company as r on i.shipping_method_id = r.relevant_company_id
-        where i.partner_company_id = #{companyID} and i.shipping_cost_type = #{shippingCostType}
+        where i.shipping_cost_type = #{shippingCostType}
+        <if test="companyID != 1">
+            and i.partner_company_id = #{companyID}
+        </if>
         order by i.inbound_entry_id desc
     </select>
 

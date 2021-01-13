@@ -146,7 +146,7 @@ public class InboundEntryController {
                 companyID + ", shippingCostType: " + shippingCostType);
 
         switch (shippingCostType) {
-            case "自付":
+            case "自付": // company will always be selfCompany
             case "代垫":
                 break;
             default:
