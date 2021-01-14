@@ -267,7 +267,7 @@ export default {
                     url: '/outbound_invoicing/outbound_check_modify'
                 },
                 {
-                    name: '结账未开票查询',
+                    name: '出库未结账查询',
                     url: '/outbound_invoicing/outbound_not_checkout_query'
                 },
                 {
@@ -293,7 +293,7 @@ export default {
                     url: '/outbound_invoicing/outbound_check_invoicing_modify'
                 },
                 {
-                    name: '出库未结账',
+                    name: '结账未开票查询',
                     url: '/outbound_invoicing/outbound_not_invoice_query',
                 },
             ]
