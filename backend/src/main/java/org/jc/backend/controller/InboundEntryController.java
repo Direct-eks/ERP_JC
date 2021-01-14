@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -154,5 +155,37 @@ public class InboundEntryController {
         }
 
         return inboundEntryService.getEntriesByCompanyAndShippingCostType(companyID, shippingCostType);
+    }
+
+    @ApiOperation(value = "", response = InvoiceStatVO.class)
+    @GetMapping("/getNotYetCheckoutSummary")
+    public List<InvoiceStatVO> getNotYetCheckoutSummary() {
+        logger.info("GET Request to /inboundEntry/getNotYetCheckoutSummary");
+
+        return inboundEntryService.getNotYetCheckoutSummary();
+    }
+
+    @ApiOperation(value = "", response = InboundProductO.class)
+    @GetMapping("/getNotYetCheckoutDetailByCompanyID")
+    public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID) {
+        logger.info("GET Request to /inboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: " + companyID);
+
+        return inboundEntryService.getNotYetCheckoutDetailByCompanyID(companyID);
+    }
+
+    @ApiOperation(value = "", response = InvoiceStatVO.class)
+    @GetMapping("/getNotYetInvoiceSummary")
+    public List<InvoiceStatVO> getNotYetInvoiceSummary() {
+        logger.info("GET Request to /inboundEntry/getNotYetInvoiceSummary");
+
+        return inboundEntryService.getNotYetInvoiceSummary();
+    }
+
+    @ApiOperation(value = "", response = InboundProductO.class)
+    @GetMapping("/getNotYetInvoiceDetailByCompanyID")
+    public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID) {
+        logger.info("GET Request to /inboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: " + companyID);
+
+        return inboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
     }
 }

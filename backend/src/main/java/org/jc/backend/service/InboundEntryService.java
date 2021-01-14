@@ -2,6 +2,7 @@ package org.jc.backend.service;
 
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 
 import java.util.Date;
@@ -29,4 +30,9 @@ public interface InboundEntryService {
     List<InboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial);
 
     List<InboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(int companyID, String shippingCostType);
+
+    List<InvoiceStatVO> getNotYetCheckoutSummary();
+    List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID);
+    List<InvoiceStatVO> getNotYetInvoiceSummary();
+    List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID);
 }

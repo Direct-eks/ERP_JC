@@ -6,6 +6,7 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -450,5 +451,69 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         }
 
         return entries;
+    }
+
+    @Transactional(readOnly = true)
+    public List<InvoiceStatVO> getNotYetCheckoutSummary() {
+
+        List<InvoiceStatVO> summary;
+        try {
+            summary = inboundEntryMapper.queryNotYetCheckoutSummary();
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return summary;
+    }
+
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID) {
+
+        List<InboundProductO> summary;
+        try {
+            summary = inboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return summary;
+    }
+
+    @Transactional(readOnly = true)
+    public List<InvoiceStatVO> getNotYetInvoiceSummary() {
+
+        List<InvoiceStatVO> summary;
+        try {
+            summary = inboundEntryMapper.queryNotYetInvoiceSummary();
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return summary;
+    }
+
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID) {
+
+        List<InboundProductO> summary;
+        try {
+            summary = inboundEntryMapper.queryNotYetInvoiceDetailByCompanyID(companyID);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return summary;
     }
 }
