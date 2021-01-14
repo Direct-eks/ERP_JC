@@ -301,7 +301,7 @@
         order by e.partner_company_id
     </select>
 
-    <select id="queryNotYetCheckoutDetailByCompanyID" resultType="org.jc.backend.entity.InboundProductO">
+    <select id="queryNotYetCheckoutDetailByCompanyID" resultMap="productResultMap">
         select inbound_product_id, p.inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, p.remark, warehouse_stock_id,
                p.warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
@@ -318,7 +318,7 @@
         where p.checkout_serial = '' and e.partner_company_id = #{id}
     </select>
 
-    <select id="queryNotYetInvoiceSummary" resultType="org.jc.backend.entity.StatO.InvoiceStatVO">
+    <select id="queryNotYetInvoiceSummary" resultMap="invoiceStatResultMap">
         select c.partner_company_id, c.abbreviated_name, c.full_name,
                sum(p.quantity * p.unit_price_with_tax) as total_sum
         from (e_inbound_entry as e join e_inbound_product as p on e.inbound_entry_id = p.inbound_entry_id)
@@ -328,7 +328,7 @@
         order by e.partner_company_id
     </select>
 
-    <select id="queryNotYetInvoiceDetailByCompanyID" resultType="org.jc.backend.entity.InboundProductO">
+    <select id="queryNotYetInvoiceDetailByCompanyID" resultMap="productResultMap">
         select inbound_product_id, p.inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, p.remark, warehouse_stock_id,
                p.warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,

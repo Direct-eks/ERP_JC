@@ -166,8 +166,8 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
-    @GetMapping("/getNotYetCheckoutDetailByCompanyID")
-    public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID) {
+    @GetMapping("/getNotYetCheckoutDetailByCompanyID/{companyID}")
+    public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(@PathVariable("companyID") int companyID) {
         logger.info("GET Request to /inboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: " + companyID);
 
         return inboundEntryService.getNotYetCheckoutDetailByCompanyID(companyID);
@@ -182,8 +182,8 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
-    @GetMapping("/getNotYetInvoiceDetailByCompanyID")
-    public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID) {
+    @GetMapping("/getNotYetInvoiceDetailByCompanyID/{companyID}")
+    public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(@PathVariable("companyID") int companyID) {
         logger.info("GET Request to /inboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: " + companyID);
 
         return inboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
