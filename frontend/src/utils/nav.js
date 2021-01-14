@@ -181,13 +181,13 @@ export default {
                     url: '/inbound_invoicing/inbound_checkout_modify'
                 },
                 {
-                    name: '结账未开票查询',
-                    url: '/inbound_invoicing/incomplete_invoice_query'
+                    name: '入库未结账查询',
+                    url: '/inbound_invoicing/inbound_not_checkout_query',
                 },
                 {
                     name: '结账后退货',
                     url: '/inbound_invoicing/inbound_checkout_return'
-                }
+                },
             ]
         },
         {
@@ -205,7 +205,11 @@ export default {
                 {
                     name: '修改',
                     url: '/inbound_invoicing/inbound_invoice_modify'
-                }
+                },
+                {
+                    name: '结账未开票查询',
+                    url: '/inbound_invoicing/inbound_not_invoice_query'
+                },
             ]
         },
         {
@@ -223,20 +227,6 @@ export default {
                 {
                     name: '修改',
                     url: '/inbound_invoicing/payment_modify'
-                }
-            ]
-        },
-        {
-            name: '入库未结账',
-            url: '/inbound_invoicing/incomplete',
-            children: [
-                {
-                    name: '明细',
-                    url: '/inbound_invoicing/incomplete_payment_detail'
-                },
-                {
-                    name: '总账',
-                    url: '/inbound_invoicing/incomplete_payment_ledger'
                 }
             ]
         },
@@ -278,11 +268,11 @@ export default {
                 },
                 {
                     name: '结账未开票查询',
-                    url: '/outbound_invoicing/incomplete_invoice_query'
+                    url: '/outbound_invoicing/outbound_not_checkout_query'
                 },
                 {
                     name: '结账后退货',
-                    url: '/outbound_invoicing/outbound_check_invoicing_return'
+                    url: '/outbound_invoicing/outbound_checkout_return'
                 }
             ]
         },
@@ -301,7 +291,11 @@ export default {
                 {
                     name: '修改',
                     url: '/outbound_invoicing/outbound_check_invoicing_modify'
-                }
+                },
+                {
+                    name: '出库未结账',
+                    url: '/outbound_invoicing/outbound_not_invoice_query',
+                },
             ]
         },
         {
@@ -323,21 +317,7 @@ export default {
             ]
         },
         {
-            name: '出库未结账',
-            url: '/outbound_invoicing/incomplete',
-            children: [
-                {
-                    name: '明细',
-                    url: '/outbound_invoicing/incomplete_receipt_detail'
-                },
-                {
-                    name: '总账',
-                    url: '/outbound_invoicing/incomplete_receipt_ledger'
-                }
-            ]
-        },
-        {
-            name: '付运费',
+            name: '收运费',
             url: '/outbound_invoicing/shipping_cost',
             children: [
                 {

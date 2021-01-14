@@ -1,9 +1,9 @@
 <template>
 <!--  <p>出库结账管理</p>-->
-<!--  <p>付运费查询</p>-->
+<!--  <p>收运费查询</p>-->
     <v-card outlined>
         <v-toolbar flat>
-            <v-toolbar-title>付运费查询</v-toolbar-title>
+            <v-toolbar-title>收运费查询</v-toolbar-title>
             <v-card-subtitle>出库代垫运费查询</v-card-subtitle>
 
             <template v-slot:extension>
