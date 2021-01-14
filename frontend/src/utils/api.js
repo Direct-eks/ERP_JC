@@ -37,6 +37,10 @@ const api = {
     returnInboundEntry: '/inboundEntry/returnEntryProducts', // POST
     // GET companyID= shippingCostType=
     inboundEntriesByCompanyAndShippingCostType: '/inboundEntry/getEntriesByCompanyAndShippingCostType',
+    notYetCheckoutSummary: '/inboundEntry/getNotYetCheckoutSummary', // GET
+    notYetCheckoutDetail: '/inboundEntry/getNotYetCheckoutDetailByCompanyID/', // GET companyID
+    notYetInvoiceSummary: '/inboundEntry/getNotYetInvoiceSummary', // GET
+    notYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
