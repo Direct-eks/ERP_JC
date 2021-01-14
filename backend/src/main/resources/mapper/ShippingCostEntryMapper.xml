@@ -51,7 +51,11 @@
                checkout_date, in_or_out, invoice_date, is_modified
         from m_shipping_cost_entry as s join c_partner_company as c
             on s.partner_company_id = c.partner_company_id
-        where s.checkout_date between #{startDate} and #{endDate}
+        where s.shipping_cost_entry_serial like #{prefix}||'%'
+            and s.checkout_date between #{startDate} and #{endDate}
+        <if test="companyID != -1">
+            and s.partner_company_id = #{companyID}
+        </if>
     </select>
 
     <select id="selectEntryBySerialForCompare" resultMap="entryResultMap">

@@ -57,7 +57,7 @@
         <v-data-table v-model="queryTableCurrentRow"
                       :headers="queryTableHeaders"
                       :items="queryTableData"
-                      item-key="checkoutEntrySerial"
+                      item-key="shippingCostEntrySerial"
                       @click:row="tableClick"
                       height="45vh"
                       calculate-widths
@@ -67,9 +67,9 @@
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.checkoutEntrySerial="{ item }">
+            <template v-slot:item.shippingCostEntrySerial="{ item }">
                 <v-chip :color="item.isModified === 1 ? 'red' : null">
-                    {{ item.checkoutEntrySerial }}
+                    {{ item.shippingCostEntrySerial }}
                 </v-chip>
             </template>
         </v-data-table>
