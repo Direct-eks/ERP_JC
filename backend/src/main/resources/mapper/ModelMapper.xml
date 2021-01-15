@@ -34,4 +34,25 @@
         where category_id = #{id}
     </select>
 
+    <select id="queryModelsByName" resultMap="ModelResultMap">
+        select model_id, sequence_number, new_code, old_code, category_id, unit_id
+        from w_model
+        <where>
+            <if test="category == 'newCode'">
+                <choose>
+                    <when test="method == 'prefix'">and new_code like #{name}||'%'</when>
+                    <when test="method == 'infix'">and new_code like '%'||#{name}||'%'</when>
+                    <when test="method == 'suffix'">and new_code like '%'||#{name}</when>
+                </choose>
+            </if>
+            <if test="category == 'oldCode'">
+                <choose>
+                    <when test="method == 'prefix'">and old_code like #{name}||'%'</when>
+                    <when test="method == 'infix'">and old_code like '%'||#{name}||'%'</when>
+                    <when test="method == 'suffix'">and old_code like '%'||#{name}</when>
+                </choose>
+            </if>
+        </where>
+    </select>
+
 </mapper>

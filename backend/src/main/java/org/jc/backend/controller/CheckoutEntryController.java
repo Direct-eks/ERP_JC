@@ -85,4 +85,12 @@ public class CheckoutEntryController {
 
         checkoutEntryService.modifyEntry(modifyVO);
     }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/returnEntry")
+    public void returnEntry(
+            @RequestBody @Validated CheckoutEntryWithProductsVO returnVO,
+            @RequestParam("isInbound") boolean isInbound) {
+
+    }
 }

@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.service.ModelService;
@@ -41,4 +42,34 @@ public class ModelController {
 
         return modelService.getModelsByCategory(id);
     }
+
+    @ApiOperation(value = "", response = ModelO.class)
+    @GetMapping("getModelsByName")
+    public List<ModelO> getModelsByName(
+            @RequestParam("name") String name,
+            @RequestParam("category") String category,
+            @RequestParam("method") String method
+    ) throws GlobalParamException {
+        logger.info("GET Request to /model/getModelsByName, name: " + name + ", category: " +
+                category + ", method: " + method);
+
+        switch (category) {
+            case "newCode":
+            case "oldCode":
+                break;
+            default:
+                throw new GlobalParamException("invalid category param");
+        }
+        switch (method) {
+            case "prefix":
+            case "infix":
+            case "suffix":
+                break;
+            default:
+                throw new GlobalParamException("invalid search method param");
+        }
+
+        return modelService.getModelsByName(name, category, method);
+    }
+    
 }

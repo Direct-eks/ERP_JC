@@ -52,6 +52,7 @@ const api = {
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
     modelsByCategory: '/model/getModelsByCategory/', // GET {id}
+    modelsByName: '/model/getModelsByName', // GET name= category= method=
 
     /* ------ /modificationRecord ------*/
     modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', // GET {serial}

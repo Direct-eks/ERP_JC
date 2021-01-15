@@ -5,33 +5,58 @@
             <v-spacer></v-spacer>
             <v-col cols="auto">
                 <v-text-field v-model="modelCode"
+                              label="代号筛选"
+                              hide-details="auto"
+                              clearable
+                              style="width: 120px">
+                </v-text-field>
+            </v-col>
+            <v-col cols="auto">
+                <v-text-field v-model="modelSearchName"
                               label="代号搜索"
                               hide-details="auto"
                               clearable
-                              style="width: 400px">
+                              style="width: 120px"
+                              @keydown.enter.native="modelSearch">
                 </v-text-field>
             </v-col>
+            <v-col cols="auto">
+                <v-radio-group v-model="modelSearchCategory"
+                               hide-details="auto"
+                               class="mt-0"
+                               dense>
+                    <v-radio label="新代号" value="newCode"></v-radio>
+                    <v-radio label="旧代号" value="oldCode"></v-radio>
+                </v-radio-group>
+            </v-col>
+            <v-col cols="auto">
+                <v-radio-group v-model="modelSearchMethod"
+                               hide-details="auto"
+                               class="mt-0"
+                               dense>
+                    <v-radio label="前匹配" value="prefix"></v-radio>
+                    <v-radio label="模糊" value="infix"></v-radio>
+                    <v-radio label="后匹配" value="suffix"></v-radio>
+                </v-radio-group>
+            </v-col>
+            <v-col cols="auto">
+                <v-btn color="accent"
+                       @click="modelSearch">
+                    查询
+                </v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
             <div class="text-body-1">
                 折扣价基准
             </div>
             <v-radio-group v-model="discountBase"
                            hide-details="auto"
                            class="mt-0 ml-2"
-                           row dense>
+                           dense>
                 <v-radio label="批发价" value="批发价"></v-radio>
                 <v-radio label="零售价" value="零售价"></v-radio>
             </v-radio-group>
             <v-spacer></v-spacer>
-            <v-btn class="mr-8"
-                   color="accent"
-                   @click="productDetail">
-                商品明细
-            </v-btn>
-            <v-btn class="mr-8"
-                   color="accent"
-                   @click="addNewHandle">
-                新增商品
-            </v-btn>
             <v-btn class="mr-8"
                    color="primary"
                    @click="chooseHandle">
@@ -199,6 +224,23 @@
                                       dense>
                         </v-data-table>
                     </v-card>
+
+                    <v-row>
+                        <v-col cols="auto">
+                            <v-btn class="mr-8"
+                                   color="accent"
+                                   @click="productDetail">
+                                商品明细
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="auto">
+                            <v-btn class="mr-8"
+                                   color="accent"
+                                   @click="addNewHandle">
+                                新增商品
+                            </v-btn>
+                        </v-col>
+                    </v-row>
                 </div>
 
             </div>
@@ -246,6 +288,9 @@ export default {
             mdiClosePath: mdiClose,
 
             modelCode: '',
+            modelSearchName: '',
+            modelSearchCategory: 'newCode',
+            modelSearchMethod: 'prefix',
             discountBase: '零售价',
             flattenedTreePosition: '',
 
@@ -350,6 +395,16 @@ export default {
         },
         addNewHandle() {
 
+        },
+        modelSearch() {
+            this.$getRequest(this.$api.modelsByName, {
+                name: this.modelSearchName,
+                category: this.modelSearchCategory,
+                method: this.modelSearchMethod
+            }).then((res) => {
+                console.log('received', res.data)
+                this.modelTableData = res.data
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
         refreshFlattenedTreePosition(val) {
             let label = val.label

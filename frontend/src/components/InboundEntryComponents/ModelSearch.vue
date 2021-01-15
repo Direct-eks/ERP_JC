@@ -5,18 +5,47 @@
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-text-field v-model="modelCode"
+                                  label="代号筛选"
+                                  hide-details="auto"
+                                  clearable
+                                  style="width: 120px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="modelSearchName"
                                   label="代号搜索"
                                   hide-details="auto"
                                   clearable
-                                  style="width: 400px">
+                                  style="width: 120px"
+                                  @keydown.enter.native="modelSearch">
                     </v-text-field>
                 </v-col>
+                <v-col cols="auto">
+                    <v-radio-group v-model="modelSearchCategory"
+                                   hide-details="auto"
+                                   class="mt-0"
+                                   dense>
+                        <v-radio label="新代号" value="newCode"></v-radio>
+                        <v-radio label="旧代号" value="oldCode"></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols="auto">
+                    <v-radio-group v-model="modelSearchMethod"
+                                   hide-details="auto"
+                                   class="mt-0"
+                                   dense>
+                        <v-radio label="前匹配" value="prefix"></v-radio>
+                        <v-radio label="模糊" value="infix"></v-radio>
+                        <v-radio label="后匹配" value="suffix"></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn color="accent"
+                           @click="modelSearch">
+                        查询
+                    </v-btn>
+                </v-col>
                 <v-spacer></v-spacer>
-                <v-btn class="mr-8"
-                       color="accent"
-                       @click="addNewHandle">
-                    新增商品
-                </v-btn>
                 <v-btn class="mr-8"
                        color="primary"
                        @click="chooseHandle">
@@ -27,8 +56,8 @@
                 </v-btn>
             </v-card-title>
             <v-card-text>
-                <v-row>
-                    <v-col cols="auto">
+                <div class="d-flex">
+                    <v-card outlined>
                         <v-responsive height="65vh"
                         style="overflow: auto">
                             <v-treeview :items="treeData"
@@ -42,8 +71,8 @@
                                         dense>
                             </v-treeview>
                         </v-responsive>
-                    </v-col>
-                    <v-col cols="auto" md="3">
+                    </v-card>
+                    <v-card outlined>
                         <v-data-table v-model="modelTableCurrentRow"
                                       :headers="modelTableHeaders"
                                       :items="modelTableData"
@@ -60,43 +89,61 @@
                                       locale="zh-cn"
                                       dense>
                         </v-data-table>
-                    </v-col>
-                    <v-col cols="auto" md="6">
+                    </v-card>
+
+                    <div class="d-flex flex-column">
+                        <div class="d-flex">
+                            <v-card outlined>
+                                <v-responsive max-height="25vh" style="overflow: auto">
+                                    <v-data-table v-model="skuTableCurrentRow"
+                                                  :headers="skuTableHeaders"
+                                                  :items="skuTableData"
+                                                  item-key="skuID"
+                                                  @click:row="skuTableChoose"
+                                                  height="20vh"
+                                                  calculate-widths
+                                                  disable-sort
+                                                  single-select
+                                                  fixed-header
+                                                  hide-default-footer
+                                                  locale="zh-cn"
+                                                  dense>
+                                    </v-data-table>
+                                </v-responsive>
+                            </v-card>
+                            <v-card outlined>
+                                <v-responsive max-height="25vh"
+                                              max-width="35vw"
+                                              style="overflow: auto">
+                                    <v-data-table v-model="warehouseStockCurrentRow"
+                                                  :headers="warehouseStockTableHeaders"
+                                                  :items="warehouseStockTableData"
+                                                  item-key="warehouseStockID"
+                                                  height="20vh"
+                                                  calculate-widths
+                                                  disable-sort
+                                                  single-select
+                                                  fixed-header
+                                                  hide-default-footer
+                                                  locale="zh-cn"
+                                                  dense>
+                                    </v-data-table>
+                                </v-responsive>
+                            </v-card>
+                        </div>
+
                         <v-row>
-                            <v-col cols="auto" md="2" class="pt-0">
-                                <v-data-table v-model="skuTableCurrentRow"
-                                              :headers="skuTableHeaders"
-                                              :items="skuTableData"
-                                              item-key="skuID"
-                                              @click:row="skuTableChoose"
-                                              height="20vh"
-                                              calculate-widths
-                                              disable-sort
-                                              single-select
-                                              fixed-header
-                                              hide-default-footer
-                                              locale="zh-cn"
-                                              dense>
-                                </v-data-table>
-                            </v-col>
-                            <v-col cols="auto" md="10" class="pt-0">
-                                <v-data-table v-model="warehouseStockCurrentRow"
-                                              :headers="warehouseStockTableHeaders"
-                                              :items="warehouseStockTableData"
-                                              item-key="warehouseStockID"
-                                              height="20vh"
-                                              calculate-widths
-                                              disable-sort
-                                              single-select
-                                              fixed-header
-                                              hide-default-footer
-                                              locale="zh-cn"
-                                              dense>
-                                </v-data-table>
+                            <v-col cols="auto">
+                                <v-btn class="mr-8"
+                                       color="accent"
+                                       @click="addNewHandle">
+                                    新增商品
+                                </v-btn>
                             </v-col>
                         </v-row>
-                    </v-col>
-                </v-row>
+
+                    </div>
+                </div>
 
             </v-card-text>
         </v-card>
@@ -115,6 +162,9 @@ export default {
             mdiClosePath: mdiClose,
 
             modelCode: '',
+            modelSearchName: '',
+            modelSearchCategory: 'newCode',
+            modelSearchMethod: 'prefix',
 
             treeData: [],
 
@@ -192,6 +242,16 @@ export default {
         },
         addNewHandle() {
 
+        },
+        modelSearch() {
+            this.$getRequest(this.$api.modelsByName, {
+                name: this.modelSearchName,
+                category: this.modelSearchCategory,
+                method: this.modelSearchMethod
+            }).then((res) => {
+                console.log('received', res.data)
+                this.modelTableData = res.data
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
         treeSelect(data) {
             this.modelTableData = []
