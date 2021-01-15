@@ -2,21 +2,42 @@
     <v-card>
         <v-card-title>
             往来单位
-            <v-spacer></v-spacer>
-            <v-text-field v-model="filterField"
-                          label="搜索"
-                          hide-details="auto"
-                          style="width: 200px">
-            </v-text-field>
-            <v-spacer></v-spacer>
-            <v-btn color="primary"
-                   class="mr-6"
-                   @click="chooseHandle">
-                选择
-            </v-btn>
-            <v-btn icon @click="close">
-                <v-icon>{{mdiClosePath}}</v-icon>
-            </v-btn>
+            <v-row>
+                <v-spacer></v-spacer>
+                <v-col>
+                    <v-text-field v-model="phone"
+                                  label="电话"
+                                  hide-details="auto"
+                                  clearable
+                                  @keydown.enter.native="searchCompanies"
+                                  style="width: 200px">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-text-field v-model="name"
+                                  label="简称"
+                                  hide-details="auto"
+                                  clearable
+                                  @keydown.enter.native="searchCompanies"
+                                  style="width: 200px">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-btn color="primary"
+                           @click="searchCompanies">
+                        搜索
+                    </v-btn>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-btn color="primary"
+                       class="mr-6"
+                       @click="chooseHandle">
+                    选择
+                </v-btn>
+                <v-btn icon @click="close">
+                    <v-icon>{{mdiClosePath}}</v-icon>
+                </v-btn>
+            </v-row>
         </v-card-title>
 
         <v-card-text class="d-flex">
@@ -40,7 +61,6 @@
                               :items="tableData"
                               item-key="companyID"
                               @click:row="handleTableClick"
-                              :search="filterField"
                               height="60vh"
                               disable-sort
                               show-select
@@ -62,19 +82,20 @@ export default {
         return {
             mdiClosePath: mdiClose,
 
-            // phone: '',
-            filterField: '',
+            phone: '',
+            name: '',
+
             headers: [
                 { text: '单位简称', value: 'abbreviatedName', width: '120px' },
                 { text: '电话', value: 'phone', width: '120px' },
-                { text: '传真', value: 'fax', width: '120px', filterable: false },
-                { text: '重要提示', value: 'remark', width: '120px', filterable: false },
-                { text: '单位类别', value: 'classification', width: '120px', filterable: false },
-                { text: '联系人', value: 'contactPerson', width: '120px', filterable: false },
-                { text: '联系人电话', value: 'contactNumber', width: '120px', filterable: false },
-                { text: '地址', value: 'address', width: '120px', filterable: false },
-                { text: '邮政编码', value: 'zipcode', width: '120px', filterable: false },
-                { text: '单位全称', value: 'fullName', width: '120px', filterable: false },
+                { text: '传真', value: 'fax', width: '120px' },
+                { text: '重要提示', value: 'remark', width: '120px' },
+                { text: '单位类别', value: 'classification', width: '120px' },
+                { text: '联系人', value: 'contactPerson', width: '120px' },
+                { text: '联系人电话', value: 'contactNumber', width: '120px' },
+                { text: '地址', value: 'address', width: '120px' },
+                { text: '邮政编码', value: 'zipcode', width: '120px' },
+                { text: '单位全称', value: 'fullName', width: '120px' },
             ],
             tableData: [],
             currentRow: [],
@@ -134,6 +155,15 @@ export default {
     methods: {
         close() {
             this.$emit('fullSearchChoose', null)
+        },
+        searchCompanies() {
+            this.$getRequest(this.$api.companyFuzzySearch, {
+                name: this.name,
+                phone: this.phone,
+            }).then((res) => {
+                console.log('receive', res.data)
+                this.tableData = res.data
+            })
         },
         handleTableClick(val) {
             this.currentRow = [val]
