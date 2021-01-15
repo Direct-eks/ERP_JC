@@ -299,44 +299,45 @@ const routes = [
         component: () => import('../views/5_Page_stock_management'),
         children: [
             {
-                path: 'product_detail',
+                path: 'products_details',
                 name: '商品明细',
-                component: () => import('../views/Stock_Management/Product_Detail')
+                component: () => import('../views/Stock_Management/1_Products_Details')
             },
             {
                 path: 'stock_report',
                 name: '库存报表',
-                component: () => import('../views/Stock_Management/Stock_Report')
+                component: () => import('../views/Stock_Management/2_Stock_Report')
             },
+
             {
-                path: 'product_pricing',
+                path: 'products_pricing',
                 name: '商品定价',
-                component: () => import('../views/Stock_Management/Product_Pricing')
+                component: () => import('../views/Stock_Management/3_Products_Pricing')
             },
             {
                 path: 'stock_alert',
                 name: '库存报警',
-                component: () => import('../views/Stock_Management/Stock_Alert')
+                component: () => import('../views/Stock_Management/4_Stock_Alert')
             },
             {
-                path: 'detail_stats',
+                path: 'detailed_stats',
                 name: '明细统计',
-                component: () => import('../views/Stock_Management/Detail_Stats')
+                component: () => import('../views/Stock_Management/5_Detailed_Stats')
             },
             {
                 path: 'inventory',
                 name: '库存盘点',
-                component: import('../views/Stock_Management/Inventory')
+                component: import('../views/Stock_Management/6_Inventory')
             },
             {
                 path: 'presales_query',
                 name: '预销售资源',
-                component: () => import('../views/Stock_Management/Presales_Query')
+                component: () => import('../views/Stock_Management/7_Presales_Query')
             },
             {
                 path: 'stock_resources',
                 name: '库存资源',
-                component: () => import('../views/Stock_Management/Stock_Resources')
+                component: () => import('../views/Stock_Management/8_Stock_Resources')
             }
         ]
     },

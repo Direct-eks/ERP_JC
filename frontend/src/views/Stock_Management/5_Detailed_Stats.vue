@@ -5,7 +5,7 @@
 
 <script>
     export default {
-        name: "Detail_Stats"
+        name: "Product_Detail"
     }
 </script>
 
