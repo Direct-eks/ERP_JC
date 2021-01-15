@@ -6,7 +6,8 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.dao.EndUserMapper;
 import org.jc.backend.entity.DO.EndUserDO;
-import org.jc.backend.entity.DTO.EndUserDTO;
+import org.jc.backend.entity.VO.EndUserLoginVO;
+import org.jc.backend.entity.VO.EndUserVO;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,21 +26,21 @@ public class EndUserServiceImpl implements EndUserService {
         this.endUserMapper = endUserMapper;
     }
 
-    public EndUserDTO getUserByName(String username) {
-        EndUserDTO userDTOList = new EndUserDTO();
+    public EndUserDO getUserByName(String username) {
+        EndUserDO userDTOList = new EndUserDO();
         BeanUtils.copyProperties(endUserMapper.queryUserByName(username), userDTOList);
         return userDTOList;
     }
 
     public String getRoleByUserId(int id) {
-        return endUserMapper.queryRoleByUserId(id);
+        return endUserMapper.queryRolesByUserId(id);
     }
 
     public List<String> getPermissionsByUserId(int id) {
         return endUserMapper.queryPermissionsByUserId(id);
     }
 
-    public String postUserLogInInfo(EndUserDTO user) {
+    public String postUserLogInInfo(EndUserLoginVO user) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(user.getUsername(), user.getPassword());
         subject.login(token);
@@ -58,7 +59,7 @@ public class EndUserServiceImpl implements EndUserService {
     }
 
 
-    public List<EndUserDTO> queryUsers() {
+    public List<EndUserVO> queryUsers() {
         //todo
         return null;
     }

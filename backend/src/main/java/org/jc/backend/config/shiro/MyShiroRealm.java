@@ -7,13 +7,12 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.jc.backend.entity.DTO.EndUserDTO;
+import org.jc.backend.entity.DO.EndUserDO;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 
@@ -34,15 +33,15 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         UsernamePasswordToken userToken = (UsernamePasswordToken) token;
 
-        EndUserDTO user = userService.getUserByName(userToken.getUsername());
+        EndUserDO user = userService.getUserByName(userToken.getUsername());
 
         if (user == null) {
             throw new AuthenticationException("no such account");
         }
 
-        if(!user.getPassword().equals(new String(userToken.getPassword()))){
-            throw new IncorrectCredentialsException("账户密码不正确");
-        }
+//        if(!user.getPassword().equals(new String(userToken.getPassword()))){
+//            throw new IncorrectCredentialsException("账户密码不正确");
+//        }
 
         Subject subject = SecurityUtils.getSubject();
 
@@ -85,7 +84,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
-        EndUserDTO user = userService.getUserByName(username);
+        EndUserDO user = userService.getUserByName(username);
 
         HashSet<String> roles = new HashSet<>();
         roles.add(userService.getRoleByUserId(user.getUserID()));

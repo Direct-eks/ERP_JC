@@ -1,21 +1,23 @@
 package org.jc.backend.service;
 
-import org.jc.backend.entity.DTO.EndUserDTO;
+import org.jc.backend.entity.DO.EndUserDO;
+import org.jc.backend.entity.VO.EndUserLoginVO;
+import org.jc.backend.entity.VO.EndUserVO;
 
 import java.util.List;
 
 public interface EndUserService {
 
-    EndUserDTO getUserByName(String username);
+    EndUserDO getUserByName(String username);
 
     String getRoleByUserId(int id);
 
     List<String> getPermissionsByUserId(int id);
 
-    String postUserLogInInfo(EndUserDTO user);
+    String postUserLogInInfo(EndUserLoginVO user);
 
     void userLogout();
 
 
-    List<EndUserDTO> queryUsers();
+    List<EndUserVO> queryUsers();
 }

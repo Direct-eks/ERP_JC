@@ -3,7 +3,6 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.jc.backend.entity.DTO.EndUserDTO;
 import org.jc.backend.entity.VO.EndUserLoginVO;
 import org.jc.backend.entity.VO.EndUserVO;
 import org.jc.backend.service.EndUserService;
@@ -35,9 +34,8 @@ public class EndUserController {
     @PostMapping("/userAuthentication")
     public String authenticate(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
         logger.info("POST Request to /user/userAuthentication");
-        EndUserDTO userDTO = new EndUserDTO();
-        BeanUtils.copyProperties(endUserLoginVO, userDTO);
-        return endUserService.postUserLogInInfo(userDTO);
+
+        return endUserService.postUserLogInInfo(endUserLoginVO);
     }
 
     @ApiOperation(value = "user logout api")
@@ -51,8 +49,7 @@ public class EndUserController {
     @PostMapping("/changePassword")
     public Boolean changePassword(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
         logger.info("POST Request to /user/changePassword");
-        EndUserDTO userDTO = new EndUserDTO();
-        BeanUtils.copyProperties(endUserLoginVO, userDTO);
+
         //todo
         return false;
     }
@@ -80,18 +77,15 @@ public class EndUserController {
     public List<EndUserVO> getUserList() {
         logger.info("GET Request to /user/getUserList");
 
-        List<EndUserVO> userVOList = new ArrayList<>();
+        List<EndUserVO> userList = endUserService.queryUsers();
 
-        List<EndUserDTO> userDTOList = endUserService.queryUsers();
-        BeanUtils.copyProperties(userDTOList, userVOList);
-
-        userVOList.forEach(user -> {
+        userList.forEach(user -> {
             int id = user.getUserID();
             user.setRole(endUserService.getRoleByUserId(id));
             user.setPermissions(endUserService.getPermissionsByUserId(id));
         });
 
-        return userVOList;
+        return userList;
     }
 
     @ApiOperation(value = "", response = String.class)

@@ -62,6 +62,9 @@ import {mdiCodeTags} from '@mdi/js'
 import {mdiAccount} from '@mdi/js'
 import {mdiLock} from '@mdi/js'
 
+import sha256 from 'crypto-js/sha256';
+import Hex from 'crypto-js/enc-hex'
+
 export default {
     name: 'Login',
     data() {
@@ -86,12 +89,13 @@ export default {
         }
     },
     methods: {
-        login: function (formName) {
+        login() {
             if (this.$refs.form.validate()) {
                 this.loading = true;
+                console.log(sha256(this.form.password).toString(Hex))
                 this.$postRequest(this.$api.userAuthentication, {
                     username: this.form.username,
-                    password: this.form.password
+                    password: sha256(this.form.password).toString(Hex),
                 }).then((res) => {
                     console.log('received', res.data)
 
