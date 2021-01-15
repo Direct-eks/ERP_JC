@@ -8,7 +8,6 @@
                                  :isInbound="true">
         </InboundInvoiceComponent>
 
-        <SnackMessage></SnackMessage>
     </v-card>
 </template>
 

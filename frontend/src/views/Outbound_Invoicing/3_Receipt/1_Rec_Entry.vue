@@ -8,7 +8,6 @@
                           :isInbound="false">
         </PaymentComponent>
 
-        <SnackMessage></SnackMessage>
     </v-card>
 </template>
 

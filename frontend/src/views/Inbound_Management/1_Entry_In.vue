@@ -7,7 +7,6 @@
         <InboundEntryCreateComponent editMode="inboundEntry">
         </InboundEntryCreateComponent>
 
-        <SnackMessage></SnackMessage>
     </v-card>
 </template>
 

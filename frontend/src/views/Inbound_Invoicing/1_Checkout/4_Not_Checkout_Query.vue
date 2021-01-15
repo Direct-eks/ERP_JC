@@ -64,7 +64,6 @@
 
         </v-tabs-items>
 
-        <SnackMessage></SnackMessage>
     </v-card>
 </template>
 

@@ -7,7 +7,6 @@
         <OutboundEntryCreateComponent editMode="quotaEntry">
         </OutboundEntryCreateComponent>
 
-        <SnackMessage></SnackMessage>
     </v-card>
 </template>
 

@@ -9,7 +9,6 @@
                                :isInbound="true">
         </ShippingCostComponent>
 
-        <SnackMessage></SnackMessage>
     </v-card>
 </template>
 

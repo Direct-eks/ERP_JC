@@ -14,10 +14,6 @@ import {patchRequest} from './utils/axios'
 import api from './utils/api'
 import AjaxErrorHandler from './utils/AjaxErrorHandler'
 
-import SnackMessage from '~/components/SnackMessage'
-
-Vue.component('SnackMessage', SnackMessage)
-
 Vue.prototype.$getRequest = getRequest
 Vue.prototype.$postRequest = postRequest
 Vue.prototype.$deleteRequest = deleteRequest
