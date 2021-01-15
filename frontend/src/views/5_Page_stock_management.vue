@@ -27,24 +27,24 @@
         </v-col>
 
         <v-col cols="12"
-               md="10"
-               lg="8">
+               md="11"
+               lg="10">
             <router-view></router-view>
         </v-col>
     </v-row>
 </template>
 
 <script>
-    import nav from "~/utils/nav";
+import nav from "~/utils/nav";
 
-    export default {
-        name: "Page_stock_management",
-        data() {
-            return {
-                navItem: nav.stock_management_nav
-            }
+export default {
+    name: "Page_stock_management",
+    data() {
+        return {
+            navItem: nav.stock_management_nav
         }
     }
+}
 </script>
 
 <style scoped>
