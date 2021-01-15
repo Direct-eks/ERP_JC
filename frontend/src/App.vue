@@ -20,7 +20,11 @@
             </v-list>
         </v-navigation-drawer>
 
-        <v-app-bar app dense :clipped-left="$vuetify.breakpoint.mdAndUp">
+        <v-app-bar app
+                   dense
+                   flat
+                   color="white"
+                   :clipped-left="$vuetify.breakpoint.mdAndUp">
 
             <v-app-bar-nav-icon @click.stop="navDrawer = !navDrawer"></v-app-bar-nav-icon>
 
@@ -36,7 +40,7 @@
 
         </v-app-bar>
 
-        <v-main>
+        <v-main class="grey lighten-3">
 
             <v-container fluid>
                 <router-view></router-view>
