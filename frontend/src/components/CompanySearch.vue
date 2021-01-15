@@ -67,30 +67,14 @@ export default {
             headers: [
                 { text: '单位简称', value: 'abbreviatedName', width: '120px' },
                 { text: '电话', value: 'phone', width: '120px' },
-                {
-                    text: '传真', value: 'fax', width: '120px', filterable: false
-                },
-                {
-                    text: '重要提示', value: 'remark', width: '120px', filterable: false
-                },
-                {
-                    text: '单位类别', value: 'classification', width: '120px', filterable: false
-                },
-                {
-                    text: '联系人', value: 'contactPerson', width: '120px', filterable: false
-                },
-                {
-                    text: '联系人电话', value: 'contactNumber', width: '120px', filterable: false
-                },
-                {
-                    text: '地址', value: 'address', width: '120px', filterable: false
-                },
-                {
-                    text: '邮政编码', value: 'zipcode', width: '120px', filterable: false
-                },
-                {
-                    text: '单位全称', value: 'fullName', width: '120px', filterable: false
-                }
+                { text: '传真', value: 'fax', width: '120px', filterable: false },
+                { text: '重要提示', value: 'remark', width: '120px', filterable: false },
+                { text: '单位类别', value: 'classification', width: '120px', filterable: false },
+                { text: '联系人', value: 'contactPerson', width: '120px', filterable: false },
+                { text: '联系人电话', value: 'contactNumber', width: '120px', filterable: false },
+                { text: '地址', value: 'address', width: '120px', filterable: false },
+                { text: '邮政编码', value: 'zipcode', width: '120px', filterable: false },
+                { text: '单位全称', value: 'fullName', width: '120px', filterable: false },
             ],
             tableData: [],
             currentRow: [],
@@ -135,7 +119,7 @@ export default {
             }
         }
 
-        const result = this.$store.getters.companyList
+        const result = this.$store.getters.companyCategoryList
         if (result) {
             this.treeData = result
             return
@@ -146,11 +130,6 @@ export default {
             console.log(this.treeData)
             this.$store.commit('modifyCompanyList', this.treeData)
         })
-    },
-    beforeDestroy() {
-        console.log('company search to be destroyed')
-        this.tableData = null
-        this.treeData = null
     },
     methods: {
         close() {

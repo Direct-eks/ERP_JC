@@ -383,7 +383,7 @@ export default {
         this.$getRequest(this.$api.modelCategories).then((res) => {
             console.log('received', res.data)
             this.treeData = creatTree(res.data)
-            this.$store.commit('modifyProductList', this.treeData)
+            this.$store.commit('modifyModelList', this.treeData)
         }).catch(error => this.$ajaxErrorHandler(error))
     },
     methods: {
@@ -460,7 +460,7 @@ export default {
                     encodeURI(val.categoryID)).then((res) => {
                     console.log('received', res.data)
                     this.modelTableData = res.data
-                    this.$store.commit('modifyModels', {key: val.categoryID, value: res.data})
+                    this.$store.commit('modifyModels', { key: val.categoryID, value: res.data })
                 }).catch(error => this.$ajaxErrorHandler(error))
             }
             this.refreshFlattenedTreePosition(val)

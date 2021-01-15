@@ -88,7 +88,7 @@ export default {
             return tree
         })
 
-        let result = this.$store.getters.relativeCompanyList
+        let result = this.$store.getters.relevantCompanyCategoryList
         if (result) {
             this.treeData = result
             return
@@ -96,7 +96,7 @@ export default {
         this.$getRequest(this.$api.relevantCompanyCategories).then((res) => {
             console.log('received', res.data)
             this.treeData = creatTree(res.data)
-            this.$store.commit('modifyRelativeCompanyList', this.treeData)
+            this.$store.commit('modifyRelevantCompanyList', this.treeData)
         }).catch(error => this.$ajaxErrorHandler(error))
     },
     methods: {
@@ -113,7 +113,7 @@ export default {
         treeSelect(data) {
             let val = data[0]
             if (val.children.length === 0) {
-                let result = this.$store.getters.relativeCompanies(val.categoryID)
+                let result = this.$store.getters.relevantCompanies(val.categoryID)
                 if (result) {
                     this.tableData = result
                     return
@@ -122,7 +122,7 @@ export default {
                     encodeURI(val.categoryID)).then((res) => {
                     console.log('received', res.data)
                     this.tableData = res.data
-                    this.$store.commit('modifyRelativeCompanies', {key: val.categoryID, value: res.data})
+                    this.$store.commit('modifyRelevantCompanies', {key: val.categoryID, value: res.data})
                 })
             }
         }

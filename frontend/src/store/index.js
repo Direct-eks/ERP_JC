@@ -5,26 +5,28 @@ Vue.use(Vuex)
 
 /*----------------Vuex-----------------*/
 const store = new Vuex.Store({
+    strict: process.env.NODE_ENV !== 'production',
     state: {
+        /*  ------- global user data ------- */
         currentUser: null, // current username
 
-        /*------- global data for snack bar -------*/
+        /* ------- global data for snack bar -------*/
         snackbar: {
             message: '',
-            color: ''
+            color: '',
         },
 
-        /*----------- company data ------------*/
-        companyList: null, // stores the tree structure of company category
-        companies: new Map(), // stores queried companies according to category, key: categoryID, value: xx
+        /* ------- company data -------*/
+        companyCategoryList: null, // stores the tree structure of company category
+        companies: new Map(), // key: categoryID, value: companies
 
-        /*----------- relative company data ------------*/
-        relativeCompanyList: null,
-        relativeCompanies: new Map(),
+        /* ------- relative company data -------*/
+        relevantCompanyCategoryList: null,
+        relevantCompanies: new Map(), // key: categoryID, value: relevant companies
 
-        /*----------- product & model data ------------*/
-        productList: null,
-        models: new Map(),
+        /* ------- model data -------*/
+        modelCategoryList: null,
+        models: new Map(), // key: categoryID, value: companies
     },
     getters: {
         currentUser(state) {
@@ -34,23 +36,36 @@ const store = new Vuex.Store({
             }
             return state.currentUser
         },
+
         /*----------- company data ------------*/
-        companyList(state) { return state.companyList },
-        companies(state) { return (id) => {
-            return state.companies.has(id) ? state.companies.get(id) : null
-        } },
+        companyCategoryList(state) {
+            return state.companyCategoryList
+        },
+        companies(state) {
+            return (id) => {
+                return state.companies.has(id) ? state.companies.get(id) : null
+            }
+        },
 
-        /*----------- product & model data ------------*/
-        productList(state) { return state.productList },
-        models(state) { return (id) => {
-            return state.models.has(id) ? state.models.get(id) : null
-        } },
+        /* ------- relative company data -------*/
+        relevantCompanyCategoryList(state) {
+            return state.relevantCompanyCategoryList
+        },
+        relevantCompanies(state) {
+            return (id) => {
+                return state.relevantCompanies.has(id) ? state.relevantCompanies.get(id) : null
+            }
+        },
 
-        /*----------- relative company data ------------*/
-        relativeCompanyList(state) { return state.relativeCompanyList },
-        relativeCompanies(state) { return (id) => {
-            return state.relativeCompanies.has(id) ? state.relativeCompanies.get(id) : null
-        } },
+        /*----------- model data ------------*/
+        productList(state) {
+            return state.modelCategoryList
+        },
+        models(state) {
+            return (id) => {
+                return state.models.has(id) ? state.models.get(id) : null
+            }
+        },
     },
     mutations: {
         modifyCurrentUser(state, username) {
@@ -71,40 +86,41 @@ const store = new Vuex.Store({
         },
 
         /*----------- company data ------------*/
-        modifyCompanyList(state, list) { state.companyList = list },
-        modifyCompanies(state, pair) {
-            if (!state.companies.has(pair.key)) {
-                state.companies.set(pair.key, pair.value)
-            }
+        modifyCompanyList(state, list) {
+            state.companyCategoryList = list
         },
-        updateCompanyData(state) {
-            state.companyList = null
+        modifyCompanies(state, pair) {
+            state.companies.set(pair.key, pair.value)
+        },
+        clearCompanyData(state) {
+            state.companyCategoryList = null
             state.companies.clear()
         },
 
-        /*----------- product & model data ------------*/
-        modifyProductList(state, list) { state.productList = list },
-        modifyModels(state, pair) {
-            if (!state.models.has(pair.key)) {
-                state.models.set(pair.key, pair.value)
-            }
+        /*----------- relevant company data ------------*/
+        modifyRelevantCompanyList(state, list) {
+            state.relevantCompanyCategoryList = list
         },
-        updateProductData(state) {
-            state.productList = null
+        modifyRelevantCompanies(state, pair) {
+            state.relevantCompanies.set(pair.key, pair.value)
+        },
+        clearRelevantCompanyData(state) {
+            state.relevantCompanyCategoryList = null
+            state.relevantCompanies.clear()
+        },
+
+        /*----------- product & model data ------------*/
+        modifyModelList(state, list) {
+            state.modelCategoryList = list
+        },
+        modifyModels(state, pair) {
+            state.models.set(pair.key, pair.value)
+        },
+        clearModelData(state) {
+            state.modelCategoryList = null
             state.models.clear()
         },
 
-        /*----------- relative company data ------------*/
-        modifyRelativeCompanyList(state, list) { state.relativeCompanyList = list },
-        modifyRelativeCompanies(state, pair) {
-            if (!state.relativeCompanies.has(pair.key)) {
-                state.relativeCompanies.set(pair.key, pair.value)
-            }
-        },
-        updateRelativeCompanyData(state) {
-            state.relativeCompanyList = null
-            state.relativeCompanies.clear()
-        }
     },
     actions: {
 
