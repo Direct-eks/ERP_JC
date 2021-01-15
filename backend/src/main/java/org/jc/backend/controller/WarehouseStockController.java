@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
@@ -31,5 +32,13 @@ public class WarehouseStockController {
         logger.info("GET Request to /warehouseStock/getWarehouseStockBySku, id: " + id);
 
         return warehouseStockService.getWarehouseStocksBySku(id);
+    }
+
+    @ApiOperation(value = "", response = WarehouseStockO.class)
+    @GetMapping("getProductsByWarehouseStockID/{id}")
+    public List<EntryProductVO> getProductsByWarehouseStockID(@PathVariable("id") int id) {
+        logger.info("GET Request to /warehouseStock/getProductsByWarehouseStockID, id: " + id);
+
+        return warehouseStockService.getProductsByWarehouseStockID(id);
     }
 }

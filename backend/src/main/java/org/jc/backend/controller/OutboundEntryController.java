@@ -3,7 +3,9 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -152,5 +154,37 @@ public class OutboundEntryController {
         }
 
         return outboundEntryService.getEntriesByCompanyAndShippingCostType(companyID, shippingCostType);
+    }
+
+    @ApiOperation(value = "", response = InvoiceStatVO.class)
+    @GetMapping("/getNotYetCheckoutSummary")
+    public List<InvoiceStatVO> getNotYetCheckoutSummary() {
+        logger.info("GET Request to /outboundEntry/getNotYetCheckoutSummary");
+
+        return outboundEntryService.getNotYetCheckoutSummary();
+    }
+
+    @ApiOperation(value = "", response = OutboundProductO.class)
+    @GetMapping("/getNotYetCheckoutDetailByCompanyID/{companyID}")
+    public List<OutboundProductO> getNotYetCheckoutDetailByCompanyID(@PathVariable("companyID") int companyID) {
+        logger.info("GET Request to /outboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: " + companyID);
+
+        return outboundEntryService.getNotYetCheckoutDetailByCompanyID(companyID);
+    }
+
+    @ApiOperation(value = "", response = InvoiceStatVO.class)
+    @GetMapping("/getNotYetInvoiceSummary")
+    public List<InvoiceStatVO> getNotYetInvoiceSummary() {
+        logger.info("GET Request to /outboundEntry/getNotYetInvoiceSummary");
+
+        return outboundEntryService.getNotYetInvoiceSummary();
+    }
+
+    @ApiOperation(value = "", response = OutboundProductO.class)
+    @GetMapping("/getNotYetInvoiceDetailByCompanyID/{companyID}")
+    public List<OutboundProductO> getNotYetInvoiceDetailByCompanyID(@PathVariable("companyID") int companyID) {
+        logger.info("GET Request to /outboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: " + companyID);
+
+        return outboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
     }
 }

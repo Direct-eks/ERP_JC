@@ -51,4 +51,6 @@ public interface InboundEntryMapper {
     List<InboundProductO> queryNotYetCheckoutDetailByCompanyID(int id);
     List<InvoiceStatVO> queryNotYetInvoiceSummary();
     List<InboundProductO> queryNotYetInvoiceDetailByCompanyID(int id);
+
+    List<InboundProductO> queryProductsByWarehouseStockID(int id);
 }

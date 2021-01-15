@@ -455,65 +455,61 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
-
-        List<InvoiceStatVO> summary;
         try {
-            summary = inboundEntryMapper.queryNotYetCheckoutSummary();
+            return inboundEntryMapper.queryNotYetCheckoutSummary();
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("query failed");
             throw e;
         }
-
-        return summary;
     }
 
     @Transactional(readOnly = true)
     public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID) {
-
-        List<InboundProductO> summary;
         try {
-            summary = inboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
+            return inboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("query failed");
             throw e;
         }
-
-        return summary;
     }
 
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetInvoiceSummary() {
-
-        List<InvoiceStatVO> summary;
         try {
-            summary = inboundEntryMapper.queryNotYetInvoiceSummary();
+            return inboundEntryMapper.queryNotYetInvoiceSummary();
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("query failed");
             throw e;
         }
-
-        return summary;
     }
 
     @Transactional(readOnly = true)
     public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID) {
-
-        List<InboundProductO> summary;
         try {
-            summary = inboundEntryMapper.queryNotYetInvoiceDetailByCompanyID(companyID);
+            return inboundEntryMapper.queryNotYetInvoiceDetailByCompanyID(companyID);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("query failed");
             throw e;
         }
+    }
 
-        return summary;
+    @Transactional(readOnly = true)
+    public List<InboundProductO> getProductsByWarehouseID(int id) {
+        try {
+            return inboundEntryMapper.queryProductsByWarehouseStockID(id);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); //todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
     }
 }

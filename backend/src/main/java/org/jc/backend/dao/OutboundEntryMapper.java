@@ -2,7 +2,9 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
+import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -44,4 +46,11 @@ public interface OutboundEntryMapper {
 
     List<OutboundEntryDO> getEntriesByCompanyAndShippingCostType(
             int companyID, String shippingCostType);
+
+    List<InvoiceStatVO> queryNotYetCheckoutSummary();
+    List<OutboundProductO> queryNotYetCheckoutDetailByCompanyID(int id);
+    List<InvoiceStatVO> queryNotYetInvoiceSummary();
+    List<OutboundProductO> queryNotYetInvoiceDetailByCompanyID(int id);
+
+    List<OutboundProductO> queryProductsByWarehouseStockID(int id);
 }

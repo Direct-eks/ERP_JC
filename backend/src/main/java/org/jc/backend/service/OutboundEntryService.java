@@ -3,6 +3,7 @@ package org.jc.backend.service;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 
 import java.util.Date;
@@ -31,4 +32,11 @@ public interface OutboundEntryService {
 
     List<OutboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
             int companyID, String shippingCostType);
+
+    List<InvoiceStatVO> getNotYetCheckoutSummary();
+    List<OutboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID);
+    List<InvoiceStatVO> getNotYetInvoiceSummary();
+    List<OutboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID);
+
+    List<OutboundProductO> getProductsByWarehouseID(int id);
 }

@@ -35,4 +35,6 @@ public interface InboundEntryService {
     List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID);
     List<InvoiceStatVO> getNotYetInvoiceSummary();
     List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID);
+
+    List<InboundProductO> getProductsByWarehouseID(int id);
 }
