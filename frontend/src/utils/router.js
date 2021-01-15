@@ -98,6 +98,21 @@ const routes = [
                 component: () => import(/* webpackChunkName: "Outbound_Management5_Query_Out" */'../views/Outbound_Management/5_Query_Out')
             },
             {
+                path: 'sales_order_entry',
+                name: '销售订单录入',
+                component: () => import(/* webpackChunkName: "Outbound_Management9_Sales_Order_Entry" */'../views/Outbound_Management/9_Sales_Order_Entry')
+            },
+            {
+                path: 'sales_order_query',
+                name: '销售订单查询',
+                component: () => import(/* webpackChunkName: "Outbound_Management10_Sales_Order_Query" */'../views/Outbound_Management/10_Sales_Order_Query')
+            },
+            {
+                path: 'sales_order_modify',
+                name: '销售订单修改',
+                component: () => import(/* webpackChunkName: "Outbound_Management11_Sales_Order_Modify" */'../views/Outbound_Management/11_Sales_Order_Modify')
+            },
+            {
                 path: 'quota_entry',
                 name: '报价单录入',
                 component: () => import(/* webpackChunkName: "Outbound_Management6_Quota_Entry" */'../views/Outbound_Management/6_Quota_Entry')
@@ -112,21 +127,6 @@ const routes = [
                 name: '报价单修改',
                 component: () => import(/* webpackChunkName: "Outbound_Management8_Quota_Modify" */'../views/Outbound_Management/8_Quota_Modify')
             },
-            {
-                path: 'sales_order_entry',
-                name: '销售订单录入',
-                component: () => import(/* webpackChunkName: "Outbound_Management9_Sales_Order_Entry" */'../views/Outbound_Management/9_Sales_Order_Entry')
-            },
-            {
-                path: 'sales_order_query',
-                name: '销售订单查询',
-                component: () => import(/* webpackChunkName: "Outbound_Management10_Sales_Order_Query" */'../views/Outbound_Management/10_Sales_Order_Query')
-            },
-            {
-                path: 'sales_order_modify',
-                name: '销售订单修改',
-                component: () => import(/* webpackChunkName: "Outbound_Management11_Sales_Order_Modify" */'../views/Outbound_Management/11_Sales_Order_Modify')
-            }
         ]
     },
     {

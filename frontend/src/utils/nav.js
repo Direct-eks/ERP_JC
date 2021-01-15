@@ -127,24 +127,6 @@ export default {
             ]
         },
         {
-            name: '报价单',
-            url: '/outbound_management/quota',
-            children: [
-                {
-                    name: '录入',
-                    url: '/outbound_management/quota_entry'
-                },
-                {
-                    name: '查询',
-                    url: '/outbound_management/quota_query'
-                },
-                {
-                    name: '修改',
-                    url: '/outbound_management/quota_modify'
-                },
-            ]
-        },
-        {
             name: '销售订单',
             url: '/outbound_management/sales_order',
             children: [
@@ -159,6 +141,24 @@ export default {
                 {
                     name: '修改',
                     url: '/outbound_management/sales_order_modify'
+                },
+            ]
+        },
+        {
+            name: '报价单',
+            url: '/outbound_management/quota',
+            children: [
+                {
+                    name: '录入',
+                    url: '/outbound_management/quota_entry'
+                },
+                {
+                    name: '查询',
+                    url: '/outbound_management/quota_query'
+                },
+                {
+                    name: '修改',
+                    url: '/outbound_management/quota_modify'
                 },
             ]
         },
