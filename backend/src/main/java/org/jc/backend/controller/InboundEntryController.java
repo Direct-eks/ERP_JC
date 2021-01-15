@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -31,6 +32,7 @@ public class InboundEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("inboundEntry:Creation")
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) {
         logger.info("PUT Request to /inboundEntry/createEntry");
@@ -39,6 +41,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundEntryWithProductsVO.class)
+    @RequiresPermissions("inboundEntry:Query")
     @GetMapping("/getEntriesInDateRange")
     public List<InboundEntryWithProductsVO> getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,
@@ -82,6 +85,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("inboundEntry:Completion")
     @PatchMapping("/completeEntry")
     public void completeEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         logger.info("PATCH Request to /inboundEntry/completeEntry");
@@ -90,6 +94,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("inboundEntry:Modification")
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         logger.info("PATCH Request to /inboundEntry/modifyEntry");
@@ -106,6 +111,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("inboundEntry:Return")
     @PostMapping("/returnEntryProducts")
     public void returnEntryProducts(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         logger.info("DELETE Request to /inboundEntry/returnEntryProducts");
@@ -114,6 +120,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
+    @RequiresPermissions("inboundCheckout:Creation")
     @GetMapping("/getNotCheckedOutProducts")
     public List<InboundProductO> getNotCheckedOutProducts(
             @RequestParam("companyID") int companyID,
@@ -126,6 +133,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
+    @RequiresPermissions("inboundInvoice:Creation")
     @GetMapping("/getCheckoutAndNotInvoicedProducts")
     public List<InboundProductO> getCheckoutAndNotInvoicedProducts(
             @RequestParam("companyID") int companyID,
@@ -138,6 +146,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundEntryWithProductsVO.class)
+    @RequiresPermissions("inboundShippingCost:Creation")
     @GetMapping("/getEntriesByCompanyAndShippingCostType")
     public List<InboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
             @RequestParam("companyID") int companyID,
@@ -158,6 +167,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InvoiceStatVO.class)
+    @RequiresPermissions("inboundCheckout:NotCheckoutQuery")
     @GetMapping("/getNotYetCheckoutSummary")
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
         logger.info("GET Request to /inboundEntry/getNotYetCheckoutSummary");
@@ -166,6 +176,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
+    @RequiresPermissions("inboundCheckout:NotCheckoutQuery")
     @GetMapping("/getNotYetCheckoutDetailByCompanyID/{companyID}")
     public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(@PathVariable("companyID") int companyID) {
         logger.info("GET Request to /inboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: " + companyID);
@@ -174,6 +185,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InvoiceStatVO.class)
+    @RequiresPermissions("inboundInvoice:NotInvoiceQuery")
     @GetMapping("/getNotYetInvoiceSummary")
     public List<InvoiceStatVO> getNotYetInvoiceSummary() {
         logger.info("GET Request to /inboundEntry/getNotYetInvoiceSummary");
@@ -182,6 +194,7 @@ public class InboundEntryController {
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
+    @RequiresPermissions("inboundInvoice:NotInvoiceQuery")
     @GetMapping("/getNotYetInvoiceDetailByCompanyID/{companyID}")
     public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(@PathVariable("companyID") int companyID) {
         logger.info("GET Request to /inboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: " + companyID);

@@ -2,6 +2,8 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
@@ -30,6 +32,7 @@ public class CheckoutEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundCheckout:Creation", "outboundCheckout:Creation"}, logical = Logical.OR)
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
                             @RequestParam("isInbound") boolean isInbound,
@@ -40,6 +43,7 @@ public class CheckoutEntryController {
     }
 
     @ApiOperation(value = "", response = CheckoutEntryWithProductsVO.class)
+    @RequiresPermissions(value = {"inboundCheckout:Query", "outboundCheckout:Query"}, logical = Logical.OR)
     @GetMapping("/getEntriesInDateRange")
     public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(
             @RequestParam("isInbound") boolean isInbound,
@@ -79,6 +83,8 @@ public class CheckoutEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundCheckout:Modification", "outboundCheckout:Modification"},
+            logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated CheckoutEntryWithProductsVO modifyVO) {
         logger.info("PATCH Request to /checkoutEntry/modifyEntry");
@@ -87,6 +93,7 @@ public class CheckoutEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundCheckout:Return", "outboundCheckout:Return"}, logical = Logical.OR)
     @PostMapping("/returnEntry")
     public void returnEntry(
             @RequestBody @Validated CheckoutEntryWithProductsVO returnVO,

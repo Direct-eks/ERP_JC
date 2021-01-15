@@ -2,6 +2,8 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.service.PurchaseOrderService;
@@ -30,6 +32,7 @@ public class PurchaseOrderController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("purchaseOrder:Creation")
     @PutMapping("/createOrder")
     public void createOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) {
         logger.info("PUT Request to /purchaseOrder/createOrder");
@@ -39,6 +42,7 @@ public class PurchaseOrderController {
 
     @ApiOperation(value = "", response = PurchaseOrderEntryWithProductsVO.class,
         notes = "companyID can be null, if null, query all")
+    @RequiresPermissions("purchaseOrder:Query")
     @GetMapping("/getOrdersInDateRangeByCompanyID")
     public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
@@ -54,6 +58,7 @@ public class PurchaseOrderController {
     }
 
     @ApiOperation(value = "", response = PurchaseOrderEntryWithProductsVO.class)
+    @RequiresPermissions("purchaseOrder:Query")
     @GetMapping("/getOrdersByCompanyID/{id}")
     public List<PurchaseOrderEntryWithProductsVO> getOrdersByCompanyID(@PathVariable("id") int id) {
         logger.info("GET Request to /purchaseOrder/getOrdersByCompanyID, id: " + id);
@@ -62,6 +67,7 @@ public class PurchaseOrderController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("purchaseOrder:Modification")
     @PatchMapping("/modifyOrder")
     public void modifyOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
         logger.info("PATCH Request to /purchaseOrder/modifyOrder");

@@ -2,6 +2,8 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
 import org.jc.backend.service.InvoiceEntryService;
@@ -30,6 +32,7 @@ public class InvoiceEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundInvoice:Creation", "outboundInvoice:Creation"}, logical = Logical.OR)
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated InvoiceEntryStandAloneVO invoiceEntryStandAloneVO,
                             @RequestParam("isInbound") boolean isInbound) {
@@ -39,6 +42,7 @@ public class InvoiceEntryController {
     }
 
     @ApiOperation(value = "", response = InvoiceEntryStandAloneVO.class)
+    @RequiresPermissions(value = {"inboundInvoice:Query", "outboundInvoice:Query"}, logical = Logical.OR)
     @GetMapping("/getEntriesInDateRange")
     public List<InvoiceEntryStandAloneVO> getEntriesInDateRange(
             @RequestParam("isInbound") boolean isInbound,
@@ -82,6 +86,8 @@ public class InvoiceEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundInvoice:Modification", "outboundInvoice:Modification"},
+            logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated InvoiceEntryStandAloneVO invoiceEntryStandAloneVO) {
         logger.info("PATCH Request to /invoiceEntry/modifyEntry");

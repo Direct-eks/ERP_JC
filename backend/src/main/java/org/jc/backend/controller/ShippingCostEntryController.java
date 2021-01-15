@@ -2,6 +2,8 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
 import org.jc.backend.service.ShippingCostEntryService;
@@ -29,6 +31,8 @@ public class ShippingCostEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundShippingCost:Creation", "outboundShippingCost:Creation"},
+            logical = Logical.OR)
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated ShippingCostEntryVO shippingCostEntryVO,
                             @RequestParam("isInbound") boolean isInbound) {
@@ -38,6 +42,8 @@ public class ShippingCostEntryController {
     }
 
     @ApiOperation(value = "", response = ShippingCostEntryVO.class)
+    @RequiresPermissions(value = {"inboundShippingCost:Query", "outboundShippingCost:Query"},
+            logical = Logical.OR)
     @GetMapping("/getEntriesInDateRange")
     public List<ShippingCostEntryVO> getEntriesInDateRange(
             @RequestParam("isInbound") boolean isInbound,
@@ -64,6 +70,8 @@ public class ShippingCostEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundShippingCost:Modification", "outboundShippingCost:Modification"},
+            logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated ShippingCostEntryVO shippingCostEntryVO) {
         logger.info("PATCH Request to /shippingCostEntry/modifyEntry");

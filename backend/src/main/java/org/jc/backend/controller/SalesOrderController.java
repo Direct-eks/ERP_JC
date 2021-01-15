@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.SalesOrderEntryWithProductsVO;
 import org.jc.backend.service.SalesOrderService;
@@ -30,6 +31,7 @@ public class SalesOrderController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("salesOrder:Creation")
     @PutMapping("/createOrder")
     public void createOrder(@RequestBody @Validated SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO) {
         logger.info("PUT Request to /salesOrder/createOrder");
@@ -39,6 +41,7 @@ public class SalesOrderController {
 
     @ApiOperation(value = "", response = SalesOrderEntryWithProductsVO.class,
             notes = "companyID can be null, if null, query all")
+    @RequiresPermissions("salesOrder:Query")
     @GetMapping("/getOrdersInDateRangeByCompanyID")
     public List<SalesOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
@@ -54,6 +57,7 @@ public class SalesOrderController {
     }
 
     @ApiOperation(value = "", response = SalesOrderEntryWithProductsVO.class)
+    @RequiresPermissions("salesOrder:Query")
     @GetMapping("/getOrdersByCompanyID/{id}")
     public List<SalesOrderEntryWithProductsVO> getOrdersByCompanyID(@PathVariable("id") int id) {
         logger.info("GET Request to /salesOrder/getOrdersByCompanyID, id: " + id);
@@ -62,6 +66,7 @@ public class SalesOrderController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("salesOrder:Modification")
     @PatchMapping("/modifyOrder")
     public void modifyOrder(@RequestBody @Validated SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO) {
         logger.info("PATCH Request to /salesOrder/modifyOrder");

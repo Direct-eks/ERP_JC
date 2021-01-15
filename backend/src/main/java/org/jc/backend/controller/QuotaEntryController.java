@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.QuotaEntryWithProductsVO;
 import org.jc.backend.service.QuotaEntryService;
@@ -29,6 +30,7 @@ public class QuotaEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("quota:Creation")
     @PutMapping("/createOrder")
     public void createQuota(@RequestBody @Validated QuotaEntryWithProductsVO quotaEntryWithProductsVO) {
         logger.info("PUT Request to /quotaEntry/createOrder");
@@ -38,6 +40,7 @@ public class QuotaEntryController {
 
     @ApiOperation(value = "", response = QuotaEntryWithProductsVO.class,
             notes = "companyID can be null, if null, query all")
+    @RequiresPermissions("quota:Query")
     @GetMapping("/getOrdersInDateRangeByCompanyID")
     public List<QuotaEntryWithProductsVO> getQuotasInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
@@ -53,6 +56,7 @@ public class QuotaEntryController {
     }
 
     @ApiOperation(value = "", response = QuotaEntryWithProductsVO.class)
+    @RequiresPermissions("quota:Query")
     @GetMapping("/getOrdersByCompanyID/{id}")
     public List<QuotaEntryWithProductsVO> getQuotasByCompanyID(@PathVariable("id") int id) {
         logger.info("GET Request to /quotaEntry/getOrdersByCompanyID, id: " + id);
@@ -61,6 +65,7 @@ public class QuotaEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("quota:Modification")
     @PatchMapping("/modifyOrder")
     public void modifyQuota(@RequestBody @Validated QuotaEntryWithProductsVO quotaEntryWithProductsVO) {
         logger.info("PATCH Request to /quotaEntry/modifyOrder");

@@ -2,6 +2,8 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.service.MoneyEntryService;
@@ -32,6 +34,7 @@ public class MoneyEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundPayment:Creation", "outboundPayment:Creation"}, logical = Logical.OR)
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated MoneyEntryO moneyEntryO,
                             @RequestParam("isInbound") boolean isInbound) {
@@ -42,6 +45,7 @@ public class MoneyEntryController {
 
     @ApiOperation(value = "", response = MoneyEntryO.class,
             notes = "bankAccount should be 0 when not provided, because default value is -1")
+    @RequiresPermissions(value = {"inboundPayment:Query", "outboundPayment:Query"}, logical = Logical.OR)
     @GetMapping("/getEntriesInDateRange")
     public List<MoneyEntryO> getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,
@@ -76,6 +80,7 @@ public class MoneyEntryController {
     }
 
     @ApiOperation(value = "", response = MoneyEntryO.class)
+    @RequiresPermissions(value = {"inboundPayment:Query", "outboundPayment:Query"}, logical = Logical.OR)
     @GetMapping("/getEntryBySerial")
     public List<MoneyEntryO> getEntryBySerial(
             @RequestParam("serial") String serial,
@@ -93,6 +98,8 @@ public class MoneyEntryController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions(value = {"inboundPayment:Modification", "outboundPayment:Modification"},
+            logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated MoneyEntryO moneyEntryO) {
         logger.info("PATCH Request to /moneyEntry/modifyEntry");
