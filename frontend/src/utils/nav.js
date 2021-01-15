@@ -338,7 +338,7 @@ export default {
     stock_management_nav: [
         {
             name: '商品明细',
-            url: '/stock_management/products_detail'
+            url: '/stock_management/products_details'
         },
         {
             name: '库存报表',

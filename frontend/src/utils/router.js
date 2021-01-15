@@ -308,7 +308,6 @@ const routes = [
                 name: '库存报表',
                 component: () => import('../views/Stock_Management/2_Stock_Report')
             },
-
             {
                 path: 'products_pricing',
                 name: '商品定价',
