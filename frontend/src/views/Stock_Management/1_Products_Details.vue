@@ -56,7 +56,7 @@
             </v-col>
         </v-card-title>
         <v-card-text>
-            <div class="d-flex">
+            <v-row class="d-flex">
 
                 <v-card outlined>
                     <v-responsive height="65vh" max-width="230px"
@@ -129,77 +129,11 @@
                                               hide-default-footer
                                               locale="zh-cn"
                                               dense>
-                                    <template v-slot:item.wholesalePriceDiscount="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.wholesalePriceDiscount"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消"
-                                                       @save="handleDiscountChange(item)">
-                                            {{item.wholesalePriceDiscount}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.wholesalePriceDiscount"
-                                                              single-line
-                                                              counter="8">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
-                                    <template v-slot:item.retailPriceDiscount="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.retailPriceDiscount"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消"
-                                                       @save="handleDiscountChange(item)">
-                                            {{item.retailPriceDiscount}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.retailPriceDiscount"
-                                                              single-line
-                                                              counter="8">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
-                                    <template v-slot:item.unitPriceWithTax="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.unitPriceWithTax"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消"
-                                                       @save="handlePriceChange(item)">
-                                            {{item.unitPriceWithTax}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.unitPriceWithTax"
-                                                              single-line
-                                                              counter="20">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
-                                    <template v-slot:item.quantity="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.quantity"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消">
-                                            {{item.quantity}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.quantity"
-                                                              single-line
-                                                              counter="8">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
                                 </v-data-table>
                             </v-responsive>
                         </v-card>
                     </div>
 
-                    <v-card outlined class="text-h6">
-                        {{flattenedTreePosition}}
-                    </v-card>
                     <v-card outlined>
                         <v-data-table :headers="supplierTableHeaders"
                                       :items="supplierTableData"
@@ -216,7 +150,7 @@
 
                 </div>
 
-            </div>
+            </v-row>
 
             <v-card outlined>
                 <v-data-table :headers="detailTableHeaders"
@@ -283,11 +217,11 @@ export default {
             supplierTableData: [],
 
             detailTableHeaders: [
-                { text: '出入库单号', value: '', width: '' },
-                { text: '摘要', value: '', width: '' },
-                { text: '入库数量', value: '', width: '' },
-                { text: '无税价', value: '', width: '' },
-                { text: '类型', value: '', width: '' },
+                { text: '出入库单号', value: 'entryID', width: '150px' },
+                { text: '摘要', value: '', width: '120px' },
+                { text: '入库数量', value: 'quantity', width: '80px' },
+                { text: '无税价', value: 'unitPriceWithoutTax', width: '80px' },
+                { text: '类型', value: 'classification', width: '80px' },
             ],
             detailTableData: [],
         }
@@ -372,7 +306,6 @@ export default {
                     this.$store.commit('modifyModels', { key: val.categoryID, value: res.data })
                 }).catch(error => this.$ajaxErrorHandler(error))
             }
-            this.refreshFlattenedTreePosition(val)
         },
         modelTableChoose(val) {
             this.modelTableCurrentRow = [val]
@@ -404,6 +337,12 @@ export default {
         },
         warehouseStockTableChoose(val) {
             this.warehouseStockCurrentRow = [val]
+
+            this.$getRequest(this.$api.productsByWarehouseStock +
+                encodeURI(val.warehouseStockID)).then((res) => {
+                console.log('received', res.data)
+                this.detailTableData = res.data
+            }).catch(error => this.$ajaxErrorHandler(error))
         },
         productDetail() {
 
