@@ -14,7 +14,7 @@ public interface EndUserService {
 
     List<String> getPermissionsByUserId(int id);
 
-    String postUserLogInInfo(EndUserLoginVO user);
+    EndUserVO postUserLogInInfo(EndUserLoginVO user);
 
     void userLogout();
 

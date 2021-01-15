@@ -2,17 +2,17 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jc.backend.entity.VO.EndUserLoginVO;
 import org.jc.backend.entity.VO.EndUserVO;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "User Related")
@@ -31,14 +31,16 @@ public class EndUserController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "user login api", response = String.class)
+    @RequiresGuest
     @PostMapping("/userAuthentication")
-    public String authenticate(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
+    public EndUserVO authenticate(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
         logger.info("POST Request to /user/userAuthentication");
 
         return endUserService.postUserLogInInfo(endUserLoginVO);
     }
 
     @ApiOperation(value = "user logout api")
+    @RequiresAuthentication
     @PostMapping("/userLogout")
     public void logout() {
         logger.info("POST Request to /user/userLogout");
@@ -46,6 +48,7 @@ public class EndUserController {
     }
 
     @ApiOperation(value = "", response = Boolean.class)
+    @RequiresAuthentication
     @PostMapping("/changePassword")
     public Boolean changePassword(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
         logger.info("POST Request to /user/changePassword");
@@ -55,6 +58,7 @@ public class EndUserController {
     }
 
     @ApiOperation(value = "", response = Boolean.class)
+    @RequiresRoles("admin")
     @PostMapping("/createNewUser")
     public Boolean createNewUser(@RequestBody @Validated EndUserVO endUserVO) {
         logger.info("POST Request to /user/createNewUser");
@@ -77,15 +81,7 @@ public class EndUserController {
     public List<EndUserVO> getUserList() {
         logger.info("GET Request to /user/getUserList");
 
-        List<EndUserVO> userList = endUserService.queryUsers();
-
-        userList.forEach(user -> {
-            int id = user.getUserID();
-            user.setRole(endUserService.getRoleByUserId(id));
-            user.setPermissions(endUserService.getPermissionsByUserId(id));
-        });
-
-        return userList;
+        return endUserService.queryUsers();
     }
 
     @ApiOperation(value = "", response = String.class)

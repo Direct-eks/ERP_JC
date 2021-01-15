@@ -16,7 +16,7 @@
         where username = #{username};
     </select>
 
-    <select id="queryRolesByUserId" resultType="string">
+    <select id="queryRoleByUserId" resultType="string">
         select role
         from u_user_role join u_role on u_user_role.role_id = u_role.role_id
         where u_user_role.user_id = #{id}

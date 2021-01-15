@@ -27,4 +27,6 @@ public class EndUserVO {
 
     @NotNull(message = "permission null error")
     private List<String> permissions;
+
+    private String sessionID;
 }

@@ -1,5 +1,6 @@
 package org.jc.backend.service.Impl;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.Session;
@@ -13,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,28 +29,42 @@ public class EndUserServiceImpl implements EndUserService {
         this.endUserMapper = endUserMapper;
     }
 
+    /* ------------------------------ SERVICE ------------------------------ */
+
+    @Transactional(readOnly = true)
     public EndUserDO getUserByName(String username) {
-        EndUserDO userDTOList = new EndUserDO();
-        BeanUtils.copyProperties(endUserMapper.queryUserByName(username), userDTOList);
-        return userDTOList;
+        EndUserDO userDO = new EndUserDO();
+        BeanUtils.copyProperties(endUserMapper.queryUserByName(username), userDO);
+        return userDO;
     }
 
+    @Transactional(readOnly = true)
     public String getRoleByUserId(int id) {
-        return endUserMapper.queryRolesByUserId(id);
+        return endUserMapper.queryRoleByUserId(id);
     }
 
+    @Transactional(readOnly = true)
     public List<String> getPermissionsByUserId(int id) {
         return endUserMapper.queryPermissionsByUserId(id);
     }
 
-    public String postUserLogInInfo(EndUserLoginVO user) {
+    public EndUserVO postUserLogInInfo(EndUserLoginVO user) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(user.getUsername(), user.getPassword());
         subject.login(token);
         logger.info("User logging in: " + user.getUsername());
         Session session = subject.getSession();
         logger.info("User logged in: " + user.getUsername());
-        return session.getId().toString();
+
+        EndUserDO userFromDatabase = getUserByName(user.getUsername());
+        EndUserVO endUser = new EndUserVO();
+        BeanUtils.copyProperties(userFromDatabase, endUser);
+        int userID = endUser.getUserID();
+        endUser.setSessionID(session.getId().toString());
+        endUser.setPermissions(endUserMapper.queryPermissionsByUserId(userID));
+        endUser.setRole(endUserMapper.queryRoleByUserId(userID));
+
+        return endUser;
     }
 
     public void userLogout() {
@@ -58,9 +75,31 @@ public class EndUserServiceImpl implements EndUserService {
         logger.info("User logged out: " + username);
     }
 
-
+    @Transactional(readOnly = true)
     public List<EndUserVO> queryUsers() {
-        //todo
-        return null;
+
+        List<EndUserVO> userList = new ArrayList<>();
+
+        try {
+            List<EndUserDO> usersFromDatabase = endUserMapper.queryAllUsers();
+
+            for (var userFromDatabase : usersFromDatabase) {
+                EndUserVO newUser = new EndUserVO();
+                BeanUtils.copyProperties(userFromDatabase, newUser);
+
+                int id = newUser.getUserID();
+                newUser.setRole(endUserMapper.queryRoleByUserId(id));
+                newUser.setPermissions(endUserMapper.queryPermissionsByUserId(id));
+
+                userList.add(newUser);
+            }
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("query failed");
+            throw e;
+        }
+
+        return userList;
     }
 }
