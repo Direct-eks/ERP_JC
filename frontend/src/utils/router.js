@@ -6,12 +6,6 @@ Vue.use(VueRouter)
 
 // Dynamic Loading Modules
 
-//Pages
-// const Login = resolve => { require.ensure(['../views/login/Login.vue            '], ()=>{ resolve(require('../views/login/Login.vue')); }); };
-// const Register = resolve => { require.ensure(['../views/register/Register.vue'], ()=>{ resolve(require('../views/register/Register.vue')); }); };
-// const Page404 = resolve => { require.ensure(['../views/Page404.vue'], ()=>{ resolve(require('../views/Page404.vue')); }); };
-// const Page500 = resolve => { require.ensure(['../views/Page500.vue'], ()=>{ resolve(require('../views/Page500.vue')); }); };
-
 const routes = [
     {
         path: '/',
@@ -599,28 +593,26 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     console.log(from.path, to.path)
 
-
-    // if path to /login and is not authenticated (for logout, or debug with no authen info)
-    if (to.path === '/login' &&
-        (!sessionStorage.getItem('isAuthenticated') ||
-            sessionStorage.getItem('isAuthenticated') === "false")) {
-        console.log('to login router page')
-        next()
-        return
-    }
-    if (to.path === '/login') { //forbid going to login
-        console.log('forbid to login page')
-        next('/home')
-        return
-    }
     /* ----------- disabled for debugging ----------- */
+    // if path to /login and is not authenticated (for logout, or debug with no authen info)
+    // if (to.path === '/login' &&
+    //     (!sessionStorage.getItem('isAuthenticated') ||
+    //         sessionStorage.getItem('isAuthenticated') === "false")) {
+    //     console.log('to login router page')
+    //     next()
+    //     return
+    // }
+    // if (to.path === '/login') { //forbid going to login
+    //     console.log('forbid to login page')
+    //     next('/home')
+    //     return
+    // }
     // if (!sessionStorage.getItem('isAuthenticated') ||
     //             sessionStorage.getItem('isAuthenticated') === 'false') {
     //     console.log('not authenticated')
     //     next('/login')
     //     return
     // }
-    console.log('ddd')
     next()
 })
 

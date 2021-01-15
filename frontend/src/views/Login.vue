@@ -22,31 +22,35 @@
                         <span>Source</span>
                     </v-tooltip>
                 </v-toolbar>
+
                 <v-card-text>
                     <v-form ref="form" @keyup.enter.native="login">
-                        <v-text-field v-model="ruleForm.username"
+                        <v-text-field v-model="form.username"
                                       :rules="rules.username"
-                                      required
                                       label="登录名"
+                                      clearable
                                       name="login"
                                       :prepend-icon="mdiAccountPath"
                                       type="text">
                         </v-text-field>
 
-                        <v-text-field v-model="ruleForm.password"
+                        <v-text-field v-model="form.password"
                                       :rules="rules.password"
-                                      required
                                       id="password"
                                       label="密码"
+                                      clearable
                                       name="password"
                                       :prepend-icon="mdiLockPath"
                                       type="password">
                         </v-text-field>
                     </v-form>
                 </v-card-text>
+
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="login">Login</v-btn>
+                    <v-btn color="primary"
+                           :loading="loading"
+                           @click="login">登录</v-btn>
                 </v-card-actions>
             </v-card>
         </v-col>
@@ -54,75 +58,72 @@
 </template>
 
 <script>
-    import {mdiCodeTags} from '@mdi/js'
-    import {mdiAccount} from '@mdi/js'
-    import {mdiLock} from '@mdi/js'
+import {mdiCodeTags} from '@mdi/js'
+import {mdiAccount} from '@mdi/js'
+import {mdiLock} from '@mdi/js'
 
-    export default {
-        name: 'Login',
-        data() {
-            return {
-                mdiCodeTagsPath: mdiCodeTags,
-                mdiAccountPath: mdiAccount,
-                mdiLockPath: mdiLock,
+export default {
+    name: 'Login',
+    data() {
+        return {
+            mdiCodeTagsPath: mdiCodeTags,
+            mdiAccountPath: mdiAccount,
+            mdiLockPath: mdiLock,
 
-                ruleForm: {
-                    username: '',
-                    password: ''
-                },
-                rules: {
-                    username: [
-                        v => !!v || '请填写用户名',
-                    ],
-                    password: [
-                        v => !!v || '请填写密码',
-                    ]
-                },
-                loading: false,
-                loginFailed: false,
-                errorMessage: '',
+            form: {
+                username: '',
+                password: ''
+            },
+            rules: {
+                username: [
+                    v => !!v || '请填写用户名',
+                ],
+                password: [
+                    v => !!v || '请填写密码',
+                ]
+            },
+            loading: false,
+        }
+    },
+    methods: {
+        login: function (formName) {
+            if (this.$refs.form.validate()) {
+                this.loading = true;
+                this.$postRequest(this.$api.userAuthentication, {
+                    username: this.form.username,
+                    password: this.form.password
+                }).then((res) => {
+                    console.log('received', res.data)
+
+                    // use vuex to store user information
+                    sessionStorage.setItem('userName', this.form.username)
+                    sessionStorage.setItem('userToken', res.data)
+                    sessionStorage.setItem('isAuthenticated', 'true')
+                    // this.$store.dispatch('userLoginSuccess', res.data.username)
+
+                    this.username = ''
+                    this.password = ''
+                    this.loading = false;
+                    this.$router.replace('/home').then(t => {
+                    }).catch(t => {
+                    })
+                }).catch((reject) => {
+                    this.loading = false
+                });
+
+                /*------ for debug only ------*/
+                // sessionStorage.setItem('userName', this.ruleForm.username)
+                // sessionStorage.setItem('userToken', 'token')
+                // this.$store.dispatch('userLoginSuccess',
+                //     {username: this.ruleForm.username, token: 'token'})
+                // this.username = ''
+                // this.password = ''
+                // this.loading = false;
+                // this.$router.push('/home')
             }
-        },
-        methods: {
-            login: function (formName) {
-                if (this.$refs.form.validate()) {
-                    this.loading = true;
-                    this.$postRequest(this.$api.userAuthentication, {
-                        username: this.ruleForm.username,
-                        password: this.ruleForm.password
-                    }).then((res) => {
-                        console.log('received', res.data)
-
-                        // use vuex to store user information
-                        sessionStorage.setItem('userName', this.ruleForm.username)
-                        sessionStorage.setItem('userToken', res.data)
-                        sessionStorage.setItem('isAuthenticated', 'true')
-                        // this.$store.dispatch('userLoginSuccess', res.data.username)
-
-                        this.username = ''
-                        this.password = ''
-                        this.loading = false;
-                        this.$router.replace('/home').then(t => {
-                        }).catch(t => {
-                        })
-                    }).catch((reject) => {
-                        this.loading = false
-                        //todo
-                    });
-
-                    /*------ for debug only ------*/
-                    // sessionStorage.setItem('userName', this.ruleForm.username)
-                    // sessionStorage.setItem('userToken', 'token')
-                    // this.$store.dispatch('userLoginSuccess',
-                    //     {username: this.ruleForm.username, token: 'token'})
-                    // this.username = ''
-                    // this.password = ''
-                    // this.loading = false;
-                    // this.$router.push('/home')
-                }
-            }
-        } // end method
-    }
+        }
+    } // end method
+}
 </script>
 
 <style scoped>
