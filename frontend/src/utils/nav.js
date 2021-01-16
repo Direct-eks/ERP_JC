@@ -268,17 +268,17 @@ export default {
                 {
                     name: '结账',
                     url: '/inbound_invoicing/shipping_cost_checkout',
-                    requiredPermission: 'inboundShipping:Creation',
+                    requiredPermission: 'inboundShippingCost:Creation',
                 },
                 {
                     name: '查询',
                     url: '/inbound_invoicing/shipping_cost_query',
-                    requiredPermission: 'inboundShipping:Query',
+                    requiredPermission: 'inboundShippingCost:Query',
                 },
                 {
                     name: '修改',
                     url: '/inbound_invoicing/shipping_cost_modify',
-                    requiredPermission: 'inboundShipping:Modification',
+                    requiredPermission: 'inboundShippingCost:Modification',
                 }
             ]
         },
@@ -369,17 +369,17 @@ export default {
                 {
                     name: '结账',
                     url: '/outbound_invoicing/cost_bill',
-                    requiredPermission: 'outboundShipping:Creation',
+                    requiredPermission: 'outboundShippingCost:Creation',
                 },
                 {
                     name: '查询',
                     url: '/outbound_invoicing/cost_query',
-                    requiredPermission: 'outboundShipping:Query',
+                    requiredPermission: 'outboundShippingCost:Query',
                 },
                 {
                     name: '修改',
                     url: '/outbound_invoicing/cost_modify',
-                    requiredPermission: 'outboundShipping:Modification',
+                    requiredPermission: 'outboundShippingCost:Modification',
                 }
             ]
         },
