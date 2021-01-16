@@ -173,7 +173,7 @@ export default {
         },
         tableChoose(val) {
             if (this.queryTableCurrentRows.includes(val))
-                this.queryTableCurrentRows.slice(this.queryTableCurrentRows.indexOf(val), 1)
+                this.queryTableCurrentRows.splice(this.queryTableCurrentRows.indexOf(val), 1)
             else
                 this.queryTableCurrentRows.push(val)
         },

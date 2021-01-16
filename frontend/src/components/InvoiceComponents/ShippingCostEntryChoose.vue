@@ -110,7 +110,7 @@ export default {
         },
         tableChoose(val) {
             if (this.tableSelection.includes(val))
-                this.tableSelection.slice(this.tableSelection.indexOf(val), 1)
+                this.tableSelection.splice(this.tableSelection.indexOf(val), 1)
             else
                 this.tableSelection.push(val)
         },
