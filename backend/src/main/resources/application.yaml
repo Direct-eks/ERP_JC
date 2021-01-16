@@ -1,7 +1,7 @@
 server:
-  port: 8088
+  port: 58080
   shutdown: graceful
-  address: 127.0.0.1
+  address: localhost
 
 management:
   endpoints:

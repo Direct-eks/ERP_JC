@@ -15,10 +15,10 @@ module.exports = merge(common, {
     devtool: 'inline-source-map',
     devServer: {
         host: '127.0.0.1',
-        port: 8080,
+        port: 58888,
         proxy: {
             '/api': {
-                target: 'http://localhost:8088',
+                target: 'http://localhost:58080',
                 changeOrigin: true,
                 pathRewrite: { '/api': '' }
             }

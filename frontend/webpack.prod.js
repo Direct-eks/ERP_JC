@@ -15,7 +15,9 @@ module.exports = merge(common, {
     },
     plugins: [
         // eslint-disable-next-line new-cap
-        new bundleAnalyzerPlugin(),
+        new bundleAnalyzerPlugin({
+            analyzerPort: 58081
+        }),
     ],
     optimization: {
         usedExports: true,
