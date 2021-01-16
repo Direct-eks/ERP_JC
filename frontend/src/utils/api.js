@@ -1,6 +1,7 @@
 /* --------- api ----------*/
 
 const api = {
+    userNameList: '/user/getUserNameList',
     userAuthentication: '/user/userAuthentication',
     userLogout: '/user/userLogout',
 

@@ -9,6 +9,8 @@ const store = new Vuex.Store({
     state: {
         /*  ------- global user data ------- */
         currentUser: null, // current username
+        currentUserRole: null,
+        currentUserPermissions: [],
 
         /* ------- global data for snack bar -------*/
         snackbar: {
@@ -35,6 +37,20 @@ const store = new Vuex.Store({
                     sessionStorage.getItem('userName') : ''
             }
             return state.currentUser
+        },
+        currentUserRole(state) {
+            if (state.currentUserRole == null) {
+                return sessionStorage.getItem('userRole') != null ?
+                    sessionStorage.getItem('userRole') : ''
+            }
+            return state.currentUserRole
+        },
+        currentUserPermissions(state) {
+            if (state.currentUserPermissions.length === 0) {
+                return sessionStorage.getItem('userPermissions') != null ?
+                    JSON.parse(sessionStorage.getItem('userPermissions')) : []
+            }
+            return state.currentUserPermissions
         },
 
         /*----------- company data ------------*/
@@ -73,12 +89,17 @@ const store = new Vuex.Store({
                 state.currentUser = username
             }
             else { // if is null, then logout
-                sessionStorage.setItem('userName', null)
-                sessionStorage.setItem('userToken', null)
-                sessionStorage.setItem('isAuthenticated', 'false')
+                sessionStorage.clear()
                 state.currentUser = null
             }
         },
+        modifyCurrentUserRole(state, userRole) {
+            state.currentUserRole = userRole
+        },
+        modifyCurrentUserPermissions(state, userPermissions) {
+            state.currentUserPermissions = userPermissions
+        },
+
         /*------- global data for snack bar -------*/
         setSnackbar(state, payload) {
             state.snackbar.message = payload.message

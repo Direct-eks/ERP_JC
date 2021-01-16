@@ -25,14 +25,23 @@
 
                 <v-card-text>
                     <v-form ref="form" @keyup.enter.native="login">
-                        <v-text-field v-model="form.username"
-                                      :rules="rules.username"
-                                      label="登录名"
-                                      clearable
-                                      name="login"
-                                      :prepend-icon="mdiAccountPath"
-                                      type="text">
-                        </v-text-field>
+                        <v-autocomplete v-model="form.username"
+                                        :rules="rules.username"
+                                        :items="userList"
+                                        hide-details="auto"
+                                        auto-select-first
+                                        :prepend-icon="mdiAccountPath"
+                                        dense
+                                        label="登录名">
+                        </v-autocomplete>
+<!--                        <v-text-field v-model="form.username"-->
+<!--                                      :rules="rules.username"-->
+<!--                                      label="登录名"-->
+<!--                                      clearable-->
+<!--                                      name="login"-->
+<!--                                      -->
+<!--                                      type="text">-->
+<!--                        </v-text-field>-->
 
                         <v-text-field v-model="form.password"
                                       :rules="rules.password"
@@ -67,11 +76,19 @@ import Hex from 'crypto-js/enc-hex'
 
 export default {
     name: 'Login',
+    beforeMount() {
+        this.$getRequest(this.$api.userNameList).then((res) => {
+            console.log('received', res.data)
+            this.userList = res.data
+        })
+    },
     data() {
         return {
             mdiCodeTagsPath: mdiCodeTags,
             mdiAccountPath: mdiAccount,
             mdiLockPath: mdiLock,
+
+            userList: [],
 
             form: {
                 username: '',
@@ -98,12 +115,16 @@ export default {
                     password: sha256(this.form.password).toString(Hex),
                 }).then((res) => {
                     console.log('received', res.data)
+                    this.$store.commit('setSnackbar', {
+                        message: '登录成功', color: 'success'
+                    })
 
                     // use vuex to store user information
                     sessionStorage.setItem('userName', this.form.username)
-                    sessionStorage.setItem('userToken', res.data)
+                    sessionStorage.setItem('userToken', res.data.sessionID)
+                    sessionStorage.setItem('userRole', res.data.role)
+                    sessionStorage.setItem('userPermissions', JSON.stringify(res.data.permissions))
                     sessionStorage.setItem('isAuthenticated', 'true')
-                    // this.$store.dispatch('userLoginSuccess', res.data.username)
 
                     this.username = ''
                     this.password = ''

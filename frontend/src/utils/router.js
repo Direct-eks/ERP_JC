@@ -595,24 +595,24 @@ router.beforeEach((to, from, next) => {
 
     /* ----------- disabled for debugging ----------- */
     // if path to /login and is not authenticated (for logout, or debug with no authen info)
-    // if (to.path === '/login' &&
-    //     (!sessionStorage.getItem('isAuthenticated') ||
-    //         sessionStorage.getItem('isAuthenticated') === "false")) {
-    //     console.log('to login router page')
-    //     next()
-    //     return
-    // }
-    // if (to.path === '/login') { //forbid going to login
-    //     console.log('forbid to login page')
-    //     next('/home')
-    //     return
-    // }
-    // if (!sessionStorage.getItem('isAuthenticated') ||
-    //             sessionStorage.getItem('isAuthenticated') === 'false') {
-    //     console.log('not authenticated')
-    //     next('/login')
-    //     return
-    // }
+    if (to.path === '/login' &&
+        (!sessionStorage.getItem('isAuthenticated') ||
+            sessionStorage.getItem('isAuthenticated') === "false")) {
+        console.log('to login router page')
+        next()
+        return
+    }
+    if (to.path === '/login') { //forbid going to login
+        console.log('forbid to login page')
+        next('/home')
+        return
+    }
+    if (!sessionStorage.getItem('isAuthenticated') ||
+                sessionStorage.getItem('isAuthenticated') === 'false') {
+        console.log('not authenticated')
+        next('/login')
+        return
+    }
     next()
 })
 
