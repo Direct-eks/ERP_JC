@@ -32,7 +32,7 @@ process.on('message', (message) => {
     if (`${message}` === 'shutdown') {
         const options = {
             hostname: 'localhost',
-            port: 8088,
+            port: 58080,
             path: '/actuator/shutdown',
             method: 'POST',
             headers: {}
