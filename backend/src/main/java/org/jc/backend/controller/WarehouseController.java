@@ -6,8 +6,6 @@ import org.jc.backend.entity.WarehouseO;
 import org.jc.backend.service.WarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

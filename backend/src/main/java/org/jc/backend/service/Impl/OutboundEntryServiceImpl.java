@@ -1,7 +1,6 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.ModificationO;
@@ -40,7 +39,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
-    public void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException {
+    public void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) {
 
         OutboundEntryDO newEntry = new OutboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);

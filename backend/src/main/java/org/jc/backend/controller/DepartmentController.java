@@ -6,8 +6,6 @@ import org.jc.backend.entity.DepartmentO;
 import org.jc.backend.service.DepartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
