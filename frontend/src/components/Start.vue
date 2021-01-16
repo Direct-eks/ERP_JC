@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <p>Empty Start Page</p>
-        <v-btn>logout</v-btn>
+        <v-btn @click="logout">local logout</v-btn>
     </div>
 </template>
 
@@ -11,7 +11,11 @@ export default {
     methods: {
         logout() {
             this.$store.commit('modifyCurrentUser', null)
-            this.$router.replace('/login').then(()=>{}).catch(()=>{})
+            this.$store.commit('modifyCurrentUserRole', null)
+            this.$store.commit('modifyCurrentPermissions', [])
+
+            sessionStorage.clear()
+            this.$router.replace('/login')
         }
     }
 }
