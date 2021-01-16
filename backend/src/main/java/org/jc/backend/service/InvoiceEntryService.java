@@ -1,6 +1,5 @@
 package org.jc.backend.service;
 
-import org.jc.backend.entity.InvoiceEntryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
 

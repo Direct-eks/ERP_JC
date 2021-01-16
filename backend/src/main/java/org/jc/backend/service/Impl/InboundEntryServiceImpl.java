@@ -385,7 +385,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         List<InboundProductO> products;
         try {
-            products = inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);;
+            products = inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production

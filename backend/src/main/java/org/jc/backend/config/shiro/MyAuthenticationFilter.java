@@ -58,27 +58,6 @@ public class MyAuthenticationFilter extends FormAuthenticationFilter {
             return false;
         }
 
-
-//        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-
-//        Subject subject = SecurityUtils.getSubject();
-//        Object user = subject.getPrincipal();
-//
-//        if (Objects.equals(user, null)) {
-//            Map<String, Object> result = new LinkedHashMap<>();
-//            result.put("code", 101);
-//            result.put("msg", "未登录");
-//            result.put("data",null);
-//            httpServletResponse.setCharacterEncoding("UTF-8");
-//            httpServletResponse.setContentType("application/json");
-//            httpServletResponse.getWriter().write();
-//            httpServletResponse.setStatus(401);
-//        }
-
-//        httpServletResponse.setContentType("application/json; charset=utf-8");
-//        httpServletResponse.setStatus(401);
-//        httpServletResponse.getWriter().flush();
-//        return false;
     }
 
 }

@@ -2,7 +2,6 @@ package org.jc.backend.service;
 
 import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.WarehouseStockO;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

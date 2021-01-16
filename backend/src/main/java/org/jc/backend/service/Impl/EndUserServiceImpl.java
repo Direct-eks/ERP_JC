@@ -83,9 +83,7 @@ public class EndUserServiceImpl implements EndUserService {
         try {
             List<EndUserDO> usersFromDatabase = endUserMapper.queryAllUsers();
 
-            usersFromDatabase.forEach(user -> {
-                userList.add(user.getUsername());
-            });
+            usersFromDatabase.forEach(user -> userList.add(user.getUsername()));
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
