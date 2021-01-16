@@ -147,18 +147,115 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; 剔除spring-boot打包的org和BOOT-INF文件夹(用于子模块打包) &ndash;&gt;-->
+<!--                    <skip>true</skip>-->
+<!--                    <mainClass>org.jc.backend.BackendApplication</mainClass>-->
+<!--&lt;!&ndash;                    <layout>ZIP</layout>&ndash;&gt;-->
+<!--                    <includes>-->
+<!--                        &lt;!&ndash; 排除第三方依赖jar(只保留本项目的jar) &ndash;&gt;-->
+<!--                        <include>-->
+<!--                            <groupId>${project.groupId}</groupId>-->
+<!--                            <artifactId>${project.artifactId}</artifactId>-->
+<!--                        </include>-->
+<!--                    </includes>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
+            <!-- maven 打包插件 -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.jc.backend.BackendApplication</mainClass>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <!-- MANIFEST.MF 中 Class-Path 加入前缀 -->
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <!-- jar包不包含唯一版本标识 -->
+                            <useUniqueVersions>false</useUniqueVersions>
+                            <!-- 指定入口类 -->
+                            <mainClass>org.jc.backend.BackendApplication</mainClass>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
                 </configuration>
             </plugin>
+
+            <!-- 拷贝依赖 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
+
+<!--        <resources>-->
+<!--            &lt;!&ndash; 打包src/main/java下的xml文件 &ndash;&gt;-->
+<!--            <resource>-->
+<!--                <directory>src/main/java</directory>-->
+<!--                <includes>-->
+<!--                    <include>**/*.xml</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--            &lt;!&ndash; 排除resources下的配置文件 &ndash;&gt;-->
+<!--            <resource>-->
+<!--                <filtering>true</filtering>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                <excludes>-->
+<!--                    <exclude>static/**</exclude>-->
+<!--                    <exclude>templates/**</exclude>-->
+<!--                    <exclude>*.yml</exclude>-->
+<!--                    <exclude>*.properties</exclude>-->
+<!--                    <exclude>*.xml</exclude>-->
+<!--                    <exclude>*.txt</exclude>-->
+<!--                </excludes>-->
+<!--                <targetPath>BOOT-INF/classes/</targetPath>-->
+<!--            </resource>-->
+<!--            &lt;!&ndash; 打包lib下的jar包 &ndash;&gt;-->
+<!--            <resource>-->
+<!--                <directory>lib</directory>-->
+<!--                <targetPath>BOOT-INF/lib/</targetPath>-->
+<!--                <includes>-->
+<!--                    <include>**/*.jar</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--        </resources>-->
+
     </build>
 
 </project>
