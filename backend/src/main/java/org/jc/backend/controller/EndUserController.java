@@ -30,7 +30,7 @@ public class EndUserController {
 
     /* ------------------------------ API ------------------------------ */
 
-    @ApiOperation(value = "user login api", response = String.class)
+    @ApiOperation(value = "user login api", response = EndUserVO.class)
     @RequiresGuest
     @PostMapping("/userAuthentication")
     public EndUserVO authenticate(@RequestBody @Validated EndUserLoginVO endUserLoginVO) {
@@ -75,13 +75,13 @@ public class EndUserController {
         return false;
     }
 
-    @ApiOperation(value = "", response = EndUserVO.class)
-    @RequiresRoles("admin")
-    @GetMapping("/getUserList")
-    public List<EndUserVO> getUserList() {
-        logger.info("GET Request to /user/getUserList");
+    @ApiOperation(value = "", response = String.class)
+    @RequiresGuest
+    @GetMapping("/getUserNameList")
+    public List<String> getUserList() {
+        logger.info("GET Request to /user/getUserNameList");
 
-        return endUserService.queryUsers();
+        return endUserService.queryUserNameList();
     }
 
     @ApiOperation(value = "", response = String.class)

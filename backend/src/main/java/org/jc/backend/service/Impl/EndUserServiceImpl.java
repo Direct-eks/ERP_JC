@@ -76,23 +76,16 @@ public class EndUserServiceImpl implements EndUserService {
     }
 
     @Transactional(readOnly = true)
-    public List<EndUserVO> queryUsers() {
+    public List<String> queryUserNameList() {
 
-        List<EndUserVO> userList = new ArrayList<>();
+        List<String> userList = new ArrayList<>();
 
         try {
             List<EndUserDO> usersFromDatabase = endUserMapper.queryAllUsers();
 
-            for (var userFromDatabase : usersFromDatabase) {
-                EndUserVO newUser = new EndUserVO();
-                BeanUtils.copyProperties(userFromDatabase, newUser);
-
-                int id = newUser.getUserID();
-                newUser.setRole(endUserMapper.queryRoleByUserId(id));
-                newUser.setPermissions(endUserMapper.queryPermissionsByUserId(id));
-
-                userList.add(newUser);
-            }
+            usersFromDatabase.forEach(user -> {
+                userList.add(user.getUsername());
+            });
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production

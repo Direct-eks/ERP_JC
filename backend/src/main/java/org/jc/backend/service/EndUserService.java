@@ -18,6 +18,5 @@ public interface EndUserService {
 
     void userLogout();
 
-
-    List<EndUserVO> queryUsers();
+    List<String> queryUserNameList();
 }
