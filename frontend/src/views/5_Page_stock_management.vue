@@ -39,9 +39,25 @@ import nav from "~/utils/nav";
 
 export default {
     name: "Page_stock_management",
+    beforeMount() {
+        const userPermissions = this.$store.getters.currentUserPermissions
+        let navItems = JSON.parse(JSON.stringify(nav.stock_management_nav))
+        for (const item of navItems) {
+            let itemsToBeRemoved = []
+            for (const subItem of item.children) {
+                if (!userPermissions.includes(subItem.requiredPermission)) {
+                    itemsToBeRemoved.push(subItem)
+                }
+            }
+            itemsToBeRemoved.forEach(subItem => {
+                item.children.splice(item.children.indexOf(subItem), 1)
+            })
+        }
+        this.navItem = navItems
+    },
     data() {
         return {
-            navItem: nav.stock_management_nav
+            navItem: []
         }
     }
 }
