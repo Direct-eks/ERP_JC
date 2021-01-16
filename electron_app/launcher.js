@@ -1,22 +1,21 @@
 const { spawn } = require('child_process')
 const http = require('http')
 
-
-const springBoot = spawn(__dirname + "/springboot/fulljre11/bin/java",
-    ['-jar', __dirname + '/springboot/backend-0.0.1-SNAPSHOT.jar']);
+const path = require('path')
+const springBoot = spawn(path.resolve('C:\\ERP_JC\\fulljre11\\bin\\java'),
+    ['-jar', path.resolve('C:\\ERP_JC\\backend-0.0.1-SNAPSHOT.jar')]);
 
 let applicationStarted = false
 
 springBoot.stdout.on('data', (data) => {
-    const line = `${data}`
-    console.log(line.trimEnd())
+    const line = `${data}`.trimEnd()
+    console.log(line)
     if (line.includes('Application started!')) {
         applicationStarted = true
         process.send('launched')
     }
-    else {
-        if (!applicationStarted)
-            process.send('one line')
+    else if (!applicationStarted) {
+        process.send('one line')
     }
 })
 
