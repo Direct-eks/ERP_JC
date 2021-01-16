@@ -60,23 +60,28 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_management/entry_in'
+                    url: '/inbound_management/entry_in',
+                    requiredPermission: 'inboundEntry:Creation',
                 },
                 {
                     name: '完善',
-                    url: '/inbound_management/completion_in'
+                    url: '/inbound_management/completion_in',
+                    requiredPermission: 'inboundEntry:Completion',
                 },
                 {
                     name: '修改',
-                    url: '/inbound_management/modify_in'
+                    url: '/inbound_management/modify_in',
+                    requiredPermission: 'inboundEntry:Modification',
                 },
                 {
                     name: '退货',
-                    url: '/inbound_management/return_in'
+                    url: '/inbound_management/return_in',
+                    requiredPermission: 'inboundEntry:Return',
                 },
                 {
                     name: '查询',
-                    url: '/inbound_management/query_in'
+                    url: '/inbound_management/query_in',
+                    requiredPermission: 'inboundEntry:Query',
                 },
             ]
         },
@@ -86,15 +91,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_management/purchase_order_entry'
+                    url: '/inbound_management/purchase_order_entry',
+                    requiredPermission: 'purchaseOrder:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/inbound_management/purchase_order_query'
+                    url: '/inbound_management/purchase_order_query',
+                    requiredPermission: 'purchaseOrder:Query',
                 },
                 {
                     name: '修改',
-                    url: '/inbound_management/purchase_order_modify'
+                    url: '/inbound_management/purchase_order_modify',
+                    requiredPermission: 'purchaseOrder:Modification',
                 }
             ]
         }
@@ -106,23 +114,28 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_management/entry_out'
+                    url: '/outbound_management/entry_out',
+                    requiredPermission: 'outboundEntry:Creation',
                 },
                 {
                     name: '完善',
-                    url: '/outbound_management/completion_out'
+                    url: '/outbound_management/completion_out',
+                    requiredPermission: 'outboundEntry:Completion',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_management/modify_out'
+                    url: '/outbound_management/modify_out',
+                    requiredPermission: 'outboundEntry:Modification',
                 },
                 {
                     name: '退货',
-                    url: '/outbound_management/return_out'
+                    url: '/outbound_management/return_out',
+                    requiredPermission: 'outboundEntry:Return',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_management/query_out'
+                    url: '/outbound_management/query_out',
+                    requiredPermission: 'outboundEntry:Query',
                 },
             ]
         },
@@ -132,15 +145,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_management/sales_order_entry'
+                    url: '/outbound_management/sales_order_entry',
+                    requiredPermission: 'salesOrder:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_management/sales_order_query'
+                    url: '/outbound_management/sales_order_query',
+                    requiredPermission: 'salesOrder:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_management/sales_order_modify'
+                    url: '/outbound_management/sales_order_modify',
+                    requiredPermission: 'salesOrder:Modification',
                 },
             ]
         },
@@ -150,15 +166,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_management/quota_entry'
+                    url: '/outbound_management/quota_entry',
+                    requiredPermission: 'quota:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_management/quota_query'
+                    url: '/outbound_management/quota_query',
+                    requiredPermission: 'quota:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_management/quota_modify'
+                    url: '/outbound_management/quota_modify',
+                    requiredPermission: 'quota:Modification',
                 },
             ]
         },
@@ -170,23 +189,28 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_invoicing/inbound_checkout_entry'
+                    url: '/inbound_invoicing/inbound_checkout_entry',
+                    requiredPermission: 'inboundCheckout:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/inbound_checkout_query'
+                    url: '/inbound_invoicing/inbound_checkout_query',
+                    requiredPermission: 'inboundCheckout:Query',
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/inbound_checkout_modify'
+                    url: '/inbound_invoicing/inbound_checkout_modify',
+                    requiredPermission: 'inboundCheckout:Modification',
                 },
                 {
                     name: '入库未结账查询',
                     url: '/inbound_invoicing/inbound_not_checkout_query',
+                    requiredPermission: 'inboundCheckout:NotCheckoutQuery',
                 },
                 {
                     name: '结账后退货',
-                    url: '/inbound_invoicing/inbound_checkout_return'
+                    url: '/inbound_invoicing/inbound_checkout_return',
+                    requiredPermission: 'inboundCheckout:Return',
                 },
             ]
         },
@@ -196,19 +220,23 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_invoicing/inbound_invoice_entry'
+                    url: '/inbound_invoicing/inbound_invoice_entry',
+                    requiredPermission: 'inboundInvoice:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/inbound_invoice_query'
+                    url: '/inbound_invoicing/inbound_invoice_query',
+                    requiredPermission: 'inboundInvoice:Query',
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/inbound_invoice_modify'
+                    url: '/inbound_invoicing/inbound_invoice_modify',
+                    requiredPermission: 'inboundInvoice:Modification',
                 },
                 {
                     name: '结账未开票查询',
-                    url: '/inbound_invoicing/inbound_not_invoice_query'
+                    url: '/inbound_invoicing/inbound_not_invoice_query',
+                    requiredPermission: 'inboundInvoice:NotInvoiceQuery',
                 },
             ]
         },
@@ -218,15 +246,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/inbound_invoicing/payment_entry'
+                    url: '/inbound_invoicing/payment_entry',
+                    requiredPermission: 'inboundPayment:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/payment_query'
+                    url: '/inbound_invoicing/payment_query',
+                    requiredPermission: 'inboundPayment:Query',
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/payment_modify'
+                    url: '/inbound_invoicing/payment_modify',
+                    requiredPermission: 'inboundPayment:Modification',
                 }
             ]
         },
@@ -236,15 +267,18 @@ export default {
             children: [
                 {
                     name: '结账',
-                    url: '/inbound_invoicing/shipping_cost_checkout'
+                    url: '/inbound_invoicing/shipping_cost_checkout',
+                    requiredPermission: 'inboundShipping:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/inbound_invoicing/shipping_cost_query'
+                    url: '/inbound_invoicing/shipping_cost_query',
+                    requiredPermission: 'inboundShipping:Query',
                 },
                 {
                     name: '修改',
-                    url: '/inbound_invoicing/shipping_cost_modify'
+                    url: '/inbound_invoicing/shipping_cost_modify',
+                    requiredPermission: 'inboundShipping:Modification',
                 }
             ]
         },
@@ -256,23 +290,28 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_invoicing/outbound_check_entry'
+                    url: '/outbound_invoicing/outbound_check_entry',
+                    requiredPermission: 'outboundCheckout:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_invoicing/outbound_check_query'
+                    url: '/outbound_invoicing/outbound_check_query',
+                    requiredPermission: 'outboundCheckout:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_invoicing/outbound_check_modify'
+                    url: '/outbound_invoicing/outbound_check_modify',
+                    requiredPermission: 'outboundCheckout:Modification',
                 },
                 {
                     name: '出库未结账查询',
-                    url: '/outbound_invoicing/outbound_not_checkout_query'
+                    url: '/outbound_invoicing/outbound_not_checkout_query',
+                    requiredPermission: 'outboundCheckout:NotCheckoutQuery',
                 },
                 {
                     name: '结账后退货',
-                    url: '/outbound_invoicing/outbound_checkout_return'
+                    url: '/outbound_invoicing/outbound_checkout_return',
+                    requiredPermission: 'outboundCheckout:Return',
                 }
             ]
         },
@@ -282,19 +321,23 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_invoicing/outbound_check_invoicing_entry'
+                    url: '/outbound_invoicing/outbound_check_invoicing_entry',
+                    requiredPermission: 'outboundInvoice:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_invoicing/outbound_check_invoicing_query'
+                    url: '/outbound_invoicing/outbound_check_invoicing_query',
+                    requiredPermission: 'outboundInvoice:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_invoicing/outbound_check_invoicing_modify'
+                    url: '/outbound_invoicing/outbound_check_invoicing_modify',
+                    requiredPermission: 'outboundInvoice:Modification',
                 },
                 {
                     name: '结账未开票查询',
                     url: '/outbound_invoicing/outbound_not_invoice_query',
+                    requiredPermission: 'outboundInvoice:NotInvoiceQuery',
                 },
             ]
         },
@@ -304,15 +347,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_invoicing/receipt_entry'
+                    url: '/outbound_invoicing/receipt_entry',
+                    requiredPermission: 'outboundPayment:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_invoicing/receipt_query'
+                    url: '/outbound_invoicing/receipt_query',
+                    requiredPermission: 'outboundPayment:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_invoicing/receipt_modify'
+                    url: '/outbound_invoicing/receipt_modify',
+                    requiredPermission: 'outboundPayment:Modification',
                 }
             ]
         },
@@ -322,15 +368,18 @@ export default {
             children: [
                 {
                     name: '结账',
-                    url: '/outbound_invoicing/cost_bill'
+                    url: '/outbound_invoicing/cost_bill',
+                    requiredPermission: 'outboundShipping:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_invoicing/cost_query'
+                    url: '/outbound_invoicing/cost_query',
+                    requiredPermission: 'outboundShipping:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_invoicing/cost_modify'
+                    url: '/outbound_invoicing/cost_modify',
+                    requiredPermission: 'outboundShipping:Modification',
                 }
             ]
         },
@@ -338,35 +387,43 @@ export default {
     stock_management_nav: [
         {
             name: '商品明细',
-            url: '/stock_management/products_details'
+            url: '/stock_management/products_details',
+            requiredPermission: 'management:ProductsDetails',
         },
         {
             name: '库存报表',
-            url: '/stock_management/stock_report'
+            url: '/stock_management/stock_report',
+            requiredPermission: 'management:StockReport',
         },
         {
             name: '商品定价',
-            url: '/stock_management/products_pricing'
+            url: '/stock_management/products_pricing',
+            requiredPermission: 'management:ProductsPricing',
         },
         {
             name: '库存报警',
-            url: '/stock_management/stock_alert'
+            url: '/stock_management/stock_alert',
+            requiredPermission: 'management:StockAlert',
         },
         {
             name: '明细统计',
-            url: '/stock_management/detail_stats'
+            url: '/stock_management/detail_stats',
+            requiredPermission: 'management:DetailStats',
         },
         {
             name: '库存盘点',
-            url: '/stock_management/inventory'
+            url: '/stock_management/inventory',
+            requiredPermission: 'management:Inventory',
         },
         {
             name: '预销售资源',
-            url: '/stock_management/presales_query'
+            url: '/stock_management/presales_query',
+            requiredPermission: 'management:PresalesQuery',
         },
         {
             name: '库存资源',
-            url: '/stock_management/stock_resources'
+            url: '/stock_management/stock_resources',
+            requiredPermission: 'management:StockResources',
         }
     ],
     production_management_nav: [
