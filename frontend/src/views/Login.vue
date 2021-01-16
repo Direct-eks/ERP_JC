@@ -71,8 +71,7 @@ import {mdiCodeTags} from '@mdi/js'
 import {mdiAccount} from '@mdi/js'
 import {mdiLock} from '@mdi/js'
 
-import sha256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex'
+// import {sha256} from 'utility'
 
 export default {
     name: 'Login',
@@ -109,18 +108,23 @@ export default {
         login() {
             if (this.$refs.form.validate()) {
                 this.loading = true;
-                console.log(sha256(this.form.password).toString(Hex))
+                // console.log(sha256(this.form.password))
                 this.$postRequest(this.$api.userAuthentication, {
                     username: this.form.username,
-                    password: sha256(this.form.password).toString(Hex),
+                    // password: sha256(this.form.password),
+                    password: this.form.password
                 }).then((res) => {
-                    console.log('received', res.data)
+                    const userData = res.data
+                    console.log('received', userData)
                     this.$store.commit('setSnackbar', {
                         message: '登录成功', color: 'success'
                     })
 
+                    this.$store.commit('modifyCurrentUser', userData.username)
+                    this.$store.commit('modifyCurrentUserRole', userData.role)
+                    this.$store.commit('modifyCurrentUserPermissions', userData.permissions)
                     // use vuex to store user information
-                    sessionStorage.setItem('userName', this.form.username)
+                    sessionStorage.setItem('userName', userData.username)
                     sessionStorage.setItem('userToken', res.data.sessionID)
                     sessionStorage.setItem('userRole', res.data.role)
                     sessionStorage.setItem('userPermissions', JSON.stringify(res.data.permissions))

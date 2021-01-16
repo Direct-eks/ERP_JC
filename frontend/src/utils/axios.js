@@ -67,7 +67,8 @@ if (process.env.NODE_ENV === 'development') {
     base = '/api'
 }
 else {
-    base = 'http://127.0.0.1:8088'
+    // base = 'http://127.0.0.1:8088' // for electron
+    base = '' // for web
 }
 
 export const getRequest = (url, params) => {

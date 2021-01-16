@@ -37,6 +37,9 @@
             <v-btn icon>
                 <v-icon @click="logout">{{ mdiLogoutPath }}</v-icon>
             </v-btn>
+            <v-btn icon>
+                <v-icon @click="shutdown">{{ mdiPowerPath }}</v-icon>
+            </v-btn>
 
         </v-app-bar>
 
@@ -53,7 +56,7 @@
 </template>
 
 <script>
-import { mdiLogout, mdiHome } from '@mdi/js'
+import { mdiLogout, mdiHome, mdiPower } from '@mdi/js'
 import nav from "~/utils/nav";
 import SnackMessage from "~/components/SnackMessage";
 
@@ -84,6 +87,7 @@ export default {
         return {
             mdiHomePath: mdiHome,
             mdiLogoutPath: mdiLogout,
+            mdiPowerPath: mdiPower,
 
             nav: nav.items,
             navDrawer: null
@@ -105,11 +109,16 @@ export default {
             this.$postRequest(this.$api.userLogout, {}).then(() => {
                 this.$store.commit('modifyCurrentUser', null)
                 this.$store.commit('modifyCurrentUserRole', null)
-                this.$store.commit('modifyCurrentPermissions', [])
+                this.$store.commit('modifyCurrentUserPermissions', [])
                 sessionStorage.clear()
                 this.$router.replace('/login')
             }).catch(error => this.$ajaxErrorHandler(error))
-        }
+        },
+        shutdown() {
+            this.$postRequest('/actuator/shutdown').then(() => {
+                console.log('shutdown success')
+            })
+        },
     }
 }
 </script>
