@@ -21,7 +21,7 @@ spring:
   datasource:
     username:
     password:
-    url: jdbc:sqlite:../db/test.db
+    url: jdbc:sqlite:C:/ERP_JC/db/test.db
     driver-class-name: org.sqlite.JDBC
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
