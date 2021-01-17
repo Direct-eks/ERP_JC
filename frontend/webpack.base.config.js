@@ -1,4 +1,4 @@
-const path = require('path')
+const { resolve } = require('path')
 // const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     entry: {
-        index: path.join(__dirname, 'src/main.js'),
+        index: resolve(__dirname, 'src/main.js'),
     },
     module: {
         rules: [
@@ -78,7 +78,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            '~': path.resolve(__dirname, 'src')
+            '~': resolve(__dirname, 'src')
         },
         extensions: ['.js', '.vue', '.json', '.css']
     },
