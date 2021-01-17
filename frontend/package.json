@@ -13,8 +13,8 @@
     },
     "private": true,
     "scripts": {
-        "dev": "webpack-dev-server --config webpack.dev.js",
-        "build": "rimraf dist && webpack -p --progress --hide-modules --config webpack.prod.js"
+        "dev": "webpack-dev-server --config webpack.dev.config.js",
+        "build": "rimraf dist && webpack -p --progress --hide-modules --config webpack.prod.config.js"
     },
     "dependencies": {
         "@mdi/js": "^5.8.55",
