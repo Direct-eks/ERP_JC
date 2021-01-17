@@ -3,13 +3,13 @@
         <v-navigation-drawer
                 app
                 v-model="navDrawer"
-                :clipped="$vuetify.breakpoint.mdAndUp">
+                stateless
+                disable-resize-watcher>
             <v-list dense nav>
                 <v-list-item
                         v-for="(item, i) in nav"
                         :key="i"
                         :to="item.url"
-                        link
                         @click.stop="navDrawer = !navDrawer">
                     <v-list-item-content>
                         <v-list-item-title>
@@ -23,8 +23,7 @@
         <v-app-bar app
                    dense
                    flat
-                   color="white"
-                   :clipped-left="$vuetify.breakpoint.mdAndUp">
+                   color="white">
 
             <v-app-bar-nav-icon @click.stop="navDrawer = !navDrawer"></v-app-bar-nav-icon>
 
@@ -90,7 +89,7 @@ export default {
             mdiPowerPath: mdiPower,
 
             nav: nav.items,
-            navDrawer: null
+            navDrawer: false
         }
     },
     components: {
