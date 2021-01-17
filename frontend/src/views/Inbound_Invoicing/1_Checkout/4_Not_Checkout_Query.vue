@@ -8,6 +8,13 @@
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="querySummary">查询</v-btn>
 
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/inbound_invoicing">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
+
             <template v-slot:extension>
                 <v-tabs v-model="tab" @change="handleTabChange">
                     <v-tabs-slider></v-tabs-slider>
@@ -68,10 +75,13 @@
 </template>
 
 <script>
+import { mdiArrowLeft } from '@mdi/js'
+
 export default {
     name: "Not_Checkout_Query",
     data() {
         return {
+            mdiArrowLeftPath: mdiArrowLeft,
             tab: null,
             totalSum: 0.0,
 

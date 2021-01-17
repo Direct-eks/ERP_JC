@@ -6,6 +6,13 @@
             <v-toolbar-title>收运费查询</v-toolbar-title>
             <v-card-subtitle>出库代垫运费查询</v-card-subtitle>
 
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/outbound_invoicing">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
+
             <template v-slot:extension>
                 <v-tabs v-model="tab" @change="handleTabChange">
                     <v-tabs-slider></v-tabs-slider>
@@ -39,6 +46,8 @@
 </template>
 
 <script>
+import { mdiArrowLeft } from '@mdi/js'
+
 export default {
     name: "Out_Cost_Query",
     components: {
@@ -47,6 +56,7 @@ export default {
     },
     data() {
         return {
+            mdiArrowLeftPath: mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 

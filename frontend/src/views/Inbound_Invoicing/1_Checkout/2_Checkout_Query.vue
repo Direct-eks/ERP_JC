@@ -4,6 +4,12 @@
     <v-card outlined>
         <v-toolbar flat>
             <v-toolbar-title>入库结账单查询</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/inbound_invoicing">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
 
             <template v-slot:extension>
                 <v-tabs v-model="tab" @change="handleTabChange">
@@ -38,6 +44,8 @@
 </template>
 
 <script>
+import { mdiArrowLeft } from '@mdi/js'
+
 export default {
     name: "In_Check_Query",
     components: {
@@ -49,6 +57,7 @@ export default {
     },
     data() {
         return {
+            mdiArrowLeftPath: mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 
