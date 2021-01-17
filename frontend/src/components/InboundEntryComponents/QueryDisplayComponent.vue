@@ -80,7 +80,7 @@
                       hide-default-footer
                       locale="zh-cn">
             <template v-slot:item.inboundEntryID="{ item }">
-                <v-chip :color="item.isModified === 1 ? 'red' : null">
+                <v-chip :color="chipColor(item)">
                     {{ item.inboundEntryID }}
                 </v-chip>
             </template>
@@ -223,7 +223,6 @@ export default {
         },
         query() {
             if (this.isPurchaseQuery) {
-                console.log(this.dateRange)
                 this.$getRequest(this.$api.purchaseOrdersInDateRangeByCompanyID, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
@@ -234,7 +233,6 @@ export default {
                 }).catch(() => {})
             }
             else {
-                console.log(this.dateRange)
                 this.$getRequest(this.$api.inboundEntriesInDateRange, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
@@ -260,6 +258,18 @@ export default {
                 console.log('received', data)
                 this.modificationRecords = data
             }).catch(() => {})
+        },
+        chipColor(item) {
+            let color = null
+            if (item.isModified === 1) {
+                color = 'red'
+                if (item.returnSerial !== '') color = 'orange'
+            }
+            else if (item.returnSerial !== '') {
+                color = 'blue'
+            }
+
+            return color
         },
         tableClick(val) {
             this.modificationRecords = []
