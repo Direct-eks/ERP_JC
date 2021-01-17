@@ -613,6 +613,7 @@ export default {
                 this.tableData = val
             }
             this.purchaseOrderPanelOpen = false
+            this.handleQuantityChange()
         },
         /* ------- model search -------*/
         modelSearchCloseAction() {
