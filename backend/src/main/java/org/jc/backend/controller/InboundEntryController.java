@@ -2,7 +2,9 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -68,17 +70,20 @@ public class InboundEntryController {
         List<InboundEntryWithProductsVO> entries = inboundEntryService.getEntriesInDateRangeByTypeAndCompanyID(
                 startDate, endDate, type, companyID);
 
-        //forbid changes to invoiced entries
+        //forbid changes to invoiced entries if subject has no admin role
         //drop entries if were invoiced when forModify is true
         if (forModify) {
-            entries.removeIf(entry -> {
-                for (var product : entry.getInboundProducts()) {
-                    if (!product.getCheckoutSerial().equals("")) {
-                        return true;
+            Subject subject = SecurityUtils.getSubject();
+            if (!subject.hasRole("admin")) {
+                entries.removeIf(entry -> {
+                    for (var product : entry.getInboundProducts()) {
+                        if (!product.getCheckoutSerial().equals("")) {
+                            return true;
+                        }
                     }
-                }
-                return false;
-            });
+                    return false;
+                });
+            }
         }
 
         return entries;
