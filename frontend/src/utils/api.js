@@ -38,10 +38,10 @@ const api = {
     returnInboundEntry: '/inboundEntry/returnEntryProducts', // POST
     // GET companyID= shippingCostType=
     inboundEntriesByCompanyAndShippingCostType: '/inboundEntry/getEntriesByCompanyAndShippingCostType',
-    notYetCheckoutSummary: '/inboundEntry/getNotYetCheckoutSummary', // GET
-    notYetCheckoutDetail: '/inboundEntry/getNotYetCheckoutDetailByCompanyID/', // GET companyID
-    notYetInvoiceSummary: '/inboundEntry/getNotYetInvoiceSummary', // GET
-    notYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
+    inboundNotYetCheckoutSummary: '/inboundEntry/getNotYetCheckoutSummary', // GET
+    inboundNotYetCheckoutDetail: '/inboundEntry/getNotYetCheckoutDetailByCompanyID/', // GET companyID
+    inboundNotYetInvoiceSummary: '/inboundEntry/getNotYetInvoiceSummary', // GET
+    inboundNotYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
@@ -75,6 +75,10 @@ const api = {
     returnOutboundEntry: '/outboundEntry/returnEntryProducts', // POST
     // GET companyID= shippingCostType=
     outboundEntriesByCompanyAndShippingCostType: '/outboundEntry/getEntriesByCompanyAndShippingCostType',
+    outboundNotYetCheckoutSummary: '/outboundEntry/getNotYetCheckoutSummary', // GET
+    outboundNotYetCheckoutDetail: '/outboundEntry/getNotYetCheckoutDetailByCompanyID/', // GET companyID
+    outboundNotYetInvoiceSummary: '/outboundEntry/getNotYetInvoiceSummary', // GET
+    outboundNotYetInvoiceDetail: '/outboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
