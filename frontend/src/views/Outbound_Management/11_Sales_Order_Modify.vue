@@ -4,6 +4,12 @@
     <v-card outlined>
         <v-toolbar flat>
             <v-toolbar-title>销售订单修改</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/outbound_management">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
 
             <template v-slot:extension>
                 <v-tabs v-model="tab" @change="handleTabChange">
@@ -36,14 +42,17 @@
 </template>
 
 <script>
+import { mdiArrowLeft } from '@mdi/js'
+
 export default {
-    name: "11_Sales_Order_Modify",
+    name: "Sales_Order_Modify",
     components: {
         OutboundQueryDisplayComponent: () => import('~/components/OutboundEntryComponents/QueryDisplayComponent'),
         OutboundEntryDisplayAndModifyComponent: () => import('~/components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),
     },
     data() {
         return {
+            mdiArrowLeftPath: mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 

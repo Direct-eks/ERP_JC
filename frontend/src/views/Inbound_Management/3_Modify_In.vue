@@ -4,6 +4,12 @@
     <v-card outlined>
         <v-toolbar flat>
             <v-toolbar-title>入库单修改</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/inbound_management">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
 
             <template v-slot:extension>
                 <v-tabs v-model="tab" @change="handleTabChange">
@@ -36,6 +42,8 @@
 </template>
 
 <script>
+import { mdiArrowLeft } from '@mdi/js'
+
 export default {
     name: "Modify_In",
     components: {
@@ -47,6 +55,7 @@ export default {
     },
     data() {
         return {
+            mdiArrowLeftPath: mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 

@@ -1,6 +1,7 @@
 <template>
     <v-row justify="center" dense>
-        <v-col md="auto">
+        <v-col cols="auto"
+               v-show="showStatus">
             <v-card>
                 <v-list>
                     <template v-for="(item, i) in navItem">
@@ -57,9 +58,15 @@ export default {
     },
     data() {
         return {
-            navItem: []
+            navItem: [],
+            showStatus: true,
         }
-    }
+    },
+    watch: {
+        $route(to, from) {
+            this.showStatus = to.path === '/stock_management';
+        },
+    },
 }
 </script>
 
