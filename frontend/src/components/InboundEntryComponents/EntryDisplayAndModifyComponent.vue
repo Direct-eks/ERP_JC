@@ -490,16 +490,16 @@ export default {
             break
         }
         if (this.inboundEntryModifyMode || this.purchaseOrderModifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((res) => {
-                console.log(res.data)
-                this.departmentOptions = res.data
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            this.$getRequest(this.$api.departmentOptions).then((data) => {
+                console.log(data)
+                this.departmentOptions = data
+            }).catch(() => {})
         }
         if (this.purchaseOrderModifyMode) {
-            this.$getRequest(this.$api.warehouseOptions).then((res) => {
-                console.log(res.data)
-                this.warehouseOptions = res.data
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            this.$getRequest(this.$api.warehouseOptions).then((data) => {
+                console.log(data)
+                this.warehouseOptions = data
+            }).catch(() => {})
         }
     },
     data() {
@@ -643,7 +643,7 @@ export default {
                         message: '提交成功', color: 'success'
                     })
                     this.$router.replace('/inbound_management')
-                }).catch((error) => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         saveOrderModification() {
@@ -667,7 +667,7 @@ export default {
                         message: '提交成功', color: 'success'
                     })
                     this.$router.replace('/inbound_management')
-                }).catch((error) => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         saveEntryReturn() {
@@ -676,7 +676,7 @@ export default {
                     message: '提交成功', color: 'success'
                 })
                 this.$router.replace('/inbound_management')
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         }
     },
     computed: {

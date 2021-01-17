@@ -138,36 +138,36 @@ export default {
                 if (this.checkoutMode) {
                     this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
                         companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
+                    }).then((data) => {
+                        console.log(data)
+                        this.queryTableData = data
+                    }).catch(() => {})
                 }
                 else if (this.invoiceMode) {
                     this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
                         companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
+                    }).then((data) => {
+                        console.log(data)
+                        this.queryTableData = data
+                    }).catch(() => {})
                 }
             }
             else {
                 if (this.checkoutMode) {
                     this.$getRequest(this.$api.outboundProductsNotCheckedOut, {
                         companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
+                    }).then((data) => {
+                        console.log(data)
+                        this.queryTableData = data
+                    }).catch(() => {})
                 }
                 else if (this.invoiceMode) {
                     this.$getRequest(this.$api.outboundProductsCheckoutAndNotInvoiced, {
                         companyID: this.companyID, invoiceType: this.invoiceType
-                    }).then((res) => {
-                        console.log(res.data)
-                        this.queryTableData = res.data
-                    })
+                    }).then((data) => {
+                        console.log(data)
+                        this.queryTableData = data
+                    }).catch(() => {})
                 }
             }
         },

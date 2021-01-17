@@ -73,18 +73,18 @@ export default {
                 if (this.isSalesOrderMode) {
                     this.$getRequest(this.$api.salesOrdersByCompanyID +
                         encodeURI(String(this.companyID))
-                    ).then((res) => {
-                        console.log('received', res.data)
-                        this.queryTableData = res.data
-                    }).catch((error) => this.$ajaxErrorHandler(error))
+                    ).then((data) => {
+                        console.log('received', data)
+                        this.queryTableData = data
+                    }).catch(() => {})
                 }
                 else if (this.isQuotaMode) {
                     this.$getRequest(this.$api.quotaByCompanyID +
                         encodeURI(String(this.companyID))
-                    ).then((res) => {
-                        console.log('received', res.data)
-                        this.queryTableData = res.data
-                    }).catch((error) => this.$ajaxErrorHandler(error))
+                    ).then((data) => {
+                        console.log('received', data)
+                        this.queryTableData = data
+                    }).catch(() => {})
                 }
             },
             immediate: true

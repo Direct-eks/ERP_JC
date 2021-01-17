@@ -400,13 +400,13 @@ export default {
         'form.shippingCostType'(val) {
             if (val === '自付') {
                 this.disableCompanySearch = true
-                this.$getRequest(this.$api.selfCompany).then((res) => {
-                    console.log('received', res.data)
-                    this.form.partnerCompanyID = res.data.companyID
-                    this.form.companyAbbreviatedName = res.data.abbreviatedName
-                    this.form.companyFullName = res.data.fullName
-                    this.form.companyPhone = res.data.phone
-                })
+                this.$getRequest(this.$api.selfCompany).then((data) => {
+                    console.log('received', data)
+                    this.form.partnerCompanyID = data.companyID
+                    this.form.companyAbbreviatedName = data.abbreviatedName
+                    this.form.companyFullName = data.fullName
+                    this.form.companyPhone = data.phone
+                }).catch(() => {})
             }
             else if (val === '代垫') {
                 this.disableCompanySearch = false
@@ -589,7 +589,7 @@ export default {
                     else {
                         this.$router.replace('/outbound_invoicing')
                     }
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         modifyEntry() {
@@ -604,7 +604,7 @@ export default {
                     else {
                         this.$router.replace('/outbound_invoicing')
                     }
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
     },

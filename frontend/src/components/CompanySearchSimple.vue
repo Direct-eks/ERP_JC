@@ -87,12 +87,12 @@ export default {
             this.$getRequest(this.$api.companyFuzzySearch, {
                 phone: this.phoneSearchField,
                 name: this.companyNameSearchField
-            }).then((res) => {
-                console.log('received', res.data)
-                this.simpleSearchTable = res.data
+            }).then((data) => {
+                console.log('received', data)
+                this.simpleSearchTable = data
                 // open panel
                 this.simpleSearchPanelOpen = true
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         },
         handleTableClick(val) {
             this.simpleSearchCurrentRow = [val]

@@ -427,21 +427,21 @@ export default {
         }
 
         if (this.creationMode || this.modifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((res) => {
-                console.log(res.data)
-                this.departmentOptions = res.data
+            this.$getRequest(this.$api.departmentOptions).then((data) => {
+                console.log(data)
+                this.departmentOptions = data
                 for (const item of this.departmentOptions) {
                     if (item.isDefault === 1) {
                         this.form.departmentID = item.departmentID
                         break
                     }
                 }
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
 
-            this.$getRequest(this.$api.visibleBankAccounts).then((res) => {
-                console.log(res.data)
-                this.bankAccountOptions = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
+                console.log(data)
+                this.bankAccountOptions = data
+            }).catch(() => {})
         }
     },
     data() {
@@ -648,7 +648,7 @@ export default {
                 })
 
                 this.$router.replace('/inbound_invoicing')
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         },
         modifyCheckoutEntry() {
             if (!this.$refs.form.validate()) return
@@ -672,7 +672,7 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         },
     }
 }

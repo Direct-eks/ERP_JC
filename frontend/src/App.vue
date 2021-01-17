@@ -111,12 +111,12 @@ export default {
                 this.$store.commit('modifyCurrentUserPermissions', [])
                 sessionStorage.clear()
                 this.$router.replace('/login')
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         },
         shutdown() {
             this.$postRequest('/actuator/shutdown').then(() => {
                 console.log('shutdown success')
-            })
+            }).catch(() => {})
         },
     }
 }

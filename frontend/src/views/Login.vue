@@ -76,10 +76,10 @@ import {mdiLock} from '@mdi/js'
 export default {
     name: 'Login',
     beforeMount() {
-        this.$getRequest(this.$api.userNameList).then((res) => {
-            console.log('received', res.data)
-            this.userList = res.data
-        })
+        this.$getRequest(this.$api.userNameList).then((data) => {
+            console.log('received', data)
+            this.userList = data
+        }).catch(() => {})
     },
     data() {
         return {
@@ -113,32 +113,27 @@ export default {
                     username: this.form.username,
                     // password: sha256(this.form.password),
                     password: this.form.password
-                }).then((res) => {
-                    const userData = res.data
-                    console.log('received', userData)
+                }).then((data) => {
+                    console.log('received', data)
                     this.$store.commit('setSnackbar', {
                         message: '登录成功', color: 'success'
                     })
 
-                    this.$store.commit('modifyCurrentUser', userData.username)
-                    this.$store.commit('modifyCurrentUserRole', userData.role)
-                    this.$store.commit('modifyCurrentUserPermissions', userData.permissions)
+                    this.$store.commit('modifyCurrentUser', data.username)
+                    this.$store.commit('modifyCurrentUserRole', data.role)
+                    this.$store.commit('modifyCurrentUserPermissions', data.permissions)
                     // use vuex to store user information
-                    sessionStorage.setItem('userName', userData.username)
-                    sessionStorage.setItem('userToken', res.data.sessionID)
-                    sessionStorage.setItem('userRole', res.data.role)
-                    sessionStorage.setItem('userPermissions', JSON.stringify(res.data.permissions))
+                    sessionStorage.setItem('userName', data.username)
+                    sessionStorage.setItem('userToken', data.sessionID)
+                    sessionStorage.setItem('userRole', data.role)
+                    sessionStorage.setItem('userPermissions', JSON.stringify(data.permissions))
                     sessionStorage.setItem('isAuthenticated', 'true')
 
                     this.username = ''
                     this.password = ''
                     this.loading = false;
-                    this.$router.replace('/home').then(t => {
-                    }).catch(t => {
-                    })
-                }).catch((reject) => {
-                    this.loading = false
-                });
+                    this.$router.replace('/home').then(() => {}).catch(() => {})
+                }).catch(() => {this.loading = false})
 
                 /*------ for debug only ------*/
                 // sessionStorage.setItem('userName', this.ruleForm.username)

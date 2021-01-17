@@ -552,22 +552,22 @@ export default {
         }
 
         if (this.outboundEntryModifyMode || this.salesOrderModifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((res) => {
-                console.log(res.data)
-                this.departmentOptions = res.data
+            this.$getRequest(this.$api.departmentOptions).then((data) => {
+                console.log(data)
+                this.departmentOptions = data
                 for (let item of this.departmentOptions)
                     if (item.isDefault === 1)
                         this.form.departmentID = item.id
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         }
         if (this.salesOrderModifyMode) {
-            this.$getRequest(this.$api.warehouseOptions).then((res) => {
-                console.log(res.data)
-                this.warehouseOptions = res.data
+            this.$getRequest(this.$api.warehouseOptions).then((data) => {
+                console.log(data)
+                this.warehouseOptions = data
                 for (let item of this.warehouseOptions)
                     if (item.isDefault === 1)
                         this.form.warehouseID = item.id
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         }
     },
     data() {
@@ -721,7 +721,7 @@ export default {
                         message: '提交成功', color: 'success'
                     })
                     this.$router.replace('/outbound_management')
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         saveOrderModification() {
@@ -745,7 +745,7 @@ export default {
                         message: '提交成功', color: 'success'
                     })
                     this.$router.replace('/outbound_management')
-                }).catch((error) => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         saveQuotaModification() {
@@ -758,7 +758,7 @@ export default {
                         message: '提交成功', color: 'success'
                     })
                     this.$router.replace('/outbound_management')
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         saveEntryReturn() {
@@ -767,7 +767,7 @@ export default {
                     message: '提交成功', color: 'success'
                 })
                 this.$router.replace('/outbound_management')
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         }
     },
     computed: {

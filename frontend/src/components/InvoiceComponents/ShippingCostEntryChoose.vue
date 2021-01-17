@@ -92,19 +92,19 @@ export default {
                 this.$getRequest(this.$api.inboundEntriesByCompanyAndShippingCostType, {
                     companyID: this.companyID,
                     shippingCostType: this.shippingCostType,
-                }).then((res) => {
-                    console.log('received', res.data)
-                    this.tableData = res.data
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).then((data) => {
+                    console.log('received', data)
+                    this.tableData = data
+                }).catch(() => {})
             }
             else {
                 this.$getRequest(this.$api.outboundEntriesByCompanyAndShippingCostType, {
                     companyID: this.companyID,
                     shippingCostType: this.shippingCostType
-                }).then((res) => {
-                    console.log('received', res.data)
-                    this.tableData = res.data
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).then((data) => {
+                    console.log('received', data)
+                    this.tableData = data
+                }).catch(() => {})
             }
 
         },

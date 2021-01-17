@@ -145,12 +145,12 @@ export default {
             this.treeData = result
             return
         }
-        this.$getRequest(this.$api.companyAreas).then((res) => {
-            console.log('received', res.data)
-            this.treeData = creatTree(res.data)
+        this.$getRequest(this.$api.companyAreas).then((data) => {
+            console.log('received', data)
+            this.treeData = creatTree(data)
             console.log(this.treeData)
             this.$store.commit('modifyCompanyList', this.treeData)
-        })
+        }).catch(() => {})
     },
     methods: {
         close() {
@@ -160,10 +160,10 @@ export default {
             this.$getRequest(this.$api.companyFuzzySearch, {
                 name: this.name,
                 phone: this.phone,
-            }).then((res) => {
-                console.log('receive', res.data)
-                this.tableData = res.data
-            })
+            }).then((data) => {
+                console.log('receive', data)
+                this.tableData = data
+            }).catch(() => {})
         },
         handleTableClick(val) {
             this.currentRow = [val]
@@ -181,11 +181,11 @@ export default {
                     return
                 }
                 this.$getRequest(this.$api.companiesByCategory
-                        + encodeURI(val.areaID)).then((res) => {
-                    console.log('received', res.data)
-                    this.tableData = res.data
-                    this.$store.commit('modifyCompanies', { key: val.areaID, value: res.data })
-                }).catch(error => this.$ajaxErrorHandler(error))
+                        + encodeURI(val.areaID)).then((data) => {
+                    console.log('received', data)
+                    this.tableData = data
+                    this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
+                }).catch(() => {})
             }
         }
     }

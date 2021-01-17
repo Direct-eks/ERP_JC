@@ -299,12 +299,12 @@ export default {
         },
         saveShippingInfoChange() {
             this.form.totalCost = this.totalCost
-            this.$patchRequest(this.$api.completeInboundEntry, this.form).then((res) => {
+            this.$patchRequest(this.$api.completeInboundEntry, this.form).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
                 this.$router.replace('/inbound_management')
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         }
     },
     watch: {

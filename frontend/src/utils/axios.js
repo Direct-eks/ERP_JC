@@ -17,7 +17,7 @@ axios.interceptors.response.use((response) => {
         //     message: '请求成功', color: 'success'
         // })
     }
-    return Promise.resolve(response)
+    return Promise.resolve(response.data)
 }, (error) => {
     console.log("error status: " + error.response.status)
     console.log("error message: " + error.response.data.msg)
@@ -28,6 +28,10 @@ axios.interceptors.response.use((response) => {
         main.$store.commit('setSnackbar', {
             message: '登录失效，请重新登录', color: 'error'
         })
+        sessionStorage.clear()
+        setTimeout(() => {
+            main.$router.replace('login')
+        }, 3000)
         break
     case 403: // Forbidden
         main.$store.commit('setSnackbar', {
@@ -59,7 +63,7 @@ axios.interceptors.response.use((response) => {
             message: '未知错误' + error.status, color: 'error'
         })
     }
-    return Promise.reject(error)
+    return Promise.reject()
 })
 
 let base

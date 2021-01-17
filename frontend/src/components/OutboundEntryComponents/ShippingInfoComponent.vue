@@ -342,7 +342,7 @@ export default {
                     message: '提交成功', color: 'success'
                 })
                 this.$router.replace('/outbound_management')
-            }).catch((error) => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         }
     },
 }

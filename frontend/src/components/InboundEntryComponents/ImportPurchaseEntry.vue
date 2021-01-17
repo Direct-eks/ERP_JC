@@ -63,14 +63,14 @@ export default {
     },
     watch: {
         companyID: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 if (val === -1) return
                 this.$getRequest(this.$api.purchaseOrdersByCompanyID +
                     encodeURI(String(this.companyID))
-                ).then((res) => {
-                    console.log('received', res.data)
-                    this.queryTableData = res.data
-                }).catch((error) => this.$ajaxErrorHandler(error))
+                ).then((data) => {
+                    console.log('received', data)
+                    this.queryTableData = data
+                }).catch(() => {})
             },
             immediate: true
         }

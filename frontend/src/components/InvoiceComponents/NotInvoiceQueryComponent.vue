@@ -131,30 +131,30 @@ export default {
         },
         querySummary() {
             if (this.isInbound) {
-                this.$getRequest(this.$api.inboundNotYetInvoiceSummary).then((res) => {
-                    console.log('received', res.data)
+                this.$getRequest(this.$api.inboundNotYetInvoiceSummary).then((data) => {
+                    console.log('received', data)
 
-                    this.summaryTableData = res.data
+                    this.summaryTableData = data
 
                     this.totalSum = 0.0
                     this.summaryTableData.forEach((item) => {
                         this.totalSum += Number(item.totalAmount)
                     })
 
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
             else {
-                this.$getRequest(this.$api.outboundNotYetInvoiceSummary).then((res) => {
-                    console.log('received', res.data)
+                this.$getRequest(this.$api.outboundNotYetInvoiceSummary).then((data) => {
+                    console.log('received', data)
 
-                    this.summaryTableData = res.data
+                    this.summaryTableData = data
 
                     this.totalSum = 0.0
                     this.summaryTableData.forEach((item) => {
                         this.totalSum += Number(item.totalAmount)
                     })
 
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
 
         },
@@ -164,19 +164,19 @@ export default {
 
             if (this.isInbound) {
                 this.$getRequest(this.$api.inboundNotYetInvoiceDetail +
-                    encodeURI(val.companyID)).then((res) => {
-                    console.log('received', res.data)
+                    encodeURI(val.companyID)).then((data) => {
+                    console.log('received', data)
 
-                    this.detailTableData = res.data
-                }).catch(error => this.$ajaxErrorHandler(error))
+                    this.detailTableData = data
+                }).catch(() => {})
             }
             else {
                 this.$getRequest(this.$api.outboundNotYetInvoiceDetail +
-                    encodeURI(val.companyID)).then((res) => {
-                    console.log('received', res.data)
+                    encodeURI(val.companyID)).then((data) => {
+                    console.log('received', data)
 
-                    this.detailTableData = res.data
-                }).catch(error => this.$ajaxErrorHandler(error))
+                    this.detailTableData = data
+                }).catch(() => {})
             }
 
         }

@@ -139,10 +139,10 @@ export default {
             break
         }
 
-        this.$getRequest(this.$api.visibleBankAccounts).then((res) => {
-            console.log(res.data)
-            this.bankAccountOptions = res.data
-        }).catch(error => this.$ajaxErrorHandler(error))
+        this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
+            console.log(data)
+            this.bankAccountOptions = data
+        }).catch(() => {})
     },
     data() {
         return {
@@ -222,18 +222,18 @@ export default {
                 companyID: this.companyID,
                 paymentMethod: this.paymentMethod,
                 bankAccountID: this.bankAccountID,
-            }).then((res) => {
-                console.log(res.data)
-                this.queryTableData = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).then((data) => {
+                console.log(data)
+                this.queryTableData = data
+            }).catch(() => {})
         },
         queryModificationRecord() {
             this.$getRequest(this.$api.modificationRecordsBySerial
                 + encodeURI(this.queryTableCurrentRow[0].moneyEntrySerial)
-            ).then((res) => {
-                console.log('received', res.data)
-                this.modificationRecords = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            ).then((data) => {
+                console.log('received', data)
+                this.modificationRecords = data
+            }).catch(() => {})
         },
         tableClick(val) {
             this.modificationRecords = []

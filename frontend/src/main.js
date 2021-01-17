@@ -12,7 +12,6 @@ import {deleteRequest} from './utils/axios'
 import {putRequest} from './utils/axios'
 import {patchRequest} from './utils/axios'
 import api from './utils/api'
-import AjaxErrorHandler from './utils/AjaxErrorHandler'
 
 Vue.prototype.$getRequest = getRequest
 Vue.prototype.$postRequest = postRequest
@@ -20,7 +19,6 @@ Vue.prototype.$deleteRequest = deleteRequest
 Vue.prototype.$putRequest = putRequest
 Vue.prototype.$patchRequest = patchRequest
 Vue.prototype.$api = api
-Vue.prototype.$ajaxErrorHandler = AjaxErrorHandler
 
 
 if (process.env.NODE_ENV === "development") {

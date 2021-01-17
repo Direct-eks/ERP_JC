@@ -228,10 +228,10 @@ export default {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     companyID: this.companyID,
-                }).then((res) => {
-                    console.log('received', res.data)
-                    this.queryTableData = res.data
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).then((data) => {
+                    console.log('received', data)
+                    this.queryTableData = data
+                }).catch(() => {})
             }
             else {
                 console.log(this.dateRange)
@@ -241,10 +241,10 @@ export default {
                     type: this.category,
                     companyID: this.companyID,
                     forModify: this.isModify
-                }).then((res) => {
-                    console.log('received', res.data)
-                    this.queryTableData = res.data
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).then((data) => {
+                    console.log('received', data)
+                    this.queryTableData = data
+                }).catch(() => {})
             }
         },
         queryModificationRecord() {
@@ -256,10 +256,10 @@ export default {
                 url = encodeURI(this.queryTableCurrentRow[0].inboundEntryID)
             }
 
-            this.$getRequest(this.$api.modificationRecordsBySerial + url).then((res) => {
-                console.log('received', res.data)
-                this.modificationRecords = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            this.$getRequest(this.$api.modificationRecordsBySerial + url).then((data) => {
+                console.log('received', data)
+                this.modificationRecords = data
+            }).catch(() => {})
         },
         tableClick(val) {
             this.modificationRecords = []

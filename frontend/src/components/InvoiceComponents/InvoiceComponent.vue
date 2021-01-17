@@ -512,24 +512,24 @@ export default {
             if (this.$refs.form.validate()) {
                 this.$putRequest(this.$api.createInvoiceEntry, this.form, {
                     isInbound: this.isInbound,
-                }).then((res) => {
+                }).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
 
                     this.$router.replace('/inbound_invoicing')
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         },
         modifyEntry() {
             if (this.$refs.form.validate()) {
-                this.$patchRequest(this.$api.modifyInvoiceEntry, this.form).then((res) => {
+                this.$patchRequest(this.$api.modifyInvoiceEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
 
                     this.$router.replace('/inbound_invoicing')
-                }).catch(error => this.$ajaxErrorHandler(error))
+                }).catch(() => {})
             }
         }
     }

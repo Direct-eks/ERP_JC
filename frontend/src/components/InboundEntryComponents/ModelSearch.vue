@@ -230,11 +230,11 @@ export default {
             this.treeData = result
             return
         }
-        this.$getRequest(this.$api.modelCategories).then((res) => {
-            console.log('received', res.data)
-            this.treeData = creatTree(res.data)
+        this.$getRequest(this.$api.modelCategories).then((data) => {
+            console.log('received', data)
+            this.treeData = creatTree(data)
             this.$store.commit('modifyModelList', this.treeData)
-        }).catch(error => this.$ajaxErrorHandler(error))
+        }).catch(() => {})
     },
     methods: {
         close() {
@@ -248,10 +248,10 @@ export default {
                 name: this.modelSearchName,
                 category: this.modelSearchCategory,
                 method: this.modelSearchMethod
-            }).then((res) => {
-                console.log('received', res.data)
-                this.modelTableData = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).then((data) => {
+                console.log('received', data)
+                this.modelTableData = data
+            }).catch(() => {})
         },
         treeSelect(data) {
             this.modelTableData = []
@@ -270,11 +270,11 @@ export default {
                     return
                 }
                 this.$getRequest(this.$api.modelsByCategory +
-                        encodeURI(val.categoryID)).then((res) => {
-                    console.log('received', res.data)
-                    this.modelTableData = res.data
-                    this.$store.commit('modifyModels', { key: val.categoryID, value: res.data })
-                }).catch(error => this.$ajaxErrorHandler(error))
+                        encodeURI(val.categoryID)).then((data) => {
+                    console.log('received', data)
+                    this.modelTableData = data
+                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
+                }).catch(() => {})
             }
         },
         modelTableChoose(val) {
@@ -285,10 +285,10 @@ export default {
             this.warehouseStockCurrentRow = []
 
             this.$getRequest(this.$api.fullSkuByModel +
-                encodeURI(val.modelID)).then((res) => {
-                console.log('received', res.data)
-                this.skuTableData = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+                encodeURI(val.modelID)).then((data) => {
+                console.log('received', data)
+                this.skuTableData = data
+            }).catch(() => {})
         },
         skuTableChoose(val) {
             this.skuTableCurrentRow = [val]
@@ -299,7 +299,7 @@ export default {
                 encodeURI(val.skuID)).then((res) => {
                 console.log('received', res.data)
                 this.warehouseStockTableData = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).catch(() => {})
         },
         chooseHandle() {
             //check if sku is chosen

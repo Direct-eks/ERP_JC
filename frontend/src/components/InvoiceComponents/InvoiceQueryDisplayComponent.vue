@@ -269,18 +269,18 @@ export default {
                 invoiceNumber: this.invoiceNumber,
                 invoiceType: this.invoiceType,
                 forModify: this.isModify,
-            }).then((res) => {
-                console.log(res.data)
-                this.queryTableData = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            }).then((data) => {
+                console.log(data)
+                this.queryTableData = data
+            }).catch(() => {})
         },
         queryModificationRecord() {
             this.$getRequest(this.$api.modificationRecordsBySerial
                 + encodeURI(this.queryTableCurrentRow[0].invoiceEntrySerial)
-            ).then((res) => {
-                console.log('received', res.data)
-                this.modificationRecords = res.data
-            }).catch(error => this.$ajaxErrorHandler(error))
+            ).then((data) => {
+                console.log('received', data)
+                this.modificationRecords = data
+            }).catch(() => {})
         },
         tableClick(val) {
             this.modificationRecords = []

@@ -93,11 +93,11 @@ export default {
             this.treeData = result
             return
         }
-        this.$getRequest(this.$api.relevantCompanyCategories).then((res) => {
-            console.log('received', res.data)
-            this.treeData = creatTree(res.data)
+        this.$getRequest(this.$api.relevantCompanyCategories).then((data) => {
+            console.log('received', data)
+            this.treeData = creatTree(data)
             this.$store.commit('modifyRelevantCompanyList', this.treeData)
-        }).catch(error => this.$ajaxErrorHandler(error))
+        }).catch(() => {})
     },
     methods: {
         close() {
@@ -119,11 +119,11 @@ export default {
                     return
                 }
                 this.$getRequest(this.$api.relevantCompaniesByCategory +
-                    encodeURI(val.categoryID)).then((res) => {
-                    console.log('received', res.data)
-                    this.tableData = res.data
-                    this.$store.commit('modifyRelevantCompanies', {key: val.categoryID, value: res.data})
-                })
+                    encodeURI(val.categoryID)).then((data) => {
+                    console.log('received', data)
+                    this.tableData = data
+                    this.$store.commit('modifyRelevantCompanies', {key: val.categoryID, value: data})
+                }).catch(() => {})
             }
         }
     } // end methods
