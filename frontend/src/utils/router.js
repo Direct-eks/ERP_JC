@@ -584,10 +584,10 @@ const routes = [
 
 /*--------------Vue Router------------*/
 const router = new VueRouter({
-    routes,
-    linkActiveClass: 'open active',
+    routes: routes,
+    mode: 'hash',
+    // linkActiveClass: 'open active',
     scrollBehavior: () => ({ y: 0 }),
-    mode: 'hash'
 });
 
 router.beforeEach((to, from, next) => {
