@@ -3,7 +3,6 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
-import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -145,8 +144,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 logger.info("Completion: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originInfo.getInboundEntryID(), record.toString()));
-            } else {
-                logger.warn("Nothing changed!");
+            }
+            else {
+                logger.warn("nothing changed, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
@@ -211,6 +212,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getInboundEntryID(), record.toString()));
+            }
+            else {
+                logger.warn("nothing changed, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
@@ -281,6 +286,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
             if (bool || bool2) {
                 modificationMapper.insertModificationRecord(new ModificationO(id, record.toString()));
+            }
+            else {
+                logger.warn("nothing changed, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
