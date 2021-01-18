@@ -9,6 +9,7 @@ import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
+import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -29,14 +30,14 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     private final InboundEntryMapper inboundEntryMapper;
     private final ModificationMapper modificationMapper;
-    private final WarehouseStockMapper warehouseStockMapper;
+    private final WarehouseStockService warehouseStockService;
 
     public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper,
                                    ModificationMapper modificationMapper,
-                                   WarehouseStockMapper warehouseStockMapper) {
+                                   WarehouseStockService warehouseStockService) {
         this.inboundEntryMapper = inboundEntryMapper;
         this.modificationMapper = modificationMapper;
-        this.warehouseStockMapper = warehouseStockMapper;
+        this.warehouseStockService = warehouseStockService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -52,26 +53,34 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             int count = inboundEntryMapper.countNumberOfEntriesOfToday();
             String newSerial = MyUtils.formNewSerial("购入", count, newEntry.getEntryDate());
 
+            // set new inbound entry serial, and insert
             newEntry.setInboundEntryID(newSerial);
             inboundEntryMapper.insertNewEntry(newEntry);
 
+            // set inbound entry serial for products, and insert
             for (var product : newProducts) {
                 //set entry serial id for product
                 product.setInboundEntryID(newSerial);
 
                 //check warehouseStock for existence, if not, create new one
+                int warehouseID = product.getWarehouseID();
+                int skuID = product.getSkuID();
                 if (product.getWarehouseStockID() == -1
-                        || warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(
-                                product.getWarehouseID(), product.getSkuID()) == null) {
+                        || warehouseStockService.getWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
                     WarehouseStockO newWarehouseStock = new WarehouseStockO();
-                    newWarehouseStock.setSkuID(product.getSkuID());
-                    newWarehouseStock.setWarehouseID(product.getWarehouseID());
-                    int newID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    newWarehouseStock.setSkuID(skuID);
+                    newWarehouseStock.setWarehouseID(warehouseID);
+                    int newID = warehouseStockService.insertNewWarehouseStock(newWarehouseStock);
                     product.setWarehouseStockID(newID);
                 }
 
                 int id = inboundEntryMapper.insertNewProduct(product);
                 logger.info("Insert new inbound product id: " + id);
+
+                // calculate stock unit price for product
+                warehouseStockService.updateWarehouseStockUnitPriceAndQuantity(product);
+
+                //todo replenish presales
             }
 
         } catch (PersistenceException e) {
@@ -185,6 +194,9 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                         if (bool3) {
                             bool2 = true;
                             inboundEntryMapper.updateProduct(currentProduct);
+
+                            // calculate new unit stock price
+                            warehouseStockService.updateWarehouseStockUnitPriceAndQuantity(currentProduct, originProduct);
                         }
                         found = true;
                         break;

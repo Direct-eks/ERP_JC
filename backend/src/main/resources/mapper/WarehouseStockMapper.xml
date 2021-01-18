@@ -50,4 +50,12 @@
         from w_warehouse_stock as ws join w_warehouse as w on ws.warehouse_id = w.warehouse_id
         where ws.sku_id = #{sku} and ws.warehouse_id = #{warehouse}
     </select>
+
+    <update id="updateWarehouseStockUnitPriceAndQuantityByID">
+        update w_warehouse_stock
+        set stock_unit_price_without_tax = #{price},
+            stock_quantity = #{quantity}
+        where warehouse_stock_id = #{id}
+    </update>
+
 </mapper>
