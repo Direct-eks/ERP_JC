@@ -101,7 +101,7 @@
                       hide-default-footer
                       locale="zh-cn">
         </v-data-table>
-
+        <p class="body-1">红色：修改，蓝色：退货，橘色：退货并且修改</p>
         <v-divider></v-divider>
 
         <v-data-table :headers="modificationRecordTableHeader"
@@ -165,7 +165,7 @@ export default {
             ],
 
             queryTableHeaders: [
-                {text: '入库单号', value: 'inboundEntryID', width: '80px'},
+                {text: '入库单号', value: 'inboundEntryID', width: '120px'},
                 {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
                 {text: '仓库', value: 'warehouseName', width: '65'},
                 {text: '部门', value: 'departmentName', width: '80px'},
@@ -174,11 +174,12 @@ export default {
                 {text: '总金额', value: 'totalCost', width: '85px'},
                 {text: '运输方式', value: 'relevantCompanyName', width: '100px'},
                 {text: '运单号', value: 'shippingNumber', width: '100px'},
+                {text: '运费标志', value: 'shippingCostType', width: '60px'},
                 {text: '运费', value: 'shippingCost', width: '65px'},
                 {text: '备注', value: 'remark', width: '120px'},
                 {text: '开单人', value: 'drawer', width: '60px'},
                 {text: '开单日期', value: 'entryDate', width: '80px'},
-                {text: '运费标志', value: 'shippingCostType', width: '60px'}
+                {text: '退货日期', value: 'returnDate', width: '80px'},
             ],
             purchaseQueryTableHeaders: [
                 {text: '采购订单', value: 'purchaseOrderEntryID', width: '80px'},
@@ -263,9 +264,9 @@ export default {
             let color = null
             if (item.isModified === 1) {
                 color = 'red'
-                if (item.returnSerial !== '') color = 'orange'
+                if (item.returnDate !== '') color = 'orange'
             }
-            else if (item.returnSerial !== '') {
+            else if (item.returnDate !== '') {
                 color = 'blue'
             }
 
