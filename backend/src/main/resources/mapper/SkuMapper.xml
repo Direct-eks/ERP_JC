@@ -15,6 +15,12 @@
         <result property="unitName" column="unit_name"/>
         <result property="stockQuantity" column="stock_quantity"/>
         <result property="remark" column="remark"/>
+        <result property="supplierID" column="supplier_id"/>
+        <result property="companyAbbreviatedName" column="abbreviated_name"/>
+        <result property="companyFullName" column="full_name"/>
+        <result property="companyPhone" column="phone"/>
+        <result property="companyRemark" column="company_remark"/>
+        <result property="recordFactoryStock" column="record_factory_stock"/>
         <result property="factoryPriceWithoutTax" column="factory_price_without_tax"/>
         <result property="factoryPriceWithTax" column="factory_price_with_tax"/>
         <result property="settlementPriceWithoutTax" column="settlement_price_without_tax"/>
@@ -25,21 +31,16 @@
         <result property="retailPrice" column="retail_price"/>
         <result property="stockLowerLimit" column="stock_lower_limit"/>
         <result property="stockUpperLimit" column="stock_upper_limit"/>
-        <result property="supplierID" column="supplier_id"/>
-        <result property="companyAbbreviatedName" column="abbreviated_name"/>
-        <result property="companyFullName" column="full_name"/>
-        <result property="companyPhone" column="phone"/>
-        <result property="companyRemark" column="company_remark"/>
     </resultMap>
 
 
     <select id="queryFullSkuByModel" resultMap="SkuResultMap">
         select s.sku_id, s.factory_brand_id, f.code as factory_code, s.model_id, m.new_code, m.old_code,
-               m.unit_id, u.name as unit_name, s.stock_quantity, s.remark, s.factory_price_without_tax,
-               s.factory_price_with_tax, s.settlement_price_without_tax, s.price_base_reference,
-               s.wholesale_price_discount, s.wholesale_price, s.retail_price_discount, s.retail_price,
-               s.stock_lower_limit, s.stock_upper_limit, s.supplier_id, c.abbreviated_name,
-               c.full_name, c.phone, c.remark as company_remark
+               m.unit_id, u.name as unit_name, s.stock_quantity, s.remark, s.supplier_id, c.abbreviated_name,
+               c.full_name, c.phone, c.remark as company_remark, s.record_factory_stock,
+               s.factory_price_without_tax, s.factory_price_with_tax, s.settlement_price_without_tax,
+               s.price_base_reference, s.wholesale_price_discount, s.wholesale_price, s.retail_price_discount,
+               s.retail_price, s.stock_lower_limit, s.stock_upper_limit
         from ((w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
             join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
             on s.model_id = m.model_id)
