@@ -21,5 +21,22 @@ public class SkuFullO {
 
     private int stockQuantity;
     private String remark;
+
+    private double factoryPriceWithoutTax;
+    private double factoryPriceWithTax;
+    private double settlementPriceWithoutTax;
+    private String priceBaseReference;
+    private double wholesalePriceDiscount;
+    private double wholesalePrice;
+    private double retailPriceDiscount;
+    private double retailPrice;
+    private int stockLowerLimit;
+    private int stockUpperLimit;
+
     private int supplierID;
+    // from c_partner_company
+    private String companyAbbreviatedName;
+    private String companyFullName;
+    private String companyPhone;
+    private String companyRemark;
 }
