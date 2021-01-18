@@ -29,16 +29,39 @@
 
             <v-toolbar-title>精诚轴承</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon to="/home">
-                <v-icon>{{mdiHomePath}}</v-icon>
-            </v-btn>
 
-            <v-btn icon>
-                <v-icon @click="logout">{{ mdiLogoutPath }}</v-icon>
-            </v-btn>
-            <v-btn icon>
-                <v-icon @click="shutdown">{{ mdiPowerPath }}</v-icon>
-            </v-btn>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon to="/home"
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon>{{mdiHomePath}}</v-icon>
+                    </v-btn>
+                </template>
+                <span>主页</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon @click="logout">{{ mdiLogoutPath }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>登出</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon @click="shutdown">{{ mdiPowerPath }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>关闭后台服务器</span>
+            </v-tooltip>
 
         </v-app-bar>
 
