@@ -187,9 +187,21 @@
         where inbound_product_id = #{id}
     </update>
 
+    <update id="updateEntryReturn">
+        update e_inbound_entry
+        set total_cost = #{totalCost},
+            invoice_type = #{invoiceType},
+            department_id = #{departmentID},
+            remark = #{remark},
+            return_date = date('now', 'localtime'),
+            is_modified = 1
+        where inbound_entry_id = #{inboundEntryID}
+    </update>
+
     <update id="returnProductByID">
         update e_inbound_product
-        set quantity = #{quantity}
+        set quantity = #{quantity},
+            return_status = 1
         where inbound_product_id = #{inboundProductID}
     </update>
 
