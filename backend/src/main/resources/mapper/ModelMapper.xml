@@ -16,7 +16,7 @@
     <select id="queryModelCategories" resultMap="ModelCategoryResultMap">
         select model_category_id, sequence_number, code, name, remark, tree_level
         from w_model_category
-        order by tree_level
+        order by sequence_number
     </select>
 
     <resultMap id="ModelResultMap" type="org.jc.backend.entity.ModelO">
@@ -32,6 +32,7 @@
         select model_id, sequence_number, new_code, old_code, category_id, unit_id
         from w_model
         where category_id = #{id}
+        order by new_code
     </select>
 
     <select id="queryModelsByName" resultMap="ModelResultMap">
@@ -53,6 +54,12 @@
                 </choose>
             </if>
         </where>
+    </select>
+
+    <select id="queryAllModels" resultMap="ModelResultMap">
+        select model_id, m.sequence_number, new_code, old_code, category_id, unit_id
+        from w_model as m join w_model_category as c on m.category_id = c.model_category_id
+        order by c.sequence_number, m.new_code
     </select>
 
 </mapper>

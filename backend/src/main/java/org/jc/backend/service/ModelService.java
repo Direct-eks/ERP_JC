@@ -9,4 +9,7 @@ public interface ModelService {
     List<ModelCategoryO> getModelCategories();
     List<ModelO> getModelsByCategory(int id);
     List<ModelO> getModelsByName(String name, String category, String method);
+
+    List<ModelO> getAllModels();
+    List<ModelO> getModelsByCoarseCategoryID(int id);
 }

@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface SkuMapper {
     List<SkuFullO> queryFullSkuByModel(int id);
+
+    List<SkuFullO> queryFullSkuByModelAndFactoryBrandID(int modelID, int factoryBrandID);
 }

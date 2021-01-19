@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface SkuService {
     List<SkuFullO> getFullSkuByModel(int id);
+
+    List<SkuFullO> getSkusByModelCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID);
 }

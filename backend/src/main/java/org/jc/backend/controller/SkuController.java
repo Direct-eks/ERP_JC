@@ -6,10 +6,7 @@ import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +31,17 @@ public class SkuController {
         logger.info("GET Request to /sku/getFullSkuByModel, id: " + id);
 
         return skuService.getFullSkuByModel(id);
+    }
+
+    @ApiOperation(value = "", response = SkuFullO.class)
+    @GetMapping("/getSkusByModelCategoryAndFactoryBrand")
+    public List<SkuFullO> getSkusByModelCategoryAndFactoryBrand(
+            @RequestParam("modelCategoryID") int modelCategoryID,
+            @RequestParam("factoryBrandID") int factoryBrandID
+    ) {
+        logger.info("GET Request to /sku/getSkusByModelCategoryAndFactoryBrand, modelCategoryID: " +
+                modelCategoryID + ", factoryBrandID: " + factoryBrandID);
+
+        return skuService.getSkusByModelCategoryAndFactoryBrand(modelCategoryID, factoryBrandID);
     }
 }

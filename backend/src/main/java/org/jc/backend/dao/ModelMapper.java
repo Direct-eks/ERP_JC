@@ -13,4 +13,6 @@ public interface ModelMapper {
     List<ModelCategoryO> queryModelCategories();
     List<ModelO> queryModelsByCategory(int id);
     List<ModelO> queryModelsByName(String name, String category, String method);
+
+    List<ModelO> queryAllModels();
 }
