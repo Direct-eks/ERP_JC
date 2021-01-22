@@ -1,10 +1,12 @@
 package org.jc.backend.utils;
 
-import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.*;
+import org.jc.backend.entity.InboundProductO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
 
 @Component
 public class IOModificationUtils {
@@ -28,9 +30,10 @@ public class IOModificationUtils {
 
         boolean bool = false;
 
-        if (modifiedShippingInfo.getShippingCost() != originShippingInfo.getShippingCost()) {
+        if (new BigDecimal(modifiedShippingInfo.getShippingCost())
+                .compareTo(new BigDecimal(originShippingInfo.getShippingCost())) != 0) {
             bool = true;
-            record.append(String.format("运费: %f -> %f; ",
+            record.append(String.format("运费: %s -> %s; ",
                     originShippingInfo.getShippingCost(), modifiedShippingInfo.getShippingCost()));
         }
         if (!modifiedShippingInfo.getShippingCostType().equals(originShippingInfo.getShippingCostType())) {
@@ -151,9 +154,10 @@ public class IOModificationUtils {
         BeanUtils.copyProperties(modifiedEntry, modifyDO);
         BeanUtils.copyProperties(originEntry, originDO);
 
-        if (originDO.getTotalCost() != modifyDO.getTotalCost()) {
+        if (new BigDecimal(originDO.getTotalCost())
+                .compareTo(new BigDecimal(modifyDO.getTotalCost())) != 0) {
             bool = true;
-            record.append(String.format("总金额: %f -> %f; ", originDO.getTotalCost(), modifyDO.getTotalCost()));
+            record.append(String.format("总金额: %s -> %s; ", originDO.getTotalCost(), modifyDO.getTotalCost()));
         }
         if (!originDO.getInvoiceType().equals(modifyDO.getInvoiceType())) {
             bool = true;
@@ -204,19 +208,21 @@ public class IOModificationUtils {
             record.append(String.format("型号(%s) 备注: %s -> %s; ", modelCode,
                     originProduct.getRemark(), modifiedProduct.getRemark()));
         }
-        if (modifiedProduct.getTaxRate() != originProduct.getTaxRate()) {
+        if (!modifiedProduct.getTaxRate().equals(originProduct.getTaxRate())) {
             bool = true;
-            record.append(String.format("型号(%s) 税率: %f -> %f; ", modelCode,
+            record.append(String.format("型号(%s) 税率: %s -> %s; ", modelCode,
                     originProduct.getTaxRate(), modifiedProduct.getTaxRate()));
         }
-        if (modifiedProduct.getUnitPriceWithoutTax() != originProduct.getUnitPriceWithoutTax()) {
+        if (new BigDecimal(modifiedProduct.getUnitPriceWithoutTax())
+                .compareTo(new BigDecimal(originProduct.getUnitPriceWithoutTax())) != 0) {
             bool = true;
-            record.append(String.format("型号(%s) 单价: %f -> %f; ", modelCode,
+            record.append(String.format("型号(%s) 单价: %s -> %s; ", modelCode,
                     originProduct.getUnitPriceWithoutTax(), modifiedProduct.getUnitPriceWithoutTax()));
         }
-        if (modifiedProduct.getUnitPriceWithTax() != originProduct.getUnitPriceWithTax()) {
+        if (new BigDecimal(modifiedProduct.getUnitPriceWithTax())
+                .compareTo(new BigDecimal(originProduct.getUnitPriceWithTax())) != 0) {
             bool = true;
-            record.append(String.format("型号(%s) 税价: %f -> %f; ", modelCode,
+            record.append(String.format("型号(%s) 税价: %s -> %s; ", modelCode,
                     originProduct.getUnitPriceWithTax(), modifiedProduct.getUnitPriceWithTax()));
         }
 

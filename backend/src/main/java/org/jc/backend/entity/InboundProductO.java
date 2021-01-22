@@ -3,9 +3,10 @@ package org.jc.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
@@ -28,15 +29,22 @@ public class InboundProductO {
     private int warehouseStockID;
     private int warehouseID;
 
-    @DecimalMin(value = "0.0", message = "taxRate smaller than zero error")
-    private double taxRate;
+    @NotNull(message = "taxRate null error")
+    @NotBlank(message = "taxRate blank error")
+    @Pattern(regexp = "^[\\d]*$", message = "unitPriceWithoutTax value error")
+    private String taxRate;
 
-    @DecimalMin(value = "0.0", message = "unitPriceWithoutTax smaller than zero error")
-    private double unitPriceWithoutTax;
+    @NotNull(message = "unitPriceWithoutTax null error")
+    @NotBlank(message = "unitPriceWithoutTax blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "unitPriceWithoutTax value error")
+    private String unitPriceWithoutTax;
 
-    @DecimalMin(value = "0.0", message = "unitPriceWithTax smaller than zero error")
-    private double unitPriceWithTax;
-    private double stockUnitPrice;
+    @NotNull(message = "unitPriceWithTax null error")
+    @NotBlank(message = "unitPriceWithTax blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "unitPriceWithTax value error")
+    private String unitPriceWithTax;
+
+    private String stockUnitPrice;
     private int returnStatus;
     private String checkoutSerial;
     private String invoiceSerial;

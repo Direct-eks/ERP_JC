@@ -19,8 +19,10 @@ public class InboundEntryWithProductsVO {
 
     private String creationDate;
 
-    @DecimalMin(value = "0.0", message = "totalCost smaller than zero error")
-    private double totalCost;
+    @NotNull(message = "totalCost null error")
+    @NotBlank(message = "totalCost blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalCost value error")
+    private String totalCost;
 
     @NotNull(message = "invoiceType null error")
     @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
@@ -51,8 +53,9 @@ public class InboundEntryWithProductsVO {
     @Pattern(regexp = "^(购入|出退)$", message = "classification value error")
     private String classification;
 
-    @DecimalMin(value = "0.0", message = "shipping cost smaller than zero error")
-    private double shippingCost;
+    @NotNull(message = "shippingCost null error") // pattern will allow blank
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "shippingCost value error")
+    private String shippingCost;
 
     @NotNull(message = "shippingCostType null error")
     @Pattern(regexp = "^(自付|代垫|无)$", message = "shippingCostType value error")

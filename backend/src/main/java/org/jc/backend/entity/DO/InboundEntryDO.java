@@ -9,7 +9,7 @@ public class InboundEntryDO {
     private String inboundEntryID;
     private String entryDate;
     private String creationDate;
-    private double totalCost;
+    private String totalCost;
     private String invoiceType;
     private String drawer;
 
@@ -29,7 +29,7 @@ public class InboundEntryDO {
 
     private String remark;
     private String classification;
-    private double shippingCost;
+    private String shippingCost;
     private String shippingCostType;
     private int shippingQuantity;
     private String shippingNumber;

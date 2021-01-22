@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,11 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         InboundEntryDO newEntry = new InboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
         List<InboundProductO> newProducts = entryWithProductsVO.getInboundProducts();
+
+        // set shipping cost to 0 if it is blank
+        if (newEntry.getShippingCost().trim().equals("")) {
+            newEntry.setShippingCost("0");
+        }
 
         try {
             int count = inboundEntryMapper.countNumberOfEntriesOfToday();
@@ -125,6 +131,11 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
         InboundEntryDO currentInfo = new InboundEntryDO();
         BeanUtils.copyProperties(inboundEntryWithProductsVO, currentInfo);
+
+        // set shipping cost to 0 if it is blank
+        if (currentInfo.getShippingCost().trim().equals("")) {
+            currentInfo.setShippingCost("0");
+        }
 
         String id = currentInfo.getInboundEntryID();
 
@@ -256,9 +267,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(),
                         modifiedEntry.getRemark()));
             }
-            if (originEntry.getTotalCost() != modifiedEntry.getTotalCost()) {
+            if (new BigDecimal(originEntry.getTotalCost())
+                    .compareTo(new BigDecimal(modifiedEntry.getTotalCost())) != 0) {
                 bool = true;
-                record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalCost(),
+                record.append(String.format("总金额: %s -> %s; ", originEntry.getTotalCost(),
                         modifiedEntry.getTotalCost()));
             }
             if (bool) {
