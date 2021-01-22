@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -68,12 +70,17 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
 
             int stockQuantity = stock.getStockQuantity();
-            double stockUnitPriceWithoutTax = stock.getStockUnitPriceWithoutTax();
+            BigDecimal stockUnitPriceWithoutTax = new BigDecimal(stock.getStockUnitPriceWithoutTax());
             int productQuantity = product.getQuantity();
-            double productUnitPriceWithoutTax = product.getUnitPriceWithoutTax();
+            BigDecimal productUnitPriceWithoutTax = new BigDecimal(product.getUnitPriceWithoutTax());
+
+            String calculatedPrice = productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(productQuantity))
+                    .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity)))
+                    .divide(BigDecimal.valueOf(productQuantity + stockQuantity), RoundingMode.HALF_EVEN)
+                    .toPlainString();
+
             warehouseStockMapper.updateWarehouseStockUnitPriceAndQuantityByID(stock.getWarehouseStockID(),
-                    (productUnitPriceWithoutTax * productQuantity + stockUnitPriceWithoutTax * stockQuantity)
-                            / (productQuantity + stockQuantity), stockQuantity + productQuantity);
+                    calculatedPrice, stockQuantity + productQuantity);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
@@ -92,15 +99,19 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
 
             // update stock quantity based on modified and origin product and warehouseStock quantity
             int stockQuantity = stock.getStockQuantity();
-            double stockUnitPriceWithoutTax = stock.getStockUnitPriceWithoutTax();
+            BigDecimal stockUnitPriceWithoutTax = new BigDecimal(stock.getStockUnitPriceWithoutTax());
             int oldProductQuantity = originProduct.getQuantity();
             int newProductQuantity = modifiedProduct.getQuantity();
             int productQuantityChange = newProductQuantity - oldProductQuantity;
-            double newProductUnitPriceWithoutTax = modifiedProduct.getUnitPriceWithoutTax();
+            BigDecimal newProductUnitPriceWithoutTax = new BigDecimal(modifiedProduct.getUnitPriceWithoutTax());
+
+            String calculatedPrice = newProductUnitPriceWithoutTax.multiply(BigDecimal.valueOf(newProductQuantity))
+                    .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity - oldProductQuantity)))
+                    .divide(BigDecimal.valueOf(stockQuantity + productQuantityChange), RoundingMode.HALF_EVEN)
+                    .toPlainString();
+
             warehouseStockMapper.updateWarehouseStockUnitPriceAndQuantityByID(stock.getWarehouseStockID(),
-                    (newProductUnitPriceWithoutTax * newProductQuantity +
-                            stockUnitPriceWithoutTax * (stockQuantity - oldProductQuantity))
-                            / (stockQuantity + productQuantityChange), stockQuantity + productQuantityChange);
+                    calculatedPrice, stockQuantity + productQuantityChange);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production

@@ -13,8 +13,8 @@ public class WarehouseStockO {
     private String warehouseName;
 
     private int stockQuantity;
-    private double stockUnitPriceWithoutTax;
-    private double stockUnitPriceWithTax;
+    private String stockUnitPriceWithoutTax;
+    private String stockUnitPriceWithTax;
     private String remark;
     private int storagePlaceID;
 }
