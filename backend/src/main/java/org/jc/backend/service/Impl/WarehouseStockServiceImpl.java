@@ -12,6 +12,7 @@ import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +30,8 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     private final OutboundEntryService outboundEntryService;
 
     public WarehouseStockServiceImpl(WarehouseStockMapper warehouseStockMapper,
-                                     InboundEntryService inboundEntryService,
-                                     OutboundEntryService outboundEntryService) {
+                                     @Lazy InboundEntryService inboundEntryService,
+                                     @Lazy OutboundEntryService outboundEntryService) {
         this.warehouseStockMapper = warehouseStockMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
