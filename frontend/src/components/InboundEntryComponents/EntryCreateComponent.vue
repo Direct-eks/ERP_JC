@@ -62,7 +62,7 @@
                                   outlined
                                   readonly
                                   dense
-                                  style="width: 150px">
+                                  style="width: 100px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
@@ -84,7 +84,18 @@
                               label="预计单据类型"
                               hide-details="auto"
                               outlined dense
-                              style="width: 180px">
+                              style="width: 150px">
+                    </v-select>
+                </v-col>
+                <v-col v-if="form.invoiceType === '增值税票'">
+                    <v-select v-model="taxRate"
+                              :rules="rules.taxRate"
+                              :items="taxRateOptions"
+                              @change="changeTaxRate"
+                              label="税率"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 80px">
                     </v-select>
                 </v-col>
             </v-row>
@@ -490,6 +501,10 @@ export default {
                 }
             }
         }).catch(() => {})
+
+        this.$getRequest(this.$api.allTaxRates).then((data) => {
+            this.taxRateOptions = data
+        })
     },
     data() {
         return {
@@ -503,6 +518,7 @@ export default {
             purchaseOrderPanelOpen: false,
 
             allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
+            taxRate: '0',
 
             form: {
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
@@ -525,6 +541,7 @@ export default {
             rules: {
                 warehouseID: [v => !!v || '请选择仓库'],
                 departmentID: [v => !!v || '请选择部门'],
+                taxRate: [v => !!v || '请选择税率'],
                 entryDate: [v => !!v || '请选择日期'],
                 invoiceType: [v => !!v || ' 请选择单据类型'], // no need to validate if is purchase order
                 company: [v => !!v || '请选择单位'],
@@ -533,6 +550,7 @@ export default {
 
             warehouseOptions: [],
             departmentOptions: [],
+            taxRateOptions: [],
             invoiceTypeOptions: [
                 { value: '增值税票', label: '增值税票' },
                 { value: '普票', label: '普票' },
@@ -616,6 +634,8 @@ export default {
                     return
                 }
             }
+            let newVal = JSON.parse(JSON.stringify(val))
+            newVal.taxRate = this.taxRate
             this.tableData.push(val)
 
             this.$store.commit('setSnackbar', {
@@ -651,14 +671,19 @@ export default {
         handlePriceWithTaxChange(row) {
             row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
             const tempValue = this.$Big(row.unitPriceWithTax)
-            row.unitPriceWithoutTax = tempValue.div('1.16') //todo replace tax rate
+            row.unitPriceWithoutTax = tempValue.div(this.$Big(this.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         handlePriceWithoutTaxChange(row) {
             row.unitPriceWithoutTax = this.$validateFloat(row.unitPriceWithoutTax)
             const tempValue = this.$Big(row.unitPriceWithoutTax)
-            row.unitPriceWithTax = tempValue.times('1.16') //todo replace tax rate
+            row.unitPriceWithTax = tempValue.times(this.$Big(this.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
+        },
+        changeTaxRate() {
+            this.tableData.forEach(row => {
+                this.handlePriceWithoutTaxChange(row)
+            })
         },
         /* ------- table & entry submission -------*/
         handleDeleteRow() {

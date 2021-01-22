@@ -322,18 +322,18 @@ export default {
                     oldCode: this.skuTableCurrentRow[0].oldCode,
                     unitName: this.skuTableCurrentRow[0].unitName,
                     factoryCode: this.skuTableCurrentRow[0].factoryCode,
-                    quantity: 0,
+                    quantity: '0',
                     stockQuantity: stockQuantity,
                     remark: '',
                     warehouseStockID: warehouseStockID,
                     warehouseID: this.warehouseID,
-                    taxRate: 0.16, //todo
-                    unitPriceWithoutTax: 0.0,
-                    unitPriceWithTax: 0.0,
+                    taxRate: '',
+                    unitPriceWithoutTax: '0',
+                    unitPriceWithTax: '0',
                     stockUnitPrice: stockUnitPrice,
                     //statistic fields
-                    totalWithoutTax: 0.0,
-                    totalTax: 0.0
+                    totalWithoutTax: '',
+                    totalTax: ''
                 })
                 this.modelTableCurrentRow = []
                 this.skuTableCurrentRow = []

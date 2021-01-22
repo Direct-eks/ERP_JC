@@ -55,6 +55,9 @@ const api = {
     modelsByCategory: '/model/getModelsByCategory/', // GET {id}
     modelsByName: '/model/getModelsByName', // GET name= category= method=
 
+    /* ------ /miscellaneousData ------*/
+    allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
+
     /* ------ /modificationRecord ------*/
     modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', // GET {serial}
 
