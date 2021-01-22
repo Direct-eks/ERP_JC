@@ -296,9 +296,9 @@ export default {
             this.warehouseStockCurrentRow = []
 
             this.$getRequest(this.$api.warehouseStockBySKu +
-                encodeURI(val.skuID)).then((res) => {
-                console.log('received', res.data)
-                this.warehouseStockTableData = res.data
+                encodeURI(val.skuID)).then((data) => {
+                console.log('received', data)
+                this.warehouseStockTableData = data
             }).catch(() => {})
         },
         chooseHandle() {
