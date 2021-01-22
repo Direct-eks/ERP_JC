@@ -444,18 +444,6 @@
 </template>
 
 <script>
-function validateFloat(value) {
-    let val = value.replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
-    val = val.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    val = val.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    val = val.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (val.indexOf(".") < 0 && val !== "") { // 如果没有小数点，首位不能为0
-        val = parseFloat(val)
-    }
-    console.log('float', val)
-    return val
-}
-
 export default {
     name: "InboundEntryAndPurchaseOrderComponent",
     components: {
@@ -636,36 +624,40 @@ export default {
         },
         /* ----- number calculation ----- */
         handleShippingQuantityChange() {
-            this.form.shippingQuantity = this.form.shippingQuantity.toString().replace(/[^\d]/g, "")
+            this.form.shippingQuantity = this.$validateNumber(this.form.shippingQuantity)
         },
         handleShippingCostChange() {
-            this.form.shippingCost = validateFloat(this.form.shippingCost.toString())
+            this.form.shippingCost = this.$validateFloat(this.form.shippingCost)
         },
         handleQuantityChange(row) {
             // calculate for each row
-            row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
-            row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
-            row.totalTax = (row.quantity * (row.unitPriceWithTax - row.unitPriceWithoutTax)).toFixed(2)
+            row.quantity = this.$validateNumber(row.quantity)
+            const tempQuantity = this.$Big(row.quantity)
+            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
+            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
 
-            let tempSumWithTax = 0
-            let tempSumWithoutTax = 0
+            let tempSumWithTax = this.$Big('0')
+            let tempSumWithoutTax = this.$Big('0')
             this.tableData.forEach((item) => {
                 // calculate for total
-                tempSumWithTax += item.unitPriceWithTax * item.quantity
-                tempSumWithoutTax += item.unitPriceWithoutTax * item.quantity
+                const itemQuantity = this.$Big(item.quantity)
+                tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
             })
-            this.sumWithTax = tempSumWithTax.toFixed(2)
-            this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
-            this.tax = (tempSumWithTax - tempSumWithoutTax).toFixed(2)
+            this.sumWithTax = tempSumWithTax.toString()
+            this.sumWithoutTax = tempSumWithoutTax.toString()
+            this.tax = tempSumWithTax.minus(tempSumWithoutTax)
         },
         handlePriceWithTaxChange(row) {
-            row.unitPriceWithTax = validateFloat(row.unitPriceWithTax.toString())
-            row.unitPriceWithoutTax = (row.unitPriceWithTax / 1.16).toFixed(2)
+            row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
+            const tempValue = this.$Big(row.unitPriceWithTax)
+            row.unitPriceWithoutTax = tempValue.div('1.16') //todo replace tax rate
             this.handleQuantityChange(row)
         },
         handlePriceWithoutTaxChange(row) {
-            row.unitPriceWithoutTax = validateFloat(row.unitPriceWithoutTax.toString())
-            row.unitPriceWithTax = (row.unitPriceWithoutTax * 1.16).toFixed(2)
+            row.unitPriceWithoutTax = this.$validateFloat(row.unitPriceWithoutTax)
+            const tempValue = this.$Big(row.unitPriceWithoutTax)
+            row.unitPriceWithTax = tempValue.times('1.16') //todo replace tax rate
             this.handleQuantityChange(row)
         },
         /* ------- table & entry submission -------*/
