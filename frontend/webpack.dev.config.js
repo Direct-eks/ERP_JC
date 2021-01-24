@@ -12,7 +12,7 @@ module.exports = merge(common, {
         chunkFilename: "[name].bundle.js",
         publicPath: '/assets/'
     },
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
     devServer: {
         host: '127.0.0.1',
         port: 58888,
