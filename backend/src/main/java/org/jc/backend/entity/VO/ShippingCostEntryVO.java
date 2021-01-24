@@ -6,6 +6,7 @@ import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
@@ -26,11 +27,15 @@ public class ShippingCostEntryVO {
     @NotNull(message = "invoiceNumber null error")
     private String invoiceNumber;
 
-    @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
-    private double totalAmount;
+    @NotNull(message = "totalAmount null error")
+    @NotBlank(message = "totalAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    private String totalAmount;
 
-    @DecimalMin(value = "0.0", message = "invoiceAmount smaller than zero error")
-    private double invoiceAmount;
+    @NotNull(message = "invoiceAmount null error")
+    @NotBlank(message = "invoiceAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "invoiceAmount value error")
+    private String invoiceAmount;
 
     @NotNull(message = "shippingPaymentType null error")
     @Pattern(regexp = "^(代垫|自付)$", message = "shippingCostType value error")
@@ -40,6 +45,7 @@ public class ShippingCostEntryVO {
     private String remark;
 
     @NotNull(message = "drawer null error")
+    @NotBlank(message = "drawer blank error")
     private String drawer;
 
     private String creationDate;

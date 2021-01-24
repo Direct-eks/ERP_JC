@@ -16,8 +16,8 @@ public class ShippingCostEntryDO {
 
     private int isTaxDeduction;
     private String invoiceNumber;
-    private double totalAmount;
-    private double invoiceAmount;
+    private String totalAmount;
+    private String invoiceAmount;
     private String shippingCostType;
     private String remark;
     private String drawer;
