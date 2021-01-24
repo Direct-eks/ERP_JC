@@ -94,8 +94,9 @@
                               @change="changeTaxRate"
                               label="税率"
                               hide-details="auto"
+                              :append-icon="mdiPercentOutlinePath"
                               outlined dense
-                              style="width: 80px">
+                              style="width: 110px">
                     </v-select>
                 </v-col>
             </v-row>
@@ -455,6 +456,8 @@
 </template>
 
 <script>
+import { mdiPercentOutline } from '@mdi/js'
+
 export default {
     name: "InboundEntryAndPurchaseOrderComponent",
     components: {
@@ -517,6 +520,7 @@ export default {
             modelSearchPanelOpen: false,
             purchaseOrderPanelOpen: false,
 
+            mdiPercentOutlinePath: mdiPercentOutline,
             allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
             taxRate: '0',
 
