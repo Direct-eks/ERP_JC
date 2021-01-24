@@ -5,7 +5,10 @@ import lombok.Setter;
 import org.jc.backend.entity.InboundProductO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
@@ -50,6 +53,7 @@ public class InboundEntryWithProductsVO {
     private String remark;
 
     @NotNull(message = "classification null error")
+    @NotBlank(message = "classification blank error")
     @Pattern(regexp = "^(购入|出退)$", message = "classification value error")
     private String classification;
 

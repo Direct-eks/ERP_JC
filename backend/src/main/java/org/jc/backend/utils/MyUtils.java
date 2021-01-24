@@ -1,13 +1,19 @@
 package org.jc.backend.utils;
 
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.StatO.InvoiceStatDO;
+import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class MyUtils {
@@ -52,6 +58,33 @@ public class MyUtils {
         logger.info("New serial: " + newSerial);
 
         return newSerial;
+    }
+
+    /**
+     * group entries by companyID, and calculate the sum of total amounts, return VO
+     * @param rawStats ungrouped and summed entry data
+     * @return grouped and summed entry data
+     */
+    public static List<InvoiceStatVO> summingUpTotalAmountForEachCompany(List<InvoiceStatDO> rawStats) {
+
+        List<InvoiceStatVO> statVOs = new ArrayList<>();
+        rawStats.stream()
+                .collect(Collectors.groupingBy(InvoiceStatDO::getCompanyID))
+                .forEach((k, v) -> {
+                    InvoiceStatVO tempVO = new InvoiceStatVO();
+                    tempVO.setCompanyID(k);
+                    tempVO.setCompanyAbbreviatedName(v.get(0).getCompanyAbbreviatedName());
+                    tempVO.setCompanyFullName(v.get(0).getCompanyFullName());
+                    BigDecimal totalAmount = new BigDecimal("0");
+                    for (var e : v) {
+                        totalAmount = totalAmount.add(new BigDecimal(e.getUnitPriceWithTax())
+                                .multiply(new BigDecimal(e.getQuantity())));
+                    }
+                    tempVO.setTotalAmount(totalAmount.toPlainString());
+                    statVOs.add(tempVO);
+                });
+        // todo sort
+        return statVOs;
     }
 
 }

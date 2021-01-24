@@ -6,9 +6,11 @@ import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
+import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
+import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +32,14 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     private final OutboundEntryMapper outboundEntryMapper;
     private final ModificationMapper modificationMapper;
+    private final WarehouseStockService warehouseStockService;
 
     public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper,
-                                    ModificationMapper modificationMapper) {
+                                    ModificationMapper modificationMapper,
+                                    WarehouseStockService warehouseStockService) {
         this.outboundEntryMapper = outboundEntryMapper;
         this.modificationMapper = modificationMapper;
+        this.warehouseStockService = warehouseStockService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -44,6 +50,11 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         OutboundEntryDO newEntry = new OutboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
         List<OutboundProductO> newProducts = entryWithProductsVO.getOutboundProducts();
+
+        // set shipping cost to 0 if it is blank
+        if (newEntry.getShippingCost().trim().equals("")) {
+            newEntry.setShippingCost("0");
+        }
 
         try {
             int count = outboundEntryMapper.countNumberOfEntriesOfToday();
@@ -56,7 +67,11 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 product.setOutboundEntryID(newSerial);
                 int id = outboundEntryMapper.insertNewProduct(product);
                 logger.info("Insert new outbound product id: " + id);
+
+                warehouseStockService.decreaseStock(product);
             }
+
+            //todo mark replenish
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
@@ -152,7 +167,6 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     record, currentEntry, originEntry);
 
             if (bool1) {
-                logger.info("");//todo
                 outboundEntryMapper.updateEntry(currentEntry);
             }
 
@@ -222,9 +236,10 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(),
                         modifiedEntry.getRemark()));
             }
-            if (originEntry.getTotalAmount() != modifiedEntry.getTotalAmount()) {
+            if (new BigDecimal(originEntry.getTotalAmount())
+                    .compareTo(new BigDecimal(modifiedEntry.getTotalAmount())) != 0) {
                 bool = true;
-                record.append(String.format("总金额: %f -> %f; ", originEntry.getTotalAmount(),
+                record.append(String.format("总金额: %s -> %s; ", originEntry.getTotalAmount(),
                         modifiedEntry.getTotalAmount()));
             }
             if (bool) {
@@ -252,6 +267,10 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
             if (bool || bool2) {
                 modificationMapper.insertModificationRecord(new ModificationO(id, record.toString()));
+            }
+            else {
+                logger.warn("nothing changed begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
@@ -437,7 +456,9 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
         try {
-            return outboundEntryMapper.queryNotYetCheckoutSummary();
+            List<InvoiceStatDO> statsFromDatabase = outboundEntryMapper.queryNotYetCheckoutSummary();
+
+            return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
@@ -461,7 +482,9 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetInvoiceSummary() {
         try {
-            return outboundEntryMapper.queryNotYetInvoiceSummary();
+            List<InvoiceStatDO> statsFromDatabase = outboundEntryMapper.queryNotYetInvoiceSummary();
+
+            return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production

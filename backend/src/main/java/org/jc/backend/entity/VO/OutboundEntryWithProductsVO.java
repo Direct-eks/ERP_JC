@@ -4,7 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jc.backend.entity.OutboundProductO;
 
-import javax.validation.constraints.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
@@ -18,14 +23,21 @@ public class OutboundEntryWithProductsVO {
 
     private String creationDate;
 
-    @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
-    private double totalAmount;
+    @NotNull(message = "totalAmount null error")
+    @NotBlank(message = "totalAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    private String totalAmount;
 
+    @NotNull(message = "deliveryMethod null error")
+    @NotBlank(message = "deliveryMethod blank error")
     @Pattern(regexp = "^(自提|送货|代办发货|发货代收款)$", message = "deliveryMethod value error")
     private String deliveryMethod;
 
+    @NotNull(message = "invoiceType null error")
+    @NotBlank(message = "invoiceType blank error")
     @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
     private String invoiceType;
+
     @NotNull(message = "drawer null error")
     @NotBlank(message = "drawer blank error")
     private String drawer;
@@ -44,15 +56,26 @@ public class OutboundEntryWithProductsVO {
     // from w_warehouse
     private String warehouseName;
 
+    @NotNull(message = "remark null error")
     private String remark;
 
+    @NotNull(message = "classification null error")
+    @NotBlank(message = "classification blank error")
     @Pattern(regexp = "^(销出|入退)$", message = "classification value error")
     private String classification;
 
-    @DecimalMin(value = "0.0", message = "shipping cost smaller than zero error")
-    private double shippingCost;
+    @NotNull(message = "shippingCost null error") // pattern will allow blank
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "shippingCost value error")
+    private String shippingCost;
+
+    @NotNull(message = "shippingCostType null error")
+    @Pattern(regexp = "^(自付|代垫|无)$", message = "shippingCostType value error")
     private String shippingCostType;
+
+    @Min(value = 0, message = "shippingQuantity smaller than zero error")
     private int shippingQuantity;
+
+    @NotNull(message = "shippingNumber null error")
     private String shippingNumber;
 
     private int shippingMethodID;
@@ -65,5 +88,6 @@ public class OutboundEntryWithProductsVO {
     private int printTimes;
     private int isModified;
 
+    @Valid
     List<OutboundProductO> outboundProducts;
 }

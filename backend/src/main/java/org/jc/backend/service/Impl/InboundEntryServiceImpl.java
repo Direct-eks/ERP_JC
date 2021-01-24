@@ -83,7 +83,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 logger.info("Insert new inbound product id: " + id);
 
                 // calculate stock unit price for product
-                warehouseStockService.updateWarehouseStockUnitPriceAndQuantity(product);
+                warehouseStockService.increaseStockAndUpdateStockUnitPrice(product);
 
                 //todo replenish presales
             }
@@ -208,7 +208,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                             inboundEntryMapper.updateProduct(currentProduct);
 
                             // calculate new unit stock price
-                            warehouseStockService.updateWarehouseStockUnitPriceAndQuantity(currentProduct, originProduct);
+                            warehouseStockService.increaseStockAndUpdateStockUnitPrice(currentProduct, originProduct);
                         }
                         found = true;
                         break;
@@ -486,34 +486,12 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         return entries;
     }
 
-    public List<InvoiceStatVO> summingUpTotalAmountForEachCompany(List<InvoiceStatDO> rawStats) {
-
-        List<InvoiceStatVO> statVOs = new ArrayList<>();
-        rawStats.stream()
-                .collect(Collectors.groupingBy(InvoiceStatDO::getCompanyID))
-                .forEach((k, v) -> {
-                    InvoiceStatVO tempVO = new InvoiceStatVO();
-                    tempVO.setCompanyID(k);
-                    tempVO.setCompanyAbbreviatedName(v.get(0).getCompanyAbbreviatedName());
-                    tempVO.setCompanyFullName(v.get(0).getCompanyFullName());
-                    BigDecimal totalAmount = new BigDecimal("0");
-                    for (var e : v) {
-                        totalAmount = totalAmount.add(new BigDecimal(e.getUnitPriceWithTax())
-                                .multiply(new BigDecimal(e.getQuantity())));
-                    }
-                    tempVO.setTotalAmount(totalAmount.toPlainString());
-                    statVOs.add(tempVO);
-                });
-        // todo sort
-        return statVOs;
-    }
-
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
         try {
             List<InvoiceStatDO> statsFromDatabase = inboundEntryMapper.queryNotYetCheckoutSummary();
 
-            return summingUpTotalAmountForEachCompany(statsFromDatabase);
+            return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
@@ -539,7 +517,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         try {
             List<InvoiceStatDO> statsFromDatabase = inboundEntryMapper.queryNotYetInvoiceSummary();
 
-            return summingUpTotalAmountForEachCompany(statsFromDatabase);
+            return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production

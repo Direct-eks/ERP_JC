@@ -1,6 +1,7 @@
 package org.jc.backend.service;
 
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.WarehouseStockO;
 
@@ -10,9 +11,11 @@ public interface WarehouseStockService {
     List<WarehouseStockO> getWarehouseStocksBySku(int id);
     int insertNewWarehouseStock(WarehouseStockO warehouseStockO);
     WarehouseStockO getWarehouseStockByWarehouseAndSku(int warehouse, int sku);
-    void updateWarehouseStockUnitPriceAndQuantity(InboundProductO product);
-    void updateWarehouseStockUnitPriceAndQuantity(InboundProductO modifiedProduct,
-                                                  InboundProductO originProduct);
+    void increaseStockAndUpdateStockUnitPrice(InboundProductO product);
+    void increaseStockAndUpdateStockUnitPrice(InboundProductO modifiedProduct,
+                                              InboundProductO originProduct);
+    void decreaseStock(OutboundProductO product);
+    void decreaseStock(OutboundProductO modifiedProduct, OutboundProductO originProduct);
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
 }

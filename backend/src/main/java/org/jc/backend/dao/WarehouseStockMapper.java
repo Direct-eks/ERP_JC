@@ -13,5 +13,6 @@ public interface WarehouseStockMapper {
     int insertNewWarehouseStock(WarehouseStockO warehouseStockO);
 
     WarehouseStockO queryWarehouseStockByWarehouseAndSku(int warehouse, int sku);
-    void updateWarehouseStockUnitPriceAndQuantityByID(int id, String price, int quantity);
+    void increaseStockAndChangeStockUnitPrice(int id, String price, int quantity);
+    void decreaseStock(int id, int quantity);
 }

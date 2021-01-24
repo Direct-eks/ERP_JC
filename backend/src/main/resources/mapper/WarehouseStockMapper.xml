@@ -37,10 +37,16 @@
         where ws.sku_id = #{sku} and ws.warehouse_id = #{warehouse}
     </select>
 
-    <update id="updateWarehouseStockUnitPriceAndQuantityByID">
+    <update id="increaseStockAndChangeStockUnitPrice">
         update w_warehouse_stock
         set stock_unit_price_without_tax = #{price},
             stock_quantity = #{quantity}
+        where warehouse_stock_id = #{id}
+    </update>
+
+    <update id="decreaseStock">
+        update w_warehouse_stock
+        set stock_quantity = #{quantity}
         where warehouse_stock_id = #{id}
     </update>
 

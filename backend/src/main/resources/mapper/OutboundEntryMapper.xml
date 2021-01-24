@@ -294,13 +294,10 @@
     </resultMap>
 
     <select id="queryNotYetCheckoutSummary" resultMap="invoiceStatResultMap">
-        select c.partner_company_id, c.abbreviated_name, c.full_name,
-               sum(p.quantity * p.unit_price_with_tax) as total_sum
+        select c.partner_company_id, c.abbreviated_name, c.full_name, p.quantity, p.unit_price_with_tax
         from (e_outbound_entry as e join e_outbound_product as p on e.outbound_entry_id = p.outbound_entry_id)
                  join c_partner_company as c on e.partner_company_id = c.partner_company_id
         where p.checkout_serial = ''
-        group by e.partner_company_id
-        order by e.partner_company_id
     </select>
 
     <select id="queryNotYetCheckoutDetailByCompanyID" resultMap="productResultMap">
@@ -321,13 +318,10 @@
     </select>
 
     <select id="queryNotYetInvoiceSummary" resultMap="invoiceStatResultMap">
-        select c.partner_company_id, c.abbreviated_name, c.full_name,
-               sum(p.quantity * p.unit_price_with_tax) as total_sum
+        select c.partner_company_id, c.abbreviated_name, c.full_name, p.quantity, p.unit_price_with_tax
         from (e_outbound_entry as e join e_outbound_product as p on e.outbound_entry_id = p.outbound_entry_id)
                  join c_partner_company as c on e.partner_company_id = c.partner_company_id
         where p.invoice_serial = '' and p.checkout_serial != ''
-        group by e.partner_company_id
-        order by e.partner_company_id
     </select>
 
     <select id="queryNotYetInvoiceDetailByCompanyID" resultMap="productResultMap">

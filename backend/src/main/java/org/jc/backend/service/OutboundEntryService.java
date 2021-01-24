@@ -1,6 +1,5 @@
 package org.jc.backend.service;
 
-import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;

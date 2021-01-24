@@ -108,10 +108,11 @@ public class IOModificationUtils {
             }
         }
         else if (modifiedEntry instanceof OutboundEntryDO) {
-            if (((OutboundEntryDO)modifiedEntry).getTotalAmount() !=
-                    ((OutboundEntryDO)originEntry).getTotalAmount()) {
+            if (new BigDecimal(((OutboundEntryDO)modifiedEntry).getTotalAmount())
+                    .compareTo(new BigDecimal(((OutboundEntryDO)originEntry).getTotalAmount())) != 0)
+            {
                 bool = true;
-                record.append(String.format("总金额: %f -> %f; ",
+                record.append(String.format("总金额: %s -> %s; ",
                         ((OutboundEntryDO)originEntry).getTotalAmount(),
                         ((OutboundEntryDO)modifiedEntry).getTotalAmount()));
             }

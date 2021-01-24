@@ -63,7 +63,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     }
 
     @Transactional
-    public void updateWarehouseStockUnitPriceAndQuantity(InboundProductO product) {
+    public void increaseStockAndUpdateStockUnitPrice(InboundProductO product) {
         try {
             int warehouseID = product.getWarehouseID();
             int skuID = product.getSkuID();
@@ -79,19 +79,19 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                     .divide(BigDecimal.valueOf(productQuantity + stockQuantity), RoundingMode.HALF_EVEN)
                     .toPlainString();
 
-            warehouseStockMapper.updateWarehouseStockUnitPriceAndQuantityByID(stock.getWarehouseStockID(),
+            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock.getWarehouseStockID(),
                     calculatedPrice, stockQuantity + productQuantity);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
-            logger.error("insert failed");
+            logger.error("update failed");
             throw e;
         }
     }
 
     @Transactional
-    public void updateWarehouseStockUnitPriceAndQuantity(InboundProductO modifiedProduct,
-                                                         InboundProductO originProduct) {
+    public void increaseStockAndUpdateStockUnitPrice(InboundProductO modifiedProduct,
+                                                     InboundProductO originProduct) {
         try {
             int warehouseID = originProduct.getWarehouseID();
             int skuID = originProduct.getSkuID();
@@ -110,12 +110,53 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                     .divide(BigDecimal.valueOf(stockQuantity + productQuantityChange), RoundingMode.HALF_EVEN)
                     .toPlainString();
 
-            warehouseStockMapper.updateWarehouseStockUnitPriceAndQuantityByID(stock.getWarehouseStockID(),
+            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock.getWarehouseStockID(),
                     calculatedPrice, stockQuantity + productQuantityChange);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
-            logger.error("insert failed");
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    public void decreaseStock(OutboundProductO product) {
+        try {
+            int warehouseID = product.getWarehouseID();
+            int skuID = product.getSkuID();
+            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
+
+            int stockQuantity = stock.getStockQuantity();
+            int productQuantity = product.getQuantity();
+
+            warehouseStockMapper.decreaseStock(stock.getWarehouseStockID(), stockQuantity - productQuantity);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    public void decreaseStock(OutboundProductO modifiedProduct, OutboundProductO originProduct) {
+        try {
+            int warehouseID = originProduct.getWarehouseID();
+            int skuID = originProduct.getSkuID();
+            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
+
+            // update stock quantity based on modified and origin product and warehouseStock quantity
+            int stockQuantity = stock.getStockQuantity();
+            int oldProductQuantity = originProduct.getQuantity();
+            int newProductQuantity = modifiedProduct.getQuantity();
+            int productQuantityChange = newProductQuantity - oldProductQuantity;
+
+            warehouseStockMapper.decreaseStock(stock.getWarehouseStockID(),stockQuantity - productQuantityChange);
+
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // todo remove in production
+            logger.error("update failed");
             throw e;
         }
     }
