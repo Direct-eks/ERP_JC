@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 
-import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
@@ -26,11 +26,15 @@ public class InvoiceEntryStandAloneVO {
     @NotNull(message = "invoiceNumber null error")
     private String invoiceNumber;
 
-    @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
-    private double totalAmount;
+    @NotNull(message = "totalAmount null error")
+    @NotBlank(message = "totalAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    private String totalAmount;
 
-    @DecimalMin(value = "0.0", message = "invoiceAmount smaller than zero error")
-    private double invoiceAmount;
+    @NotNull(message = "invoiceAmount null error")
+    @NotBlank(message = "invoiceAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "invoiceAmount value error")
+    private String invoiceAmount;
 
     @NotNull(message = "invoiceIndication null error")
     @Pattern(regexp = "^(正常|红冲)$", message = "invoiceIndication value error")
@@ -41,7 +45,10 @@ public class InvoiceEntryStandAloneVO {
     @NotNull(message = "remark null error")
     private String remark;
 
+    @NotNull(message = "drawer null error")
+    @NotBlank(message = "drawer blank error")
     private String drawer;
+
     private String creationDate;
     private String checkoutDate;
     private String inOrOut;

@@ -3,7 +3,7 @@ package org.jc.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -21,10 +21,14 @@ public class MoneyEntryO {
     @NotNull(message = "paymentIndication null error")
     @Pattern(regexp = "^(正常|退款)$", message = "paymentIndication value error")
     private String paymentIndication;
+
     private String paymentMethod;
     private String paymentNumber;
-    @DecimalMin(value = "0.0", message = "paymentAmount smaller than zero error")
-    private double paymentAmount;
+
+    @NotNull(message = "paymentAmount null error")
+    @NotBlank(message = "paymentAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "paymentAmount value error")
+    private String paymentAmount;
 
     private int bankAccountID;
     // from c_bank_account
@@ -32,8 +36,11 @@ public class MoneyEntryO {
 
     @NotNull(message = "remark null error")
     private String remark;
+
     @NotNull(message = "drawer null error")
+    @NotBlank(message = "drawer blank error")
     private String drawer;
+
     private String creationDate;
     private String paymentDate;
     private String checkoutSerial;

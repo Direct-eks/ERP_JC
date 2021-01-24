@@ -17,17 +17,17 @@ public class CheckoutEntryDO {
     private String invoiceType;
     private String paymentMethod;
     private String paymentNumber;
-    private double paymentAmount;
+    private String paymentAmount;
 
     private int bankAccountID;
     //from c_bank_account
     private String bankAccountName;
 
-    private double totalAmount;
+    private String totalAmount;
     private int isRounded;
-    private double roundedAmount;
-    private double debt;
-    private double serviceFee;
+    private String roundedAmount;
+    private String debt;
+    private String serviceFee;
     private String remark;
     private String drawer;
     private String creationDate;

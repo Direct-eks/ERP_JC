@@ -30,14 +30,14 @@ public class SkuFullO {
     private String companyRemark;
 
     private int recordFactoryStock;
-    private double factoryPriceWithoutTax;
-    private double factoryPriceWithTax;
-    private double settlementPriceWithoutTax;
+    private String factoryPriceWithoutTax;
+    private String factoryPriceWithTax;
+    private String settlementPriceWithoutTax;
     private String priceBaseReference;
-    private double wholesalePriceDiscount;
-    private double wholesalePrice;
-    private double retailPriceDiscount;
-    private double retailPrice;
+    private String wholesalePriceDiscount;
+    private String wholesalePrice;
+    private String retailPriceDiscount;
+    private String retailPrice;
     private int stockLowerLimit;
     private int stockUpperLimit;
 }

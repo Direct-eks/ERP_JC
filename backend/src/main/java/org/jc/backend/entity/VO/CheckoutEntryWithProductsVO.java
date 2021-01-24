@@ -7,7 +7,7 @@ import org.jc.backend.entity.InvoiceEntryO;
 import org.jc.backend.entity.OutboundProductO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
@@ -28,28 +28,40 @@ public class CheckoutEntryWithProductsVO {
     private String paymentMethod;
     private String paymentNumber;
 
-    @DecimalMin(value = "0.0", message = "paymentAmount smaller than zero error")
-    private double paymentAmount;
+    @NotNull(message = "paymentAmount null error")
+    @NotBlank(message = "paymentAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "paymentAmount value error")
+    private String paymentAmount;
 
     private int bankAccountID;
     //from c_bank_account
     private String bankAccountName;
 
-    @DecimalMin(value = "0.0", message = "totalAmount smaller than zero error")
-    private double totalAmount;
-    private double debt;
+    @NotNull(message = "totalAmount null error")
+    @NotBlank(message = "totalAmount blank error")
+    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    private String totalAmount;
+
+    @NotNull(message = "debt null error")
+    private String debt;
 
     private int isRounded;
-    private double roundedAmount;
 
-    @DecimalMin(value = "0.0", message = "serviceFee smaller than zero error")
-    private double serviceFee;
+    @NotNull(message = "roundedAmount null error")
+    private String roundedAmount;
+
+    @NotNull(message = "totalAmount null error")
+//    @NotBlank(message = "totalAmount blank error")
+//    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    private String serviceFee;
 
     @NotNull(message = "remark null error")
     private String remark;
 
     @NotNull(message = "drawer null error")
+    @NotBlank(message = "drawer blank error")
     private String drawer;
+
     private String creationDate;
     private String checkoutDate;
     private String moneyEntrySerial;
