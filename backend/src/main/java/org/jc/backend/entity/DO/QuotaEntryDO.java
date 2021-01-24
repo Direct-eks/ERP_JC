@@ -8,7 +8,7 @@ import lombok.Setter;
 public class QuotaEntryDO {
     private String quotaEntryID;
     private String creationDate;
-    private double totalAmount;
+    private String totalAmount;
     private String invoiceType;
     private String drawer;
 

@@ -9,7 +9,7 @@ public class SalesOrderEntryDO {
     private String salesOrderEntryID;
     private String shipmentDate;
     private String creationDate;
-    private double totalAmount;
+    private String totalAmount;
     private String invoiceType;
     private String executionStatus;
     private String drawer;

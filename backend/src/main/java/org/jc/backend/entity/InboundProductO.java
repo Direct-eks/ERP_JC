@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 public class InboundProductO {
     private int inboundProductID;
     private String inboundEntryID;
+
     private int skuID;
     // from w_model, w_measurement_unit, w_factory_brand
     private String newCode;

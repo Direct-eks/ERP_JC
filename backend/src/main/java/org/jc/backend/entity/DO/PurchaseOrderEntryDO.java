@@ -9,7 +9,7 @@ public class PurchaseOrderEntryDO {
     private String purchaseOrderEntryID;
     private String entryDate;
     private String creationDate;
-    private double totalCost;
+    private String totalCost;
     private String invoiceType;
     private String executionStatus;
     private String drawer;
