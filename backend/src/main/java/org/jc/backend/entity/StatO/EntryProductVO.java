@@ -24,10 +24,10 @@ public class EntryProductVO {
     private String remark;
     private int warehouseStockID;
     private int warehouseID;
-    private double taxRate;
-    private double unitPriceWithoutTax;
-    private double unitPriceWithTax;
-    private double stockUnitPrice;
+    private String taxRate;
+    private String unitPriceWithoutTax;
+    private String unitPriceWithTax;
+    private String stockUnitPrice;
     private int returnStatus;
     private String checkoutSerial;
     private String invoiceSerial;

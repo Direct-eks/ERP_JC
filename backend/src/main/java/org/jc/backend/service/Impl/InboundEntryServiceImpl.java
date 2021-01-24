@@ -5,6 +5,7 @@ import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
+import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
@@ -20,9 +21,8 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InboundEntryServiceImpl implements InboundEntryService {
@@ -486,10 +486,34 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         return entries;
     }
 
+    public List<InvoiceStatVO> summingUpTotalAmountForEachCompany(List<InvoiceStatDO> rawStats) {
+
+        List<InvoiceStatVO> statVOs = new ArrayList<>();
+        rawStats.stream()
+                .collect(Collectors.groupingBy(InvoiceStatDO::getCompanyID))
+                .forEach((k, v) -> {
+                    InvoiceStatVO tempVO = new InvoiceStatVO();
+                    tempVO.setCompanyID(k);
+                    tempVO.setCompanyAbbreviatedName(v.get(0).getCompanyAbbreviatedName());
+                    tempVO.setCompanyFullName(v.get(0).getCompanyFullName());
+                    BigDecimal totalAmount = new BigDecimal("0");
+                    for (var e : v) {
+                        totalAmount = totalAmount.add(new BigDecimal(e.getUnitPriceWithTax())
+                                .multiply(new BigDecimal(e.getQuantity())));
+                    }
+                    tempVO.setTotalAmount(totalAmount.toPlainString());
+                    statVOs.add(tempVO);
+                });
+        // todo sort
+        return statVOs;
+    }
+
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
         try {
-            return inboundEntryMapper.queryNotYetCheckoutSummary();
+            List<InvoiceStatDO> statsFromDatabase = inboundEntryMapper.queryNotYetCheckoutSummary();
+
+            return summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
@@ -513,7 +537,9 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     @Transactional(readOnly = true)
     public List<InvoiceStatVO> getNotYetInvoiceSummary() {
         try {
-            return inboundEntryMapper.queryNotYetInvoiceSummary();
+            List<InvoiceStatDO> statsFromDatabase = inboundEntryMapper.queryNotYetInvoiceSummary();
+
+            return summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production

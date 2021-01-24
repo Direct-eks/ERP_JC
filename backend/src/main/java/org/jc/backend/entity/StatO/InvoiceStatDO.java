@@ -5,9 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InvoiceStatVO {
+public class InvoiceStatDO {
     private int companyID;
     private String companyAbbreviatedName;
     private String companyFullName;
-    private String totalAmount;
+    private int quantity;
+    private String unitPriceWithTax;
 }
