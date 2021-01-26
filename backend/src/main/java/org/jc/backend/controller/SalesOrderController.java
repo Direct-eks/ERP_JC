@@ -34,7 +34,7 @@ public class SalesOrderController {
     @RequiresPermissions("salesOrder:Creation")
     @PutMapping("/createOrder")
     public void createOrder(@RequestBody @Validated SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO) {
-        logger.info("PUT Request to /salesOrder/createOrder");
+        logger.info("PUT Request to /salesOrder/createOrder, data: {}", salesOrderEntryWithProductsVO.toString());
 
         salesOrderService.createOrder(salesOrderEntryWithProductsVO);
     }
@@ -47,8 +47,8 @@ public class SalesOrderController {
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalParamException {
-        logger.info("GET Request to /salesOrder/getOrdersInDateRangeByCompanyID, start date: " +
-                startDateString + ", end date： " + endDateString + ", id: " + companyID);
+        logger.info("GET Request to /salesOrder/getOrdersInDateRangeByCompanyID, start date: {}; " +
+                "end date: {}; id: {};", startDateString, endDateString, companyID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -60,7 +60,7 @@ public class SalesOrderController {
     @RequiresPermissions("salesOrder:Query")
     @GetMapping("/getOrdersByCompanyID/{id}")
     public List<SalesOrderEntryWithProductsVO> getOrdersByCompanyID(@PathVariable("id") int id) {
-        logger.info("GET Request to /salesOrder/getOrdersByCompanyID, id: " + id);
+        logger.info("GET Request to /salesOrder/getOrdersByCompanyID, id: {}", id);
 
         return salesOrderService.getOrdersByCompanyID(id);
     }
@@ -68,10 +68,10 @@ public class SalesOrderController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("salesOrder:Modification")
     @PatchMapping("/modifyOrder")
-    public void modifyOrder(@RequestBody @Validated SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO) {
-        logger.info("PATCH Request to /salesOrder/modifyOrder");
+    public void modifyOrder(@RequestBody @Validated SalesOrderEntryWithProductsVO modifyOrderVO) {
+        logger.info("PATCH Request to /salesOrder/modifyOrder, data: {}", modifyOrderVO.toString());
 
-        salesOrderService.modifyOrder(salesOrderEntryWithProductsVO);
+        salesOrderService.modifyOrder(modifyOrderVO);
     }
 
     @ApiOperation(value = "", response = void.class)
