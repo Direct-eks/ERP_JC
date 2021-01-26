@@ -20,6 +20,8 @@ public class MyUtils {
 
     public static final Logger logger = LoggerFactory.getLogger(MyUtils.class);
 
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     /**
      * parse Date to verify passed param
      * @param dateString String to be parsed, format yyyy-MM-dd

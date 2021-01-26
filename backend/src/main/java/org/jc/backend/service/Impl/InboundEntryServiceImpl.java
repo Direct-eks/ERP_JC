@@ -22,7 +22,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class InboundEntryServiceImpl implements InboundEntryService {
@@ -43,6 +42,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
+    @Override
     public void createEntry(InboundEntryWithProductsVO entryWithProductsVO) {
 
         InboundEntryDO newEntry = new InboundEntryDO();
@@ -93,19 +93,17 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             logger.error("Insert failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
                                                                                     String type, int companyID) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<InboundEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.queryEntriesInDateRangeByInvoiceTypeAndCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), type, companyID);
+                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), type, companyID);
 
+            List<InboundEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 InboundEntryWithProductsVO tempEntry = new InboundEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -116,17 +114,17 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production mode
             logger.error("Query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void completeEntry(InboundEntryWithProductsVO inboundEntryWithProductsVO) {
 
         InboundEntryDO currentInfo = new InboundEntryDO();
@@ -137,12 +135,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             currentInfo.setShippingCost("0");
         }
 
-        String id = currentInfo.getInboundEntryID();
-
-        InboundEntryDO originInfo;
         try {
+            String id = currentInfo.getInboundEntryID();
             //query database for compare
-            originInfo = inboundEntryMapper.selectEntryShippingInfoForCompare(id);
+            InboundEntryDO originInfo = inboundEntryMapper.selectEntryShippingInfoForCompare(id);
 
             // check changes to shipping info
             StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
@@ -170,6 +166,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional
+    @Override
     public void modifyEntry(InboundEntryWithProductsVO inboundEntryWithProductsVO) {
         //extract entryDO
         InboundEntryDO currentEntry = new InboundEntryDO();
@@ -238,6 +235,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional
+    @Override
     public void deleteEntry(String id) {
         try {
             inboundEntryMapper.deleteProductsByEntryID(id);
@@ -250,6 +248,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional
+    @Override
     public void returnEntry(InboundEntryWithProductsVO returnVO) {
 
         InboundEntryDO modifiedEntry = new InboundEntryDO();
@@ -312,12 +311,12 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType) {
-
-        List<InboundProductO> products = new ArrayList<>();
-
         try {
             List<String> entryIDs = inboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+
+            List<InboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
                 List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
                 for (var tempProduct : tempProducts) {
@@ -327,23 +326,22 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     }
                 }
             }
+            return products;
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType) {
-
-        List<InboundProductO> products = new ArrayList<>();
-
         try {
             List<String> entryIDs = inboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+
+            List<InboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
                 List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
                 for (var tempProduct : tempProducts) {
@@ -353,19 +351,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     }
                 }
             }
+            return products;
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional
+    @Override
     public void updateProductsWithCheckoutSerial(List<InboundProductO> products, String checkoutSerial) {
-
         try {
             for (var product : products) {
                 product.setCheckoutSerial(checkoutSerial);
@@ -377,12 +374,11 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             logger.error("Update failed");
             throw e;
         }
-
     }
 
     @Transactional
+    @Override
     public void updateProductsWithInvoiceSerial(List<InboundProductO> products, String invoiceSerial) {
-
         try {
             for (var product : products) {
                 product.setInvoiceSerial(invoiceSerial);
@@ -394,44 +390,37 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             logger.error("update failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getProductsWithCheckoutSerial(String checkoutSerial) {
-
-        List<InboundProductO> products;
         try {
-            products = inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
+            return inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getProductsWithInvoiceSerial(String invoiceSerial) {
-
-        List<InboundProductO> products;
         try {
-            products = inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
+            return inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional
+    @Override
     public void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO) {
-
         try {
             inboundEntryMapper.updateEntryWithShippingCostSerial(inboundEntryDO);
 
@@ -440,34 +429,30 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             logger.error("update failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial) {
-
-        List<InboundEntryDO> entries;
         try {
-            entries = inboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
+            return inboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("update failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
             int companyID, String shippingCostType) {
-
-        List<InboundEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<InboundEntryDO> entriesFromDatabase = inboundEntryMapper.getEntriesByCompanyAndShippingCostType(
                     companyID, shippingCostType);
 
+            List<InboundEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 //filter out all entries which has already checked-out shipping cost
                 if (entryFromDatabase.getShippingCostSerial().equals("")) {
@@ -476,17 +461,17 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     entries.add(entry);
                 }
             }
+            return entries;
 
         } catch (PersistenceException e) {
             e.printStackTrace(); //todo remove in production
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
         try {
             List<InvoiceStatDO> statsFromDatabase = inboundEntryMapper.queryNotYetCheckoutSummary();
@@ -501,6 +486,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID) {
         try {
             return inboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
@@ -513,6 +499,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InvoiceStatVO> getNotYetInvoiceSummary() {
         try {
             List<InvoiceStatDO> statsFromDatabase = inboundEntryMapper.queryNotYetInvoiceSummary();
@@ -527,6 +514,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID) {
         try {
             return inboundEntryMapper.queryNotYetInvoiceDetailByCompanyID(companyID);
@@ -539,6 +527,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getProductsByWarehouseID(int id) {
         try {
             return inboundEntryMapper.queryProductsByWarehouseStockID(id);
