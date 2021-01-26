@@ -3,11 +3,13 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
-import org.jc.backend.entity.*;
 import org.jc.backend.entity.DO.InboundEntryDO;
+import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
+import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -20,8 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class InboundEntryServiceImpl implements InboundEntryService {
@@ -89,7 +92,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Insert failed");
             throw e;
         }
@@ -117,7 +120,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
@@ -158,7 +161,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Completion failed");
             throw e;
         }
@@ -213,6 +216,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 }
                 if (!found) {
                     inboundEntryMapper.deleteProductByID(originProduct.getInboundProductID());
+                    //todo deduct warehouse stock
                 }
             }
 
@@ -227,7 +231,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Modify failed");
             throw e;
         }
@@ -241,7 +245,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             inboundEntryMapper.deleteProductsByEntryID(id);
             inboundEntryMapper.deleteEntryByID(id);
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Deletion failed");
             throw e;
         }
@@ -284,7 +288,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 //compare product
                 for (var originProduct : originProducts) {
                     if (originProduct.getInboundProductID() == modifiedProduct.getInboundProductID()) {
-                        if (modifiedProduct.getQuantity() != originProduct.getQuantity()) {
+                        if (!modifiedProduct.getQuantity().equals(originProduct.getQuantity())) {
                             bool2 = true;
                             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
@@ -304,7 +308,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
@@ -329,7 +333,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return products;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
@@ -354,7 +358,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return products;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
@@ -370,7 +374,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Update failed");
             throw e;
         }
@@ -386,7 +390,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
@@ -399,7 +403,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return inboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
@@ -412,7 +416,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return inboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
@@ -425,7 +429,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             inboundEntryMapper.updateEntryWithShippingCostSerial(inboundEntryDO);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
@@ -438,7 +442,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return inboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
@@ -464,7 +468,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
@@ -479,7 +483,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
@@ -492,7 +496,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return inboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
@@ -507,7 +511,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
@@ -520,7 +524,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return inboundEntryMapper.queryNotYetInvoiceDetailByCompanyID(companyID);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
@@ -533,7 +537,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             return inboundEntryMapper.queryProductsByWarehouseStockID(id);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }

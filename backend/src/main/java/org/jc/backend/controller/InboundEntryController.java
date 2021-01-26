@@ -37,7 +37,7 @@ public class InboundEntryController {
     @RequiresPermissions("inboundEntry:Creation")
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) {
-        logger.info("PUT Request to /inboundEntry/createEntry");
+        logger.info("PUT Request to /inboundEntry/createEntry, data: {}", inboundEntryVO.toString());
 
         inboundEntryService.createEntry(inboundEntryVO);
     }
@@ -52,9 +52,9 @@ public class InboundEntryController {
             @RequestParam("type") String type,
             @RequestParam("forModify") boolean forModify
     ) throws GlobalParamException {
-        logger.info("GET Request to /inboundEntry/getEntriesInDateRange, start date: " +
-                startDateString + ", end date： " + endDateString + ", companyID: " + companyID +
-                ", type: " + type + ", forModify:" + forModify);
+        logger.info("GET Request to /inboundEntry/getEntriesInDateRange, start date: {}; " +
+                "end date: {}; companyID: {}; type: {}; forModify: {};",
+                startDateString, endDateString, companyID, type, forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -92,25 +92,25 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("inboundEntry:Completion")
     @PatchMapping("/completeEntry")
-    public void completeEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
-        logger.info("PATCH Request to /inboundEntry/completeEntry");
+    public void completeEntry(@RequestBody @Validated InboundEntryWithProductsVO completeEntryVO) {
+        logger.info("PATCH Request to /inboundEntry/completeEntry, data: {}", completeEntryVO.toString());
 
-        inboundEntryService.completeEntry(inboundEntryWithProductsVO);
+        inboundEntryService.completeEntry(completeEntryVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("inboundEntry:Modification")
     @PatchMapping("/modifyEntry")
-    public void modifyEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
-        logger.info("PATCH Request to /inboundEntry/modifyEntry");
+    public void modifyEntry(@RequestBody @Validated InboundEntryWithProductsVO modifyEntryVO) {
+        logger.info("PATCH Request to /inboundEntry/modifyEntry, data: {}", modifyEntryVO.toString());
 
-        inboundEntryService.modifyEntry(inboundEntryWithProductsVO);
+        inboundEntryService.modifyEntry(modifyEntryVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @DeleteMapping("/deleteEntry/{id}")
     public void deleteEntry(@PathVariable("id") String id) {
-        logger.info("DELETE Request to /inboundEntry/deleteEntry, id: " + id);
+        logger.info("DELETE Request to /inboundEntry/deleteEntry, id: {}", id);
 
         inboundEntryService.deleteEntry(id);
     }
@@ -118,10 +118,10 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("inboundEntry:Return")
     @PostMapping("/returnEntryProducts")
-    public void returnEntryProducts(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryWithProductsVO) {
-        logger.info("DELETE Request to /inboundEntry/returnEntryProducts");
+    public void returnEntryProducts(@RequestBody @Validated InboundEntryWithProductsVO returnEntryVO) {
+        logger.info("DELETE Request to /inboundEntry/returnEntryProducts, data: {}", returnEntryVO.toString());
 
-        inboundEntryService.returnEntry(inboundEntryWithProductsVO);
+        inboundEntryService.returnEntry(returnEntryVO);
     }
 
     @ApiOperation(value = "", response = InboundProductO.class)
@@ -131,8 +131,8 @@ public class InboundEntryController {
             @RequestParam("companyID") int companyID,
             @RequestParam("invoiceType") String invoiceType
     ) {
-        logger.info("GET Request to /inboundEntry/getNotCheckedOutProducts, companyID: " +
-                companyID + ", invoiceType: " + invoiceType);
+        logger.info("GET Request to /inboundEntry/getNotCheckedOutProducts, companyID: {}; invoiceType: {};",
+                companyID, invoiceType);
 
         return inboundEntryService.getNotCheckedOutProducts(companyID, invoiceType);
     }
@@ -144,8 +144,8 @@ public class InboundEntryController {
             @RequestParam("companyID") int companyID,
             @RequestParam("invoiceType") String invoiceType
     ) {
-        logger.info("GET Request to /inboundEntry/getCheckoutAndNotInvoicedProducts, companyID: " +
-                companyID + ", invoiceType: " + invoiceType);
+        logger.info("GET Request to /inboundEntry/getCheckoutAndNotInvoicedProducts, companyID: {}; " +
+                "invoiceType: {};", companyID, invoiceType);
 
         return inboundEntryService.getCheckoutButNotInvoicedProducts(companyID, invoiceType);
     }
@@ -157,8 +157,8 @@ public class InboundEntryController {
             @RequestParam("companyID") int companyID,
             @RequestParam("shippingCostType") String shippingCostType
     ) throws GlobalParamException {
-        logger.info("GET Request to /inboundEntry/getEntriesByCompanyAndShippingCostType, companyID: " +
-                companyID + ", shippingCostType: " + shippingCostType);
+        logger.info("GET Request to /inboundEntry/getEntriesByCompanyAndShippingCostType, companyID: {}; " +
+                "shippingCostType: {};", companyID, shippingCostType);
 
         switch (shippingCostType) {
             case "自付": // company will always be selfCompany
@@ -184,7 +184,7 @@ public class InboundEntryController {
     @RequiresPermissions("inboundCheckout:NotCheckoutQuery")
     @GetMapping("/getNotYetCheckoutDetailByCompanyID/{companyID}")
     public List<InboundProductO> getNotYetCheckoutDetailByCompanyID(@PathVariable("companyID") int companyID) {
-        logger.info("GET Request to /inboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: " + companyID);
+        logger.info("GET Request to /inboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: {}", companyID);
 
         return inboundEntryService.getNotYetCheckoutDetailByCompanyID(companyID);
     }
@@ -202,7 +202,7 @@ public class InboundEntryController {
     @RequiresPermissions("inboundInvoice:NotInvoiceQuery")
     @GetMapping("/getNotYetInvoiceDetailByCompanyID/{companyID}")
     public List<InboundProductO> getNotYetInvoiceDetailByCompanyID(@PathVariable("companyID") int companyID) {
-        logger.info("GET Request to /inboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: " + companyID);
+        logger.info("GET Request to /inboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: {}", companyID);
 
         return inboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
     }
