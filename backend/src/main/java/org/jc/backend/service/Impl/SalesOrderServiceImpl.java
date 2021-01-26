@@ -18,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,9 +38,10 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         this.warehouseStockMapper = warehouseStockMapper;
     }
 
-    /* -------
-    ----------------------- SERVICE ------------------------------ */
+    /* ------------------------------ SERVICE ------------------------------ */
+
     @Transactional
+    @Override
     public void createOrder(SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO) {
 
         SalesOrderEntryDO newEntry = new SalesOrderEntryDO();
@@ -62,23 +62,20 @@ public class SalesOrderServiceImpl implements SalesOrderService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Insert failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<SalesOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<SalesOrderEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<SalesOrderEntryDO> entriesFromDatabase = salesOrderMapper.queryEntriesInDateRangeByCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), id);
+                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), id);
 
+            List<SalesOrderEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 SalesOrderEntryWithProductsVO tempEntry = new SalesOrderEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -89,23 +86,22 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query error");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<SalesOrderEntryWithProductsVO> getOrdersByCompanyID(int id) {
-
-        List<SalesOrderEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<SalesOrderEntryDO> entriesFromDatabase = salesOrderMapper.queryEntriesByCompanyID(id);
 
+            List<SalesOrderEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 SalesOrderEntryWithProductsVO tempEntry = new SalesOrderEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -116,31 +112,30 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query error");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void modifyOrder(SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO) {
 
         SalesOrderEntryDO currentEntry = new SalesOrderEntryDO();
         BeanUtils.copyProperties(salesOrderEntryWithProductsVO, currentEntry);
         List<SalesOrderProductO> currentProducts = salesOrderEntryWithProductsVO.getSalesOrderProducts();
 
-        //query database for compare
-        String id = currentEntry.getSalesOrderEntryID();
-        logger.info("Serial to be changed: " + id);
-        SalesOrderEntryDO originEntry;
-        List<SalesOrderProductO> originProducts;
         try {
-            originEntry = salesOrderMapper.selectEntryForCompare(id);
-            originProducts = salesOrderMapper.selectProductsForCompare(id);
+            //query database for compare
+            String id = currentEntry.getSalesOrderEntryID();
+            logger.info("Serial to be changed: " + id);
+
+            SalesOrderEntryDO originEntry = salesOrderMapper.selectEntryForCompare(id);
+            List<SalesOrderProductO> originProducts = salesOrderMapper.selectProductsForCompare(id);
 
             //first check if warehouse is changed, if so, check warehouse_stock and update all products
             if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
@@ -195,21 +190,26 @@ public class SalesOrderServiceImpl implements SalesOrderService {
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getSalesOrderEntryID(), record.toString()));
             }
+            else {
+                logger.warn("Nothing changed, begin rolling back");
+                throw new RuntimeException();
+            }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Update error");
             throw e;
         }
     }
 
     @Transactional
+    @Override
     public void deleteOrder(String id) {
         try {
             salesOrderMapper.deleteOrderProductsByEntryID(id);
             salesOrderMapper.deleteOrderEntry(id);
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query error");
             throw e;
         }
