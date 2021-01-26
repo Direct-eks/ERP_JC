@@ -2,6 +2,7 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.jc.backend.entity.QuotaProductO;
 
 import javax.validation.Valid;
@@ -12,8 +13,12 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class QuotaEntryWithProductsVO {
     private String quotaEntryID;
+
+    @NotNull(message = "creationDate null error")
+    @NotBlank(message = "creationDate blank error")
     private String creationDate;
 
     @NotNull(message = "totalAmount null error")
@@ -29,7 +34,8 @@ public class QuotaEntryWithProductsVO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
-    private int partnerCompanyID;
+    @NotNull(message = "partnerCompanyID null error")
+    private Integer partnerCompanyID;
     // from c_partner_company
     private String companyAbbreviatedName;
     private String companyFullName;

@@ -2,6 +2,7 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.jc.backend.entity.SalesOrderProductO;
 
 import javax.validation.Valid;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class SalesOrderEntryWithProductsVO {
     private String salesOrderEntryID;
 
@@ -19,6 +21,8 @@ public class SalesOrderEntryWithProductsVO {
     @NotBlank(message = "shipmentDate blank error")
     private String shipmentDate;
 
+    @NotNull(message = "creationDate null error")
+    @NotBlank(message = "creationDate blank error")
     private String creationDate;
 
     @NotNull(message = "totalAmount null error")
@@ -39,17 +43,20 @@ public class SalesOrderEntryWithProductsVO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
-    private int partnerCompanyID;
+    @NotNull(message = "partnerCompanyID null error")
+    private Integer partnerCompanyID;
     //from c_partner_company
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
 
-    private int departmentID;
+    @NotNull(message = "departmentID null error")
+    private Integer departmentID;
     //from e_department
     private String departmentName;
 
-    private int warehouseID;
+    @NotNull(message = "warehouseID null error")
+    private Integer warehouseID;
     //from w_warehouse
     private String warehouseName;
 
