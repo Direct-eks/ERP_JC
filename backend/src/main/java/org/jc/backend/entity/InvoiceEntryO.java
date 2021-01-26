@@ -2,17 +2,18 @@ package org.jc.backend.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
+@ToString
 public class InvoiceEntryO {
     private String invoiceEntrySerial;
 
-    private int partnerCompanyID;
+    @NotNull(message = "partnerCompanyID null error")
+    private Integer partnerCompanyID;
     // from c_partner_company
     private String companyFullName;
 
@@ -21,6 +22,7 @@ public class InvoiceEntryO {
     private String invoiceType;
 
     @NotNull(message = "invoiceNumber null error")
+    @NotBlank(message = "invoiceNumber blank error")
     private String invoiceNumber;
 
     @NotNull(message = "totalAmount null error")
@@ -37,6 +39,8 @@ public class InvoiceEntryO {
     @Pattern(regexp = "^(正常|红冲)$", message = "invoiceIndication value error")
     private String invoiceIndication;
 
+    @Min(value = 0, message = "isFollowUpIndication value error")
+    @Max(value = 1, message = "isFollowUpIndication value error")
     private int isFollowUpIndication;
 
     @NotNull(message = "remark null error")
@@ -46,10 +50,25 @@ public class InvoiceEntryO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
+    @NotNull(message = "creationDate null error")
+    @NotBlank(message = "creationDate blank error")
     private String creationDate;
+
+    @NotNull(message = "checkoutDate null error")
+    @NotBlank(message = "checkoutDate blank error")
     private String checkoutDate;
+
+    @NotNull(message = "inOrOut null error")
+    @Pattern(regexp = "^([入出])$")
     private String inOrOut;
+
+    @NotNull(message = "invoiceDate null error")
+    @NotBlank(message = "invoiceDate blank error")
     private String invoiceDate;
+
+    @NotNull(message = "invoiceNumberDate null error")
+    @NotBlank(message = "invoiceNumberDate blank error")
     private String invoiceNumberDate;
+
     private int isModified;
 }
