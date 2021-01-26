@@ -34,7 +34,7 @@ public class PurchaseOrderController {
     @RequiresPermissions("purchaseOrder:Creation")
     @PutMapping("/createOrder")
     public void createOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntry) {
-        logger.info("PUT Request to /purchaseOrder/createOrder");
+        logger.info("PUT Request to /purchaseOrder/createOrder, data: {}", purchaseOrderEntry.toString());
 
         purchaseOrderService.createOrder(purchaseOrderEntry);
     }
@@ -47,8 +47,8 @@ public class PurchaseOrderController {
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalParamException {
-        logger.info("GET Request to /purchaseOrder/getOrdersInDateRangeByCompanyID, start date: " +
-                startDateString + ", end date： " + endDateString + ", id: " + companyID);
+        logger.info("GET Request to /purchaseOrder/getOrdersInDateRangeByCompanyID, start date: {}; " +
+                "end date: {}; id: {};", startDateString, endDateString, companyID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -60,7 +60,7 @@ public class PurchaseOrderController {
     @RequiresPermissions("purchaseOrder:Query")
     @GetMapping("/getOrdersByCompanyID/{id}")
     public List<PurchaseOrderEntryWithProductsVO> getOrdersByCompanyID(@PathVariable("id") int id) {
-        logger.info("GET Request to /purchaseOrder/getOrdersByCompanyID, id: " + id);
+        logger.info("GET Request to /purchaseOrder/getOrdersByCompanyID, id: {}", id);
 
         return purchaseOrderService.getOrdersByCompanyID(id);
     }
@@ -68,16 +68,16 @@ public class PurchaseOrderController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("purchaseOrder:Modification")
     @PatchMapping("/modifyOrder")
-    public void modifyOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
-        logger.info("PATCH Request to /purchaseOrder/modifyOrder");
+    public void modifyOrder(@RequestBody @Validated PurchaseOrderEntryWithProductsVO modifyEntryVO) {
+        logger.info("PATCH Request to /purchaseOrder/modifyOrder, data: {}", modifyEntryVO.toString());
 
-        purchaseOrderService.modifyOrder(purchaseOrderEntryWithProductsVO);
+        purchaseOrderService.modifyOrder(modifyEntryVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @DeleteMapping("/deleteOrder/{id}")
     public void deleteOrder(@PathVariable("id") String id) {
-        logger.info("DELETE Request to /purchaseOrder/deleteOrder, id: " + id);
+        logger.info("DELETE Request to /purchaseOrder/deleteOrder, id: {}", id);
 
         purchaseOrderService.deleteOrder(id);
     }
