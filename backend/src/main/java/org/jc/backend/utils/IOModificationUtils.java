@@ -199,7 +199,7 @@ public class IOModificationUtils {
                 modifiedProduct.getNewCode() : modifiedProduct.getOldCode();
         //compare product
         boolean bool = false;
-        if (modifiedProduct.getQuantity() != originProduct.getQuantity()) {
+        if (!modifiedProduct.getQuantity().equals(originProduct.getQuantity())) {
             bool = true;
             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
