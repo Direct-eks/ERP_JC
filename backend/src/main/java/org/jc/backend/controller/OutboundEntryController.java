@@ -34,10 +34,10 @@ public class OutboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("outboundEntry:Creation")
     @PutMapping("/createEntry")
-    public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO inboundEntryVO) throws GlobalParamException {
-        logger.info("PUT Request to /outboundEntry/createEntry");
+    public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO entryVO) throws GlobalParamException {
+        logger.info("PUT Request to /outboundEntry/createEntry, data: {}", entryVO.toString());
 
-        outboundEntryService.createEntry(inboundEntryVO);
+        outboundEntryService.createEntry(entryVO);
     }
 
     @ApiOperation(value = "", response = OutboundEntryWithProductsVO.class)
@@ -50,9 +50,9 @@ public class OutboundEntryController {
             @RequestParam("type") String type,
             @RequestParam("forModify") boolean forModify
     ) throws GlobalParamException {
-        logger.info("GET Request to /outboundEntry/getEntriesInDateRange, start date: " +
-                startDateString + ", end date： " + endDateString + ", companyID: " + companyID +
-                ", type: " + type + ", forModify: " + forModify);
+        logger.info("GET Request to /outboundEntry/getEntriesInDateRange, start date: {}; end date: {};" +
+                "companyID: {}; type: {}; forModify: {};", startDateString, endDateString, companyID,
+                type, forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -85,25 +85,25 @@ public class OutboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("outboundEntry:Completion")
     @PatchMapping("/completeEntry")
-    public void completeEntry(@RequestBody @Validated OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
-        logger.info("PATCH Request to /outboundEntry/completeEntry");
+    public void completeEntry(@RequestBody @Validated OutboundEntryWithProductsVO completeEntryVO) {
+        logger.info("PATCH Request to /outboundEntry/completeEntry, data: {}", completeEntryVO.toString());
 
-        outboundEntryService.completeEntry(outboundEntryWithProductsVO);
+        outboundEntryService.completeEntry(completeEntryVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("outboundEntry:Modification")
     @PatchMapping("/modifyEntry")
-    public void modifyEntry(@RequestBody @Validated OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
-        logger.info("PATCH Request to /outboundEntry/modifyEntry");
+    public void modifyEntry(@RequestBody @Validated OutboundEntryWithProductsVO modifyEntryVO) {
+        logger.info("PATCH Request to /outboundEntry/modifyEntry, data: {}", modifyEntryVO.toString());
 
-        outboundEntryService.modifyEntry(outboundEntryWithProductsVO);
+        outboundEntryService.modifyEntry(modifyEntryVO);
     }
 
     @ApiOperation(value = "", response = void.class)
     @DeleteMapping("/deleteEntry/{id}")
     public void deleteEntry(@PathVariable("id") String id) {
-        logger.info("DELETE Request to /outboundEntry/deleteEntry, id: " + id);
+        logger.info("DELETE Request to /outboundEntry/deleteEntry, id: {}", id);
 
         outboundEntryService.deleteEntry(id);
     }
@@ -111,10 +111,10 @@ public class OutboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("outboundEntry:Return")
     @PostMapping("/returnEntryProducts")
-    public void returnEntryProducts(@RequestBody @Validated OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
-        logger.info("DELETE Request to /outboundEntry/returnEntryProducts");
+    public void returnEntryProducts(@RequestBody @Validated OutboundEntryWithProductsVO returnEntryVO) {
+        logger.info("DELETE Request to /outboundEntry/returnEntryProducts, data: {}", returnEntryVO.toString());
 
-        outboundEntryService.returnEntry(outboundEntryWithProductsVO);
+        outboundEntryService.returnEntry(returnEntryVO);
     }
 
     @ApiOperation(value = "", response = OutboundProductO.class)
@@ -124,8 +124,8 @@ public class OutboundEntryController {
             @RequestParam("companyID") int companyID,
             @RequestParam("invoiceType") String invoiceType
     ) {
-        logger.info("GET Request to /outboundEntry/getNotCheckedOutProducts, companyID: " +
-                companyID + ", invoiceType: " + invoiceType);
+        logger.info("GET Request to /outboundEntry/getNotCheckedOutProducts, companyID: {}; invoiceType: {};",
+                companyID, invoiceType);
 
         return outboundEntryService.getNotCheckedOutProducts(companyID, invoiceType);
     }
@@ -137,8 +137,8 @@ public class OutboundEntryController {
             @RequestParam("companyID") int companyID,
             @RequestParam("invoiceType") String invoiceType
     ) {
-        logger.info("GET Request to /outboundEntry/getCheckoutAndNotInvoicedProducts, companyID: " +
-                companyID + ", invoiceType: " + invoiceType);
+        logger.info("GET Request to /outboundEntry/getCheckoutAndNotInvoicedProducts, companyID: {}; invoiceType: {};",
+                companyID, invoiceType);
 
         return outboundEntryService.getCheckoutButNotInvoicedProducts(companyID, invoiceType);
     }
@@ -150,8 +150,8 @@ public class OutboundEntryController {
             @RequestParam("companyID") int companyID,
             @RequestParam("shippingCostType") String shippingCostType
     ) throws GlobalParamException {
-        logger.info("GET Request to /outboundEntry/getEntriesByCompanyAndShippingCostType, companyID: " +
-                companyID + ", shippingCostType: " + shippingCostType);
+        logger.info("GET Request to /outboundEntry/getEntriesByCompanyAndShippingCostType, companyID: {}; " +
+                "shippingCostType: {};", companyID, shippingCostType);
 
         switch (shippingCostType) {
             case "自付":
@@ -177,7 +177,7 @@ public class OutboundEntryController {
     @RequiresPermissions("outboundCheckout:NotCheckoutQuery")
     @GetMapping("/getNotYetCheckoutDetailByCompanyID/{companyID}")
     public List<OutboundProductO> getNotYetCheckoutDetailByCompanyID(@PathVariable("companyID") int companyID) {
-        logger.info("GET Request to /outboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: " + companyID);
+        logger.info("GET Request to /outboundEntry/getNotYetCheckoutDetailByCompanyID, companyID: {}", companyID);
 
         return outboundEntryService.getNotYetCheckoutDetailByCompanyID(companyID);
     }
@@ -195,7 +195,7 @@ public class OutboundEntryController {
     @RequiresPermissions("outboundInvoice:NotInvoiceQuery")
     @GetMapping("/getNotYetInvoiceDetailByCompanyID/{companyID}")
     public List<OutboundProductO> getNotYetInvoiceDetailByCompanyID(@PathVariable("companyID") int companyID) {
-        logger.info("GET Request to /outboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: " + companyID);
+        logger.info("GET Request to /outboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: {}", companyID);
 
         return outboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
     }
