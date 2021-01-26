@@ -42,27 +42,38 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional(readOnly = true)
+    @Override
     public List<WarehouseStockO> getWarehouseStocksBySku(int id) {
         return warehouseStockMapper.queryWarehouseStocksBySku(id);
     }
 
     @Transactional
+    @Override
     public int insertNewWarehouseStock(WarehouseStockO warehouseStockO) {
         try {
             return warehouseStockMapper.insertNewWarehouseStock(warehouseStockO);
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public WarehouseStockO getWarehouseStockByWarehouseAndSku(int warehouse, int sku) {
-        return warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouse, sku);
+        try {
+            return warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouse, sku);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Transactional
+    @Override
     public void increaseStockAndUpdateStockUnitPrice(InboundProductO product) {
         try {
             int warehouseID = product.getWarehouseID();
@@ -83,13 +94,14 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                     calculatedPrice, stockQuantity + productQuantity);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
     }
 
     @Transactional
+    @Override
     public void increaseStockAndUpdateStockUnitPrice(InboundProductO modifiedProduct,
                                                      InboundProductO originProduct) {
         try {
@@ -114,13 +126,14 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                     calculatedPrice, stockQuantity + productQuantityChange);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
     }
 
     @Transactional
+    @Override
     public void decreaseStock(OutboundProductO product) {
         try {
             int warehouseID = product.getWarehouseID();
@@ -133,13 +146,14 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             warehouseStockMapper.decreaseStock(stock.getWarehouseStockID(), stockQuantity - productQuantity);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
     }
 
     @Transactional
+    @Override
     public void decreaseStock(OutboundProductO modifiedProduct, OutboundProductO originProduct) {
         try {
             int warehouseID = originProduct.getWarehouseID();
@@ -155,7 +169,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             warehouseStockMapper.decreaseStock(stock.getWarehouseStockID(),stockQuantity - productQuantityChange);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
@@ -163,26 +177,31 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
 
     @Transactional(readOnly = true)
     public List<EntryProductVO> getProductsByWarehouseStockID(int id) {
+        try {
+            List<InboundProductO> inboundProducts = inboundEntryService.getProductsByWarehouseID(id);
+            List<OutboundProductO> outboundProducts = outboundEntryService.getProductsByWarehouseID(id);
 
-        List<InboundProductO> inboundProducts = inboundEntryService.getProductsByWarehouseID(id);
-        List<OutboundProductO> outboundProducts = outboundEntryService.getProductsByWarehouseID(id);
+            List<EntryProductVO> products = new ArrayList<>();
+            inboundProducts.forEach(product -> {
+                EntryProductVO newProduct = new EntryProductVO();
+                BeanUtils.copyProperties(product, newProduct);
+                newProduct.setEntryID(product.getInboundEntryID());
+                products.add(newProduct);
+            });
+            outboundProducts.forEach(product -> {
+                EntryProductVO newProduct = new EntryProductVO();
+                BeanUtils.copyProperties(product, newProduct);
+                newProduct.setEntryID(product.getOutboundEntryID());
+                products.add(newProduct);
+            });
 
-        List<EntryProductVO> products = new ArrayList<>();
-        inboundProducts.forEach(product -> {
-            EntryProductVO newProduct = new EntryProductVO();
-            BeanUtils.copyProperties(product, newProduct);
-            newProduct.setEntryID(product.getInboundEntryID());
-            products.add(newProduct);
-        });
-        outboundProducts.forEach(product -> {
-            EntryProductVO newProduct = new EntryProductVO();
-            BeanUtils.copyProperties(product, newProduct);
-            newProduct.setEntryID(product.getOutboundEntryID());
-            products.add(newProduct);
-        });
+            products.sort(Comparator.comparing(p -> p.getEntryID().substring(2)));
+            return products;
 
-        products.sort(Comparator.comparing(p -> p.getEntryID().substring(2)));
-
-        return products;
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 }
