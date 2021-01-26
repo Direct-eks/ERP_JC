@@ -4,7 +4,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
-import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

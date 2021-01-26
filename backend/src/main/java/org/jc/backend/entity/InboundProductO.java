@@ -24,7 +24,7 @@ public class InboundProductO {
     private String unitName;
     private String factoryCode;
 
-    @NotNull(message = "quantity not null error")
+    @NotNull(message = "quantity null error")
     @Min(value = 1, message = "quantity smaller than one error")
     private Integer quantity;
     private int stockQuantity;

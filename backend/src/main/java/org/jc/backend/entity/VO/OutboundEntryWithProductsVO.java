@@ -2,8 +2,8 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.jc.backend.entity.OutboundProductO;
-
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -14,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class OutboundEntryWithProductsVO {
     private String outboundEntryID;
 
@@ -21,6 +22,8 @@ public class OutboundEntryWithProductsVO {
     @NotBlank(message = "shipmentDate blank error")
     private String shipmentDate;
 
+    @NotNull(message = "creationDate null error")
+    @NotBlank(message = "creationDate blank error")
     private String creationDate;
 
     @NotNull(message = "totalAmount null error")
@@ -42,17 +45,20 @@ public class OutboundEntryWithProductsVO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
-    private int partnerCompanyID;
+    @NotNull(message = "partnerCompanyID null error")
+    private Integer partnerCompanyID;
     // from c_partner_company
     private String companyAbbreviatedName;
     private String companyPhone;
     private String companyFullName;
 
-    private int departmentID;
+    @NotNull(message = "departmentID null error")
+    private Integer departmentID;
     // from e_department
     private String departmentName;
 
-    private int warehouseID;
+    @NotNull(message = "warehouseID null error")
+    private Integer warehouseID;
     // from w_warehouse
     private String warehouseName;
 
@@ -72,12 +78,14 @@ public class OutboundEntryWithProductsVO {
     @Pattern(regexp = "^(自付|代垫|无)$", message = "shippingCostType value error")
     private String shippingCostType;
 
+    @NotNull(message = "shippingQuantity null error")
     @Min(value = 0, message = "shippingQuantity smaller than zero error")
-    private int shippingQuantity;
+    private Integer shippingQuantity;
 
     @NotNull(message = "shippingNumber null error")
     private String shippingNumber;
 
+    @NotNull(message = "shippingMethodID null error")
     private int shippingMethodID;
     // from c_relevant_company
     private String relevantCompanyName;
