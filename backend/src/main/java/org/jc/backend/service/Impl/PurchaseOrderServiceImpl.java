@@ -4,10 +4,10 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.PurchaseOrderMapper;
 import org.jc.backend.dao.WarehouseStockMapper;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
-import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.PurchaseOrderProductO;
+import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -18,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +42,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
+    @Override
     public void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts) {
 
         PurchaseOrderEntryDO newEntry = new PurchaseOrderEntryDO();
@@ -61,11 +61,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 product.setPurchaseOrderEntryID(newSerial);
 
                 //check warehouseStock for existence, if not, create new one
+                int warehouseID = product.getWarehouseID();
+                int skuID = product.getSkuID();
                 if (product.getWarehouseStockID() == -1 ||
-                        warehouseStockMapper.queryWarehouseStocksBySku(product.getSkuID()) == null) {
+                        warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
                     WarehouseStockO newWarehouseStock = new WarehouseStockO();
-                    newWarehouseStock.setSkuID(product.getSkuID());
-                    newWarehouseStock.setWarehouseID(product.getWarehouseID());
+                    newWarehouseStock.setSkuID(skuID);
+                    newWarehouseStock.setWarehouseID(warehouseID);
                     int newID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
                     product.setWarehouseStockID(newID);
                 }
@@ -75,23 +77,21 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Insert failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
-    public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int companyID) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
+    @Override
+    public List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(
+            Date startDate, Date endDate, int companyID) {
         try {
             List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesInDateRangeByCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), companyID);
+                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), companyID);
 
+            List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 PurchaseOrderEntryWithProductsVO tempEntry = new PurchaseOrderEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -102,23 +102,22 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query error");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<PurchaseOrderEntryWithProductsVO> getOrdersByCompanyID(int id) {
-
-        List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<PurchaseOrderEntryDO> entriesFromDatabase = purchaseOrderMapper.queryEntriesByCompanyID(id);
 
+            List<PurchaseOrderEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 PurchaseOrderEntryWithProductsVO tempEntry = new PurchaseOrderEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -129,17 +128,17 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query error");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void modifyOrder(PurchaseOrderEntryWithProductsVO purchaseOrderEntryWithProductsVO) {
         //extract entryDO
         PurchaseOrderEntryDO currentEntry = new PurchaseOrderEntryDO();
@@ -148,14 +147,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         //extract List<productO>
         List<PurchaseOrderProductO> currentProducts = purchaseOrderEntryWithProductsVO.getPurchaseOrderProducts();
 
-        //query database for compare
-        String id = currentEntry.getPurchaseOrderEntryID();
-        logger.info("Serial to be changed: " + id);
-        PurchaseOrderEntryDO originEntry;
-        List<PurchaseOrderProductO> originProducts;
         try {
-            originEntry = purchaseOrderMapper.selectEntryForCompare(id);
-            originProducts = purchaseOrderMapper.selectProductsForCompare(id);
+            //query database for compare
+            String id = currentEntry.getPurchaseOrderEntryID();
+            logger.info("Serial to be changed: " + id);
+
+            PurchaseOrderEntryDO originEntry = purchaseOrderMapper.selectEntryForCompare(id);
+            List<PurchaseOrderProductO> originProducts = purchaseOrderMapper.selectProductsForCompare(id);
 
             //first check if warehouse is changed, if so, check warehouse_stock and update all products
             if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
@@ -211,22 +209,26 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getPurchaseOrderEntryID(), record.toString()));
             }
+            else {
+                logger.warn("Nothing changed, begin rolling back");
+                throw new RuntimeException();
+            }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Update error");
             throw e;
         }
-
     }
 
     @Transactional
+    @Override
     public void deleteOrder(String id) {
         try {
             purchaseOrderMapper.deleteOrderProductsByEntryID(id);
             purchaseOrderMapper.deleteOrderEntry(id);
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Delete error");
             throw e;
         }
