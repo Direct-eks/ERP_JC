@@ -178,18 +178,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         //extract List<productO>
         List<InboundProductO> currentProducts = inboundEntryWithProductsVO.getInboundProducts();
 
-        //query database for compare
-        String id = currentEntry.getInboundEntryID();
-        logger.info("Serial to be changed: " + id);
-        InboundEntryDO originEntry;
-        List<InboundProductO> originProducts;
         try {
-            originEntry = inboundEntryMapper.selectEntryForCompare(id);
-            originProducts = inboundEntryMapper.selectProductsForCompare(id);
+            String id = currentEntry.getInboundEntryID();
+            logger.info("Serial to be changed: " + id);
+
+            //query database for compare
+            InboundEntryDO originEntry = inboundEntryMapper.selectEntryForCompare(id);
+            List<InboundProductO> originProducts = inboundEntryMapper.selectProductsForCompare(id);
 
             //compare entry
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(
+                    record, currentEntry, originEntry);
 
             if (bool1) {
                 inboundEntryMapper.updateEntry(currentEntry);
@@ -249,6 +249,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             logger.error("Deletion failed");
             throw e;
         }
+
+        //todo: deduct stock
     }
 
     @Transactional

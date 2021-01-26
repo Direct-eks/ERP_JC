@@ -3,8 +3,8 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -45,6 +45,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
+    @Override
     public void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) {
 
         OutboundEntryDO newEntry = new OutboundEntryDO();
@@ -74,23 +75,20 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             //todo mark replenish
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
-    public List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
-                                                                   String type, int id) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
+    @Override
+    public List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate, String type, int id) {
         try {
             List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.queryEntriesInDateRangeByTypeAndCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), type, id);
+                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), type, id);
 
+            List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 OutboundEntryWithProductsVO tempEntry = new OutboundEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -101,27 +99,29 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void completeEntry(OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
 
         OutboundEntryDO currentInfo = new OutboundEntryDO();
         BeanUtils.copyProperties(outboundEntryWithProductsVO, currentInfo);
 
-        String id = currentInfo.getOutboundEntryID();
+        if (currentInfo.getShippingCost().trim().equals("")) {
+            currentInfo.setShippingCost("0");
+        }
 
-        OutboundEntryDO originInfo;
         try {
-            originInfo = outboundEntryMapper.selectEntryShippingInfoForCompare(id);
+            String id = currentInfo.getOutboundEntryID();
+            OutboundEntryDO originInfo = outboundEntryMapper.selectEntryShippingInfoForCompare(id);
 
             StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
             boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
@@ -136,17 +136,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             }
             else {
                 logger.warn("Nothing changed!");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Completion failed");
             throw e;
         }
-
     }
 
     @Transactional
+    @Override
     public void modifyEntry(OutboundEntryWithProductsVO outboundEntryWithProductsVO) {
 
         OutboundEntryDO currentEntry = new OutboundEntryDO();
@@ -154,13 +155,12 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
         List<OutboundProductO> currentProducts = outboundEntryWithProductsVO.getOutboundProducts();
 
-        String id = currentEntry.getOutboundEntryID();
-        logger.info("Serial to be changed: " + id);
-        OutboundEntryDO originEntry;
-        List<OutboundProductO> originProducts;
         try {
-            originEntry = outboundEntryMapper.selectEntryForCompare(id);
-            originProducts = outboundEntryMapper.selectProductsForCompare(id);
+            String id = currentEntry.getOutboundEntryID();
+            logger.info("Serial to be changed: " + id);
+
+            OutboundEntryDO originEntry = outboundEntryMapper.selectEntryForCompare(id);
+            List<OutboundProductO> originProducts = outboundEntryMapper.selectProductsForCompare(id);
 
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
             boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(
@@ -181,6 +181,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                         if (bool3) {
                             bool2 = true;
                             outboundEntryMapper.updateProduct(currentProduct);
+
+                            //todo add warehouse stock
                         }
                         found = true;
                         break;
@@ -188,6 +190,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 }
                 if (!found) {
                     outboundEntryMapper.deleteProductByID(originProduct.getOutboundProductID());
+                    //todo add warehouse stock
                 }
             }
 
@@ -196,9 +199,13 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getOutboundEntryID(), record.toString()));
             }
+            else {
+                logger.warn("nothing changed, begin rolling back");
+                throw new RuntimeException();
+            }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
@@ -206,19 +213,22 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     }
 
     @Transactional
+    @Override
     public void deleteEntry(String id) {
         try {
             outboundEntryMapper.deleteProductsByEntryID(id);
             outboundEntryMapper.deleteEntryByID(id);
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Deletion failed");
             throw e;
         }
 
-        //todo: deduct stock
+        //todo: add stock
     }
 
+    @Transactional
+    @Override
     public void returnEntry(OutboundEntryWithProductsVO returnVO) {
 
         OutboundEntryDO modifiedEntry = new OutboundEntryDO();
@@ -254,7 +264,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 //compare product
                 for (var originProduct : originProducts) {
                     if (originProduct.getOutboundProductID() == modifiedProduct.getOutboundProductID()) {
-                        if (modifiedProduct.getQuantity() != originProduct.getQuantity()) {
+                        if (!modifiedProduct.getQuantity().equals(originProduct.getQuantity())) {
                             bool2 = true;
                             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
@@ -274,19 +284,19 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production mode
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType) {
-
-        List<OutboundProductO> products = new ArrayList<>();
-
         try {
             List<String> entryIDs = outboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+
+            List<OutboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
                 List<OutboundProductO> tempProducts = outboundEntryMapper.queryProductsByEntryID(entryID);
                 for (var tempProduct : tempProducts) {
@@ -295,23 +305,22 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     }
                 }
             }
+            return products;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in productsion
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType) {
-
-        List<OutboundProductO> products = new ArrayList<>();
-
         try {
             List<String> entryIDs = outboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
+
+            List<OutboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
                 List<OutboundProductO> tempProducts = outboundEntryMapper.queryProductsByEntryID(entryID);
                 for (var tempProduct : tempProducts) {
@@ -320,19 +329,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     }
                 }
             }
+            return products;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional
+    @Override
     public void updateProductsWithCheckoutSerial(List<OutboundProductO> products, String checkoutSerial) {
-
         try {
             for (var product : products) {
                 product.setCheckoutSerial(checkoutSerial);
@@ -340,16 +348,15 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
-
     }
 
     @Transactional
+    @Override
     public void updateProductsWithInvoiceSerial(List<OutboundProductO> products, String invoiceSerial) {
-
         try {
             for (var product : products) {
                 product.setInvoiceSerial(invoiceSerial);
@@ -357,84 +364,73 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getProductsWithCheckoutSerial(String checkoutSerial){
-
-        List<OutboundProductO> products;
         try {
-            products = outboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
+            return outboundEntryMapper.getProductsWithCheckoutSerial(checkoutSerial);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getProductsWithInvoiceSerial(String invoiceSerial){
-
-        List<OutboundProductO> products;
         try {
-            products = outboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
+            return outboundEntryMapper.getProductsWithInvoiceSerial(invoiceSerial);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query failed");
             throw e;
         }
-
-        return products;
     }
 
     @Transactional
+    @Override
     public void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO) {
-
         try {
             outboundEntryMapper.updateEntryWithShippingCostSerial(outboundEntryDO);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundEntryDO> getEntriesWithShippingCostSerial(String shippingCostSerial) {
-
-        List<OutboundEntryDO> entries;
         try {
-            entries = outboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
+            return outboundEntryMapper.getEntriesWithShippingCostSerial(shippingCostSerial);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundEntryWithProductsVO> getEntriesByCompanyAndShippingCostType(
             int companyID, String shippingCostType) {
-
-        List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
         try {
             List<OutboundEntryDO> entriesFromDatabase = outboundEntryMapper.getEntriesByCompanyAndShippingCostType(
                     companyID, shippingCostType);
 
+            List<OutboundEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 //filter out all entries which has already checked-out shipping cost
                 if (entryFromDatabase.getShippingCostSerial().equals("")) {
@@ -443,17 +439,17 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     entries.add(entry);
                 }
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InvoiceStatVO> getNotYetCheckoutSummary() {
         try {
             List<InvoiceStatDO> statsFromDatabase = outboundEntryMapper.queryNotYetCheckoutSummary();
@@ -461,25 +457,27 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getNotYetCheckoutDetailByCompanyID(int companyID) {
         try {
             return outboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<InvoiceStatVO> getNotYetInvoiceSummary() {
         try {
             List<InvoiceStatDO> statsFromDatabase = outboundEntryMapper.queryNotYetInvoiceSummary();
@@ -487,31 +485,33 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             return MyUtils.summingUpTotalAmountForEachCompany(statsFromDatabase);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID) {
         try {
             return outboundEntryMapper.queryNotYetInvoiceDetailByCompanyID(companyID);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getProductsByWarehouseID(int id) {
         try {
             return outboundEntryMapper.queryProductsByWarehouseStockID(id);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
