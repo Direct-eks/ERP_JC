@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
 @Component
@@ -82,40 +83,7 @@ public class IOModificationUtils {
     ) {
         boolean bool = false;
 
-        if (modifiedEntry instanceof PurchaseOrderEntryDO) {
-            if (!((PurchaseOrderEntryDO)modifiedEntry).getExecutionStatus()
-                    .equals(((PurchaseOrderEntryDO)originEntry).getExecutionStatus())) {
-                bool = true;
-                record.append(String.format("状态: %s -> %s; ",
-                        ((PurchaseOrderEntryDO)originEntry).getExecutionStatus(),
-                        ((PurchaseOrderEntryDO)modifiedEntry).getExecutionStatus()));
-            }
-            if (((PurchaseOrderEntryDO)modifiedEntry).getWarehouseID() !=
-                    ((PurchaseOrderEntryDO)originEntry).getWarehouseID()) {
-                bool = true;
-                record.append(String.format("仓库: %s -> %s; ",
-                        ((PurchaseOrderEntryDO)originEntry).getWarehouseName(),
-                        ((PurchaseOrderEntryDO)modifiedEntry).getWarehouseName()));
-            }
-        }
-        else if (modifiedEntry instanceof  SalesOrderEntryDO) {
-            if (((SalesOrderEntryDO)modifiedEntry).getTotalAmount() !=
-                    ((SalesOrderEntryDO)originEntry).getTotalAmount()) {
-                bool = true;
-                record.append(String.format("总金额: %f -> %f; ",
-                        ((SalesOrderEntryDO)originEntry).getTotalAmount(),
-                        ((SalesOrderEntryDO)modifiedEntry).getTotalAmount()));
-            }
-        }
-        else if (modifiedEntry instanceof OutboundEntryDO) {
-            if (new BigDecimal(((OutboundEntryDO)modifiedEntry).getTotalAmount())
-                    .compareTo(new BigDecimal(((OutboundEntryDO)originEntry).getTotalAmount())) != 0)
-            {
-                bool = true;
-                record.append(String.format("总金额: %s -> %s; ",
-                        ((OutboundEntryDO)originEntry).getTotalAmount(),
-                        ((OutboundEntryDO)modifiedEntry).getTotalAmount()));
-            }
+        if (modifiedEntry instanceof OutboundEntryDO) {
             if (!((OutboundEntryDO)modifiedEntry).getDeliveryMethod()
                     .equals(((OutboundEntryDO)originEntry).getDeliveryMethod())) {
                 bool = true;
@@ -124,30 +92,67 @@ public class IOModificationUtils {
                         ((OutboundEntryDO)modifiedEntry).getDeliveryMethod()));
             }
         }
-        else if (modifiedEntry instanceof QuotaEntryDO) {
-            //all fields of QuotaEntryDo are handled here
-            if (((QuotaEntryDO)modifiedEntry).getTotalAmount() !=
-                    ((QuotaEntryDO)originEntry).getTotalAmount()) {
+
+        try {
+            // purchaseOrder or salesOrder
+            modifiedEntry.getClass().getDeclaredField("executionStatus");
+
+            // compare executionStatus and warehouseID fields
+            PurchaseOrderEntryDO modifiedDO = new PurchaseOrderEntryDO();
+            PurchaseOrderEntryDO originDO = new PurchaseOrderEntryDO();
+            BeanUtils.copyProperties(modifiedEntry, modifiedDO);
+            BeanUtils.copyProperties(originEntry, originDO);
+
+            if (!modifiedDO.getExecutionStatus().equals(originDO.getExecutionStatus())) {
                 bool = true;
-                record.append(String.format("总金额: %f -> %f; ",
-                        ((QuotaEntryDO)originEntry).getTotalAmount(),
-                        ((QuotaEntryDO)modifiedEntry).getTotalAmount()));
+                record.append(String.format("状态: %s -> %s; ",
+                        originDO.getExecutionStatus(), modifiedDO.getExecutionStatus()));
             }
-            if (!((QuotaEntryDO)modifiedEntry).getInvoiceType()
-                    .equals(((QuotaEntryDO)originEntry).getInvoiceType())) {
+            if (modifiedDO.getWarehouseID() != originDO.getWarehouseID()) {
                 bool = true;
-                record.append(String.format("单据类型: %s -> %s; ",
-                        ((QuotaEntryDO)originEntry).getInvoiceType(),
-                        ((QuotaEntryDO)modifiedEntry).getInvoiceType()));
+                record.append(String.format("仓库: %s -> %s; ",
+                        originDO.getWarehouseName(), modifiedDO.getWarehouseName()));
             }
-            if (!((QuotaEntryDO)modifiedEntry).getRemark()
-                    .equals(((QuotaEntryDO)originEntry).getRemark())) {
+
+        } catch (NoSuchFieldException e) {
+            // do nothing
+        }
+
+        try {
+            // outboundEntry or salesOrder
+            modifiedEntry.getClass().getDeclaredField("totalAmount");
+
+            OutboundEntryDO modifyDO = new OutboundEntryDO();
+            OutboundEntryDO originDO = new OutboundEntryDO();
+            BeanUtils.copyProperties(modifiedEntry, modifyDO);
+            BeanUtils.copyProperties(originEntry, originDO);
+
+            if (new BigDecimal(modifyDO.getTotalAmount()).compareTo(new BigDecimal(originDO.getTotalAmount())) != 0) {
                 bool = true;
-                record.append(String.format("备注: %s -> %s;",
-                        ((QuotaEntryDO)originEntry).getRemark(),
-                        ((QuotaEntryDO)modifiedEntry).getRemark()));
+                record.append(String.format("总金额: %s -> %s; ", originDO.getTotalAmount(), modifyDO.getTotalAmount()));
             }
-            return bool;
+
+        } catch (NoSuchFieldException e) {
+            // do nothing
+        }
+
+        try {
+            // inboundEntry or purchaseOrder
+            modifiedEntry.getClass().getDeclaredField("totalCost");
+
+            InboundEntryDO modifyDO = new InboundEntryDO();
+            InboundEntryDO originDO = new InboundEntryDO();
+            BeanUtils.copyProperties(modifiedEntry, modifyDO);
+            BeanUtils.copyProperties(originEntry, originDO);
+
+            if (new BigDecimal(originDO.getTotalCost())
+                    .compareTo(new BigDecimal(modifyDO.getTotalCost())) != 0) {
+                bool = true;
+                record.append(String.format("总金额: %s -> %s; ", originDO.getTotalCost(), modifyDO.getTotalCost()));
+            }
+
+        } catch (NoSuchFieldException e) {
+            // do nothing
         }
 
         InboundEntryDO modifyDO = new InboundEntryDO();
@@ -155,18 +160,15 @@ public class IOModificationUtils {
         BeanUtils.copyProperties(modifiedEntry, modifyDO);
         BeanUtils.copyProperties(originEntry, originDO);
 
-        if (new BigDecimal(originDO.getTotalCost())
-                .compareTo(new BigDecimal(modifyDO.getTotalCost())) != 0) {
-            bool = true;
-            record.append(String.format("总金额: %s -> %s; ", originDO.getTotalCost(), modifyDO.getTotalCost()));
+        if (!(modifiedEntry instanceof QuotaEntryDO)) {
+            if (originDO.getDepartmentID() != modifyDO.getDepartmentID()) {
+                bool = true;
+                record.append(String.format("部门: %s -> %s; ", originDO.getDepartmentName(), modifyDO.getDepartmentName()));
+            }
         }
         if (!originDO.getInvoiceType().equals(modifyDO.getInvoiceType())) {
             bool = true;
             record.append(String.format("单据类型: %s -> %s; ", originDO.getInvoiceType(), modifyDO.getInvoiceType()));
-        }
-        if (originDO.getDepartmentID() != modifyDO.getDepartmentID()) {
-            bool = true;
-            record.append(String.format("部门: %s -> %s; ", originDO.getDepartmentName(), modifyDO.getDepartmentName()));
         }
         if (!originDO.getRemark().equals(modifyDO.getRemark())) {
             bool = true;
