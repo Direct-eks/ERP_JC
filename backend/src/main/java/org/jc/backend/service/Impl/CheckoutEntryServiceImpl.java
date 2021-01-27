@@ -52,10 +52,11 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     @Override
     public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
                             boolean isInbound, boolean isReturn) {
-        try {
-            CheckoutEntryDO checkoutEntry = new CheckoutEntryDO();
-            BeanUtils.copyProperties(checkoutEntryWithProductsVO, checkoutEntry);
 
+        CheckoutEntryDO checkoutEntry = new CheckoutEntryDO();
+        BeanUtils.copyProperties(checkoutEntryWithProductsVO, checkoutEntry);
+
+        try {
             String prefix = isInbound ? (isReturn ? "出退" : "入结") : (isReturn ? "入退" : "出结");
             int count = checkoutEntryMapper.countNumberOfEntriesOfToday(prefix);
             String newCheckoutSerial = MyUtils.formNewSerial(prefix, count, checkoutEntry.getCheckoutDate());
@@ -177,7 +178,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         }
     }
 
-    private boolean compareEntryAndFormModificationRecord(StringBuilder record, CheckoutEntryDO modifiedDO,
+    private static boolean compareEntryAndFormModificationRecord(StringBuilder record, CheckoutEntryDO modifiedDO,
                                             CheckoutEntryDO originDO) {
         boolean bool = false;
         if (!modifiedDO.getPaymentMethod().equals(originDO.getPaymentMethod())) {
