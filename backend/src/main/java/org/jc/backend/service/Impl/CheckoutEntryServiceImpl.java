@@ -16,7 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,9 +49,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
+    @Override
     public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
                             boolean isInbound, boolean isReturn) {
-
         try {
             CheckoutEntryDO checkoutEntry = new CheckoutEntryDO();
             BeanUtils.copyProperties(checkoutEntryWithProductsVO, checkoutEntry);
@@ -97,27 +97,26 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(boolean isInbound, Date startDate, Date endDate,
                                                                    int companyID, String invoiceType) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
         try {
             String prefix1 = isInbound ? "出退" : "入退";
             String prefix2 = isInbound ? "入结" : "出结";
 
-            List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper.getEntriesInDateRangeByInvoiceTypeAndCompanyID(
-                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, invoiceType, prefix1, prefix2);
+            List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper
+                    .getEntriesInDateRangeByInvoiceTypeAndCompanyID(
+                            MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), companyID,
+                            invoiceType, prefix1, prefix2);
 
+            List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 CheckoutEntryWithProductsVO tempEntry = new CheckoutEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -135,19 +134,18 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void modifyEntry(CheckoutEntryWithProductsVO modifyVO) {
-
         try {
             CheckoutEntryDO modifyDO = new CheckoutEntryDO();
             BeanUtils.copyProperties(modifyVO, modifyDO);
@@ -168,15 +166,15 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 moneyEntryService.modifyEntryForCheckout(modifyDO);
             }
             else {
-                logger.warn("nothing modified");
+                logger.warn("nothing modified, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
-
     }
 
     private boolean compareEntryAndFormModificationRecord(StringBuilder record, CheckoutEntryDO modifiedDO,
@@ -184,36 +182,41 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         boolean bool = false;
         if (!modifiedDO.getPaymentMethod().equals(originDO.getPaymentMethod())) {
             bool = true;
-            record.append(String.format("付款方式: %s -> %s; ", originDO.getPaymentMethod(), modifiedDO.getPaymentMethod()));
+            record.append(String.format("付款方式: %s -> %s; ",
+                    originDO.getPaymentMethod(), modifiedDO.getPaymentMethod()));
         }
         if (!modifiedDO.getPaymentNumber().equals(originDO.getPaymentNumber())) {
             bool = true;
-            record.append(String.format("付款号码: %s -> %s; ", originDO.getPaymentNumber(), modifiedDO.getPaymentNumber()));
+            record.append(String.format("付款号码: %s -> %s; ",
+                    originDO.getPaymentNumber(), modifiedDO.getPaymentNumber()));
         }
-        if (modifiedDO.getPaymentAmount() != originDO.getPaymentAmount()) {
+        if (new BigDecimal(modifiedDO.getPaymentAmount()).compareTo(new BigDecimal(originDO.getPaymentAmount())) != 0) {
             bool = true;
-            record.append(String.format("付款金额: %f -> %f; ", originDO.getPaymentAmount(), modifiedDO.getPaymentAmount()));
+            record.append(String.format("付款金额: %s -> %s; ",
+                    originDO.getPaymentAmount(), modifiedDO.getPaymentAmount()));
         }
         if (modifiedDO.getBankAccountID() != originDO.getBankAccountID()) {
             bool = true;
-            record.append(String.format("银行账号: %s -> %s; ", originDO.getBankAccountName(), modifiedDO.getBankAccountName()));
+            record.append(String.format("银行账号: %s -> %s; ",
+                    originDO.getBankAccountName(), modifiedDO.getBankAccountName()));
         }
         if (modifiedDO.getIsRounded() != originDO.getIsRounded()) {
             bool = true;
             record.append(String.format("抹零状态: %s -> %s; ", originDO.getIsRounded() == 0 ? "不抹零" : "抹零",
                     modifiedDO.getIsRounded() == 0 ? "不抹零" : "抹零"));
         }
-        if (modifiedDO.getRoundedAmount() != originDO.getRoundedAmount()) {
+        if (new BigDecimal(modifiedDO.getRoundedAmount()).compareTo(new BigDecimal(originDO.getRoundedAmount())) != 0) {
             bool = true;
-            record.append(String.format("抹零金额: %f -> %f; ", originDO.getRoundedAmount(), modifiedDO.getRoundedAmount()));
+            record.append(String.format("抹零金额: %s -> %s; ",
+                    originDO.getRoundedAmount(), modifiedDO.getRoundedAmount()));
         }
-        if (modifiedDO.getDebt() != originDO.getDebt()) {
+        if (new BigDecimal(modifiedDO.getDebt()).compareTo(new BigDecimal(originDO.getDebt())) != 0) {
             bool = true;
-            record.append(String.format("余额: %f -> %f; ", originDO.getDebt(), modifiedDO.getDebt()));
+            record.append(String.format("余额: %s -> %s; ", originDO.getDebt(), modifiedDO.getDebt()));
         }
-        if (modifiedDO.getServiceFee() != originDO.getServiceFee()) {
+        if (new BigDecimal(modifiedDO.getServiceFee()).compareTo(new BigDecimal(originDO.getServiceFee())) != 0) {
             bool = true;
-            record.append(String.format("服务费: %f -> %f;", originDO.getServiceFee(), modifiedDO.getServiceFee()));
+            record.append(String.format("服务费: %s -> %s;", originDO.getServiceFee(), modifiedDO.getServiceFee()));
         }
         if (!modifiedDO.getRemark().equals(originDO.getRemark())) {
             bool = true;
