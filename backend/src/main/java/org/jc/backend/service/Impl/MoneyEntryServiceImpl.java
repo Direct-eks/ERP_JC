@@ -104,7 +104,8 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
                         modifiedEntry.getMoneyEntrySerial(), record.toString()));
             }
             else {
-                logger.warn("nothing modified");
+                logger.warn("nothing modified, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
