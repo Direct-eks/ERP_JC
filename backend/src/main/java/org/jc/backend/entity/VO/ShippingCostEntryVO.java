@@ -2,26 +2,28 @@ package org.jc.backend.entity.VO;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class ShippingCostEntryVO {
     private String shippingCostEntrySerial;
 
-    private int partnerCompanyID;
+    @NotNull(message = "partnerCompanyID null error")
+    private Integer partnerCompanyID;
     //from c_partner_company
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
 
+    @Min(value = 0, message = "isTaxDeduction value error")
+    @Max(value = 1, message = "isTaxDeduction value error")
     private int isTaxDeduction;
 
     @NotNull(message = "invoiceNumber null error")
@@ -48,11 +50,22 @@ public class ShippingCostEntryVO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
+    @NotNull(message = "creationDate null error")
+    @NotBlank(message = "creationDate blank error")
     private String creationDate;
+
+    @NotNull(message = "checkoutDate null error")
+    @NotBlank(message = "checkoutDate blank error")
     private String checkoutDate;
 
+    @Min(value = 0, message = "inOrOut value error")
+    @Max(value = 1, message = "inOrOut value error")
     private int inOrOut;
+
+    @NotNull(message = "invoiceDate null error")
+    @NotBlank(message = "invoiceDate blank error")
     private String invoiceDate;
+
     private int isModified;
 
     private List<InboundEntryDO> inboundEntries;

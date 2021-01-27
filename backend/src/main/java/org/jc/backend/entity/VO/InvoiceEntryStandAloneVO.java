@@ -61,9 +61,9 @@ public class InvoiceEntryStandAloneVO {
     @NotBlank(message = "checkoutDate blank error")
     private String checkoutDate;
 
-    @NotNull(message = "inOrOut null error")
-    @Pattern(regexp = "^([入出])$")
-    private String inOrOut;
+    @Min(value = 0, message = "inOrOut value error")
+    @Max(value = 1, message = "inOrOut value error")
+    private int inOrOut;
 
     @NotNull(message = "invoiceDate null error")
     @NotBlank(message = "invoiceDate blank error")
