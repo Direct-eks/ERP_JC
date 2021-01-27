@@ -14,7 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,11 +34,15 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
-    @Transactional
-    public void createEntry(MoneyEntryO moneyEntryO, boolean isInbound) {
+    private static String getPrefix (boolean isInbound) {
+        return isInbound ? "付款" : "收款";
+    }
 
+    @Transactional
+    @Override
+    public void createEntry(MoneyEntryO moneyEntryO, boolean isInbound) {
         try {
-            String prefix = isInbound ? "付款" : "收款";
+            String prefix = getPrefix(isInbound);
             int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
             String newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
 
@@ -46,55 +50,47 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             moneyEntryMapper.insertEntry(moneyEntryO);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<MoneyEntryO> getEntriesInDateRange(Date startDate, Date endDate, int companyID,
                                                    String paymentMethod, int bankAccountID, boolean isInbound) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<MoneyEntryO> entries;
-
         try {
-            String prefix = isInbound ? "付款" : "收款";
-            entries = moneyEntryMapper.getEntriesInDateRangeAndParams(dateFormat.format(startDate),
-                    dateFormat.format(endDate), companyID, paymentMethod, bankAccountID, prefix);
+            String prefix = getPrefix(isInbound);
+            return moneyEntryMapper.getEntriesInDateRangeAndParams(MyUtils.dateFormat.format(startDate),
+                    MyUtils.dateFormat.format(endDate), companyID, paymentMethod, bankAccountID, prefix);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<MoneyEntryO> getEntryBySerial(String serialSuffix, boolean isInbound) {
-
-        List<MoneyEntryO> entry = new ArrayList<>();
-
         try {
-            String prefix = isInbound ? "付款" : "收款";
-            entry.add(moneyEntryMapper.selectEntryBySerial(prefix + serialSuffix));
+            String prefix = getPrefix(isInbound);
+            List<MoneyEntryO> result = new ArrayList<>();
+            result.add(moneyEntryMapper.selectEntryBySerial(prefix + serialSuffix));
+            return result;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entry;
     }
 
     @Transactional
+    @Override
     public void modifyEntry(MoneyEntryO modifiedEntry) {
-
         try {
             MoneyEntryO originEntry = moneyEntryMapper.selectEntryBySerial(modifiedEntry.getMoneyEntrySerial());
 
@@ -112,14 +108,13 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
-
     }
 
-    private boolean compareEntryAndFormModificationRecord(StringBuilder record, MoneyEntryO originEntry,
+    private static boolean compareEntryAndFormModificationRecord(StringBuilder record, MoneyEntryO originEntry,
                                                           MoneyEntryO modifiedEntry) {
         boolean bool = false;
         if (!originEntry.getPaymentMethod().equals(modifiedEntry.getPaymentMethod())) {
@@ -127,9 +122,10 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             record.append(String.format("付款方式: %s -> %s; ", originEntry.getPaymentMethod(),
                     modifiedEntry.getPaymentMethod()));
         }
-        if (originEntry.getPaymentAmount() != modifiedEntry.getPaymentAmount()) {
+        if (new BigDecimal(originEntry.getPaymentAmount())
+                .compareTo(new BigDecimal(modifiedEntry.getPaymentAmount())) != 0) {
             bool = true;
-            record.append(String.format("付款金额: %f -> %f; ", originEntry.getPaymentAmount(),
+            record.append(String.format("付款金额: %s -> %s; ", originEntry.getPaymentAmount(),
                     modifiedEntry.getPaymentAmount()));
         }
         if (!originEntry.getPaymentNumber().equals(modifiedEntry.getPaymentNumber())) {
@@ -137,12 +133,12 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             record.append(String.format("付款号码: %s -> %s; ", originEntry.getPaymentNumber(),
                     modifiedEntry.getPaymentNumber()));
         }
-        if (originEntry.getBankAccountID() != modifiedEntry.getBankAccountID()) {
+        if (!originEntry.getBankAccountID().equals(modifiedEntry.getBankAccountID())) {
             bool = true;
             record.append(String.format("银行: %s -> %s", originEntry.getBankAccountName(),
                     modifiedEntry.getBankAccountName()));
         }
-        if (originEntry.getDepartmentID() != modifiedEntry.getDepartmentID()) {
+        if (!originEntry.getDepartmentID().equals(modifiedEntry.getDepartmentID())) {
             bool = true;
             record.append(String.format("部门: %s -> %s", originEntry.getDepartmentName(),
                     modifiedEntry.getDepartmentName()));
@@ -162,6 +158,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
 
 
     @Transactional
+    @Override
     public String createEntryForCheckout(CheckoutEntryDO checkoutEntry, String checkoutSerial, boolean isInbound) {
 
         MoneyEntryO moneyEntryO = new MoneyEntryO();
@@ -177,28 +174,28 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
         moneyEntryO.setCheckoutSerial(checkoutEntry.getCheckoutEntrySerial());
         moneyEntryO.setDepartmentID(checkoutEntry.getDepartmentID());
 
-        String newMoneySerial;
-
         try {
-            String prefix = isInbound ? "付款" : "收款";
+            String prefix = getPrefix(isInbound);
             int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
-            newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
+            String newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
 
             moneyEntryO.setCheckoutSerial(checkoutSerial);
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
 
             moneyEntryMapper.insertEntry(moneyEntryO);
+
+            return newMoneySerial;
+
         }
         catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert error");
             throw e;
         }
-
-        return newMoneySerial;
     }
 
     @Transactional
+    @Override
     public void modifyEntryForCheckout(CheckoutEntryDO checkoutEntryDO) {
 
         MoneyEntryO modifiedEntry = new MoneyEntryO();
@@ -221,14 +218,15 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
                         modifiedEntry.getMoneyEntrySerial(), record.toString()));
             }
             else {
-                logger.warn("nothing modified");
+                logger.warn("nothing modified, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
-
     }
+
 }
