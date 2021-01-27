@@ -31,12 +31,13 @@ public class SkuServiceImpl implements SkuService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional(readOnly = true)
+    @Override
     public List<SkuFullO> getFullSkuByModel(int id) {
         try {
             return skuMapper.queryFullSkuByModel(id);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
@@ -44,7 +45,6 @@ public class SkuServiceImpl implements SkuService {
 
     @Transactional(readOnly = true)
     public List<SkuFullO> getSkusByModelCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID) {
-
         try {
             List<ModelO> models;
             if (modelCategoryID != -1) {
@@ -55,16 +55,16 @@ public class SkuServiceImpl implements SkuService {
             }
 
             List<SkuFullO> skus = new ArrayList<>();
-            models.forEach(model -> {
-                skus.addAll(skuMapper.queryFullSkuByModelAndFactoryBrandID(model.getModelID(), factoryBrandID));
-            });
+            models.forEach(model ->
+                    skus.addAll(skuMapper.queryFullSkuByModelAndFactoryBrandID(model.getModelID(), factoryBrandID)));
 
             return skus;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
     }
+
 }
