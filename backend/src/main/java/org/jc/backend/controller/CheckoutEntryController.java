@@ -37,7 +37,8 @@ public class CheckoutEntryController {
     public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
                             @RequestParam("isInbound") boolean isInbound,
                             @RequestParam(value = "isReturn", defaultValue = "false") boolean isReturn) {
-        logger.info("PUT Request to /checkoutEntry/createEntry， isInbound: " + isInbound);
+        logger.info("PUT Request to /checkoutEntry/createEntry， isInbound: {}; data: {}", isInbound,
+                checkoutEntryWithProductsVO.toString());
 
         checkoutEntryService.createEntry(checkoutEntryWithProductsVO, isInbound, isReturn);
     }
@@ -53,9 +54,9 @@ public class CheckoutEntryController {
             @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType,
             @RequestParam("forModify") boolean forModify
     ) throws GlobalParamException {
-        logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, isInbound" + isInbound +
-                ",startDate: " + startDateString + ", endDate: " + endDateString + ", companyID: " +
-                companyID + ", invoiceType: "+ invoiceType);
+        logger.info("GET Request to /checkoutEntry/getEntriesInDateRange, isInbound: {}; startDate: {}; " +
+                "endDate: {}; companyID: {}; invoiceType: {};", isInbound, startDateString, endDateString,
+                companyID, invoiceType);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -87,7 +88,7 @@ public class CheckoutEntryController {
             logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated CheckoutEntryWithProductsVO modifyVO) {
-        logger.info("PATCH Request to /checkoutEntry/modifyEntry");
+        logger.info("PATCH Request to /checkoutEntry/modifyEntry, data: {}", modifyVO.toString());
 
         checkoutEntryService.modifyEntry(modifyVO);
     }
@@ -98,6 +99,7 @@ public class CheckoutEntryController {
     public void returnEntry(
             @RequestBody @Validated CheckoutEntryWithProductsVO returnVO,
             @RequestParam("isInbound") boolean isInbound) {
-
+        logger.info("POST Request to /checkoutEntry/returnEntry, isInbound: {}; data: {}",
+                isInbound, returnVO.toString());
     }
 }

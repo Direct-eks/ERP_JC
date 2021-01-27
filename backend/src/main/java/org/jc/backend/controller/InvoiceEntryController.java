@@ -36,7 +36,8 @@ public class InvoiceEntryController {
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated InvoiceEntryStandAloneVO invoiceEntryStandAloneVO,
                             @RequestParam("isInbound") boolean isInbound) {
-        logger.info("PUT Request to /invoiceEntry/createEntry, isInbound: " + isInbound);
+        logger.info("PUT Request to /invoiceEntry/createEntry, isInbound: {}; data: {}", isInbound,
+                invoiceEntryStandAloneVO.toString());
 
         invoiceEntryService.createEntry(invoiceEntryStandAloneVO, isInbound);
     }
@@ -55,10 +56,11 @@ public class InvoiceEntryController {
             @RequestParam(value = "invoiceType", defaultValue = "") String invoiceType,
             @RequestParam("forModify") boolean forModify
     )throws GlobalParamException {
-        logger.info("GET Request to /invoiceEntry/getEntryInDateRange, isInbound: " + isInbound + ", startDate: " +
-                startDateString + ", endDate: " + endDateString + ", invoiceNumberDate: " + invoiceNumberDateString +
-                ", companyID: " + companyID + ", isFollowUpIndication: " + isFollowUpIndication + ", invoiceNumber: " +
-                invoiceNumber + ", invoiceType: " + invoiceType + ", forModify: " + forModify);
+        logger.info("GET Request to /invoiceEntry/getEntryInDateRange, isInbound: {}; startDate: {}; " +
+                        "endDate: {}; invoiceNumberDate: {}; companyID: {}; isFollowUpIndication: {}; " +
+                        "invoiceNumber: {}; invoiceType: {}; forModify: {};",
+                isInbound, startDateString, endDateString, invoiceNumberDateString, companyID,
+                isFollowUpIndication, invoiceNumber, invoiceType, forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -90,7 +92,7 @@ public class InvoiceEntryController {
             logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated InvoiceEntryStandAloneVO invoiceEntryStandAloneVO) {
-        logger.info("PATCH Request to /invoiceEntry/modifyEntry");
+        logger.info("PATCH Request to /invoiceEntry/modifyEntry, data: {}", invoiceEntryStandAloneVO.toString());
 
         invoiceEntryService.modifyEntry(invoiceEntryStandAloneVO);
     }

@@ -38,7 +38,8 @@ public class MoneyEntryController {
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated MoneyEntryO moneyEntryO,
                             @RequestParam("isInbound") boolean isInbound) {
-        logger.info("PUT Request to /moneyEntry/createEntry");
+        logger.info("PUT Request to /moneyEntry/createEntry, isInbound: {}, data: {}", isInbound,
+                moneyEntryO.toString());
 
         moneyEntryService.createEntry(moneyEntryO, isInbound);
     }
@@ -55,9 +56,9 @@ public class MoneyEntryController {
             @RequestParam(value = "bankAccountID", defaultValue = "0") int bankAccountID,
             @RequestParam(value = "isInbound") boolean isInbound
     ) throws GlobalParamException {
-        logger.info("GET Request to /moneyEntry/getEntriesInDateRange, startDate: " + startDateString +
-                        ", endDate: " + endDateString + ", companyID: " + companyID + ", paymentMethod: " +
-                        paymentMethod + ", bankAccountID: " + bankAccountID);
+        logger.info("GET Request to /moneyEntry/getEntriesInDateRange, startDate: {}; endDate: {}; " +
+                        "companyID: {}; paymentMethod: {}; bankAccountID: {}",
+                startDateString, endDateString, companyID, paymentMethod, bankAccountID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -86,7 +87,7 @@ public class MoneyEntryController {
             @RequestParam("serial") String serial,
             @RequestParam("isInbound") boolean isInbound
     ) throws GlobalParamException {
-        logger.info("GET Request to /moneyEntry/getEntryBySerial");
+        logger.info("GET Request to /moneyEntry/getEntryBySerial, serial: {}; isInbound: {}", serial, isInbound);
 
         String serialSuffix = StringUtils.trimAllWhitespace(serial);
 
@@ -102,7 +103,7 @@ public class MoneyEntryController {
             logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated MoneyEntryO moneyEntryO) {
-        logger.info("PATCH Request to /moneyEntry/modifyEntry");
+        logger.info("PATCH Request to /moneyEntry/modifyEntry, data: {}", moneyEntryO.toString());
 
         moneyEntryService.modifyEntry(moneyEntryO);
     }
