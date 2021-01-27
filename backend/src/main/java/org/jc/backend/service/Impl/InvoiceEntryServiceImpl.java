@@ -165,6 +165,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     private static boolean compareEntryAndFormModificationRecord(StringBuilder record, InvoiceEntryO originEntry,
                                                           InvoiceEntryO modifiedEntry) {
         boolean bool = false;

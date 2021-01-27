@@ -36,7 +36,8 @@ public class ShippingCostEntryController {
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated ShippingCostEntryVO shippingCostEntryVO,
                             @RequestParam("isInbound") boolean isInbound) {
-        logger.info("PUT Request to /shippingCostEntry/createEntry, isInbound: " + isInbound);
+        logger.info("PUT Request to /shippingCostEntry/createEntry, isInbound: {}, data: {}", isInbound,
+                shippingCostEntryVO.toString());
 
         shippingCostEntryService.createEntry(shippingCostEntryVO, isInbound);
     }
@@ -52,9 +53,9 @@ public class ShippingCostEntryController {
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID,
             @RequestParam("forModify") boolean forModify
     ) throws GlobalParamException {
-        logger.info("GET Request to /shippingCostEntry/getEntriesInDateRange, isInbound: " + isInbound +
-                ", startDate: " + startDateString + ", endDate: " + endDateString + ", companyID: " + companyID +
-                ", forModify: " + forModify);
+        logger.info("GET Request to /shippingCostEntry/getEntriesInDateRange, isInbound: {}; " +
+                        "startDate: {}; endDate: {}; companyID: {}; forModify: {}",
+                isInbound, startDateString, endDateString, companyID, forModify);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
@@ -74,7 +75,7 @@ public class ShippingCostEntryController {
             logical = Logical.OR)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated ShippingCostEntryVO shippingCostEntryVO) {
-        logger.info("PATCH Request to /shippingCostEntry/modifyEntry");
+        logger.info("PATCH Request to /shippingCostEntry/modifyEntry, data: {}", shippingCostEntryVO.toString());
 
         shippingCostEntryService.modifyEntry(shippingCostEntryVO);
     }

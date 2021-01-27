@@ -18,7 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +44,12 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
+    private static String getPrefix(boolean isInbound) {
+        return isInbound ? "付运" : "收运";
+    }
+
     @Transactional
+    @Override
     public void createEntry(ShippingCostEntryVO shippingCostEntryVO, boolean isInbound) {
 
         ShippingCostEntryDO shippingCostEntryDO = new ShippingCostEntryDO();
@@ -54,7 +59,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
         List<OutboundEntryDO> outboundEntries = shippingCostEntryVO.getOutboundEntries();
 
         try {
-            String prefix = isInbound ? "付运" : "收运";
+            String prefix = getPrefix(isInbound);
             int count = shippingCostEntryMapper.countNumberOfEntriesOfToday(prefix);
             String newSerial = MyUtils.formNewSerial(prefix, count, shippingCostEntryDO.getCheckoutDate());
 
@@ -72,26 +77,23 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
             });
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
-
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<ShippingCostEntryVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                            int companyID, boolean isInbound) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<ShippingCostEntryVO> entries = new ArrayList<>();
         try {
-            String prefix = isInbound ? "付运" : "收运";
+            String prefix = getPrefix(isInbound);
 
             List<ShippingCostEntryDO> entriesFromDatabase = shippingCostEntryMapper.getEntriesInDateRangeAndParams(
-                    dateFormat.format(startDate), dateFormat.format(endDate), companyID, prefix);
+                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), companyID, prefix);
 
+            List<ShippingCostEntryVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 ShippingCostEntryVO tempEntry = new ShippingCostEntryVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
@@ -106,17 +108,17 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
 
                 entries.add(tempEntry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void modifyEntry(ShippingCostEntryVO shippingCostEntryVO) {
 
         ShippingCostEntryDO modifiedEntry = new ShippingCostEntryDO();
@@ -125,8 +127,8 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
         List<InboundEntryDO> modifiedInboundEntries = shippingCostEntryVO.getInboundEntries();
         List<OutboundEntryDO> modifiedOutboundEntries = shippingCostEntryVO.getOutboundEntries();
 
-        String serial = modifiedEntry.getShippingCostEntrySerial();
         try {
+            String serial = modifiedEntry.getShippingCostEntrySerial();
             ShippingCostEntryDO originEntry = shippingCostEntryMapper.selectEntryBySerialForCompare(serial);
 
             List<InboundEntryDO> originInboundEntries = inboundEntryService.getEntriesWithShippingCostSerial(serial);
@@ -213,15 +215,15 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
-
     }
 
-    private boolean compareEntryAndFormModificationRecord(StringBuilder record, ShippingCostEntryDO modifiedEntry,
-                                                          ShippingCostEntryDO originEntry) {
+    @SuppressWarnings("DuplicatedCode")
+    private static boolean compareEntryAndFormModificationRecord(StringBuilder record, ShippingCostEntryDO modifiedEntry,
+                                                                 ShippingCostEntryDO originEntry) {
         boolean bool = false;
         if (modifiedEntry.getPartnerCompanyID() != originEntry.getPartnerCompanyID()) {
             bool = true;
@@ -233,9 +235,10 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
             record.append(String.format("抵税标志: %d -> %d; ", originEntry.getIsTaxDeduction(),
                     modifiedEntry.getIsTaxDeduction()));
         }
-        if (modifiedEntry.getTotalAmount() != originEntry.getTotalAmount()) {
+        if (new BigDecimal(modifiedEntry.getTotalAmount())
+                .compareTo(new BigDecimal(originEntry.getTotalAmount())) != 0) {
             bool = true;
-            record.append(String.format("总运费金额: %f -> %f; ", originEntry.getTotalAmount(),
+            record.append(String.format("总运费金额: %s -> %s; ", originEntry.getTotalAmount(),
                     modifiedEntry.getTotalAmount()));
         }
         if (!modifiedEntry.getInvoiceNumber().equals(originEntry.getInvoiceNumber())) {
@@ -243,9 +246,10 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
             record.append(String.format("发票号码: %s -> %s; ", originEntry.getInvoiceNumber(),
                     modifiedEntry.getInvoiceNumber()));
         }
-        if (modifiedEntry.getInvoiceAmount() != originEntry.getInvoiceAmount()) {
+        if (new BigDecimal(modifiedEntry.getInvoiceAmount())
+                .compareTo(new BigDecimal(originEntry.getInvoiceAmount())) != 0) {
             bool = true;
-            record.append(String.format("开票金额: %f -> %f; ", originEntry.getInvoiceAmount(),
+            record.append(String.format("开票金额: %s -> %s; ", originEntry.getInvoiceAmount(),
                     modifiedEntry.getInvoiceAmount()));
         }
         if (!modifiedEntry.getInvoiceDate().equals(originEntry.getInvoiceDate())) {
