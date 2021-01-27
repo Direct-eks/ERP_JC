@@ -19,7 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,16 +45,21 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
     /* ------------------------------ SERVICE ------------------------------ */
 
+    private static String getEntryPrefix(boolean isInbound, String invoiceType) {
+        return isInbound ?
+                (invoiceType.equals("增值税票") ? "入增" : "入普") :
+                (invoiceType.equals("增值税票") ? "出增" : "出普");
+    }
+
     @Transactional
+    @Override
     public void createEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO, boolean isInbound) {
 
         InvoiceEntryO invoiceEntryO = new InvoiceEntryO();
         BeanUtils.copyProperties(invoiceEntryStandAloneVO, invoiceEntryO);
 
         try {
-            String prefix = isInbound ?
-                    (invoiceEntryO.getInvoiceType().equals("增值税票") ? "入增" : "入普") :
-                    (invoiceEntryO.getInvoiceType().equals("增值税票") ? "出增" : "出普");
+            String prefix = getEntryPrefix(isInbound, invoiceEntryO.getInvoiceType());
 
             int count = invoiceEntryMapper.countNumberOfEntriesOfToday(prefix);
             String newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntryO.getInvoiceDate());
@@ -72,21 +77,18 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
-
     }
 
     @Transactional
+    @Override
     public List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceNumberDate,
                                                                 int companyID, int isFollowUpIndication,
-                                                                String invoiceNumber, String invoiceType, boolean isInbound) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<InvoiceEntryStandAloneVO> entries = new ArrayList<>();
+                                                                String invoiceNumber, String invoiceType,
+                                                                boolean isInbound) {
         try {
             String prefix1, prefix2;
             if (invoiceType.equals("")) {
@@ -101,10 +103,11 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
             }
 
             List<InvoiceEntryO> entriesFromDatabase = invoiceEntryMapper.getEntriesInDateRangeAndParams(
-                    dateFormat.format(startDate), dateFormat.format(endDate),
-                    invoiceNumberDate == null ? null : dateFormat.format(invoiceNumberDate),
+                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate),
+                    invoiceNumberDate == null ? null : MyUtils.dateFormat.format(invoiceNumberDate),
                     companyID, isFollowUpIndication, invoiceNumber, invoiceType, prefix1, prefix2);
 
+            List<InvoiceEntryStandAloneVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
                 InvoiceEntryStandAloneVO entry = new InvoiceEntryStandAloneVO();
                 BeanUtils.copyProperties(entryFromDatabase, entry);
@@ -122,17 +125,17 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
                 entries.add(entry);
             }
+            return entries;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
-
-        return entries;
     }
 
     @Transactional
+    @Override
     public void modifyEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO) {
 
         InvoiceEntryO modifiedEntry = new InvoiceEntryO();
@@ -156,13 +159,13 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
             }
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
     }
 
-    private boolean compareEntryAndFormModificationRecord(StringBuilder record, InvoiceEntryO originEntry,
+    private static boolean compareEntryAndFormModificationRecord(StringBuilder record, InvoiceEntryO originEntry,
                                                           InvoiceEntryO modifiedEntry) {
         boolean bool = false;
         if (!originEntry.getInvoiceNumber().equals(modifiedEntry.getInvoiceNumber())) {
@@ -170,12 +173,14 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
             record.append(String.format("发票号码: %s -> %s; ", originEntry.getInvoiceNumber(),
                     modifiedEntry.getInvoiceNumber()));
         }
-        if (originEntry.getInvoiceAmount() != modifiedEntry.getInvoiceAmount()) {
+        if (new BigDecimal(originEntry.getInvoiceAmount())
+                .compareTo(new BigDecimal(modifiedEntry.getInvoiceAmount())) != 0) {
             bool = true;
-            record.append(String.format("开票金额: %f -> %f; ", originEntry.getInvoiceAmount(),
+            record.append(String.format("开票金额: %s -> %s; ", originEntry.getInvoiceAmount(),
                     modifiedEntry.getInvoiceAmount()));
         }
-        if (originEntry.getPartnerCompanyID() != modifiedEntry.getPartnerCompanyID()) {
+        if (new BigDecimal(originEntry.getPartnerCompanyID())
+                .compareTo(new BigDecimal(modifiedEntry.getPartnerCompanyID())) != 0) {
             bool = true;
             record.append(String.format("单位: %s -> %s; ", originEntry.getCompanyFullName(),
                     modifiedEntry.getCompanyFullName()));
@@ -195,31 +200,29 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
 
     @Transactional
+    @Override
     public String createEntryForCheckout(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO, boolean isInbound) {
 
         InvoiceEntryO invoiceEntry = new InvoiceEntryO();
         BeanUtils.copyProperties(checkoutEntryWithProductsVO.getInvoiceEntry(), invoiceEntry);
-        String newSerial;
 
         try {
-            String prefix = isInbound ?
-                    (checkoutEntryWithProductsVO.getInvoiceType().equals("增值税票") ? "入增" : "入普") :
-                    (checkoutEntryWithProductsVO.getInvoiceType().equals("增值税票") ? "出增" : "出普");
+            String prefix = getEntryPrefix(isInbound, checkoutEntryWithProductsVO.getInvoiceType());
 
             int count = invoiceEntryMapper.countNumberOfEntriesOfToday(prefix);
-            newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntry.getInvoiceDate());
+            String newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntry.getInvoiceDate());
 
             invoiceEntry.setInvoiceEntrySerial(newSerial);
             invoiceEntry.setCheckoutDate(checkoutEntryWithProductsVO.getCheckoutDate());
 
             invoiceEntryMapper.insertEntry(invoiceEntry);
 
+            return newSerial;
+
         } catch (PersistenceException e) {
-            e.printStackTrace(); //todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
             throw e;
         }
-
-        return newSerial;
     }
 }
