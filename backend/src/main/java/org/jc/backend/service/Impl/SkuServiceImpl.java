@@ -44,6 +44,7 @@ public class SkuServiceImpl implements SkuService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<SkuFullO> getSkusByModelCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID) {
         try {
             List<ModelO> models;
@@ -65,6 +66,12 @@ public class SkuServiceImpl implements SkuService {
             logger.error("query failed");
             throw e;
         }
+    }
+
+    @Transactional
+    @Override
+    public void modifySkuPricing(SkuFullO skuFullO) {
+
     }
 
 }
