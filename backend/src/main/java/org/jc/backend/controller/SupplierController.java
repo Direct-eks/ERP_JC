@@ -1,11 +1,17 @@
 package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.jc.backend.entity.SupplierO;
+import org.jc.backend.entity.SupplierResourceO;
+import org.jc.backend.entity.VO.SupplierWithResourcesVO;
 import org.jc.backend.service.SupplierService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api(tags = "Supplier Related")
 @RestController
@@ -22,5 +28,27 @@ public class SupplierController {
 
     /* ------------------------------ API ------------------------------ */
 
-    
+    @ApiOperation(value = "", response = SupplierO.class)
+    @GetMapping("/getAllSuppliers")
+    public List<SupplierO> getAllSuppliers() {
+        logger.info("GET Request to /supplier/getAllSuppliers");
+
+        return supplierService.getAllSuppliers();
+    }
+
+    @ApiOperation(value = "", response = SupplierResourceO.class)
+    @GetMapping("/getResourcesBySupplier/{id}")
+    public List<SupplierResourceO> getResourcesBySupplier(@PathVariable("id") int id) {
+        logger.info("GET Request to /supplier/getResourcesBySupplier, id: {}", id);
+
+        return supplierService.getResourcesBySupplier(id);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/createSupplierWithResources")
+    public void updateSupplierWithResources(@Validated @RequestBody SupplierWithResourcesVO vo) {
+        logger.info("POST Request to /supplier/createSupplierWithResources, data: {}", vo.toString());
+
+        supplierService.updateSupplierWithResources(vo);
+    }
 }

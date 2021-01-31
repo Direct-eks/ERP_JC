@@ -3,7 +3,7 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.jc.backend.entity.DO.SupplierResourceO;
+import org.jc.backend.entity.SupplierResourceO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

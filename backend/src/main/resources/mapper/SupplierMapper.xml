@@ -4,5 +4,56 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.SupplierMapper">
 
+    <resultMap id="supplierResultMap" type="org.jc.backend.entity.SupplierO">
+        <result property="supplierID" column="supplier_id"/>
+        <result property="supplierAbbreviatedName" column="abbreviated_name"/>
+        <result property="supplierFullName" column="full_name"/>
+        <result property="supplierPhone" column="phone"/>
+        <result property="lastQuoteDate" column="last_quote_date"/>
+        <result property="thisQuoteDate" column="this_quote_date"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="queryAllSuppliers" resultMap="supplierResultMap">
+        select supplier_id, c.abbreviated_name, c.full_name, c.phone, last_quote_date,
+               this_quote_date, s.remark
+        from w_supplier as s join c_partner_company as c on s.supplier_id = c.partner_company_id
+    </select>
+
+    <resultMap id="resourceResultMap" type="org.jc.backend.entity.SupplierResourceO">
+        <result property="supplierID" column="supplier_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="modelID" column="model_id"/>
+        <result property="newCode" column="new_code"/>
+        <result property="oldCode" column="old_code"/>
+        <result property="factoryBrandID" column="factory_brand_id"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="unitID" column="unit_id"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="quantityRecord" column="quantity_record"/>
+        <result property="factoryPriceWithoutTax" column="factory_price_without_tax"/>
+        <result property="factoryPriceWithTax" column="factory_price_with_tax"/>
+        <result property="floatDownPrice" column="float_down_price"/>
+        <result property="settlementPriceWithoutTax" column="settlement_price_without_tax"/>
+        <result property="numberOfBoxes" column="number_of_boxes"/>
+        <result property="lastSettlementPrice" column="last_settlement_price"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="queryResourcesBySupplier" resultMap="resourceResultMap">
+        select r.supplier_id, r.sku_id, s.model_id, m.new_code, m.old_code, s.factory_brand_id,
+               b.code, m.unit_id, u.name as unit_name, quantity_record, r.factory_price_without_tax,
+               r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
+               r.number_of_boxes, r.last_settlement_price, r.remark
+        from (((w_supplier_resource as r join w_sku as s on r.sku_id = s.sku_id)
+            join w_model as m on s.model_id = m.model_id)
+            join w_factory_brand as b on s.factory_brand_id = b.factory_brand_id)
+            join w_measurement_unit as u on m.unit_id = u.measurement_unit_id
+        where r.supplier_id = #{id}
+    </select>
+
+    <insert id="createSupplier"></insert>
+    <insert id="insertResource"></insert>
+    <delete id="deleteResource"></delete>
 
 </mapper>
