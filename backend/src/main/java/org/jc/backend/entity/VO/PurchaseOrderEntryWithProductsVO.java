@@ -26,8 +26,8 @@ public class PurchaseOrderEntryWithProductsVO {
     private String creationDate;
 
     @NotNull(message = "totalCost null error")
-    @NotBlank(message = "totalCost blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalCost value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "totalCost value error")
     private String totalCost;
 
     @NotNull(message = "invoiceType null error")

@@ -27,8 +27,8 @@ public class OutboundEntryWithProductsVO {
     private String creationDate;
 
     @NotNull(message = "totalAmount null error")
-    @NotBlank(message = "totalAmount blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "totalAmount value error")
     private String totalAmount;
 
     @NotNull(message = "deliveryMethod null error")
@@ -70,8 +70,9 @@ public class OutboundEntryWithProductsVO {
     @Pattern(regexp = "^(销出|入退)$", message = "classification value error")
     private String classification;
 
-    @NotNull(message = "shippingCost null error") // pattern will allow blank
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "shippingCost value error")
+    @NotNull(message = "shippingCost null error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "shippingCost value error")
     private String shippingCost;
 
     @NotNull(message = "shippingCostType null error")

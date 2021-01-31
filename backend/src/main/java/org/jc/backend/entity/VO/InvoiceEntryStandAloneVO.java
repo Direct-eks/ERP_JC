@@ -29,13 +29,13 @@ public class InvoiceEntryStandAloneVO {
     private String invoiceNumber;
 
     @NotNull(message = "totalAmount null error")
-    @NotBlank(message = "totalAmount blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "totalAmount value error")
     private String totalAmount;
 
     @NotNull(message = "invoiceAmount null error")
-    @NotBlank(message = "invoiceAmount blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "invoiceAmount value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "invoiceAmount value error")
     private String invoiceAmount;
 
     @NotNull(message = "invoiceIndication null error")

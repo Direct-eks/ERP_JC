@@ -22,8 +22,8 @@ public class QuotaEntryWithProductsVO {
     private String creationDate;
 
     @NotNull(message = "totalAmount null error")
-    @NotBlank(message = "totalAmount blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "totalAmount value error")
     private String totalAmount;
 
     @NotNull(message = "invoiceType null error")

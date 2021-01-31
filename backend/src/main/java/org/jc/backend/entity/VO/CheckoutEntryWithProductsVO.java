@@ -36,8 +36,8 @@ public class CheckoutEntryWithProductsVO {
     private String paymentNumber;
 
     @NotNull(message = "paymentAmount null error")
-    @NotBlank(message = "paymentAmount blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "paymentAmount value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "paymentAmount value error")
     private String paymentAmount;
 
     @NotNull(message = "bankAccountID null error")
@@ -46,25 +46,27 @@ public class CheckoutEntryWithProductsVO {
     private String bankAccountName;
 
     @NotNull(message = "totalAmount null error")
-    @NotBlank(message = "totalAmount blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "totalAmount value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "totalAmount value error")
     private String totalAmount;
 
     @NotNull(message = "debt null error")
-    @NotBlank(message = "debt blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "debt value error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "debt value error")
     private String debt;
 
     @Min(value = 0, message = "isFollowUpIndication value error")
     @Max(value = 1, message = "isFollowUpIndication value error")
     private int isRounded;
 
-    @NotNull(message = "roundedAmount null error") // pattern will allow blank
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "roundedAmount value error")
+    @NotNull(message = "roundedAmount null error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "roundedAmount value error")
     private String roundedAmount;
 
-    @NotNull(message = "serviceFee null error") // pattern will allow blank
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "serviceFee value error")
+    @NotNull(message = "serviceFee null error")
+    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
+            message = "serviceFee value error")
     private String serviceFee;
 
     @NotNull(message = "remark null error")
