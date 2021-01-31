@@ -51,4 +51,12 @@ public class SupplierController {
 
         supplierService.updateSupplierWithResources(vo);
     }
+
+    @ApiOperation(value = "", response = SupplierResourceO.class)
+    @GetMapping("/getSupplierResourcesBySku/{id}")
+    public List<SupplierResourceO> getSupplierResourcesBySku(@PathVariable("id") int id) {
+        logger.info("GET Request to /supplier/getSupplierResourcesBySku, id: {}", id);
+
+        return supplierService.getSupplierResourcesBySku(id);
+    }
 }

@@ -16,4 +16,6 @@ public interface SupplierMapper {
     void createSupplier();
     void insertResource();
     void deleteResource();
+
+    List<SupplierResourceO> queryResourceBySku(int id);
 }

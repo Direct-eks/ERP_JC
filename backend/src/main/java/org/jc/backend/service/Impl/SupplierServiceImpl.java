@@ -95,4 +95,16 @@ public class SupplierServiceImpl implements SupplierService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<SupplierResourceO> getSupplierResourcesBySku(int id) {
+        try {
+            return supplierMapper.queryResourceBySku(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

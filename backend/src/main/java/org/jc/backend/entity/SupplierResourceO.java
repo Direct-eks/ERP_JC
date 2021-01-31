@@ -17,6 +17,10 @@ public class SupplierResourceO {
 
     @NotNull(message = "supplierID null error")
     private Integer supplierID;
+    // from c_partner_company
+    private String supplierAbbreviatedName;
+    private String supplierFullName;
+    private String supplierPhone;
 
     @NotNull(message = "skuID null error")
     private Integer skuID;

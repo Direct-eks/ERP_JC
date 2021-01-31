@@ -22,6 +22,9 @@
 
     <resultMap id="resourceResultMap" type="org.jc.backend.entity.SupplierResourceO">
         <result property="supplierID" column="supplier_id"/>
+        <result property="supplierAbbreviatedName" column="abbreviated_name"/>
+        <result property="supplierFullName" column="full_name"/>
+        <result property="supplierPhone" column="phone"/>
         <result property="skuID" column="sku_id"/>
         <result property="modelID" column="model_id"/>
         <result property="newCode" column="new_code"/>
@@ -52,8 +55,20 @@
         where r.supplier_id = #{id}
     </select>
 
-    <insert id="createSupplier"></insert>
-    <insert id="insertResource"></insert>
-    <delete id="deleteResource"></delete>
+    <insert id="createSupplier">
+
+    </insert>
+
+    <insert id="insertResource">
+
+    </insert>
+
+    <delete id="deleteResource">
+
+    </delete>
+
+    <select id="queryResourceBySku" resultMap="resourceResultMap">
+
+    </select>
 
 </mapper>
