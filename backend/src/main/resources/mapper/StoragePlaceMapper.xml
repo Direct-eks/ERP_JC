@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.StoragePlaceMapper">
+
+    <resultMap id="storagePlaceResultMap" type="org.jc.backend.entity.StoragePlaceO">
+        <result property="storagePlaceID" column="storage_place_id"/>
+        <result property="sequenceNumber" column="sequence_number"/>
+        <result property="placeName" column="place_name"/>
+    </resultMap>
+
+    <select id="queryAllPlaces" resultMap="storagePlaceResultMap">
+        select storage_place_id, sequence_number, place_name
+        from w_storage_place
+    </select>
+
+</mapper>
