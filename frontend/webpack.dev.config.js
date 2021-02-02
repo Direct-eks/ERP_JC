@@ -12,6 +12,35 @@ module.exports = merge(common, {
         chunkFilename: "[name].bundle.js",
         publicPath: '/assets/'
     },
+    module: {
+        rules: [
+            {
+                test: /\.(sa|sc)ss$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            esModule: false
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        // Requires sass-loader@^8.0.0
+                        options: {
+                            // eslint-disable-next-line global-require
+                            implementation: require('sass'),
+                            sassOptions: {
+                                // eslint-disable-next-line global-require
+                                fiber: require('fibers'),
+                                indentedSyntax: true // optional
+                            },
+                        },
+                    },
+                ],
+            },
+        ]
+    },
     devtool: 'eval-source-map',
     devServer: {
         host: '127.0.0.1',
