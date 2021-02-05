@@ -5,6 +5,11 @@ const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 // const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
+/*
+browserlist:
+"maintained node versions"
+*/
+
 module.exports = {
     entry: {
         index: resolve(__dirname, 'src/main.js'),

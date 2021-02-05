@@ -4,9 +4,8 @@
     "author": "dw",
     "description": "frontend jc using vue",
     "browserslist": [
-        "> 1%",
-        "last 2 versions",
-        "not ie <= 9"
+        "last 2 Chrome major versions",
+        "last 2 Electron major versions"
     ],
     "engines": {
         "node": ">=12"
