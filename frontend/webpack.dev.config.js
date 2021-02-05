@@ -42,6 +42,7 @@ module.exports = merge(common, {
         ]
     },
     devtool: 'eval-source-map',
+    target: 'web',
     devServer: {
         host: '127.0.0.1',
         port: 58888,
