@@ -12,7 +12,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports = merge(common, {
     mode: 'production',
     output: {
-        path: resolve(__dirname, 'dist'),
+        path: resolve(__dirname, '../electron_app/webpages'),
         filename: '[name].js',
         chunkFilename: "[name].bundle.js",
         publicPath: publicPath

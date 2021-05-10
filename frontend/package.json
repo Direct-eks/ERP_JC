@@ -13,7 +13,7 @@
     "private": true,
     "scripts": {
         "dev": "webpack serve --config webpack.dev.config.js",
-        "build": "rimraf dist && webpack --progress --config webpack.prod.config.js"
+        "build": "rimraf ../electron_app/webpages && webpack --progress --config webpack.prod.config.js"
     },
     "dependencies": {
         "@mdi/js": "^5.9.55",
