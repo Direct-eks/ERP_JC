@@ -137,71 +137,43 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
             StringBuilder record = new StringBuilder("修改者: " + modifiedEntry.getDrawer() + "; ");
             boolean bool1 = compareEntryAndFormModificationRecord(record, modifiedEntry, originEntry);
 
-            boolean bool2 = false;
+            boolean bool2;
+
             // check for added inbound entry
-            for (var modifiedInboundEntry : modifiedInboundEntries) {
-                boolean found = false;
-                for (var originInboundEntry : originInboundEntries) {
-                    if (originInboundEntry.getInboundEntryID().equals(modifiedInboundEntry.getInboundEntryID())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    bool2 = true;
-                    record.append(String.format("新增: %s; ", modifiedInboundEntry.getInboundEntryID()));
-                    modifiedInboundEntry.setShippingCostSerial(serial);
-                    inboundEntryService.updateEntryWithShippingCostSerial(modifiedInboundEntry);
-                }
+            List<InboundEntryDO> tempModifiedInboundEntries = new ArrayList<>(modifiedInboundEntries);
+            tempModifiedInboundEntries.removeAll(originInboundEntries);
+            bool2 = !tempModifiedInboundEntries.isEmpty();
+            for (var entry : tempModifiedInboundEntries) {
+                record.append(String.format("增加: %s; ", entry.getInboundEntryID()));
+                entry.setShippingCostSerial(serial);
+                inboundEntryService.updateEntryWithShippingCostSerial(entry);
             }
             // check for removed inbound entry
-            for (var originInboundEntry : originInboundEntries) {
-                boolean found = false;
-                for (var modifiedInboundEntry : modifiedInboundEntries) {
-                    if (modifiedInboundEntry.getInboundEntryID().equals(originInboundEntry.getInboundEntryID())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    bool2 = true;
-                    record.append(String.format("移除: %s; ", originInboundEntry.getInboundEntryID()));
-                    originInboundEntry.setShippingCostSerial("");
-                    inboundEntryService.updateEntryWithShippingCostSerial(originInboundEntry);
-                }
+            List<InboundEntryDO> tempOriginalInboundEntries = new ArrayList<>(originInboundEntries);
+            tempOriginalInboundEntries.removeAll(modifiedInboundEntries);
+            bool2 = bool2 || !tempOriginalInboundEntries.isEmpty();
+            for (var entry : tempOriginalInboundEntries) {
+                record.append(String.format("移除: %s; ", entry.getInboundEntryID()));
+                entry.setShippingCostSerial("");
+                inboundEntryService.updateEntryWithShippingCostSerial(entry);
             }
-
             // check for added outbound entry
-            for (var modifiedOutboundEntry : modifiedOutboundEntries) {
-                boolean found = false;
-                for (var originOutboundEntry : originOutboundEntries) {
-                    if (originOutboundEntry.getOutboundEntryID().equals(modifiedOutboundEntry.getOutboundEntryID())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    bool2 = true;
-                    record.append(String.format("增加: %s; ", modifiedOutboundEntry.getOutboundEntryID()));
-                    modifiedOutboundEntry.setShippingCostSerial(serial);
-                    outboundEntryService.updateEntryWithShippingCostSerial(modifiedOutboundEntry);
-                }
+            List<OutboundEntryDO> tempModifiedOutboundEntries = new ArrayList<>(modifiedOutboundEntries);
+            tempModifiedOutboundEntries.removeAll(originOutboundEntries);
+            bool2 = bool2 || !tempModifiedOutboundEntries.isEmpty();
+            for (var entry : tempModifiedOutboundEntries) {
+                record.append(String.format("增加: %s; ", entry.getOutboundEntryID()));
+                entry.setShippingCostSerial(serial);
+                outboundEntryService.updateEntryWithShippingCostSerial(entry);
             }
             // check for removed outbound entry
-            for (var originOutboundEntry : originOutboundEntries) {
-                boolean found = false;
-                for (var modifiedOutboundEntry : modifiedOutboundEntries) {
-                    if (modifiedOutboundEntry.getOutboundEntryID().equals(originOutboundEntry.getOutboundEntryID())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    bool2 = true;
-                    record.append(String.format("移除: %s; ", originOutboundEntry.getOutboundEntryID()));
-                    originOutboundEntry.setShippingCostSerial("");
-                    outboundEntryService.updateEntryWithShippingCostSerial(originOutboundEntry);
-                }
+            List<OutboundEntryDO> tempOriginalOutboundEntries = new ArrayList<>(originOutboundEntries);
+            tempOriginalOutboundEntries.removeAll(modifiedOutboundEntries);
+            bool2 = bool2 || !tempOriginalOutboundEntries.isEmpty();
+            for (var entry : tempOriginalOutboundEntries) {
+                record.append(String.format("移除: %s; ", entry.getOutboundEntryID()));
+                entry.setShippingCostSerial("");
+                outboundEntryService.updateEntryWithShippingCostSerial(entry);
             }
 
             if (bool1 || bool2) {
