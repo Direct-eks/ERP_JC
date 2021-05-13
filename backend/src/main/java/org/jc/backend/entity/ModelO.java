@@ -8,8 +8,7 @@ import lombok.Setter;
 public class ModelO {
     private int modelID;
     private int sequenceNumber;
-    private String newCode;
-    private String oldCode;
+    private String code;
     private int categoryID;
     private int unitID;
 }

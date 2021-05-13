@@ -55,9 +55,10 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Transactional(readOnly = true)
-    public List<ModelO> getModelsByName(String name, String category, String method) {
+    @Override
+    public List<ModelO> getModelsByName(String name, String method) {
         try {
-            return modelMapper.queryModelsByName(name, category, method);
+            return modelMapper.queryModelsByName(name, method);
 
         } catch (PersistenceException e) {
             e.printStackTrace(); // todo remove in production

@@ -47,19 +47,11 @@ public class ModelController {
     @GetMapping("getModelsByName")
     public List<ModelO> getModelsByName(
             @RequestParam("name") String name,
-            @RequestParam("category") String category,
             @RequestParam("method") String method
     ) throws GlobalParamException {
-        logger.info("GET Request to /model/getModelsByName, name: " + name + ", category: " +
-                category + ", method: " + method);
+        logger.info("GET Request to /model/getModelsByName, name: " + name +
+                ", method: " + method);
 
-        switch (category) {
-            case "newCode":
-            case "oldCode":
-                break;
-            default:
-                throw new GlobalParamException("invalid category param");
-        }
         switch (method) {
             case "prefix":
             case "infix":
@@ -69,7 +61,7 @@ public class ModelController {
                 throw new GlobalParamException("invalid search method param");
         }
 
-        return modelService.getModelsByName(name, category, method);
+        return modelService.getModelsByName(name, method);
     }
     
 }

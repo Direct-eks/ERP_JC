@@ -21,15 +21,6 @@
                 </v-text-field>
             </v-col>
             <v-col cols="auto">
-                <v-radio-group v-model="modelSearchCategory"
-                               hide-details="auto"
-                               class="mt-0"
-                               dense>
-                    <v-radio label="新代号" value="newCode"></v-radio>
-                    <v-radio label="旧代号" value="oldCode"></v-radio>
-                </v-radio-group>
-            </v-col>
-            <v-col cols="auto">
                 <v-radio-group v-model="modelSearchMethod"
                                hide-details="auto"
                                class="mt-0"
@@ -289,7 +280,6 @@ export default {
 
             modelCode: '',
             modelSearchName: '',
-            modelSearchCategory: 'newCode',
             modelSearchMethod: 'prefix',
             discountBase: '零售价',
             flattenedTreePosition: '',
@@ -399,7 +389,6 @@ export default {
         modelSearch() {
             this.$getRequest(this.$api.modelsByName, {
                 name: this.modelSearchName,
-                category: this.modelSearchCategory,
                 method: this.modelSearchMethod
             }).then((data) => {
                 console.log('received', data)

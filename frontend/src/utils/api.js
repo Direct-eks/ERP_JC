@@ -53,7 +53,7 @@ const api = {
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
     modelsByCategory: '/model/getModelsByCategory/', // GET {id}
-    modelsByName: '/model/getModelsByName', // GET name= category= method=
+    modelsByName: '/model/getModelsByName', // GET name= method=
 
     /* ------ /miscellaneousData ------*/
     allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
