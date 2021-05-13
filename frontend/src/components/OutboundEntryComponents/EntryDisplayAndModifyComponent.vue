@@ -600,8 +600,7 @@ export default {
 
             tableHeaders: [
                 {text: '序号', value: 'index', width: '60px'},
-                {text: '新代号', value: 'newCode', width: '100px'},
-                {text: '旧代号', value: 'oldCode', width: '100px'},
+                {text: '代号', value: 'code', width: '100px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
                 {text: '出库数量', value: 'quantity', width: '80px'},
                 {text: '单位', value: 'unitName', width: '60px'},
@@ -617,8 +616,7 @@ export default {
 
             returnTableHeaders: [
                 {text: '序号', value: 'index', width: '60px'},
-                {text: '新代号', value: 'newCode', width: '100px'},
-                {text: '旧代号', value: 'oldCode', width: '100px'},
+                {text: '代号', value: 'code', width: '100px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
                 {text: '出库数量', value: 'originalQuantity', width: '80px'},
                 {text: '退货数量', value: 'returnQuantity', width: '80px'},

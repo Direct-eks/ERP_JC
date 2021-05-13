@@ -177,8 +177,7 @@ export default {
             treeData: [],
 
             modelTableHeaders: [
-                {text: '新代号', value: 'newCode', width: '180px'},
-                {text: '原代号', value: 'oldCode', width: '180px'}
+                {text: '代号', value: 'code', width: '180px'},
             ],
             modelTableData: [],
             modelTableCurrentRow: [],

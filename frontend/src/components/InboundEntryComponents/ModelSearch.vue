@@ -159,8 +159,7 @@ export default {
             treeData: [],
 
             modelTableHeaders: [
-                {text: '新代号', value: 'newCode', width: '180px'},
-                {text: '原代号', value: 'oldCode', width: '180px'}
+                {text: '代号', value: 'code', width: '180px'},
             ],
             modelTableData: [],
             modelTableCurrentRow: [],
@@ -307,8 +306,7 @@ export default {
 
                 this.$emit('modelSearchChoose', {
                     skuID: this.skuTableCurrentRow[0].skuID,
-                    newCode: this.skuTableCurrentRow[0].newCode,
-                    oldCode: this.skuTableCurrentRow[0].oldCode,
+                    code: this.skuTableCurrentRow[0].code,
                     unitName: this.skuTableCurrentRow[0].unitName,
                     factoryCode: this.skuTableCurrentRow[0].factoryCode,
                     quantity: '0',
