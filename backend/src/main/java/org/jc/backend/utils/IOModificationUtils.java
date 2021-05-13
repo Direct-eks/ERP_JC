@@ -1,10 +1,12 @@
 package org.jc.backend.utils;
 
-import org.jc.backend.entity.DO.*;
+import org.jc.backend.entity.DO.InboundEntryDO;
+import org.jc.backend.entity.DO.OutboundEntryDO;
+import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
+import org.jc.backend.entity.DO.QuotaEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 
