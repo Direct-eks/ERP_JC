@@ -21,8 +21,7 @@ public class SkuFullO {
     @NotNull(message = "modelID null error")
     private Integer modelID;
     // from w_model
-    private String newCode;
-    private String oldCode;
+    private String code;
 
     @NotNull(message = "unitID null error")
     private Integer unitID;

@@ -19,8 +19,7 @@ public class OutboundProductO {
     @NotNull(message = "skuID null error")
     private Integer skuID;
     // from w_model, w_measurement_unit, w_factory_brand
-    private String newCode;
-    private String oldCode;
+    private String code;
     private String unitName;
     private String factoryCode;
 

@@ -26,8 +26,7 @@ public class SupplierResourceO {
     private Integer skuID;
     // from w_model
     private Integer modelID;
-    private String newCode;
-    private String oldCode;
+    private String code;
 
     private Integer factoryBrandID;
     // from w_factory_brand

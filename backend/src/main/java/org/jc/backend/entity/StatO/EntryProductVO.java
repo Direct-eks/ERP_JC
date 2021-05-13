@@ -14,8 +14,7 @@ public class EntryProductVO {
     private String outboundEntryID;
     private int skuID;
     // from w_model, w_measurement_unit, w_factory_brand
-    private String newCode;
-    private String oldCode;
+    private String code;
     private String unitName;
     private String factoryCode;
 
