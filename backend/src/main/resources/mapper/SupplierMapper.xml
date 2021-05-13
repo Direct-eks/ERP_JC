@@ -27,8 +27,7 @@
         <result property="supplierPhone" column="phone"/>
         <result property="skuID" column="sku_id"/>
         <result property="modelID" column="model_id"/>
-        <result property="newCode" column="new_code"/>
-        <result property="oldCode" column="old_code"/>
+        <result property="code" column="code"/>
         <result property="factoryBrandID" column="factory_brand_id"/>
         <result property="factoryCode" column="factory_code"/>
         <result property="unitID" column="unit_id"/>
@@ -44,7 +43,7 @@
     </resultMap>
 
     <select id="queryResourcesBySupplier" resultMap="resourceResultMap">
-        select r.supplier_id, r.sku_id, s.model_id, m.new_code, m.old_code, s.factory_brand_id,
+        select r.supplier_id, r.sku_id, s.model_id, m.code, s.factory_brand_id,
                b.code, m.unit_id, u.name as unit_name, quantity_record, r.factory_price_without_tax,
                r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
                r.number_of_boxes, r.last_settlement_price, r.remark

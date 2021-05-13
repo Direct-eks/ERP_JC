@@ -72,8 +72,7 @@
         <result property="inboundProductID" column="inbound_product_id"/>
         <result property="inboundEntryID" column="inbound_entry_id"/>
         <result property="skuID" column="sku_id"/>
-        <result property="newCode" column="new_code"/>
-        <result property="oldCode" column="old_code"/>
+        <result property="code" column="code"/>
         <result property="unitName" column="unit_name"/>
         <result property="factoryCode" column="factory_code"/>
         <result property="quantity" column="quantity"/>
@@ -111,12 +110,12 @@
     </select>
 
     <select id="queryProductsByEntryID" resultMap="productResultMap">
-        select inbound_product_id, inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+        select inbound_product_id, inbound_entry_id, p.sku_id, sku.code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
                warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
                return_status, checkout_serial, invoice_serial
         from e_inbound_product as p join (
-            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
             from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
                 join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
                 on s.model_id = m.model_id
@@ -156,7 +155,7 @@
 
     <select id="selectProductsForCompare" resultMap="productResultMap">
         select inbound_product_id, inbound_entry_id, quantity, p.remark, tax_rate,
-               unit_price_without_tax, unit_price_with_tax, m.new_code, m.old_code
+               unit_price_without_tax, unit_price_with_tax, m.code
         from e_inbound_product as p join (w_sku as s join w_model as m on s.model_id = m.model_id)
             on p.sku_id = s.sku_id
         where inbound_entry_id = #{id}
@@ -234,12 +233,12 @@
     </update>
 
     <select id="getProductsWithCheckoutSerial" resultMap="productResultMap">
-        select inbound_product_id, inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+        select inbound_product_id, inbound_entry_id, p.sku_id, sku.code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
                warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
                return_status, checkout_serial, invoice_serial
         from e_inbound_product as p join (
-            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
             from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
                      join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
                           on s.model_id = m.model_id
@@ -249,12 +248,12 @@
     </select>
 
     <select id="getProductsWithInvoiceSerial" resultMap="productResultMap">
-        select inbound_product_id, inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+        select inbound_product_id, inbound_entry_id, p.sku_id, sku.code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
                warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
                return_status, checkout_serial, invoice_serial
         from e_inbound_product as p join (
-            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
             from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
                      join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
                           on s.model_id = m.model_id
@@ -312,13 +311,13 @@
     </select>
 
     <select id="queryNotYetCheckoutDetailByCompanyID" resultMap="productResultMap">
-        select inbound_product_id, p.inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+        select inbound_product_id, p.inbound_entry_id, p.sku_id, sku.code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, p.remark, warehouse_stock_id,
                p.warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
                return_status, checkout_serial, invoice_serial
         from (e_inbound_entry as e join (
             e_inbound_product as p join (
-                select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+                select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
                 from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
                         on s.model_id = m.model_id
@@ -336,13 +335,13 @@
     </select>
 
     <select id="queryNotYetInvoiceDetailByCompanyID" resultMap="productResultMap">
-        select inbound_product_id, p.inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+        select inbound_product_id, p.inbound_entry_id, p.sku_id, sku.code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, p.remark, warehouse_stock_id,
                p.warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
                return_status, checkout_serial, invoice_serial
         from (e_inbound_entry as e join (
             e_inbound_product as p join (
-                select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+                select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
                 from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
                         on s.model_id = m.model_id
@@ -353,12 +352,12 @@
     </select>
 
     <select id="queryProductsByWarehouseStockID" resultMap="productResultMap">
-        select inbound_product_id, inbound_entry_id, p.sku_id, sku.new_code, sku.old_code,
+        select inbound_product_id, inbound_entry_id, p.sku_id, sku.code,
                sku.unit_name, sku.factory_code, quantity, stock_quantity, remark, warehouse_stock_id,
                warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
                return_status, checkout_serial, invoice_serial
         from e_inbound_product as p join (
-            select s.sku_id, m.new_code, m.old_code, u.name as unit_name, f.code as factory_code
+            select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
             from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
                      join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
                           on s.model_id = m.model_id
