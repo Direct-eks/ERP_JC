@@ -9,8 +9,7 @@
         <result property="factoryBrandID" column="factory_brand_id"/>
         <result property="factoryCode" column="factory_code"/>
         <result property="modelID" column="model_id"/>
-        <result property="newCode" column="new_code"/>
-        <result property="oldCode" column="old_code"/>
+        <result property="code" column="code"/>
         <result property="unitID" column="unit_id"/>
         <result property="unitName" column="unit_name"/>
         <result property="stockQuantity" column="stock_quantity"/>

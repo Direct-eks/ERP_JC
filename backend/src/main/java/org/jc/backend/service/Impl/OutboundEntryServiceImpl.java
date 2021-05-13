@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -258,8 +257,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             boolean bool2 = false;
             List<OutboundProductO> originProducts = outboundEntryMapper.selectProductsForCompare(id);
             for (var modifiedProduct : modifiedProducts) {
-                String modelCode = StringUtils.hasLength(modifiedProduct.getNewCode()) ?
-                        modifiedProduct.getNewCode() : modifiedProduct.getOldCode();
+                String modelCode = modifiedProduct.getCode();
                 //compare product
                 for (var originProduct : originProducts) {
                     if (originProduct.getOutboundProductID() == modifiedProduct.getOutboundProductID()) {

@@ -196,8 +196,7 @@ public class IOModificationUtils {
         BeanUtils.copyProperties(modifiedO, modifiedProduct);
         BeanUtils.copyProperties(originO, originProduct);
 
-        String modelCode = StringUtils.hasLength(modifiedProduct.getNewCode()) ?
-                modifiedProduct.getNewCode() : modifiedProduct.getOldCode();
+        String modelCode = modifiedProduct.getCode();
         //compare product
         boolean bool = false;
         if (!modifiedProduct.getQuantity().equals(originProduct.getQuantity())) {
