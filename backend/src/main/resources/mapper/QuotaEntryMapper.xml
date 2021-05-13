@@ -84,15 +84,10 @@
 
     <select id="queryProductsByEntryID" resultMap="productResultMap">
         select quota_product_id, quota_entry_id, p.sku_id,
-               sku.code, sku.unit_name, sku.factory_code,
-               quantity, remark, tax_rate,
+               sku_full.code, sku_full.unit_name, sku_full.factory_code,
+               quantity, p.remark, tax_rate,
                unit_price_without_tax, unit_price_with_tax
-        from e_quota_product as p join (
-            select s.sku_id, m.code, u.name as unit_name, f.code as factory_code
-            from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
-                     join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
-                          on s.model_id = m.model_id
-        ) as sku on p.sku_id = sku.sku_id
+        from e_quota_product as p join sku_full on p.sku_id = sku_full.sku_id
         where quota_entry_id = #{id}
         order by quota_product_id
     </select>

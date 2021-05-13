@@ -101,15 +101,10 @@
 
     <select id="queryProductsByEntryID" resultMap="productResultMap">
         select purchase_order_product_id, purchase_order_entry_id, p.sku_id,
-               sku.code, sku.unit_name, sku.factory_code,
-               quantity, remark, warehouse_stock_id, warehouse_id, tax_rate,
+               sku_full.code, sku_full.unit_name, sku_full.factory_code,
+               quantity, p.remark, warehouse_stock_id, warehouse_id, tax_rate,
                unit_price_without_tax, unit_price_with_tax, stock_unit_price
-        from e_purchase_order_product as p join (
-            select s.sku_id, m.code,u.name as unit_name, f.code as factory_code
-            from (w_sku as s join w_factory_brand as f on s.factory_brand_id = f.factory_brand_id)
-                join (w_model as m join w_measurement_unit as u on m.unit_id = u.measurement_unit_id)
-                on s.model_id = m.model_id
-        ) as sku on p.sku_id = sku.sku_id
+        from e_purchase_order_product as p join sku_full on p.sku_id = sku_full.sku_id
         where purchase_order_entry_id = #{id}
         order by purchase_order_product_id
     </select>
