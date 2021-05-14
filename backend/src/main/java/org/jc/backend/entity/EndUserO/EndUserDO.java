@@ -1,4 +1,4 @@
-package org.jc.backend.entity.DO;
+package org.jc.backend.entity.EndUserO;
 
 import lombok.Getter;
 import lombok.Setter;

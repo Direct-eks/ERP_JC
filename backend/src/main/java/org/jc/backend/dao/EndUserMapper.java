@@ -1,7 +1,7 @@
 package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.jc.backend.entity.DO.EndUserDO;
+import org.jc.backend.entity.EndUserO.EndUserDO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

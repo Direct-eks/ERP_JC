@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.EndUserMapper">
     
-    <resultMap id="EndUserResultMap" type="org.jc.backend.entity.DO.EndUserDO">
+    <resultMap id="EndUserResultMap" type="org.jc.backend.entity.EndUserO.EndUserDO">
         <result property="userID" column="user_id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>

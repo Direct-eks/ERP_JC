@@ -1,8 +1,8 @@
 package org.jc.backend.service;
 
-import org.jc.backend.entity.DO.EndUserDO;
-import org.jc.backend.entity.VO.EndUserLoginVO;
-import org.jc.backend.entity.VO.EndUserVO;
+import org.jc.backend.entity.EndUserO.EndUserDO;
+import org.jc.backend.entity.EndUserO.EndUserLoginVO;
+import org.jc.backend.entity.EndUserO.EndUserVO;
 
 import java.util.List;
 
