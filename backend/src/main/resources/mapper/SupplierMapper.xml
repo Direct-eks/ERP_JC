@@ -43,14 +43,13 @@
     </resultMap>
 
     <select id="queryResourcesBySupplier" resultMap="resourceResultMap">
-        select r.supplier_id, r.sku_id, s.model_id, m.code, s.factory_brand_id,
-               b.code, m.unit_id, u.name as unit_name, quantity_record, r.factory_price_without_tax,
+        select r.supplier_id, c.abbreviated_name, c.full_name, c.phone,
+               r.sku_id, s.model_id, s.code, s.factory_brand_id, s.factory_code,
+               s.unit_id, s.unit_name, quantity_record, r.factory_price_without_tax,
                r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
                r.number_of_boxes, r.last_settlement_price, r.remark
-        from (((w_supplier_resource as r join w_sku as s on r.sku_id = s.sku_id)
-            join w_model as m on s.model_id = m.model_id)
-            join w_factory_brand as b on s.factory_brand_id = b.factory_brand_id)
-            join w_measurement_unit as u on m.unit_id = u.measurement_unit_id
+        from w_supplier_resource as r join sku_full as s on r.sku_id = s.sku_id
+            join c_partner_company as c on r.supplier_id = c.partner_company_id
         where r.supplier_id = #{id}
     </select>
 
@@ -67,7 +66,14 @@
     </delete>
 
     <select id="queryResourceBySku" resultMap="resourceResultMap">
-
+        select r.supplier_id, c.abbreviated_name, c.full_name, c.phone,
+               r.sku_id, s.model_id, s.code, s.factory_brand_id, s.factory_code,
+               s.unit_id, s.unit_name, quantity_record, r.factory_price_without_tax,
+               r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
+               r.number_of_boxes, r.last_settlement_price, r.remark
+        from w_supplier_resource as r join sku_full as s on r.sku_id = s.sku_id
+            join c_partner_company c on r.supplier_id = c.partner_company_id
+        where r.sku_id = #{id}
     </select>
 
 </mapper>

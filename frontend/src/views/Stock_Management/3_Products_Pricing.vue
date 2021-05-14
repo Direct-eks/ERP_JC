@@ -117,12 +117,17 @@
 
         </div>
 
-        <v-data-table :headers="tableHeaders"
+        <v-data-table v-model="tableCurrentRow"
+                      :headers="tableHeaders"
                       :items="tableData"
-                      item-key="index"
+                      item-key="skuID"
                       calculate-widths
                       height="45vh"
                       disable-sort
+                      show-select
+                      single-select
+                      @click:row="tableSelect"
+                      @item-selected="tableSelect"
                       fixed-header
                       locale="zh-cn"
                       :footer-props="{'items-per-page-options': [5,20,50]}">
@@ -222,8 +227,8 @@ export default {
             factoryBrandSelected: '',
 
             supplierTableHeaders: [
-                { text: '供应商简称', value: 'companyAbbreviatedName', width: '100px' },
-                { text: '厂牌', value: 'factoryBrand', width: '80px' },
+                { text: '供应商简称', value: 'supplierAbbreviatedName', width: '100px' },
+                { text: '厂牌', value: 'factoryCode', width: '80px' },
                 { text: '含税厂价', value: 'factoryPriceWithTax', width: '65px' },
                 { text: '下浮率', value: 'floatDownRate', width: '100px' },
                 { text: '无税结算价', value: 'settlementPriceWithoutTax', width: '80px' },
@@ -251,6 +256,7 @@ export default {
                 { text: '上限', value: 'stockUpperLimit', width: '65px' },
             ],
             tableData: [],
+            tableCurrentRow: [],
             modifiedTableData: [],
 
             priceBaseOptions: [
@@ -288,6 +294,15 @@ export default {
                 console.log('received', data)
                 this.tableData = data
             }).catch(() => {})
+        },
+        tableSelect(row) {
+            this.tableCurrentRow = [row]
+
+            this.$getRequest(this.$api.supplierResourcesBySku +
+                encodeURI(row.skuID)).then(data => {
+                console.log('received', data)
+                this.supplierTableData = data
+            })
         },
         saveEditing(item) {
             // todo validate fields

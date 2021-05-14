@@ -117,6 +117,9 @@ const api = {
     skuByCategoryAndFactoryBrand: '/sku/getSkusByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
     modifySkuPricing: '/sku/modifySkuPricing', // POST
 
+    /* ------ /supplier ------*/
+    supplierResourcesBySku: '/supplier/getSupplierResourcesBySku/', // GET {id}
+
     /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',
 
