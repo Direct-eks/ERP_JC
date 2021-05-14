@@ -62,7 +62,7 @@ public class SkuFullO {
     private String priceBaseReference;
 
     @NotNull(message = "wholesalePriceDiscount null error")
-    @Pattern(regexp = "^([1-9][\\d]*)$",
+    @Pattern(regexp = "^([1-9][\\d]*)|(0)$",
             message = "wholesalePriceDiscount value error")
     private String wholesalePriceDiscount;
 
@@ -72,7 +72,7 @@ public class SkuFullO {
     private String wholesalePrice;
 
     @NotNull(message = "retailPriceDiscount null error")
-    @Pattern(regexp = "^([1-9][\\d]*)$",
+    @Pattern(regexp = "^([1-9][\\d]*)|(0)$",
             message = "retailPriceDiscount value error")
     private String retailPriceDiscount;
 

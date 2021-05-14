@@ -9,5 +9,5 @@ public interface SkuService {
 
     List<SkuFullO> getSkusByCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID);
 
-    void modifySkuPricing(SkuFullO skuFullO);
+    void modifySkuPricing(List<SkuFullO> skuFullO);
 }

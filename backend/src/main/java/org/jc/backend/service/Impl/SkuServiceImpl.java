@@ -70,9 +70,11 @@ public class SkuServiceImpl implements SkuService {
 
     @Transactional
     @Override
-    public void modifySkuPricing(SkuFullO skuFullO) {
+    public void modifySkuPricing(List<SkuFullO> skuFullO) {
         try {
-            skuMapper.updateSkuPricing(skuFullO);
+            for (var modifiedSku: skuFullO) {
+                skuMapper.updateSkuPricing(modifiedSku);
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

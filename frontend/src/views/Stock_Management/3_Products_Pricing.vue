@@ -10,6 +10,12 @@
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
                 返回
             </v-btn>
+            <v-col cols="auto">
+                <v-btn color="success"
+                       @click="saveChanges">
+                    保存修改
+                </v-btn>
+            </v-col>
         </v-card-title>
 
         <v-row>
@@ -79,6 +85,7 @@
                                   height="30vh"
                                   calculate-widths
                                   disable-sort
+                                  disable-pagination
                                   single-select
                                   @click:row="factoryBrandSelect"
                                   fixed-header
@@ -110,8 +117,7 @@
 
         </div>
 
-        <v-data-table
-                      :headers="tableHeaders"
+        <v-data-table :headers="tableHeaders"
                       :items="tableData"
                       item-key="index"
                       calculate-widths
@@ -123,13 +129,20 @@
             <template v-slot:item.index="{ item }">
                 {{tableData.indexOf(item) + 1}}
             </template>
+            <template v-slot:item.factoryPriceWithoutTax="{ item }">
+                <v-edit-dialog :return-value="item.factoryPriceWithoutTax"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.factoryPriceWithoutTax}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.factoryPriceWithoutTax" single-line/>
+                    </template>
+                </v-edit-dialog>
+            </template>
             <template v-slot:item.priceBaseReference="{ item }">
-                <v-select v-model="item.priceBaseReference"
-                          :items="priceBaseOptions"
-                          hide-details="auto"
-                          dense
-                          style="width: 120px">
-                </v-select>
+                <v-select v-model="item.priceBaseReference" :items="priceBaseOptions"
+                          hide-details="auto" dense style="width: 120px"
+                          @change="saveEditing(item)"/>
             </template>
         </v-data-table>
 
@@ -238,6 +251,7 @@ export default {
                 { text: '上限', value: 'stockUpperLimit', width: '65px' },
             ],
             tableData: [],
+            modifiedTableData: [],
 
             priceBaseOptions: [
                 '无税厂价',
@@ -266,7 +280,6 @@ export default {
         },
 
         searchSku() {
-
             this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
                 modelCategoryID: this.treeSelection[0].categoryID,
                 factoryBrandID: this.factoryBrandCurrentRow.length === 0 ? -1 :
@@ -274,6 +287,23 @@ export default {
             }).then((data) => {
                 console.log('received', data)
                 this.tableData = data
+            }).catch(() => {})
+        },
+        saveEditing(item) {
+            // todo validate fields
+            if (this.modifiedTableData.indexOf(item) === -1) {
+                this.modifiedTableData.push(item)
+            }
+            console.log(this.modifiedTableData)
+        },
+        saveChanges() {
+            this.$postRequest(this.$api.modifySkuPricing, {
+                elements: this.modifiedTableData
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '保存成功', color: 'success'
+                })
+                this.$router.replace('/stock_management')
             }).catch(() => {})
         }
     },

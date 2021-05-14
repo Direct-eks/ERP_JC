@@ -3,6 +3,7 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.entity.SkuFullO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,9 @@ public class SkuController {
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/modifySkuPricing")
-    public void modifySkuPricing(@Validated @RequestBody SkuFullO skuFullO) {
-        logger.info("POST Request to /sku/modifySkuPricing, data: {}", skuFullO.toString());
+    public void modifySkuPricing(@Validated @RequestBody ListUpdateVO<SkuFullO> listUpdateVO) {
+        logger.info("POST Request to /sku/modifySkuPricing, data: {}", listUpdateVO.getElements().toString());
 
-        skuService.modifySkuPricing(skuFullO);
+        skuService.modifySkuPricing(listUpdateVO.getElements());
     }
 }
