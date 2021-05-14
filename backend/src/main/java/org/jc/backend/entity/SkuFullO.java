@@ -58,7 +58,7 @@ public class SkuFullO {
     private String settlementPriceWithoutTax;
 
     @NotNull(message = "priceBaseReference null error")
-    @Pattern(regexp = "^(无税厂价|含税厂价|无税结算价)$", message = "priceBaseReference value error")
+    @Pattern(regexp = "^(无税厂价|含税厂价|无税结算价|)$", message = "priceBaseReference value error")
     private String priceBaseReference;
 
     @NotNull(message = "wholesalePriceDiscount null error")
