@@ -8,10 +8,10 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class UserRole {
-    private int roleID;
+public class UserPermission {
+    private int permissionID;
 
-    @NotNull(message = "role null error")
-    @NotBlank(message = "role blank error")
-    private String role;
+    @NotNull(message = "permission null error")
+    @NotBlank(message = "permission blank error")
+    private String permission;
 }

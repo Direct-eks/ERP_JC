@@ -6,9 +6,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.dao.EndUserMapper;
-import org.jc.backend.entity.EndUserO.EndUserDO;
-import org.jc.backend.entity.EndUserO.EndUserLoginVO;
-import org.jc.backend.entity.EndUserO.EndUserVO;
+import org.jc.backend.entity.EndUserO.*;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,7 @@ public class EndUserServiceImpl implements EndUserService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional(readOnly = true)
+    @Override
     public EndUserDO getUserByName(String username) {
         EndUserDO userDO = new EndUserDO();
         BeanUtils.copyProperties(endUserMapper.queryUserByName(username), userDO);
@@ -39,15 +38,18 @@ public class EndUserServiceImpl implements EndUserService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public String getRoleByUserId(int id) {
         return endUserMapper.queryRoleByUserId(id);
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<String> getPermissionsByUserId(int id) {
         return endUserMapper.queryPermissionsByUserId(id);
     }
 
+    @Override
     public EndUserVO postUserLogInInfo(EndUserLoginVO user) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(user.getUsername(), user.getPassword());
@@ -67,6 +69,7 @@ public class EndUserServiceImpl implements EndUserService {
         return endUser;
     }
 
+    @Override
     public void userLogout() {
         Subject subject = SecurityUtils.getSubject();
         String username = (String) subject.getPrincipals().getPrimaryPrincipal();
@@ -76,6 +79,7 @@ public class EndUserServiceImpl implements EndUserService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<String> queryUserNameList() {
 
         List<String> userList = new ArrayList<>();
@@ -86,11 +90,38 @@ public class EndUserServiceImpl implements EndUserService {
             usersFromDatabase.forEach(user -> userList.add(user.getUsername()));
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
 
         return userList;
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<UserRole> getAllRoles() {
+        try {
+            return endUserMapper.queryAllRoles();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<UserPermission> getAllPermissions() {
+        try {
+            return endUserMapper.queryAllPermissions();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
 }

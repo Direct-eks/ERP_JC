@@ -1,8 +1,6 @@
 package org.jc.backend.service;
 
-import org.jc.backend.entity.EndUserO.EndUserDO;
-import org.jc.backend.entity.EndUserO.EndUserLoginVO;
-import org.jc.backend.entity.EndUserO.EndUserVO;
+import org.jc.backend.entity.EndUserO.*;
 
 import java.util.List;
 
@@ -19,4 +17,7 @@ public interface EndUserService {
     void userLogout();
 
     List<String> queryUserNameList();
+
+    List<UserRole> getAllRoles();
+    List<UserPermission> getAllPermissions();
 }

@@ -7,6 +7,8 @@ import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jc.backend.entity.EndUserO.EndUserLoginVO;
 import org.jc.backend.entity.EndUserO.EndUserVO;
+import org.jc.backend.entity.EndUserO.UserPermission;
+import org.jc.backend.entity.EndUserO.UserRole;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,18 +89,18 @@ public class EndUserController {
     @ApiOperation(value = "", response = String.class)
     @RequiresRoles("admin")
     @GetMapping("/getAllRoles")
-    public List<String> getAllRoles() {
+    public List<UserRole> getAllRoles() {
         logger.info("GET Request to /user/getAllRoles");
 
-        return null;
+        return endUserService.getAllRoles();
     }
 
     @ApiOperation(value = "", response = String.class)
     @RequiresRoles("admin")
     @GetMapping("/getAllPermissions")
-    public List<String> getAllPermissions() {
+    public List<UserPermission> getAllPermissions() {
         logger.info("GET Request to /user/getAllPermissions");
 
-        return null;
+        return endUserService.getAllPermissions();
     }
 }
