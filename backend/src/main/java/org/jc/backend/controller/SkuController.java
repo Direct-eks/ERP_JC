@@ -35,15 +35,15 @@ public class SkuController {
     }
 
     @ApiOperation(value = "", response = SkuFullO.class)
-    @GetMapping("/getSkusByModelCategoryAndFactoryBrand")
-    public List<SkuFullO> getSkusByModelCategoryAndFactoryBrand(
+    @GetMapping("/getSkusByCategoryAndFactoryBrand")
+    public List<SkuFullO> getSkusByCategoryAndFactoryBrand(
             @RequestParam("modelCategoryID") int modelCategoryID,
             @RequestParam("factoryBrandID") int factoryBrandID
     ) {
         logger.info("GET Request to /sku/getSkusByModelCategoryAndFactoryBrand, modelCategoryID: " +
                 modelCategoryID + ", factoryBrandID: " + factoryBrandID);
 
-        return skuService.getSkusByModelCategoryAndFactoryBrand(modelCategoryID, factoryBrandID);
+        return skuService.getSkusByCategoryAndFactoryBrand(modelCategoryID, factoryBrandID);
     }
 
     @ApiOperation(value = "", response = void.class)

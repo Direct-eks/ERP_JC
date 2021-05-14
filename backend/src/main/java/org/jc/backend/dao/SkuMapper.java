@@ -12,4 +12,6 @@ public interface SkuMapper {
     List<SkuFullO> queryFullSkuByModel(int id);
 
     List<SkuFullO> queryFullSkuByModelAndFactoryBrandID(int modelID, int factoryBrandID);
+
+    void updateSkuPricing(SkuFullO skuFullO);
 }

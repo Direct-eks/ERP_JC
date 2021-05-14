@@ -45,7 +45,7 @@ public class SkuServiceImpl implements SkuService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SkuFullO> getSkusByModelCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID) {
+    public List<SkuFullO> getSkusByCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID) {
         try {
             List<ModelO> models;
             if (modelCategoryID != -1) {
@@ -71,7 +71,14 @@ public class SkuServiceImpl implements SkuService {
     @Transactional
     @Override
     public void modifySkuPricing(SkuFullO skuFullO) {
+        try {
+            skuMapper.updateSkuPricing(skuFullO);
 
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
     }
 
 }

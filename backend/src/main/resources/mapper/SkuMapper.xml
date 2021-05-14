@@ -58,4 +58,19 @@
         </if>
     </select>
 
+    <update id="updateSkuPricing">
+        update w_sku
+        set factory_price_without_tax = #{factoryPriceWithoutTax},
+            factory_price_with_tax = #{factoryPriceWithTax},
+            settlement_price_without_tax = #{settlementPriceWithoutTax},
+            price_base_reference = #{priceBaseReference},
+            wholesale_price_discount = #{wholesalePriceDiscount},
+            wholesale_price = #{wholesalePrice},
+            retail_price_discount = #{retailPriceDiscount},
+            retail_price = #{retailPrice},
+            stock_lower_limit = #{stockLowerLimit},
+            stock_upper_limit = #{stockUpperLimit}
+        where sku_id = #{skuID}
+    </update>
+
 </mapper>
