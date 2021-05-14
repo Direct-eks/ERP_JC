@@ -53,7 +53,6 @@
         </v-row>
 
         <div class="d-flex">
-
             <v-card outlined>
                 <v-responsive height="30vh"
                               style="overflow: auto">
@@ -74,7 +73,6 @@
                     </v-treeview>
                 </v-responsive>
             </v-card>
-
             <v-card outlined>
                 <v-responsive height="30vh" width="20vw"
                               style="overflow: auto">
@@ -95,7 +93,6 @@
                     </v-data-table>
                 </v-responsive>
             </v-card>
-
             <v-card outlined>
                 <v-responsive height="30vh" width="45vw"
                               style="overflow: auto">
@@ -107,14 +104,20 @@
                                   calculate-widths
                                   disable-sort
                                   single-select
+                                  @click:row="data => this.supplierTableCurrentRow = [data]"
                                   fixed-header
                                   hide-default-footer
                                   locale="zh-cn"
                                   dense>
                     </v-data-table>
+                    <v-col cols="auto">
+                        <v-btn color="accent"
+                               @click="importPrice">
+                            导入
+                        </v-btn>
+                    </v-col>
                 </v-responsive>
             </v-card>
-
         </div>
 
         <v-data-table v-model="tableCurrentRow"
@@ -130,7 +133,7 @@
                       @item-selected="tableSelect"
                       fixed-header
                       locale="zh-cn"
-                      :footer-props="{'items-per-page-options': [5,20,50]}">
+                      :footer-props="{'items-per-page-options': [10,20,30]}">
             <template v-slot:item.index="{ item }">
                 {{tableData.indexOf(item) + 1}}
             </template>
@@ -267,6 +270,16 @@ export default {
         }
     },
     methods: {
+        saveChanges() {
+            this.$postRequest(this.$api.modifySkuPricing, {
+                elements: this.modifiedTableData
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '保存成功', color: 'success'
+                })
+                this.$router.replace('/stock_management')
+            }).catch(() => {})
+        },
         treeSelect(data) {
             if (data.length === 0) return
             let val = data[data.length - 1]
@@ -283,8 +296,12 @@ export default {
             this.treeSelectedLevel = ''
             this.factoryBrandCurrentRow = []
             this.factoryBrandSelected = ''
+            this.supplierTableData = []
+            this.supplierTableCurrentRow = []
+            this.tableData = []
+            this.tableCurrentRow = []
+            this.modifiedTableData = []
         },
-
         searchSku() {
             this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
                 modelCategoryID: this.treeSelection[0].categoryID,
@@ -297,6 +314,8 @@ export default {
         },
         tableSelect(row) {
             this.tableCurrentRow = [row]
+            this.supplierTableData = []
+            this.supplierTableCurrentRow = []
 
             this.$getRequest(this.$api.supplierResourcesBySku +
                 encodeURI(row.skuID)).then(data => {
@@ -311,16 +330,9 @@ export default {
             }
             console.log(this.modifiedTableData)
         },
-        saveChanges() {
-            this.$postRequest(this.$api.modifySkuPricing, {
-                elements: this.modifiedTableData
-            }).then(() => {
-                this.$store.commit('setSnackbar', {
-                    message: '保存成功', color: 'success'
-                })
-                this.$router.replace('/stock_management')
-            }).catch(() => {})
-        }
+        importPrice() {
+
+        },
     },
 }
 </script>
