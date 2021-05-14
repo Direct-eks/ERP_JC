@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.FactoryBrandMapper">
+
+    <resultMap id="FactoryBrandResultMap" type="org.jc.backend.entity.FactoryBrandO">
+        <result property="factoryBrandID" column="factory_brand_id"/>
+        <result property="sequenceNumber" column="sequence_number"/>
+        <result property="code" column="code"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+
+    <select id="queryAllFactoryBrands" resultMap="FactoryBrandResultMap">
+        select factory_brand_id, sequence_number, code, remark
+        from w_factory_brand
+    </select>
+
+</mapper>
