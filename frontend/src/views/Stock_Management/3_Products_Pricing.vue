@@ -14,7 +14,7 @@
 
         <v-row>
             <v-col cols="auto" class="ml-3">
-                <v-text-field v-model="treeSelectedLevel[0].name"
+                <v-text-field v-model="treeSelectedLevel"
                               label="已选分类"
                               hide-details="auto"
                               outlined
@@ -24,18 +24,8 @@
                 </v-text-field>
             </v-col>
             <v-col cols="auto">
-                <v-text-field v-model="factoryBrandCurrentRow[0].code"
+                <v-text-field v-model="factoryBrandSelected"
                               label="已选厂牌"
-                              hide-details="auto"
-                              outlined
-                              readonly
-                              dense
-                              style="width: 120px">
-                </v-text-field>
-            </v-col>
-            <v-col cols="auto">
-                <v-text-field v-model="warehouseTableCurrentRow[0].name"
-                              label="已选仓库"
                               hide-details="auto"
                               outlined
                               readonly
@@ -59,14 +49,19 @@
         <div class="d-flex">
 
             <v-card outlined>
-                <v-responsive height="25vh"
+                <v-responsive height="30vh"
                               style="overflow: auto">
-                    <v-treeview :items="treeData"
+                    <v-treeview v-model="treeSelection"
+                                :items="treeData"
                                 item-text="label"
                                 item-key="categoryID"
-                                activatable
                                 return-object
+                                selectable
+                                activatable
+                                @input="treeSelect"
+                                @update:open="treeSelect"
                                 @update:active="treeSelect"
+                                selection-type="independent"
                                 color="primary"
                                 open-on-click
                                 dense>
@@ -75,16 +70,17 @@
             </v-card>
 
             <v-card outlined>
-                <v-responsive height="25vh" width="20vw"
+                <v-responsive height="30vh" width="20vw"
                               style="overflow: auto">
                     <v-data-table v-model="factoryBrandCurrentRow"
                                   :headers="factoryBrandTableHeaders"
                                   :items="factoryBrandTableData"
                                   item-key="factoryBrandID"
-                                  height="25vh"
+                                  height="30vh"
                                   calculate-widths
                                   disable-sort
                                   single-select
+                                  @click:row="factoryBrandSelect"
                                   fixed-header
                                   hide-default-footer
                                   locale="zh-cn"
@@ -94,26 +90,7 @@
             </v-card>
 
             <v-card outlined>
-                <v-responsive height="25vh" width="18vw"
-                              style="overflow: auto">
-                    <v-data-table v-model="warehouseTableCurrentRow"
-                                  :headers="warehouseTableHeaders"
-                                  :items="warehouseTableData"
-                                  item-key="warehouseID"
-                                  height="25vh"
-                                  calculate-widths
-                                  disable-sort
-                                  single-select
-                                  fixed-header
-                                  hide-default-footer
-                                  locale="zh-cn"
-                                  dense>
-                    </v-data-table>
-                </v-responsive>
-            </v-card>
-
-            <v-card outlined>
-                <v-responsive height="25vh" width="30vw"
+                <v-responsive height="30vh" width="45vw"
                               style="overflow: auto">
                     <v-data-table v-model="supplierTableCurrentRow"
                                   :headers="supplierTableHeaders"
@@ -137,25 +114,21 @@
                       :headers="tableHeaders"
                       :items="tableData"
                       item-key="index"
-                      height="45vh"
                       calculate-widths
+                      height="45vh"
                       disable-sort
-                      show-select
                       fixed-header
-                      disable-pagination
-                      hide-default-footer
-                      locale="zh-cn">
+                      locale="zh-cn"
+                      :footer-props="{'items-per-page-options': [5,20,50]}">
             <template v-slot:item.index="{ item }">
                 {{tableData.indexOf(item) + 1}}
             </template>
-            <template v-slot:item.storagePlace="{ item }">
-                <v-select v-model="item.storagePlace"
-                          :items="storagePlaceOptions"
+            <template v-slot:item.priceBaseReference="{ item }">
+                <v-select v-model="item.priceBaseReference"
+                          :items="priceBaseOptions"
                           hide-details="auto"
-                          multiple
-                          @change="saveChoice(item)"
                           dense
-                          style="width: 150px">
+                          style="width: 120px">
                 </v-select>
             </template>
         </v-data-table>
@@ -202,6 +175,11 @@ export default {
             }
         }
 
+        this.$getRequest(this.$api.allFactoryBrands).then((data) => {
+            console.log('received', data)
+            this.factoryBrandTableData = data
+        }).catch(() => {})
+
         let result = this.$store.getters.productList
         if (result) {
             this.treeData = result
@@ -218,23 +196,17 @@ export default {
             mdiArrowLeftPath: mdiArrowLeft,
 
             treeData: [],
-            treeSelectedLevel: [{name: ''}],
+            treeSelection: [],
+            treeSelectedLevel: '',
 
             factoryBrandTableHeaders: [
                 { text: '序号', value: 'sequenceNumber', width: '65px' },
                 { text: '厂牌代号', value: 'code', width: '80px' },
-                { text: '厂牌描述', value: 'remark', width: '200px' },
+                { text: '厂牌描述', value: 'remark', width: '100px' },
             ],
             factoryBrandTableData: [],
-            factoryBrandCurrentRow: [{code: ''}],
-
-            warehouseTableHeaders: [
-                { text: '仓库名称', value: 'name', width: '100px' },
-                { text: '位置', value: 'location', width: '80px' },
-                { text: '默认', value: 'isDefault', width: '65px' },
-            ],
-            warehouseTableData: [],
-            warehouseTableCurrentRow: [{name: ''}],
+            factoryBrandCurrentRow: [],
+            factoryBrandSelected: '',
 
             supplierTableHeaders: [
                 { text: '供应商简称', value: 'companyAbbreviatedName', width: '100px' },
@@ -248,62 +220,63 @@ export default {
             supplierTableData: [],
             supplierTableCurrentRow: [],
 
-            storagePlaceOptions: ['a', 'b', 'c', 'd', 'e'],
-            storagePlaceChoose: [],
             tableHeaders: [
                 { text: '序号', value: 'index', width: '65px' },
-                { text: '架位', value: 'storagePlace', width: '65px' },
-                { text: '选择', value: 'choice', width: '65px' },
+                { text: '商品分类', value: '', width: '80px' },
+                { text: '代号', value: 'code', width: '120px' },
+                { text: '厂牌', value: 'factoryCode', width: '65px' },
+                { text: '无税厂价', value: 'factoryPriceWithoutTax', width: '80px' },
+                { text: '含税厂价', value: 'factoryPriceWithTax', width: '80px' },
+                { text: '无税结算价', value: 'settlementPriceWithoutTax', width: '95px' },
+                { text: '加价基准', value: 'priceBaseReference', width: '80px' },
+                { text: '批加', value: 'wholesalePriceDiscount', width: '65px' },
+                { text: '批发价', value: 'wholesalePrice', width: '80px' },
+                { text: '零加', value: 'retailPriceDiscount', width: '65px' },
+                { text: '零售价', value: 'retailPrice', width: '80px' },
+                { text: '数量', value: 'stockQuantity', width: '65px' },
+                { text: '下限', value: 'stockLowerLimit', width: '65px' },
+                { text: '上限', value: 'stockUpperLimit', width: '65px' },
             ],
-            tableData: [
-                {storagePlace: [], choice: ''},
-                {storagePlace: [], choice: ''},
-                {storagePlace: [], choice: ''}
-            ],
+            tableData: [],
+
+            priceBaseOptions: [
+                '无税厂价',
+                '含税厂价',
+                '无税结算价'
+            ]
         }
     },
     methods: {
         treeSelect(data) {
-            this.modelTableData = []
-            this.modelTableCurrentRow = [] //reset model table
-            this.skuTableData = []
-            this.skuTableCurrentRow = [] //reset stock table
-            this.warehouseStockTableData = []
-            this.warehouseStockCurrentRow = []
-
-            let val = data[0]
-            if (val.children.length === 0) { // end node
-                console.log(val.categoryID)
-                let result = this.$store.getters.models(val.categoryID)
-                if (result) {
-                    this.modelTableData = result
-                    return
-                }
-                this.$getRequest(this.$api.modelsByCategory +
-                    encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
-                    this.modelTableData = data
-                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
-                }).catch(() => {})
-            }
+            if (data.length === 0) return
+            let val = data[data.length - 1]
+            this.treeSelection = [val]
+            this.treeSelectedLevel = val.label
         },
-
+        factoryBrandSelect(data) {
+            console.log(data)
+            this.factoryBrandCurrentRow = [data]
+            this.factoryBrandSelected = data.code
+        },
         clearSearchFields() {
-            this.treeSelectedLevel = [{name: ''}]
-            this.factoryBrandCurrentRow = [{code: ''}]
-            this.warehouseTableCurrentRow = [{name: ''}]
-        },
-
-        //temp test method
-        saveChoice(item) {
-            console.log(item.storagePlace)
-            item.choice = item.storagePlace.toString()
+            this.treeSelection = []
+            this.treeSelectedLevel = ''
+            this.factoryBrandCurrentRow = []
+            this.factoryBrandSelected = ''
         },
 
         searchSku() {
 
+            this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
+                modelCategoryID: this.treeSelection[0].categoryID,
+                factoryBrandID: this.factoryBrandCurrentRow.length === 0 ? -1 :
+                    this.factoryBrandCurrentRow[0].factoryBrandID
+            }).then((data) => {
+                console.log('received', data)
+                this.tableData = data
+            }).catch(() => {})
         }
-    }
+    },
 }
 </script>
 

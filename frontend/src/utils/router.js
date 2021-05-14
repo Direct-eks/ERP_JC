@@ -602,7 +602,7 @@ router.beforeEach((to, from, next) => {
         next()
         return
     }
-    if (to.path === '/login') { //forbid going to login
+    if (to.path === '/login') { // forbid going to login
         console.log('forbid to login page')
         next('/home')
         return

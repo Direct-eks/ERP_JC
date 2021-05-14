@@ -27,6 +27,9 @@ const api = {
     /* ------ /department ------*/
     departmentOptions: '/department/getDepartmentOptions', // GET
 
+    /* ------ /factoryBrand ------*/
+    allFactoryBrands: '/factoryBrand/allFactoryBrands', // GET
+
     /* ------ /inboundEntry ------*/
     completeInboundEntry: '/inboundEntry/completeEntry', // PATCH
     createInboundEntry: '/inboundEntry/createEntry', // PUT
@@ -111,6 +114,8 @@ const api = {
 
     /* ------ /sku ------*/
     fullSkuByModel: '/sku/getFullSkuByModel/', // GET {id}
+    skuByCategoryAndFactoryBrand: '/sku/getSkusByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
+    modifySkuPricing: '/sku/modifySkuPricing', // POST
 
     /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',
