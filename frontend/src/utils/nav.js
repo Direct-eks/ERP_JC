@@ -38,7 +38,7 @@ export default {
         },
         {
             name: '资源录入',
-            url: '/resources_entry',
+            url: '/resources',
         },
         {
             name: '系统维护',
@@ -745,20 +745,72 @@ export default {
             url: '/query_stats/yearly_stats'
         }
     ],
-    resources_entry_nav: [
+    resources_nav: [
         {
-            name: '资源录入修改',
-            url: '/resources_entry',
+            name: '供货商资源',
+            url: '/resources/supplier_resources',
+            color: '#7FFFD4'
+        },
+        {
+            name: '商品分类',
+            url: '/resources/product_categories',
+            color: '#A6CAF0'
+        },
+        {
+            name: '商品型号',
+            url: '/resources/models',
+            color: '#A6CAF0'
+        },
+        {
+            name: '生产厂',
+            url: '/resources/factory_brands',
+            color: '#A6CAF0'
+        },
+        {
+            name: '商品型号明细',
+            url: '/resources/sku',
+            color: '#A6CAF0'
+        },
+        {
+            name: '往来单位区划',
+            url: '/resources/partner_company_categories',
+            color: '#C0DCC0'
+        },
+        {
+            name: '往来单位',
+            url: '/resources/partner_companies',
+            color: '#C0DCC0'
+        },
+        {
+            name: '系统及人员信息',
+            url: '/resources/staff',
+            color: '#FF00FF'
+        },
+        {
+            name: '相关单位分类',
+            url: '/resources/relevant_company_categories',
+            color: '#FFFF00'
+        },
+        {
+            name: '相关单位',
+            url: '/resources/relevant_companies',
+            color: '#FFFF00'
+        },
+        {
+            name: '仓库/计量单位',
+            url: '/resources/measurement_units',
+            color: '#00FF00'
+        },
+        {
+            name: '费用收入类别',
+            url: '/resources/fees',
+            color: '#00FFFF'
         },
     ],
     maintenance_nav: [
         {
             name: '本公司信息',
             url: '/maintenance',
-        },
-        {
-            name: '系统标准表',
-            url: '/maintenanc',
         },
         {
             name: '国标型号维护',
