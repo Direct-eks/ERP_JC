@@ -118,6 +118,8 @@ const api = {
     modifySkuPricing: '/sku/modifySkuPricing', // POST
 
     /* ------ /supplier ------*/
+    allSuppliers: '/supplier/getAllSuppliers', // GET
+    resourceBySupplier: '/supplier/getResourcesBySupplier/', // GET {id}
     supplierResourcesBySku: '/supplier/getSupplierResourcesBySku/', // GET {id}
 
     /* ------ /warehouse ------*/

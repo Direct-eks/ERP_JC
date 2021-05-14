@@ -93,8 +93,8 @@
                     </v-data-table>
                 </v-responsive>
             </v-card>
-            <v-card outlined>
-                <v-responsive height="30vh" width="45vw"
+            <v-card outlined height="30vh">
+                <v-responsive width="45vw"
                               style="overflow: auto">
                     <v-data-table v-model="supplierTableCurrentRow"
                                   :headers="supplierTableHeaders"
@@ -110,13 +110,34 @@
                                   locale="zh-cn"
                                   dense>
                     </v-data-table>
-                    <v-col cols="auto">
-                        <v-btn color="accent"
-                               @click="importPrice">
-                            导入
-                        </v-btn>
-                    </v-col>
                 </v-responsive>
+                <v-card-actions>
+                    <v-row>
+                        <v-col cols="auto">
+                            <v-btn color="accent"
+                                   @click="importPrice">
+                                导入
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="auto">
+                            <v-dialog v-model="supplierDialog"
+                                      :eager="true"
+                                      persistent
+                                      scrollable
+                                      no-click-animation
+                                      max-width="45vw">
+                                <template v-slot:activator="{on}">
+                                    <v-btn color="accent"
+                                           v-on="on">
+                                        送资源价格
+                                    </v-btn>
+                                </template>
+                                <SupplierResourceQuery @supplierChoose="importSupplierResource">
+                                </SupplierResourceQuery>
+                            </v-dialog>
+                        </v-col>
+                    </v-row>
+                </v-card-actions>
             </v-card>
         </div>
 
@@ -147,10 +168,70 @@
                     </template>
                 </v-edit-dialog>
             </template>
+            <template v-slot:item.factoryPriceWithTax="{ item }">
+                <v-edit-dialog :return-value="item.factoryPriceWithTax"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.factoryPriceWithTax}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.factoryPriceWithTax" single-line/>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.settlementPriceWithoutTax="{ item }">
+                <v-edit-dialog :return-value="item.settlementPriceWithoutTax"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.settlementPriceWithoutTax}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.settlementPriceWithoutTax" single-line/>
+                    </template>
+                </v-edit-dialog>
+            </template>
             <template v-slot:item.priceBaseReference="{ item }">
                 <v-select v-model="item.priceBaseReference" :items="priceBaseOptions"
                           hide-details="auto" dense style="width: 120px"
                           @change="saveEditing(item)"/>
+            </template>
+            <template v-slot:item.wholesalePriceDiscount="{ item }">
+                <v-edit-dialog :return-value="item.wholesalePriceDiscount"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.wholesalePriceDiscount}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.wholesalePriceDiscount" single-line/>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.wholesalePrice="{ item }">
+                <v-edit-dialog :return-value="item.wholesalePrice"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.wholesalePrice}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.wholesalePrice" single-line/>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.retailPriceDiscount="{ item }">
+                <v-edit-dialog :return-value="item.retailPriceDiscount"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.retailPriceDiscount}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.retailPriceDiscount" single-line/>
+                    </template>
+                </v-edit-dialog>
+            </template>
+            <template v-slot:item.retailPrice="{ item }">
+                <v-edit-dialog :return-value="item.retailPrice"
+                               persistent large save-text="确认" cancel-text="取消"
+                               @save="saveEditing(item)">
+                    {{item.retailPrice}}
+                    <template v-slot:input>
+                        <v-text-field v-model="item.retailPrice" single-line/>
+                    </template>
+                </v-edit-dialog>
             </template>
         </v-data-table>
 
@@ -162,6 +243,9 @@ import { mdiArrowLeft } from '@mdi/js'
 
 export default {
     name: "Product_Pricing",
+    components: {
+        SupplierResourceQuery: () => import("~/components/SupplierResourceQuery")
+    },
     beforeMount() {
         const creatTree = (data) => {
             const tree = [];
@@ -215,6 +299,7 @@ export default {
     data() {
         return {
             mdiArrowLeftPath: mdiArrowLeft,
+            supplierDialog: false,
 
             treeData: [],
             treeSelection: [],
@@ -287,7 +372,6 @@ export default {
             this.treeSelectedLevel = val.label
         },
         factoryBrandSelect(data) {
-            console.log(data)
             this.factoryBrandCurrentRow = [data]
             this.factoryBrandSelected = data.code
         },
@@ -331,8 +415,36 @@ export default {
             console.log(this.modifiedTableData)
         },
         importPrice() {
-
+            if (this.supplierTableCurrentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '未选中供应商', color: 'warning'
+                })
+                return
+            }
+            let resource = this.supplierTableCurrentRow[0]
+            let sku = this.tableCurrentRow[0]
+            sku.factoryPriceWithoutTax = resource.factoryPriceWithoutTax
+            sku.factoryPriceWithTax = resource.factoryPriceWithTax
+            sku.settlementPriceWithoutTax = resource.settlementPriceWithoutTax
+            this.saveEditing(sku)
         },
+        importSupplierResource(data) {
+            if (data) {
+                // match resources with current table rows
+                for (const sku of this.tableData) {
+                    for (const resource of data.resources) {
+                        if (resource.skuID === sku.skuID) {
+                            sku.factoryPriceWithoutTax = resource.factoryPriceWithoutTax
+                            sku.factoryPriceWithTax = resource.factoryPriceWithTax
+                            sku.settlementPriceWithoutTax = resource.settlementPriceWithoutTax
+                            this.saveEditing(sku)
+                            break
+                        }
+                    }
+                }
+            }
+            this.supplierDialog = false
+        }
     },
 }
 </script>
