@@ -1,37 +1,57 @@
 <template>
-    <v-data-table
-        :headers="tableHeaders"
-        :items="tableData"
-        item-key="index"
-        height="45vh"
-        calculate-widths
-        disable-sort
-        show-select
-        fixed-header
-        disable-pagination
-        hide-default-footer
-        locale="zh-cn">
-        <template v-slot:item.index="{ item }">
-            {{tableData.indexOf(item) + 1}}
-        </template>
-        <template v-slot:item.storagePlace="{ item }">
-            <v-select v-model="item.storagePlace"
-                      :items="storagePlaceOptions"
-                      hide-details="auto"
-                      multiple
-                      @change="saveChoice(item)"
-                      dense
-                      style="width: 150px">
-            </v-select>
-        </template>
-    </v-data-table>
+<!--  <p>库存管理</p>-->
+<!--  <p>架位设置</p>-->
+    <v-card>
+        <v-card-title class="d-flex">
+            架位设置
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/stock_management">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
+        </v-card-title>
+        <v-card-text>
+            <v-data-table
+                :headers="tableHeaders"
+                :items="tableData"
+                item-key="index"
+                height="45vh"
+                calculate-widths
+                disable-sort
+                show-select
+                fixed-header
+                disable-pagination
+                hide-default-footer
+                locale="zh-cn">
+                <template v-slot:item.index="{ item }">
+                    {{tableData.indexOf(item) + 1}}
+                </template>
+                <template v-slot:item.storagePlace="{ item }">
+                    <v-select v-model="item.storagePlace"
+                              :items="storagePlaceOptions"
+                              hide-details="auto"
+                              multiple
+                              @change="saveChoice(item)"
+                              dense
+                              style="width: 150px">
+                    </v-select>
+                </template>
+            </v-data-table>
+        </v-card-text>
+    </v-card>
+
 </template>
 
 <script>
+import {mdiArrowLeft} from "@mdi/js";
+
 export default {
-    name: "9_Storage_Place",
+    name: "StoragePlace",
     data() {
         return {
+            mdiArrowLeftPath: mdiArrowLeft,
+
             storagePlaceOptions: ['a', 'b', 'c', 'd', 'e'],
             storagePlaceChoose: [],
             tableHeaders: [

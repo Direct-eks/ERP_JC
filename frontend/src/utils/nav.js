@@ -407,7 +407,7 @@ export default {
         },
         {
             name: '明细统计',
-            url: '/stock_management/detail_stats',
+            url: '/stock_management/detailed_stats',
             requiredPermission: 'management:DetailStats',
         },
         {
@@ -424,6 +424,11 @@ export default {
             name: '库存资源',
             url: '/stock_management/stock_resources',
             requiredPermission: 'management:StockResources',
+        },
+        {
+            name: '架位设置',
+            url: '/stock_management/storage_place',
+            requiredPermission: 'management:StoragePlace',
         }
     ],
     production_management_nav: [

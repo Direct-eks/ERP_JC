@@ -5,48 +5,55 @@
         <v-card-title class="d-flex">
             明细统计
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <v-text-field v-model="modelCode"
-                              label="代号筛选"
-                              hide-details="auto"
-                              clearable
-                              style="width: 120px">
-                </v-text-field>
-            </v-col>
-            <v-col cols="auto">
-                <v-text-field v-model="modelSearchName"
-                              label="代号搜索"
-                              hide-details="auto"
-                              clearable
-                              style="width: 120px"
-                              @keydown.enter.native="modelSearch">
-                </v-text-field>
-            </v-col>
-            <v-col cols="auto">
-                <v-radio-group v-model="modelSearchMethod"
-                               hide-details="auto"
-                               class="mt-0"
-                               dense>
-                    <v-radio label="前匹配" value="prefix"></v-radio>
-                    <v-radio label="模糊" value="infix"></v-radio>
-                    <v-radio label="后匹配" value="suffix"></v-radio>
-                </v-radio-group>
-            </v-col>
-            <v-col cols="auto">
-                <v-btn color="accent"
-                       @click="modelSearch">
-                    查询
-                </v-btn>
-            </v-col>
-            <v-col cols="auto">
-                <v-btn class="mr-8"
-                       color="accent"
-                       @click="productDetail">
-                    商品明细
-                </v-btn>
-            </v-col>
+            <v-btn color="accent"
+                   to="/stock_management">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
         </v-card-title>
         <v-card-text>
+            <v-row>
+                <v-col cols="auto">
+                    <v-text-field v-model="modelCode"
+                                  label="代号筛选"
+                                  hide-details="auto"
+                                  clearable
+                                  style="width: 120px">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="modelSearchName"
+                                  label="代号搜索"
+                                  hide-details="auto"
+                                  clearable
+                                  style="width: 120px"
+                                  @keydown.enter.native="modelSearch">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                    <v-radio-group v-model="modelSearchMethod"
+                                   hide-details="auto"
+                                   dense
+                                   row>
+                        <v-radio label="前匹配" value="prefix"></v-radio>
+                        <v-radio label="模糊" value="infix"></v-radio>
+                        <v-radio label="后匹配" value="suffix"></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn color="accent"
+                           @click="modelSearch">
+                        查询
+                    </v-btn>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn class="mr-8"
+                           color="accent"
+                           @click="productDetail">
+                        商品明细
+                    </v-btn>
+                </v-col>
+            </v-row>
             <v-row class="d-flex">
 
                 <v-card outlined>
@@ -162,13 +169,13 @@
 </template>
 
 <script>
-import {mdiClose} from "@mdi/js";
+import { mdiArrowLeft } from '@mdi/js'
 
 export default {
     name: "Detail_Stats",
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiArrowLeftPath: mdiArrowLeft,
 
             modelCode: '',
             modelSearchName: '',

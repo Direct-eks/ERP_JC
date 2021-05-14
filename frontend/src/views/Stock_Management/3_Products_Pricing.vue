@@ -5,17 +5,17 @@
         <v-card-title>
             商品定价
             <v-spacer></v-spacer>
-            <v-btn color="accent"
-                   to="/stock_management">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
-                返回
-            </v-btn>
             <v-col cols="auto">
                 <v-btn color="success"
                        @click="saveChanges">
                     保存修改
                 </v-btn>
             </v-col>
+            <v-btn color="accent"
+                   to="/stock_management">
+                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                返回
+            </v-btn>
         </v-card-title>
 
         <v-row>

@@ -326,7 +326,7 @@ const routes = [
             {
                 path: 'inventory',
                 name: '库存盘点',
-                component: import('../views/Stock_Management/6_Inventory')
+                component: () => import('../views/Stock_Management/6_Inventory')
             },
             {
                 path: 'presales_query',
@@ -337,6 +337,11 @@ const routes = [
                 path: 'stock_resources',
                 name: '库存资源',
                 component: () => import('../views/Stock_Management/8_Stock_Resources')
+            },
+            {
+                path: 'storage_place',
+                name: '架位设置',
+                component: () => import('../views/Stock_Management/9_Storage_Place')
             }
         ]
     },
