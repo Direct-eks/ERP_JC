@@ -8,8 +8,8 @@ public interface EndUserService {
 
     EndUserDO getUserByName(String username);
 
+    // for shiro usage, return string only
     String getRoleByUserId(int id);
-
     List<String> getPermissionsByUserId(int id);
 
     EndUserVO postUserLogInInfo(EndUserLoginVO user);
@@ -18,6 +18,7 @@ public interface EndUserService {
 
     List<String> queryUserNameList();
 
+    List<EndUserVO> getAllUsers();
     List<UserRole> getAllRoles();
     List<UserPermission> getAllPermissions();
 }

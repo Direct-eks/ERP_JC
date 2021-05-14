@@ -14,9 +14,9 @@ public interface EndUserMapper {
 
     EndUserDO queryUserByName(String username);
 
-    String queryRoleByUserId(int id);
+    UserRole queryRoleByUserId(int id);
 
-    List<String> queryPermissionsByUserId(int id);
+    List<UserPermission> queryPermissionsByUserId(int id);
 
     List<EndUserDO> queryAllUsers();
 

@@ -34,14 +34,6 @@
                                         dense
                                         label="登录名">
                         </v-autocomplete>
-<!--                        <v-text-field v-model="form.username"-->
-<!--                                      :rules="rules.username"-->
-<!--                                      label="登录名"-->
-<!--                                      clearable-->
-<!--                                      name="login"-->
-<!--                                      -->
-<!--                                      type="text">-->
-<!--                        </v-text-field>-->
 
                         <v-text-field v-model="form.password"
                                       :rules="rules.password"
@@ -119,14 +111,20 @@ export default {
                         message: '登录成功', color: 'success'
                     })
 
+                    // extract and keep String info only
+                    const role = data.role.role;
+                    const permissions = []
+                    for (const p of data.permissions) {
+                        permissions.push(p.permission)
+                    }
                     this.$store.commit('modifyCurrentUser', data.username)
-                    this.$store.commit('modifyCurrentUserRole', data.role)
-                    this.$store.commit('modifyCurrentUserPermissions', data.permissions)
+                    this.$store.commit('modifyCurrentUserRole', role)
+                    this.$store.commit('modifyCurrentUserPermissions', permissions)
                     // use vuex to store user information
                     sessionStorage.setItem('userName', data.username)
                     sessionStorage.setItem('userToken', data.sessionID)
-                    sessionStorage.setItem('userRole', data.role)
-                    sessionStorage.setItem('userPermissions', JSON.stringify(data.permissions))
+                    sessionStorage.setItem('userRole', role)
+                    sessionStorage.setItem('userPermissions', JSON.stringify(permissions))
                     sessionStorage.setItem('isAuthenticated', 'true')
 
                     this.username = ''

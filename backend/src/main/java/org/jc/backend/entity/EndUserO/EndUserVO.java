@@ -21,12 +21,15 @@ public class EndUserVO {
     @NotBlank(message = "password blank error")
     private String password;
 
+    @NotNull(message = "remark null error")
+    private String remark;
+
     @NotNull(message = "role null error")
     @NotBlank(message = "role blank error")
-    private String role;
+    private UserRole role;
 
     @NotNull(message = "permission null error")
-    private List<String> permissions;
+    private List<UserPermission> permissions;
 
     private String sessionID;
 }

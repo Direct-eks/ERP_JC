@@ -86,6 +86,15 @@ public class EndUserController {
         return endUserService.queryUserNameList();
     }
 
+    @ApiOperation(value = "", response = EndUserVO.class)
+    @RequiresRoles("admin")
+    @GetMapping("/getAllUsers")
+    public List<EndUserVO> getAllUsers() {
+        logger.info("GET Request to /user/getAllUsers");
+
+        return endUserService.getAllUsers();
+    }
+
     @ApiOperation(value = "", response = String.class)
     @RequiresRoles("admin")
     @GetMapping("/getAllRoles")

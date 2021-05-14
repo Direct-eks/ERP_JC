@@ -40,13 +40,29 @@ public class EndUserServiceImpl implements EndUserService {
     @Transactional(readOnly = true)
     @Override
     public String getRoleByUserId(int id) {
-        return endUserMapper.queryRoleByUserId(id);
+        try {
+            return endUserMapper.queryRoleByUserId(id).getRole();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<String> getPermissionsByUserId(int id) {
-        return endUserMapper.queryPermissionsByUserId(id);
+        try {
+            List<String> list = new ArrayList<>();
+            endUserMapper.queryPermissionsByUserId(id).forEach(p -> list.add(p.getPermission()));
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Override
@@ -81,21 +97,43 @@ public class EndUserServiceImpl implements EndUserService {
     @Transactional(readOnly = true)
     @Override
     public List<String> queryUserNameList() {
-
-        List<String> userList = new ArrayList<>();
-
         try {
+            List<String> userList = new ArrayList<>();
             List<EndUserDO> usersFromDatabase = endUserMapper.queryAllUsers();
 
             usersFromDatabase.forEach(user -> userList.add(user.getUsername()));
+            return userList;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }
+    }
 
-        return userList;
+    @Transactional(readOnly = true)
+    @Override
+    public List<EndUserVO> getAllUsers() {
+        try {
+            List<EndUserVO> userList = new ArrayList<>();
+
+            List<EndUserDO> usersFromDatabase = endUserMapper.queryAllUsers();
+            for (var user : usersFromDatabase) {
+                EndUserVO userVO = new EndUserVO();
+                BeanUtils.copyProperties(user, userVO);
+                int id = userVO.getUserID();
+                userVO.setRole(endUserMapper.queryRoleByUserId(id));
+                userVO.setPermissions(endUserMapper.queryPermissionsByUserId(id));
+
+                userList.add(userVO);
+            }
+            return userList;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)

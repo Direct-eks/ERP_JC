@@ -9,4 +9,5 @@ public class EndUserDO {
     private int userID;
     private String username;
     private String password;
+    private String remark;
 }

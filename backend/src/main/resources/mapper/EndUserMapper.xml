@@ -8,6 +8,7 @@
         <result property="userID" column="user_id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
+        <result property="remark" column="remark"/>
     </resultMap>
     
     <select id="queryUserByName" resultMap="EndUserResultMap">
@@ -16,37 +17,37 @@
         where username = #{username};
     </select>
 
-    <select id="queryRoleByUserId" resultType="string">
-        select role
-        from u_user_role join u_role on u_user_role.role_id = u_role.role_id
-        where u_user_role.user_id = #{id}
-    </select>
-
-    <select id="queryPermissionsByUserId" resultType="string">
-        select permission
-        from u_user_permission join u_permission on u_user_permission.permission_id = u_permission.permission_id
-        where u_user_permission.user_id = #{id}
-    </select>
-
-    <select id="queryAllUsers" resultMap="EndUserResultMap">
-        select user_id, username
-        from u_end_user
-    </select>
-
     <resultMap id="roleResultMap" type="org.jc.backend.entity.EndUserO.UserRole">
         <result property="roleID" column="role_id"/>
         <result property="role" column="role"/>
     </resultMap>
 
-    <select id="queryAllRoles" resultMap="roleResultMap">
-        select role_id, role
-        from u_role
+    <select id="queryRoleByUserId" resultMap="roleResultMap">
+        select u_role.role_id, role
+        from u_user_role join u_role on u_user_role.role_id = u_role.role_id
+        where u_user_role.user_id = #{id}
     </select>
 
     <resultMap id="permissionResultMap" type="org.jc.backend.entity.EndUserO.UserPermission">
         <result property="permissionID" column="permission_id"/>
         <result property="permission" column="permission"/>
     </resultMap>
+
+    <select id="queryPermissionsByUserId" resultMap="permissionResultMap">
+        select permission
+        from u_user_permission join u_permission on u_user_permission.permission_id = u_permission.permission_id
+        where u_user_permission.user_id = #{id}
+    </select>
+
+    <select id="queryAllUsers" resultMap="EndUserResultMap">
+        select user_id, username, remark
+        from u_end_user
+    </select>
+
+    <select id="queryAllRoles" resultMap="roleResultMap">
+        select role_id, role
+        from u_role
+    </select>
 
     <select id="queryAllPermissions" resultMap="permissionResultMap">
         select permission_id, permission
