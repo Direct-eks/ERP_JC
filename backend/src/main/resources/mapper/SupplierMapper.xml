@@ -35,7 +35,7 @@
         <result property="quantityRecord" column="quantity_record"/>
         <result property="factoryPriceWithoutTax" column="factory_price_without_tax"/>
         <result property="factoryPriceWithTax" column="factory_price_with_tax"/>
-        <result property="floatDownPrice" column="float_down_price"/>
+        <result property="floatDownRate" column="float_down_rate"/>
         <result property="settlementPriceWithoutTax" column="settlement_price_without_tax"/>
         <result property="numberOfBoxes" column="number_of_boxes"/>
         <result property="lastSettlementPrice" column="last_settlement_price"/>

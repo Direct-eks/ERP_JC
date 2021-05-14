@@ -49,8 +49,8 @@ public class SupplierResourceO {
             message = "factoryPriceWithTax value error")
     private String factoryPriceWithTax;
 
-    @Min(value = 0, message = "floatDownPrice smaller than zero error")
-    private int floatDownPrice;
+    @Min(value = 0, message = "floatDownRate smaller than zero error")
+    private int floatDownRate;
 
     @NotNull(message = "settlementPriceWithoutTax null error")
     @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
