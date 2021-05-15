@@ -5,6 +5,12 @@ const api = {
     userAuthentication: '/user/userAuthentication',
     userLogout: '/user/userLogout',
 
+    allUsers: '/user/getAllUsers',
+    allRoles: '/user/getAllRoles',
+    allPermissions: '/user/getAllPermissions',
+
+    updateUser: '/user/updateUser', // POST
+
     /* ------ /bankAccount ------*/
     visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET
 

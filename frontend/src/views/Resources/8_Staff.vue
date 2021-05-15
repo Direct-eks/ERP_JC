@@ -12,8 +12,195 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
+            <v-row>
+                <v-data-table v-model="userTableCurrentRow"
+                              :headers="userTableHeaders"
+                              :items="userTableData"
+                              item-key="userID"
+                              calculate-widths
+                              disable-sort
+                              fixed-header
+                              single-select
+                              show-select
+                              @click:row="tableSelect"
+                              hide-default-footer
+                              locale="zh-cn"
+                              dense>
+                    <template v-slot:item.index="{ item }">
+                        {{userTableData.indexOf(item) + 1}}
+                    </template>
+                </v-data-table>
+            </v-row>
+            <v-form ref="form">
+                <v-row v-if="userTableCurrentRow.length !== 0" class="mt-5 mb-5">
+                    <v-col cols="auto">
+                        <v-text-field v-model="form.username"
+                                      :rules="rules.username"
+                                      label="用户名"
+                                      hide-details="auto"
+                                      outlined
+                                      dense
+                                      style="width: 150px">
+                        </v-text-field>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-select v-model="form.role"
+                                  :rules="rules.role"
+                                  :items="allRoles"
+                                  item-value="role_id"
+                                  item-text="role"
+                                  label="级别"
+                                  hide-details="auto"
+                                  outlined dense
+                                  style="width: 150px">
+                        </v-select>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-text-field v-model="form.remark"
+                                      label="备注"
+                                      hide-details="auto"
+                                      outlined
+                                      dense
+                                      style="width: 180px">
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+            </v-form>
+            <v-row v-if="userTableCurrentRow.length !== 0">
+                <v-tabs v-model="tab" vertical>
+                    <v-tab key="inboundEntry">入库</v-tab>
+                    <v-tab key="outboundEntry">出库</v-tab>
+                    <v-tab key="inboundCheckout">入库结账</v-tab>
+                    <v-tab key="outboundCheckout">出库结账</v-tab>
+                    <v-tab key="management">库存管理</v-tab>
+                    <v-tab key="resources">资源录入</v-tab>
 
+                    <v-tabs-items v-model="tab">
+                        <v-tab-item key="inboundEntry">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="入库单录入" value="inboundEntry:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="入库单完善" value="inboundEntry:Completion"/>
+                                    <v-checkbox v-model="form.permissions" label="入库单修改" value="inboundEntry:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="入库单退货" value="inboundEntry:Return"/>
+                                    <v-checkbox v-model="form.permissions" label="入库单查询" value="inboundEntry:Query"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="采购单录入" value="purchaseOrder:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="采购单修改" value="purchaseOrder:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="采购单查询" value="purchaseOrder:Query"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="outboundEntry">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="出库单录入" value="outboundEntry:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="出库单完善" value="outboundEntry:Completion"/>
+                                    <v-checkbox v-model="form.permissions" label="出库单修改" value="outboundEntry:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="出库单退货" value="outboundEntry:Return"/>
+                                    <v-checkbox v-model="form.permissions" label="出库单查询" value="outboundEntry:Query"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="销售单录入" value="salesOrder:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="销售单修改" value="salesOrder:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="销售单查询" value="salesOrder:Query"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="报价单录入" value="quota:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="报价单修改" value="quota:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="报价单查询" value="quota:Query"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="inboundCheckout">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="入库结账单录入" value="inboundCheckout:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="入库结账单查询" value="inboundCheckout:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="入库结账单修改" value="inboundCheckout:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="入库未结账查询" value="inboundCheckout:NotCheckoutQuery"/>
+                                    <v-checkbox v-model="form.permissions" label="入库结账单退货" value="inboundCheckout:Return"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="入库开票单录入" value="inboundInvoice:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="入库开票单查询" value="inboundInvoice:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="入库开票单修改" value="inboundInvoice:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="入库未开票查询" value="inboundInvoice:NotInvoiceQuery"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="入库结账单录入" value="inboundPayment:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="入库结账单查询" value="inboundPayment:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="入库结账单修改" value="inboundPayment:Modification"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="入库运费单录入" value="inboundShippingCost:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="入库运费单查询" value="inboundShippingCost:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="入库运费单修改" value="inboundShippingCost:Modification"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="outboundCheckout">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="出库结账单录入" value="outboundCheckout:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="出库结账单查询" value="outboundCheckout:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="出库结账单修改" value="outboundCheckout:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="出库未结账查询" value="outboundCheckout:NotCheckoutQuery"/>
+                                    <v-checkbox v-model="form.permissions" label="出库结账单退货" value="outboundCheckout:Return"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="出库开票单录入" value="outboundInvoice:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="出库开票单查询" value="outboundInvoice:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="出库开票单修改" value="outboundInvoice:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="出库未开票查询" value="outboundInvoice:NotInvoiceQuery"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="出库结账单录入" value="outboundPayment:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="出库结账单查询" value="outboundPayment:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="出库结账单修改" value="outboundPayment:Modification"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="出库运费单录入" value="outboundShippingCost:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="出库运费单查询" value="outboundShippingCost:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="出库运费单修改" value="outboundShippingCost:Modification"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="management">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="商品明细" value="management:ProductsDetails"/>
+                                    <v-checkbox v-model="form.permissions" label="库存报表" value="management:StockReport"/>
+                                    <v-checkbox v-model="form.permissions" label="商品定价" value="management:ProductsPricing"/>
+                                    <v-checkbox v-model="form.permissions" label="库存报警" value="management:StockAlert"/>
+                                    <v-checkbox v-model="form.permissions" label="明细统计" value="management:DetailStats"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="库存盘点" value="management:Inventory"/>
+                                    <v-checkbox v-model="form.permissions" label="预销售资源" value="management:PresalesQuery"/>
+                                    <v-checkbox v-model="form.permissions" label="库存资源" value="management:StockResources"/>
+                                    <v-checkbox v-model="form.permissions" label="架位设置" value="management:StoragePlace"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="resources">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="" value=""/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                    </v-tabs-items>
+                </v-tabs>
+            </v-row>
         </v-card-text>
+        <v-card-actions v-if="userTableCurrentRow.length !== 0">
+            <v-btn color="accent"
+                   @click="saveChanges">
+                保存修改
+            </v-btn>
+        </v-card-actions>
     </v-card>
 </template>
 
@@ -22,13 +209,59 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Staff",
+    beforeMount() {
+        this.$getRequest(this.$api.allUsers).then(data => {
+            console.log('received', data)
+            this.userTableData = data
+        })
+        this.$getRequest(this.$api.allRoles).then(data => {
+            console.log('received', data)
+            this.allRoles = data
+        })
+    },
     data() {
         return {
             mdiArrowLeftPath: mdiArrowLeft,
+
+            userTableHeaders: [
+                { text: '序号', value: 'index', width: '65px' },
+                { text: '用户', value: 'username', width: '110px' },
+                { text: '级别', value: 'role.role', width: '70px' },
+                { text: '备注', value: 'remark', width: '180px' },
+            ],
+            userTableData: [],
+            userTableCurrentRow: [],
+
+            form: {
+                userID: -1,
+                username: '',
+                remark: '',
+                role: '',
+                permissions: [],
+            },
+            rules: {
+                username: [v => !!v || '名字不能为空'],
+                role: [v => !!v || '级别不能为空'],
+            },
+
+            allRoles: [],
+            tab: null
         }
     },
     methods: {
-
+        tableSelect(row) {
+            this.userTableCurrentRow = [row]
+            Object.assign(this.form, row)
+        },
+        saveChanges() {
+            if (this.$refs.form.validate()) {
+                this.$postRequest(this.$api.updateUser, this.form).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '保存成功', color: 'success'
+                    })
+                }).catch(() => {})
+            }
+        }
     }
 }
 </script>
