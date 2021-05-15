@@ -5,6 +5,10 @@
         <v-card-title class="d-flex">
             系统及人员信息
             <v-spacer></v-spacer>
+            <v-btn class="mr-3" color="primary"
+                   @click="isCreatingNewUser = true" :disabled="isCreatingNewUser">
+                新增用户
+            </v-btn>
             <v-btn color="accent"
                    to="/resources">
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
@@ -12,7 +16,7 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-            <v-row>
+            <v-row v-show="!isCreatingNewUser">
                 <v-data-table v-model="userTableCurrentRow"
                               :headers="userTableHeaders"
                               :items="userTableData"
@@ -32,7 +36,7 @@
                 </v-data-table>
             </v-row>
             <v-form ref="form">
-                <v-row v-if="userTableCurrentRow.length !== 0" class="mt-5 mb-5">
+                <v-row v-if="userTableCurrentRow.length !== 0 || isCreatingNewUser" class="mt-5 mb-5">
                     <v-col cols="auto">
                         <v-text-field v-model="form.username"
                                       :rules="rules.username"
@@ -40,6 +44,17 @@
                                       hide-details="auto"
                                       outlined
                                       dense
+                                      style="width: 150px">
+                        </v-text-field>
+                    </v-col>
+                    <v-col v-if="isCreatingNewUser" cols="auto">
+                        <v-text-field v-model="form.password"
+                                      :rules="rules.password"
+                                      label="密码"
+                                      hide-details="auto"
+                                      outlined
+                                      dense
+                                      type="password"
                                       style="width: 150px">
                         </v-text-field>
                     </v-col>
@@ -66,7 +81,7 @@
                     </v-col>
                 </v-row>
             </v-form>
-            <v-row v-if="userTableCurrentRow.length !== 0">
+            <v-row v-if="userTableCurrentRow.length !== 0 || isCreatingNewUser">
                 <v-tabs v-model="tab" vertical>
                     <v-tab key="inboundEntry">入库</v-tab>
                     <v-tab key="outboundEntry">出库</v-tab>
@@ -195,8 +210,25 @@
                 </v-tabs>
             </v-row>
         </v-card-text>
-        <v-card-actions v-if="userTableCurrentRow.length !== 0">
+        <v-card-actions v-if="userTableCurrentRow.length !== 0 || isCreatingNewUser">
+            <v-dialog v-if="!isCreatingNewUser" v-model="deletePopup" max-width="300px">
+                <template v-slot:activator="{ on }">
+                    <v-btn color="red lighten-1 mr-2" v-on="on">删除用户</v-btn>
+                </template>
+                <v-card>
+                    <v-card-title>确认删除？</v-card-title>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" @click="deletePopup = false">取消</v-btn>
+                        <v-btn color="success" @click="deleteUser">确认</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <v-btn color="accent"
+                   @click="chooseAllPermission">
+                全选（包括非本页）权限
+            </v-btn>
+            <v-btn color="success"
                    @click="saveChanges">
                 保存修改
             </v-btn>
@@ -218,6 +250,10 @@ export default {
             console.log('received', data)
             this.allRoles = data
         })
+        this.$getRequest(this.$api.allPermissions).then(data => {
+            console.log('received', data)
+            this.allPermissions = data
+        })
     },
     data() {
         return {
@@ -235,17 +271,23 @@ export default {
             form: {
                 userID: -1,
                 username: '',
+                password: '',
                 remark: '',
                 role: '',
                 permissions: [],
             },
             rules: {
                 username: [v => !!v || '名字不能为空'],
+                password: [v => this.isCreatingNewUser || !!v || '密码不能为空'],
                 role: [v => !!v || '级别不能为空'],
             },
 
+            isCreatingNewUser: false,
+
             allRoles: [],
-            tab: null
+            allPermissions: [],
+            tab: null,
+            deletePopup: false,
         }
     },
     methods: {
@@ -253,7 +295,21 @@ export default {
             this.userTableCurrentRow = [row]
             Object.assign(this.form, row)
         },
+        chooseAllPermission() {
+            this.form.permissions = JSON.parse(JSON.stringify(this.allPermissions))
+        },
         saveChanges() {
+            if (this.isCreatingNewUser) {
+                if (this.$refs.form.validate()) {
+                    this.$putRequest(this.$api.createNewUser, this.form).then(() => {
+                        this.$store.commit('setSnackbar', {
+                            message: '保存成功', color: 'success'
+                        })
+                    }).catch(() => {})
+                }
+                this.$router.replace('/resources')
+                return
+            }
             if (this.$refs.form.validate()) {
                 this.$postRequest(this.$api.updateUser, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
@@ -261,7 +317,17 @@ export default {
                     })
                 }).catch(() => {})
             }
-        }
+        },
+        deleteUser() {
+            this.$deleteRequest(this.$api.deleteUser, {
+                userID: this.form.userID
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '删除成功', color: 'success'
+                })
+                this.$router.replace('/resources')
+            }).catch(() => {})
+        },
     }
 }
 </script>

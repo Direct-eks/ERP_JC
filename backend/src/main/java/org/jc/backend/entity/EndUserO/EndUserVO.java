@@ -2,13 +2,16 @@ package org.jc.backend.entity.EndUserO;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class EndUserVO {
 
     private int userID;
@@ -17,8 +20,7 @@ public class EndUserVO {
     @NotBlank(message = "username blank error")
     private String username;
 
-    @NotNull(message = "password null error")
-    @NotBlank(message = "password blank error")
+    // not checked here
     private String password;
 
     @NotNull(message = "remark null error")
@@ -29,6 +31,7 @@ public class EndUserVO {
     private String role;
 
     @NotNull(message = "permission null error")
+    @NotEmpty(message = "permissions empty error")
     private List<String> permissions;
 
     private String sessionID;

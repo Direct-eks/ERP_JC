@@ -21,4 +21,8 @@ public interface EndUserService {
     List<EndUserVO> getAllUsers();
     List<String> getAllRoles();
     List<String> getAllPermissions();
+
+    void updateUser(EndUserVO endUserVO);
+    void createUser(EndUserVO endUserVO);
+    void deleteUser(int id);
 }

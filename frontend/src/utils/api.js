@@ -10,6 +10,8 @@ const api = {
     allPermissions: '/user/getAllPermissions',
 
     updateUser: '/user/updateUser', // POST
+    createNewUser: '/user/createNewUser', // PUT
+    deleteUser: '/user/deleteUser', // DELETE
 
     /* ------ /bankAccount ------*/
     visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET

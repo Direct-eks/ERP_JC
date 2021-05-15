@@ -56,4 +56,48 @@
         from u_permission
     </select>
 
+    <insert id="insertUserInfo" useGeneratedKeys="true" keyProperty="userID"
+        keyColumn="user_id">
+        insert into u_end_user(username, password, remark)
+        values(#{username}, #{password}, #{remark})
+    </insert>
+
+    <update id="updateUserInfo">
+        update u_end_user
+        set username = #{username},
+            remark = #{remark}
+        where user_id = #{userID}
+    </update>
+
+    <delete id="deleteUserInfo">
+        delete from u_end_user
+        where user_id = #{id}
+    </delete>
+
+    <insert id="insertUserRole">
+        insert into u_user_role(user_id, role_id)
+        values (#{id}, #{roleID})
+    </insert>
+
+    <update id="updateUserRole">
+        update u_user_role
+        set role_id = #{roleID}
+        where user_id = #{id}
+    </update>
+
+    <delete id="deleteUserRole">
+        delete from u_user_role
+        where user_id = #{id}
+    </delete>
+
+    <insert id="insertUserPermission">
+        insert into u_user_permission(user_id, permission_id)
+        values(#{id}, #{permissionID})
+    </insert>
+
+    <delete id="deleteUserPermission">
+        delete from u_user_permission
+        where user_id = #{id} and permission_id = #{permissionID}
+    </delete>
+
 </mapper>

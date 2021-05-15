@@ -20,4 +20,13 @@ public interface EndUserMapper {
     List<EndUserDO> queryAllUsers();
     List<UserRole> queryAllRoles();
     List<UserPermission> queryAllPermissions();
+
+    int insertUserInfo(EndUserDO endUserDO);
+    void updateUserInfo(EndUserDO endUserDO);
+    void deleteUserInfo(int id);
+    void insertUserRole(int id, int roleID);
+    void updateUserRole(int id, int roleID);
+    void deleteUserRole(int id);
+    void insertUserPermission(int id, int permissionID);
+    void deleteUserPermission(int id, int permissionID);
 }

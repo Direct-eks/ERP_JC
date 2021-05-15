@@ -61,15 +61,6 @@ public class EndUserController {
 
     @ApiOperation(value = "", response = Boolean.class)
     @RequiresRoles("admin")
-    @PostMapping("/createNewUser")
-    public Boolean createNewUser(@RequestBody @Validated EndUserVO endUserVO) {
-        logger.info("POST Request to /user/createNewUser");
-        //todo
-        return false;
-    }
-
-    @ApiOperation(value = "", response = Boolean.class)
-    @RequiresRoles("admin")
     @PostMapping("/forceResetPassword")
     public Boolean forceResetPassword() {
         logger.info("POST Request to /user/forceResetPassword");
@@ -111,5 +102,32 @@ public class EndUserController {
         logger.info("GET Request to /user/getAllPermissions");
 
         return endUserService.getAllPermissions();
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @RequiresRoles("admin")
+    @PostMapping("/updateUser")
+    public void updateUser(@RequestBody @Validated EndUserVO endUserVO) {
+        logger.info("POST Request to /user/updateUser, info: {}", endUserVO);
+
+        endUserService.updateUser(endUserVO);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @RequiresRoles("admin")
+    @PutMapping("/createNewUser")
+    public void createNewUser(@RequestBody @Validated EndUserVO endUserVO) {
+        logger.info("PUT Request to /user/createNewUser, info: {}", endUserVO);
+
+        endUserService.createUser(endUserVO);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @RequiresRoles("admin")
+    @DeleteMapping("/deleteUser")
+    public void deleteUser(@RequestParam("userID") int userID) {
+        logger.info("POST Request to /user/createNewUser, id: {}", userID);
+
+        endUserService.deleteUser(userID);
     }
 }
