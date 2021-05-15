@@ -31,7 +31,7 @@
         select model_id, sequence_number, code, category_id, unit_id
         from w_model
         where category_id = #{id}
-        order by code
+        order by sequence_number
     </select>
 
     <select id="queryModelsByName" resultMap="ModelResultMap">

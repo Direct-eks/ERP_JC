@@ -3,12 +3,24 @@ package org.jc.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 public class ModelO {
     private int modelID;
-    private int sequenceNumber;
+
+    @NotNull(message = "sequenceNumber null error")
+    private Integer sequenceNumber;
+
+    @NotNull(message = "code null error")
+    @NotBlank(message = "code blank error")
     private String code;
-    private int categoryID;
-    private int unitID;
+
+    @NotNull(message = "categoryID null error")
+    private Integer categoryID;
+
+    @NotNull(message = "unitID null error")
+    private Integer unitID;
 }
