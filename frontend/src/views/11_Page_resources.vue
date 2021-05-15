@@ -4,7 +4,7 @@
                v-show="showStatus">
             <v-card>
                 <v-list>
-                    <v-list-item-group v-model="active" color="#FFFF00">
+                    <v-list-item-group v-model="active">
                         <v-list-item v-for="(item, i) in navItem"
                                      :key="i"
                                      :to="item.url">
