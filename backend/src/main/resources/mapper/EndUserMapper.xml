@@ -19,13 +19,13 @@
 
 
 
-    <select id="queryRoleByUserId" resultMap="roleResultMap">
-        select u_role.role_id, role
+    <select id="queryRoleByUserId" resultType="String">
+        select role
         from u_user_role join u_role on u_user_role.role_id = u_role.role_id
         where u_user_role.user_id = #{id}
     </select>
 
-    <select id="queryPermissionsByUserId" resultMap="permissionResultMap">
+    <select id="queryPermissionsByUserId" resultType="String">
         select permission
         from u_user_permission join u_permission on u_user_permission.permission_id = u_permission.permission_id
         where u_user_permission.user_id = #{id}
