@@ -33,8 +33,9 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResult handleMethodArgumentNotValidError(MethodArgumentNotValidException e) {
         logger.debug(e.getMessage());
-        logger.info(Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
-        return new ExceptionResult(400, "incorrect para");
+        String s = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
+        logger.info(s);
+        return new ExceptionResult(400, "incorrect para: " + s);
     }
 
     /*-------------- shiro exceptions ---------------*/
