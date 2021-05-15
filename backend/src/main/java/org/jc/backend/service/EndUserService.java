@@ -19,6 +19,6 @@ public interface EndUserService {
     List<String> queryUserNameList();
 
     List<EndUserVO> getAllUsers();
-    List<UserRole> getAllRoles();
-    List<UserPermission> getAllPermissions();
+    List<String> getAllRoles();
+    List<String> getAllPermissions();
 }

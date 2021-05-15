@@ -41,7 +41,7 @@ public class EndUserServiceImpl implements EndUserService {
     @Override
     public String getRoleByUserId(int id) {
         try {
-            return endUserMapper.queryRoleByUserId(id).getRole();
+            return endUserMapper.queryRoleByUserId(id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -54,9 +54,7 @@ public class EndUserServiceImpl implements EndUserService {
     @Override
     public List<String> getPermissionsByUserId(int id) {
         try {
-            List<String> list = new ArrayList<>();
-            endUserMapper.queryPermissionsByUserId(id).forEach(p -> list.add(p.getPermission()));
-            return list;
+            return endUserMapper.queryPermissionsByUserId(id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -138,9 +136,11 @@ public class EndUserServiceImpl implements EndUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<UserRole> getAllRoles() {
+    public List<String> getAllRoles() {
         try {
-            return endUserMapper.queryAllRoles();
+            List<String> list = new ArrayList<>();
+            endUserMapper.queryAllRoles().forEach(r -> list.add(r.getRole()));
+            return list;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -151,9 +151,11 @@ public class EndUserServiceImpl implements EndUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<UserPermission> getAllPermissions() {
+    public List<String> getAllPermissions() {
         try {
-            return endUserMapper.queryAllPermissions();
+            List<String> list = new ArrayList<>();
+            endUserMapper.queryAllPermissions().forEach(p -> list.add(p.getPermission()));
+            return list;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -26,10 +26,10 @@ public class EndUserVO {
 
     @NotNull(message = "role null error")
     @NotBlank(message = "role blank error")
-    private UserRole role;
+    private String role;
 
     @NotNull(message = "permission null error")
-    private List<UserPermission> permissions;
+    private List<String> permissions;
 
     private String sessionID;
 }

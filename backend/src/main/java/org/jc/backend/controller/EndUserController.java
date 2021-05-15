@@ -98,7 +98,7 @@ public class EndUserController {
     @ApiOperation(value = "", response = String.class)
     @RequiresRoles("admin")
     @GetMapping("/getAllRoles")
-    public List<UserRole> getAllRoles() {
+    public List<String> getAllRoles() {
         logger.info("GET Request to /user/getAllRoles");
 
         return endUserService.getAllRoles();
@@ -107,7 +107,7 @@ public class EndUserController {
     @ApiOperation(value = "", response = String.class)
     @RequiresRoles("admin")
     @GetMapping("/getAllPermissions")
-    public List<UserPermission> getAllPermissions() {
+    public List<String> getAllPermissions() {
         logger.info("GET Request to /user/getAllPermissions");
 
         return endUserService.getAllPermissions();
