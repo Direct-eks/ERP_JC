@@ -32,7 +32,7 @@ public class ModelServiceImpl implements ModelService {
             return modelMapper.queryModelCategories();
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
             throw e;
         }
@@ -48,7 +48,7 @@ public class ModelServiceImpl implements ModelService {
             return modelMapper.queryModelsByCategory(id);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
             throw e;
         }
@@ -61,7 +61,7 @@ public class ModelServiceImpl implements ModelService {
             return modelMapper.queryModelsByName(name, method);
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
             throw e;
         }
@@ -73,7 +73,7 @@ public class ModelServiceImpl implements ModelService {
             return modelMapper.queryAllModels();
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
             throw e;
         }
@@ -108,7 +108,7 @@ public class ModelServiceImpl implements ModelService {
             return models;
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
             throw e;
         }
