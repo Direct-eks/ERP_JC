@@ -54,7 +54,8 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
 
             for (var product : newProducts) {
                 product.setQuotaEntryID(newSerial);
-                int id = quotaEntryMapper.insertNewOrderProduct(product);
+                quotaEntryMapper.insertNewOrderProduct(product);
+                int id = product.getQuotaProductID();
                 logger.info("Insert new purchase product id: " + id);
             }
 

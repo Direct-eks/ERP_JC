@@ -64,7 +64,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
             for (var product : newProducts) {
                 product.setOutboundEntryID(newSerial);
-                int id = outboundEntryMapper.insertNewProduct(product);
+                outboundEntryMapper.insertNewProduct(product);
+                int id = product.getOutboundProductID();
                 logger.info("Insert new outbound product id: " + id);
 
                 warehouseStockService.decreaseStock(product);

@@ -68,11 +68,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                     WarehouseStockO newWarehouseStock = new WarehouseStockO();
                     newWarehouseStock.setSkuID(skuID);
                     newWarehouseStock.setWarehouseID(warehouseID);
-                    int newID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                    int newID = newWarehouseStock.getWarehouseStockID();
                     product.setWarehouseStockID(newID);
                 }
 
-                int id = purchaseOrderMapper.insertNewOrderProduct(product);
+                purchaseOrderMapper.insertNewOrderProduct(product);
+                int id = product.getPurchaseOrderProductID();
                 logger.info("Insert new purchase product id: " + id);
             }
 
@@ -165,7 +167,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                         WarehouseStockO newWarehouseStock = new WarehouseStockO();
                         newWarehouseStock.setSkuID(product.getSkuID());
                         newWarehouseStock.setWarehouseID(currentEntry.getWarehouseID());
-                        newWarehouseStockID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                        warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                        newWarehouseStockID = newWarehouseStock.getWarehouseStockID();
                     }
                     else {
                         newWarehouseStockID = warehouseStock.getWarehouseStockID();

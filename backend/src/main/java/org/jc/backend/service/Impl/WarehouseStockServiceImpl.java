@@ -51,7 +51,8 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     @Override
     public int insertNewWarehouseStock(WarehouseStockO warehouseStockO) {
         try {
-            return warehouseStockMapper.insertNewWarehouseStock(warehouseStockO);
+            warehouseStockMapper.insertNewWarehouseStock(warehouseStockO);
+            return warehouseStockO.getWarehouseStockID();
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");

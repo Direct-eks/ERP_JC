@@ -81,7 +81,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     product.setWarehouseStockID(newID);
                 }
 
-                int id = inboundEntryMapper.insertNewProduct(product);
+                inboundEntryMapper.insertNewProduct(product);
+                int id = product.getInboundProductID();
                 logger.info("Insert new inbound product id: " + id);
 
                 // calculate stock unit price for product

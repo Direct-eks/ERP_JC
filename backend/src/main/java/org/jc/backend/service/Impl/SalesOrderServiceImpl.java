@@ -57,7 +57,8 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
             for (var product : newProducts) {
                 product.setSalesOrderEntryID(newSerial);
-                int id = salesOrderMapper.insertNewOrderProduct(product);
+                salesOrderMapper.insertNewOrderProduct(product);
+                int id = product.getSalesOrderProductID();
                 logger.info("Insert new sales product id: " + id);
             }
 
@@ -147,7 +148,8 @@ public class SalesOrderServiceImpl implements SalesOrderService {
                         WarehouseStockO newWarehouseStock = new WarehouseStockO();
                         newWarehouseStock.setSkuID(product.getSkuID());
                         newWarehouseStock.setWarehouseID(currentEntry.getWarehouseID());
-                        newWarehouseStockID = warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                        warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
+                        newWarehouseStockID = newWarehouseStock.getWarehouseStockID();
                     }
                     else {
                         newWarehouseStockID = warehouseStock.getWarehouseStockID();
