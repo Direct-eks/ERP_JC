@@ -130,6 +130,9 @@ const api = {
     resourceBySupplier: '/supplier/getResourcesBySupplier/', // GET {id}
     supplierResourcesBySku: '/supplier/getSupplierResourcesBySku/', // GET {id}
 
+    /* ------ /unit ------*/
+    allUnits: '/unit/getAllUnits', // GET
+
     /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',
 

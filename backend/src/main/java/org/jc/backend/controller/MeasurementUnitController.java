@@ -19,7 +19,7 @@ public class MeasurementUnitController {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasurementUnitController.class);
 
-    private MeasurementUnitService measurementUnitService;
+    private final MeasurementUnitService measurementUnitService;
 
     public MeasurementUnitController(MeasurementUnitService measurementUnitService) {
         this.measurementUnitService = measurementUnitService;

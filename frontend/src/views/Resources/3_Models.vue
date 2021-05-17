@@ -109,7 +109,10 @@ export default {
             this.$store.commit('modifyModelList', this.treeData)
         }).catch(() => {})
 
-        // todo measurement units query
+        this.$getRequest(this.$api.allUnits).then(data => {
+            console.log('received', data)
+            this.units = data
+        })
     },
     data() {
         return {
@@ -118,24 +121,15 @@ export default {
             treeData: [],
 
             modelTableHeaders: [
-                { text: '序号', value: 'sequenceNumber', width: '180px' },
+                { text: '序号', value: 'sequenceNumber', width: '70px' },
                 { text: '代号', value: 'code', width: '180px' },
-                { text: '单位', value: 'unitID', width: '180px' },
-                { text: '分类', value: 'categoryID', width: '180px' },
+                { text: '单位', value: 'unitID', width: '120px' },
+                { text: '分类', value: 'categoryID', width: '110px' },
             ],
             modelTableData: [],
             modelTableCurrentRow: [],
 
-            units: [
-                {
-                    unitID: 4,
-                    unitName: '个'
-                },
-                {
-                    unitID: 5,
-                    unitName: '件'
-                }
-            ],
+            units: [],
         }
     },
     methods: {
