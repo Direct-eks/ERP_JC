@@ -15,17 +15,13 @@ springBoot.stdout.on('data', (data) => {
         process.send('launched')
     }
     else if (!applicationStarted) {
-        process.send('one line')
+        process.send(`${data}`)
     }
 })
 
 springBoot.on('exit', (code) => {
-    process.send(`${code}`)
+    process.send('exited')
 })
-
-// springBoot.on('close', (code) => {
-//     process.send(`${code}`)
-// })
 
 process.on('message', (message) => {
     console.log('child process receive message', `${message}`)
