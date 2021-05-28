@@ -3,12 +3,14 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.MeasurementUnitMapper;
 import org.jc.backend.entity.MeasurementUnitO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.MeasurementUnitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,6 +35,34 @@ public class MeasurementUnitServiceImpl implements MeasurementUnitService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateUnits(ListUpdateVO<MeasurementUnitO> updateVO) {
+        try {
+            List<MeasurementUnitO> oldUnits = measurementUnitMapper.queryAllUnits();
+            List<MeasurementUnitO> tempUnits = new ArrayList<>(updateVO.getElements());
+
+            // check for added
+            tempUnits.removeAll(oldUnits);
+            for (var unit : tempUnits) {
+                measurementUnitMapper.insertUnit(unit);
+            }
+
+            // update all
+            tempUnits = new ArrayList<>(updateVO.getElements());
+            tempUnits.retainAll(oldUnits);
+            for (var unit : tempUnits) {
+                measurementUnitMapper.updateUnit(unit);
+            }
+
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update error");
             throw e;
         }
     }

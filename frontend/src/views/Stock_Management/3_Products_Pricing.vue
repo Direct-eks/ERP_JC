@@ -151,7 +151,7 @@
                       show-select
                       single-select
                       @click:row="tableSelect"
-                      @item-selected="tableSelect"
+                      @item-selected="tableSelect2"
                       fixed-header
                       locale="zh-cn"
                       :footer-props="{'items-per-page-options': [10,20,30]}">
@@ -406,6 +406,21 @@ export default {
                 console.log('received', data)
                 this.supplierTableData = data
             })
+        },
+        tableSelect2(row) {
+            if (!row.value) {
+                this.tableCurrentRow = []
+            }
+            else {
+                this.tableCurrentRow = [row.item]
+                this.$getRequest(this.$api.supplierResourcesBySku +
+                    encodeURI(row.item.skuID)).then(data => {
+                    console.log('received', data)
+                    this.supplierTableData = data
+                })
+            }
+            this.supplierTableData = []
+            this.supplierTableCurrentRow = []
         },
         saveEditing(item) {
             // todo validate fields

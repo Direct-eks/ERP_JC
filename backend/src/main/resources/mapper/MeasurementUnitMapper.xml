@@ -15,4 +15,17 @@
         from w_measurement_unit
     </select>
 
+    <insert id="insertUnit" useGeneratedKeys="true" keyProperty="unitID"
+        keyColumn="measurement_unit_id">
+        insert into w_measurement_unit(name, remark)
+        values(#{unitName}, #{remark})
+    </insert>
+
+    <update id="updateUnit">
+        update w_measurement_unit
+        set name = #{unitName},
+            remark = #{remark}
+        where measurement_unit_id = #{unitID}
+    </update>
+
 </mapper>

@@ -132,6 +132,7 @@ const api = {
 
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET
+    updateUnits: '/unit/updateUnits', // POST
 
     /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',

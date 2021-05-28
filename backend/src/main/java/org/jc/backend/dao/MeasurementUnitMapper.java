@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface MeasurementUnitMapper {
     List<MeasurementUnitO> queryAllUnits();
+
+    void insertUnit(MeasurementUnitO unitO);
+    void updateUnit(MeasurementUnitO unitO);
 }
