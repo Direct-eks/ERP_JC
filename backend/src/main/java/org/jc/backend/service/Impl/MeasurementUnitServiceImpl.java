@@ -47,18 +47,19 @@ public class MeasurementUnitServiceImpl implements MeasurementUnitService {
             List<MeasurementUnitO> tempUnits = new ArrayList<>(updateVO.getElements());
 
             // check for added
-            tempUnits.removeAll(oldUnits);
+            tempUnits.removeIf(i -> i.getUnitID() >= 0);
             for (var unit : tempUnits) {
                 measurementUnitMapper.insertUnit(unit);
             }
 
             // update all
             tempUnits = new ArrayList<>(updateVO.getElements());
-            tempUnits.retainAll(oldUnits);
+            tempUnits.removeIf(i -> i.getUnitID() < 0);
             for (var unit : tempUnits) {
                 measurementUnitMapper.updateUnit(unit);
             }
 
+            // todo remove
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -72,7 +72,7 @@ export default {
         this.$getRequest(this.$api.allUnits).then(data => {
             console.log('received', data)
             this.tableData = data
-        })
+        }).catch(() => {})
     },
     data() {
         return {
