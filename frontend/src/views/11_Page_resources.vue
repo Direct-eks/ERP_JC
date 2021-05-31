@@ -43,6 +43,10 @@ export default {
         //     navItems.splice(navItems.indexOf(item), 1)
         // })
         this.navItem = navItems
+
+        if (this.$route.path !== '/resources') {
+            this.showStatus = false
+        }
     },
     data() {
         return {

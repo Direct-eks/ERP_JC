@@ -53,6 +53,10 @@ export default {
         //     navItems.splice(navItems.indexOf(item), 1)
         // })
         this.navItem = navItems
+
+        if (this.$route.path !== '/stock_management') {
+            this.showStatus = false
+        }
     },
     data() {
         return {

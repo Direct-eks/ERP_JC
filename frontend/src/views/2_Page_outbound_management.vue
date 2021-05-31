@@ -55,6 +55,10 @@ export default {
             })
         }
         this.navItem = navItems
+
+        if (this.$route.path !== '/outbound_management') {
+            this.showStatus = false
+        }
     },
     data() {
         return {

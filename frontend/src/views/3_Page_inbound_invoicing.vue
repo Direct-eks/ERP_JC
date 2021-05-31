@@ -55,6 +55,10 @@ export default {
             })
         }
         this.navItem = navItems
+
+        if (this.$route.path !== '/inbound_invoicing') {
+            this.showStatus = false
+        }
     },
     data() {
         return {
