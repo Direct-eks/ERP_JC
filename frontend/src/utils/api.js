@@ -37,6 +37,7 @@ const api = {
 
     /* ------ /factoryBrand ------*/
     allFactoryBrands: '/factoryBrand/allFactoryBrands', // GET
+    updateFactoryBrands: '/factoryBrand/updateAllFactoryBrands',
 
     /* ------ /inboundEntry ------*/
     completeInboundEntry: '/inboundEntry/completeEntry', // PATCH
