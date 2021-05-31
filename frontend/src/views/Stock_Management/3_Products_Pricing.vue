@@ -46,6 +46,7 @@
                 </v-btn>
                 <v-btn class="ml-2"
                        color="accent"
+                       :loading="isQuerying"
                        @click="searchSku">
                     查询
                 </v-btn>
@@ -145,6 +146,7 @@
                       :headers="tableHeaders"
                       :items="tableData"
                       item-key="skuID"
+                      :loading="isQuerying"
                       calculate-widths
                       height="45vh"
                       disable-sort
@@ -300,6 +302,7 @@ export default {
         return {
             mdiArrowLeftPath: mdiArrowLeft,
             supplierDialog: false,
+            isQuerying: false,
 
             treeData: [],
             treeSelection: [],
@@ -387,6 +390,7 @@ export default {
             this.modifiedTableData = []
         },
         searchSku() {
+            this.isQuerying = true
             this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
                 modelCategoryID: this.treeSelection[0].categoryID,
                 factoryBrandID: this.factoryBrandCurrentRow.length === 0 ? -1 :
@@ -394,6 +398,7 @@ export default {
             }).then((data) => {
                 console.log('received', data)
                 this.tableData = data
+                this.isQuerying = false
             }).catch(() => {})
         },
         tableSelect(row) {

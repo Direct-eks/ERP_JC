@@ -94,18 +94,8 @@ public class ModelServiceImpl implements ModelService {
                     break;
                 }
             }
-            String finalTreeLevel = treeLevel; // for lambda
-            allCategories.removeIf(category -> !category.getTreeLevel().startsWith(finalTreeLevel));
 
-            List<ModelO> models = new ArrayList<>();
-            allCategories.forEach(category -> {
-                List<ModelO> modelsFromDatabase = modelMapper.queryModelsByCategory(category.getModelCategoryID());
-                if (modelsFromDatabase.size() != 0) {
-                    models.addAll(modelsFromDatabase);
-                }
-            });
-
-            return models;
+            return modelMapper.queryModelsByCoarseCategory(treeLevel);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

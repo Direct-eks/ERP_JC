@@ -12,6 +12,7 @@ import java.util.List;
 public interface ModelMapper {
     List<ModelCategoryO> queryModelCategories();
     List<ModelO> queryModelsByCategory(int id);
+    List<ModelO> queryModelsByCoarseCategory(String treeLevel);
     List<ModelO> queryModelsByName(String name, String method);
 
     List<ModelO> queryAllModels();
