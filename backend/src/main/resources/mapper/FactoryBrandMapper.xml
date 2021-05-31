@@ -15,6 +15,21 @@
     <select id="queryAllFactoryBrands" resultMap="FactoryBrandResultMap">
         select factory_brand_id, sequence_number, code, remark
         from w_factory_brand
+        order by sequence_number
     </select>
+
+    <insert id="insertBrand" useGeneratedKeys="true" keyProperty="factoryBrandID"
+        keyColumn="factory_brand_id">
+        insert into w_factory_brand(sequence_number, code, remark)
+        values (#{sequenceNumber}, #{code}, #{remark})
+    </insert>
+
+    <update id="updateBrand">
+        update w_factory_brand
+        set sequence_number = #{sequenceNumber},
+            code = #{code},
+            remark = #{remark}
+        where factory_brand_id = #{factoryBrandID}
+    </update>
 
 </mapper>

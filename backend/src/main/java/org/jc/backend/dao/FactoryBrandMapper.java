@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface FactoryBrandMapper {
     List<FactoryBrandO> queryAllFactoryBrands();
+    void insertBrand(FactoryBrandO factoryBrandO);
+    void updateBrand(FactoryBrandO factoryBrandO);
 }
