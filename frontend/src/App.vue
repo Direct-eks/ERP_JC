@@ -35,7 +35,7 @@
                     <v-btn icon to="/home"
                            v-bind="attrs"
                            v-on="on">
-                        <v-icon>{{mdiHomePath}}</v-icon>
+                        <v-icon>{{ mdiHome }}</v-icon>
                     </v-btn>
                 </template>
                 <span>主页</span>
@@ -46,7 +46,7 @@
                     <v-btn icon
                            v-bind="attrs"
                            v-on="on">
-                        <v-icon @click="logout">{{ mdiLogoutPath }}</v-icon>
+                        <v-icon @click="logout">{{ mdiLogout }}</v-icon>
                     </v-btn>
                 </template>
                 <span>登出</span>
@@ -57,7 +57,7 @@
                     <v-btn icon
                            v-bind="attrs"
                            v-on="on">
-                        <v-icon @click="shutdown">{{ mdiPowerPath }}</v-icon>
+                        <v-icon @click="shutdown">{{ mdiPower }}</v-icon>
                     </v-btn>
                 </template>
                 <span>关闭后台服务器</span>
@@ -74,11 +74,59 @@
             <SnackMessage></SnackMessage>
         </v-main>
 
+        <v-bottom-navigation v-show="navBottomShow" color="primary">
+            <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon to="/inbound_management/entry_in"
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon>{{ mdiArchiveArrowDown }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>入库单录入</span>
+            </v-tooltip>
+
+            <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon to="/outbound_management/entry_out"
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon>{{ mdiArchiveArrowUp }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>出库单录入</span>
+            </v-tooltip>
+
+            <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon to="/inbound_invoicing/inbound_checkout_entry"
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon>{{ mdiArchiveArrowDownOutline }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>入库结账单录入</span>
+            </v-tooltip>
+
+            <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon to="/outbound_invoicing/outbound_check_entry"
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon>{{ mdiArchiveArrowUpOutline }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>出库结账单录入</span>
+            </v-tooltip>
+        </v-bottom-navigation>
+
     </v-app>
 </template>
 
 <script>
-import { mdiLogout, mdiHome, mdiPower } from '@mdi/js'
+import { mdiLogout, mdiHome, mdiPower,
+        mdiArchiveArrowDown, mdiArchiveArrowDownOutline,
+        mdiArchiveArrowUp, mdiArchiveArrowUpOutline  } from '@mdi/js'
 import nav from "~/utils/nav";
 import SnackMessage from "~/components/SnackMessage";
 
@@ -105,18 +153,28 @@ Date.prototype.format = function (fmt) {
 }
 
 export default {
-    data() {
-        return {
-            mdiHomePath: mdiHome,
-            mdiLogoutPath: mdiLogout,
-            mdiPowerPath: mdiPower,
-
-            nav: nav.items,
-            navDrawer: false
-        }
-    },
     components: {
         SnackMessage
+    },
+    data() {
+        return {
+            mdiHome,
+            mdiLogout,
+            mdiPower,
+            mdiArchiveArrowUp,
+            mdiArchiveArrowDown,
+            mdiArchiveArrowDownOutline,
+            mdiArchiveArrowUpOutline,
+
+            nav: nav.items,
+            navDrawer: false,
+            navBottomShow: true
+        }
+    },
+    watch: {
+        $route(to, from) {
+            this.navBottomShow = to.path === '/home'
+        },
     },
     methods: {
         logout() {
