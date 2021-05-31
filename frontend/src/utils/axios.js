@@ -116,3 +116,11 @@ export const deleteRequest = (url, params) => {
         params: params
     })
 }
+export const getFileRequest = (url, params) => {
+    return axios({
+        method: 'get',
+        url: `${base}${url}`,
+        params: params,
+        responseType:'blob'
+    })
+}

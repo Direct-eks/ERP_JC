@@ -11,6 +11,7 @@ import { postRequest } from './utils/axios'
 import { deleteRequest } from './utils/axios'
 import { putRequest } from './utils/axios'
 import { patchRequest } from './utils/axios'
+import { getFileRequest } from "./utils/axios";
 import api from './utils/api'
 
 Vue.prototype.$getRequest = getRequest
@@ -18,6 +19,7 @@ Vue.prototype.$postRequest = postRequest
 Vue.prototype.$deleteRequest = deleteRequest
 Vue.prototype.$putRequest = putRequest
 Vue.prototype.$patchRequest = patchRequest
+Vue.prototype.$getFileRequest = getFileRequest
 Vue.prototype.$api = api
 
 
