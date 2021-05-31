@@ -21,6 +21,10 @@ public class ModelO {
     @NotNull(message = "categoryID null error")
     private Integer categoryID;
 
+    private String categoryCode;
+
     @NotNull(message = "unitID null error")
     private Integer unitID;
+
+    private String unitName;
 }

@@ -24,7 +24,9 @@
         <result property="sequenceNumber" column="sequence_number"/>
         <result property="code" column="code"/>
         <result property="categoryID" column="category_id"/>
+        <result property="categoryCode" column="category_code"/>
         <result property="unitID" column="unit_id"/>
+        <result property="unitName" column="unit_name"/>
     </resultMap>
 
     <select id="queryModelsByCategory" resultMap="ModelResultMap">
@@ -45,9 +47,11 @@
     </select>
 
     <select id="queryAllModels" resultMap="ModelResultMap">
-        select model_id, m.sequence_number, m.code, category_id, unit_id
+        select model_id, m.sequence_number, m.code, category_id,
+               c.code as category_code, unit_id, u.name as unit_name
         from w_model as m join w_model_category as c on m.category_id = c.model_category_id
-        order by c.sequence_number, m.code
+            join w_measurement_unit as u on m.unit_id = u.measurement_unit_id
+        order by c.sequence_number, m.sequence_number
     </select>
 
 </mapper>

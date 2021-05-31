@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Api(tags = "Model Related")
@@ -63,5 +64,12 @@ public class ModelController {
 
         return modelService.getModelsByName(name, method);
     }
-    
+
+    @ApiOperation(value = "", response = void.class)
+    @GetMapping("/exportAllModels")
+    public void exportAllModels(HttpServletResponse response) {
+        logger.info("GET Request to /model/exportAllModels");
+
+        modelService.exportAllModels(response);
+    }
 }

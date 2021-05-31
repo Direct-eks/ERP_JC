@@ -1,6 +1,9 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jc.backend.dao.ModelMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
@@ -10,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -68,14 +72,44 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Transactional(readOnly = true)
-    public List<ModelO> getAllModels() {
+    @Override
+    public void exportAllModels(HttpServletResponse response) {
         try {
-            return modelMapper.queryAllModels();
+            List<ModelO> allModels = modelMapper.queryAllModels();
+
+            SXSSFWorkbook workbook = new SXSSFWorkbook();
+            Sheet sheet = workbook.createSheet("所有型号");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("所在分类");
+            header.createCell(1).setCellValue("子类序号");
+            header.createCell(2).setCellValue("型号");
+            header.createCell(3).setCellValue("计量单位");
+
+            int rowIndex = 1;
+            for (var model : allModels) {
+                Row row = sheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(model.getCategoryCode());
+                row.createCell(1).setCellValue(model.getSequenceNumber());
+                row.createCell(2).setCellValue(model.getCode());
+                row.createCell(3).setCellValue(model.getUnitName());
+            }
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment;filename=型号表.xlsx");
+
+            workbook.write(response.getOutputStream());
+            workbook.dispose();
+            workbook.close();
+            response.flushBuffer();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
             throw e;
+        } catch (IOException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("io failed");
         }
     }
 }
