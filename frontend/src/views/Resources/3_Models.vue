@@ -10,6 +10,9 @@
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
                 返回
             </v-btn>
+            <v-btn @click="exportExcel" :loading="isExporting">
+                导出
+            </v-btn>
         </v-card-title>
         <v-card-text>
             <div class="d-flex">
@@ -130,6 +133,8 @@ export default {
             modelTableCurrentRow: [],
 
             units: [],
+
+            isExporting: false
         }
     },
     methods: {
@@ -156,6 +161,22 @@ export default {
         modelTableChoose() {
 
         },
+        exportExcel() {
+            this.isExporting = true
+            this.$getFileRequest(this.$api.exportModels).then(data => {
+                console.log("received!")
+                this.isExporting = false
+                let href = window.URL.createObjectURL(new Blob([data]));
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = href;
+                link.setAttribute('download',  '型号表.xlsx')
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(href)
+            }).catch(()=>{})
+        }
     }
 }
 </script>

@@ -66,6 +66,7 @@ const api = {
     modelCategories: '/model/getModelCategories', // GET
     modelsByCategory: '/model/getModelsByCategory/', // GET {id}
     modelsByName: '/model/getModelsByName', // GET name= method=
+    exportModels: '/model/exportAllModels', // GET
 
     /* ------ /miscellaneousData ------*/
     allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
