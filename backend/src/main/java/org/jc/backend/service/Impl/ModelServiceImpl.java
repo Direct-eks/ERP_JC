@@ -78,29 +78,4 @@ public class ModelServiceImpl implements ModelService {
             throw e;
         }
     }
-
-    /**
-     * get modesl by coarse category, all models lie below the sub model category tree
-     * will be retrieved
-     */
-    @Transactional(readOnly = true)
-    public List<ModelO> getModelsByCoarseCategoryID(int id) {
-        try {
-            List<ModelCategoryO> allCategories = modelMapper.queryModelCategories();
-            String treeLevel = null;
-            for (var category : allCategories) {
-                if (category.getModelCategoryID() == id) {
-                    treeLevel = category.getTreeLevel();
-                    break;
-                }
-            }
-
-            return modelMapper.queryModelsByCoarseCategory(treeLevel);
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query error");
-            throw e;
-        }
-    }
 }

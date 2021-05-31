@@ -11,5 +11,4 @@ public interface ModelService {
     List<ModelO> getModelsByName(String name, String method);
 
     List<ModelO> getAllModels();
-    List<ModelO> getModelsByCoarseCategoryID(int id);
 }

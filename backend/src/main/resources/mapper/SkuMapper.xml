@@ -44,17 +44,22 @@
         where s.model_id = #{id}
     </select>
 
-    <select id="queryFullSkuByModelAndFactoryBrandID" resultMap="SkuResultMap">
+    <select id="querySkuByCoarseCategoryAndFactoryBrand" resultMap="SkuResultMap">
         select s.sku_id, s.factory_brand_id, s.factory_code, s.model_id, s.code,
                s.unit_id, s.unit_name, s.stock_quantity, s.remark, s.supplier_id, c.abbreviated_name,
                c.full_name, c.phone, c.remark as company_remark, s.record_factory_stock,
                s.factory_price_without_tax, s.factory_price_with_tax, s.settlement_price_without_tax,
                s.price_base_reference, s.wholesale_price_discount, s.wholesale_price, s.retail_price_discount,
                s.retail_price, s.stock_lower_limit, s.stock_upper_limit
-        from sku_full as s left join c_partner_company as c on s.supplier_id = c.partner_company_id
-        where s.model_id = #{modelID}
+        from sku_full as s join (
+            select m.model_id
+            from w_model as m join w_model_category as c
+                on m.category_id = c.model_category_id
+            where c.tree_level like #{treeLevel}||'%'
+        ) as model on s.model_id = model.model_id
+            left join c_partner_company as c on s.supplier_id = c.partner_company_id
         <if test="factoryBrandID != -1">
-            and s.factory_brand_id = #{factoryBrandID}
+            where s.factory_brand_id = #{factoryBrandID}
         </if>
     </select>
 

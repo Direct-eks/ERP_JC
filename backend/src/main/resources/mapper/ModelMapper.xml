@@ -34,13 +34,6 @@
         order by sequence_number
     </select>
 
-    <select id="queryModelsByCoarseCategory" resultMap="ModelResultMap">
-        select m.model_id, m.sequence_number, m.code, m.category_id, m.unit_id
-        from w_model as m join w_model_category as c
-            on m.category_id = c.model_category_id
-        where c.tree_level like #{treeLevel}||'%'
-    </select>
-
     <select id="queryModelsByName" resultMap="ModelResultMap">
         select model_id, sequence_number, code, category_id, unit_id
         from w_model

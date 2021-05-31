@@ -2,6 +2,7 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.SkuMapper;
+import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.service.ModelService;
@@ -47,19 +48,18 @@ public class SkuServiceImpl implements SkuService {
     @Override
     public List<SkuFullO> getSkusByCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID) {
         try {
-            List<ModelO> models;
+            String treeLevel = "";
             if (modelCategoryID != -1) {
-                models = modelService.getModelsByCoarseCategoryID(modelCategoryID);
-            }
-            else {
-                models = modelService.getAllModels();
+                List<ModelCategoryO> allCategories = modelService.getModelCategories();
+                for (var category : allCategories) {
+                    if (category.getModelCategoryID() == modelCategoryID) {
+                        treeLevel = category.getTreeLevel();
+                        break;
+                    }
+                }
             }
 
-            List<SkuFullO> skus = new ArrayList<>();
-            models.forEach(model ->
-                    skus.addAll(skuMapper.queryFullSkuByModelAndFactoryBrandID(model.getModelID(), factoryBrandID)));
-
-            return skus;
+            return skuMapper.querySkuByCoarseCategoryAndFactoryBrand(treeLevel, factoryBrandID);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

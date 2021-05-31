@@ -11,7 +11,7 @@ import java.util.List;
 public interface SkuMapper {
     List<SkuFullO> queryFullSkuByModel(int id);
 
-    List<SkuFullO> queryFullSkuByModelAndFactoryBrandID(int modelID, int factoryBrandID);
+    List<SkuFullO> querySkuByCoarseCategoryAndFactoryBrand(String treeLevel, int factoryBrandID);
 
     void updateSkuPricing(SkuFullO skuFullO);
 }
