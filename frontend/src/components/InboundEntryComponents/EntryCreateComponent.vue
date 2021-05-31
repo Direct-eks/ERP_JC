@@ -507,7 +507,7 @@ export default {
 
         this.$getRequest(this.$api.allTaxRates).then((data) => {
             this.taxRateOptions = data
-        })
+        }).catch(() => {})
     },
     data() {
         return {

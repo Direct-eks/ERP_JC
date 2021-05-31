@@ -23,6 +23,9 @@ axios.interceptors.response.use((response) => {
     console.log("error message: " + error.response.data.msg)
     switch (error.response.status) {
     case 400: // Bad Request
+        main.$store.commit('setSnackbar', {
+            message: '无效数据', color: 'error'
+        })
         break
     case 401: // Unauthorized
         main.$store.commit('setSnackbar', {
