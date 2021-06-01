@@ -4,13 +4,41 @@
     <v-card>
         <v-card-title>
             商品定价
+            <v-text-field v-model="treeSelectedLevel"
+                          label="已选分类"
+                          hide-details="auto"
+                          outlined
+                          readonly
+                          dense
+                          class="ml-4"
+                          style="max-width: 180px">
+            </v-text-field>
+            <v-text-field v-model="factoryBrandSelected"
+                          label="已选厂牌"
+                          hide-details="auto"
+                          outlined
+                          readonly
+                          dense
+                          class="ml-2"
+                          style="max-width: 100px">
+            </v-text-field>
+            <v-btn class="ml-2"
+                   color="warning"
+                   @click="clearSearchFields">
+                清空
+            </v-btn>
+            <v-btn class="ml-2"
+                   color="accent"
+                   :loading="isQuerying"
+                   @click="searchSku">
+                查询
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <v-btn color="success"
-                       @click="saveChanges">
-                    保存修改
-                </v-btn>
-            </v-col>
+            <v-btn class="mr-4"
+                   color="success"
+                   @click="saveChanges">
+                保存修改
+            </v-btn>
             <v-btn color="accent"
                    to="/stock_management">
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
@@ -18,42 +46,7 @@
             </v-btn>
         </v-card-title>
 
-        <v-row>
-            <v-col cols="auto" class="ml-3">
-                <v-text-field v-model="treeSelectedLevel"
-                              label="已选分类"
-                              hide-details="auto"
-                              outlined
-                              readonly
-                              dense
-                              style="width: 180px">
-                </v-text-field>
-            </v-col>
-            <v-col cols="auto">
-                <v-text-field v-model="factoryBrandSelected"
-                              label="已选厂牌"
-                              hide-details="auto"
-                              outlined
-                              readonly
-                              dense
-                              style="width: 120px">
-                </v-text-field>
-            </v-col>
-            <v-col cols="auto">
-                <v-btn color="warning"
-                       @click="clearSearchFields">
-                    清空
-                </v-btn>
-                <v-btn class="ml-2"
-                       color="accent"
-                       :loading="isQuerying"
-                       @click="searchSku">
-                    查询
-                </v-btn>
-            </v-col>
-        </v-row>
-
-        <div class="d-flex">
+        <div class="d-flex" v-if="!isHiding">
             <v-card outlined>
                 <v-responsive height="30vh"
                               style="overflow: auto">
@@ -101,7 +94,7 @@
                                   :headers="supplierTableHeaders"
                                   :items="supplierTableData"
                                   item-key="partnerCompanyID"
-                                  height="25vh"
+                                  height="23vh"
                                   calculate-widths
                                   disable-sort
                                   single-select
@@ -112,32 +105,28 @@
                                   dense>
                     </v-data-table>
                 </v-responsive>
-                <v-card-actions>
-                    <v-row>
-                        <v-col cols="auto">
-                            <v-btn color="accent"
-                                   @click="importPrice">
-                                导入
+                <v-card-actions  class="d-flex">
+                    <v-btn class="ml-4"
+                           color="accent"
+                           @click="importPrice">
+                        导入
+                    </v-btn>
+                    <v-dialog v-model="supplierDialog"
+                              :eager="true"
+                              persistent
+                              scrollable
+                              no-click-animation
+                              max-width="45vw">
+                        <template v-slot:activator="{on}">
+                            <v-btn class="ml-4"
+                                   color="accent"
+                                   v-on="on">
+                                送资源价格
                             </v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-dialog v-model="supplierDialog"
-                                      :eager="true"
-                                      persistent
-                                      scrollable
-                                      no-click-animation
-                                      max-width="45vw">
-                                <template v-slot:activator="{on}">
-                                    <v-btn color="accent"
-                                           v-on="on">
-                                        送资源价格
-                                    </v-btn>
-                                </template>
-                                <SupplierResourceQuery @supplierChoose="importSupplierResource">
-                                </SupplierResourceQuery>
-                            </v-dialog>
-                        </v-col>
-                    </v-row>
+                        </template>
+                        <SupplierResourceQuery @supplierChoose="importSupplierResource">
+                        </SupplierResourceQuery>
+                    </v-dialog>
                 </v-card-actions>
             </v-card>
         </div>
@@ -148,7 +137,7 @@
                       item-key="skuID"
                       :loading="isQuerying"
                       calculate-widths
-                      height="45vh"
+                      :height="tableHeight"
                       disable-sort
                       show-select
                       single-select
@@ -235,6 +224,13 @@
                     </template>
                 </v-edit-dialog>
             </template>
+
+            <template v-slot:footer.prepend>
+                <v-btn color="accent"
+                       @click="hideTop">
+                    隐藏上半部分
+                </v-btn>
+            </template>
         </v-data-table>
 
     </v-card>
@@ -309,7 +305,6 @@ export default {
             treeSelectedLevel: '',
 
             factoryBrandTableHeaders: [
-                { text: '序号', value: 'sequenceNumber', width: '65px' },
                 { text: '厂牌代号', value: 'code', width: '80px' },
                 { text: '厂牌描述', value: 'remark', width: '100px' },
             ],
@@ -349,6 +344,8 @@ export default {
             tableData: [],
             tableCurrentRow: [],
             modifiedTableData: [],
+            tableHeight: '40vh',
+            isHiding: false,
 
             priceBaseOptions: [
                 '无税厂价',
@@ -426,6 +423,16 @@ export default {
             }
             this.supplierTableData = []
             this.supplierTableCurrentRow = []
+        },
+        hideTop() {
+            if (this.isHiding) {
+                this.isHiding = false
+                this.tableHeight = '40vh'
+            }
+            else {
+                this.isHiding = true
+                this.tableHeight = '75vh'
+            }
         },
         saveEditing(item) {
             // todo validate fields
