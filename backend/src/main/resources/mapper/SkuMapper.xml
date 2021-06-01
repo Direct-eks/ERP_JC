@@ -78,4 +78,10 @@
         where sku_id = #{skuID}
     </update>
 
+    <insert id="insertSku" useGeneratedKeys="true"
+        keyProperty="skuID" keyColumn="sku_id">
+        insert into w_sku(factory_brand_id, model_id, stock_quantity, remark)
+        values(#{factoryBrandID}, #{modelID}, 0, '')
+    </insert>
+
 </mapper>

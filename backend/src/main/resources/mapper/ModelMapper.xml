@@ -46,6 +46,20 @@
         </choose>
     </select>
 
+    <insert id="insertModel" useGeneratedKeys="true"
+        keyProperty="modelID" keyColumn="model_id">
+        insert into w_model(sequence_number, code, category_id, unit_id)
+        values(#{sequenceNumber}, #{code}, #{categoryID}, #{unitID})
+    </insert>
+
+    <update id="updateModel">
+        update w_model
+        set sequence_number = #{sequenceNumber},
+            code = #{code},
+            unit_id = #{unitID}
+        where model_id = #{modelID}
+    </update>
+
     <select id="queryAllModels" resultMap="ModelResultMap">
         select model_id, m.sequence_number, m.code, category_id,
                c.code as category_code, unit_id, u.name as unit_name

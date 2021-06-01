@@ -5,9 +5,11 @@ import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +65,37 @@ public class ModelController {
         }
 
         return modelService.getModelsByName(name, method);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateModelsWithCategory")
+    public void updateModelsWithCategory(
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("brands") String brands,
+            @RequestBody @Validated ListUpdateVO<ModelO> updateVO
+    ) throws GlobalParamException {
+        logger.info("POST Request to /model/updateModelsWithCategory, category: {}, " +
+                "brands: {}, info: {}", categoryID, brands, updateVO);
+
+        if (categoryID == -1) throw new GlobalParamException("categoryID error");
+
+        int[] brandIDs;
+        if (brands.equals("")) {
+            brandIDs = new int[0];
+        }
+        else {
+            String[] brandsArray = brands.split(",");
+            brandIDs = new int[brandsArray.length];
+            for (int i = 0; i < brandsArray.length; ++i) {
+                try {
+                    brandIDs[i] = Integer.parseInt(brandsArray[i]);
+                } catch (NumberFormatException e) {
+                    throw new GlobalParamException("brandID format error");
+                }
+            }
+        }
+
+        modelService.updateModelsWithCategory(categoryID, brandIDs, updateVO);
     }
 
     @ApiOperation(value = "", response = void.class)

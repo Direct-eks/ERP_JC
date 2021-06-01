@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -83,4 +82,23 @@ public class SkuServiceImpl implements SkuService {
         }
     }
 
+    @Transactional
+    @Override
+    public void createNewSkus(List<ModelO> models, int[] brandIDs) {
+        try {
+            for (var model : models) {
+                SkuFullO sku = new SkuFullO();
+                sku.setModelID(model.getModelID());
+                for (var brand : brandIDs) {
+                    sku.setFactoryBrandID(brand);
+                    skuMapper.insertSku(sku);
+                }
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("insertion failed");
+            throw e;
+        }
+    }
 }

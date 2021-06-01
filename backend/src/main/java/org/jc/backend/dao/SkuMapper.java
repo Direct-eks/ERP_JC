@@ -14,4 +14,6 @@ public interface SkuMapper {
     List<SkuFullO> querySkuByCoarseCategoryAndFactoryBrand(String treeLevel, int factoryBrandID);
 
     void updateSkuPricing(SkuFullO skuFullO);
+
+    void insertSku(SkuFullO skuFullO);
 }

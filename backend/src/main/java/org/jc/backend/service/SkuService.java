@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.SkuFullO;
 
 import java.util.List;
@@ -10,4 +11,6 @@ public interface SkuService {
     List<SkuFullO> getSkusByCategoryAndFactoryBrand(int modelCategoryID, int factoryBrandID);
 
     void modifySkuPricing(List<SkuFullO> skuFullO);
+
+    void createNewSkus(List<ModelO> models, int[] brandIDs);
 }

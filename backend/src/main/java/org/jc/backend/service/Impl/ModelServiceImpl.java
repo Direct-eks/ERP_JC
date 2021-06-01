@@ -7,14 +7,18 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jc.backend.dao.ModelMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
+import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,9 +27,14 @@ public class ModelServiceImpl implements ModelService {
     private static final Logger logger = LoggerFactory.getLogger(ModelServiceImpl.class);
 
     private final ModelMapper modelMapper;
+    private final SkuService skuService;
 
-    public ModelServiceImpl(ModelMapper modelMapper) {
+    public ModelServiceImpl(
+            ModelMapper modelMapper,
+            @Lazy SkuService skuService
+    ) {
         this.modelMapper = modelMapper;
+        this.skuService = skuService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -67,6 +76,38 @@ public class ModelServiceImpl implements ModelService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query error");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateModelsWithCategory(int categoryID, int[] brands, ListUpdateVO<ModelO> updateVO) {
+        try {
+            List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
+            List<ModelO> tempModels = new ArrayList<>(updateVO.getElements());
+
+            // check for added
+            tempModels.removeIf(m -> m.getModelID() >= 0);
+            for (var model : tempModels) {
+                modelMapper.insertModel(model);
+            }
+            // now modelIDs are created, create sku based on the brands
+            if (brands.length > 0 && tempModels.size() > 0)
+                skuService.createNewSkus(tempModels, brands);
+
+            // update all
+            tempModels = new ArrayList<>(updateVO.getElements());
+            tempModels.removeIf(i -> i.getModelID() < 0);
+            for (var model : tempModels) {
+                modelMapper.updateModel(model);
+            }
+
+            // todo remove
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update error");
             throw e;
         }
     }
