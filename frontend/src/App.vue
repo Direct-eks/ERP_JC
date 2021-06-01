@@ -30,6 +30,27 @@
             <v-toolbar-title>精诚轴承</v-toolbar-title>
             <v-spacer></v-spacer>
 
+            <v-bottom-sheet v-model="helpSheet" inset>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon
+                           v-bind="attrs"
+                           v-on="on">
+                        <v-icon>
+                            {{ mdiHelpCircle }}
+                        </v-icon>
+                    </v-btn>
+                </template>
+                <v-sheet class="text-center"
+                         >
+                    <v-list-item v-for="(item, i) in helpContent"
+                                 :key="i">
+                        <v-list-item-content>
+                            {{ item }}
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-sheet>
+            </v-bottom-sheet>
+
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn icon to="/home"
@@ -124,10 +145,11 @@
 </template>
 
 <script>
-import { mdiLogout, mdiHome, mdiPower,
+import { mdiLogout, mdiHome, mdiPower, mdiHelpCircle,
         mdiArchiveArrowDown, mdiArchiveArrowDownOutline,
         mdiArchiveArrowUp, mdiArchiveArrowUpOutline  } from '@mdi/js'
 import nav from "~/utils/nav";
+import helpContent from "~/utils/helpContent";
 import SnackMessage from "~/components/SnackMessage";
 
 // eslint-disable-next-line no-extend-native,func-names
@@ -161,6 +183,7 @@ export default {
             mdiHome,
             mdiLogout,
             mdiPower,
+            mdiHelpCircle,
             mdiArchiveArrowUp,
             mdiArchiveArrowDown,
             mdiArchiveArrowDownOutline,
@@ -168,12 +191,21 @@ export default {
 
             nav: nav.items,
             navDrawer: false,
-            navBottomShow: true
+            navBottomShow: true,
+            helpSheet: false,
+            helpContent: [],
         }
     },
     watch: {
         $route(to, from) {
             this.navBottomShow = to.path === '/home'
+            this.helpContent = []
+            for (const item of helpContent.items) {
+                if (item.url === to.path) {
+                    this.helpContent = item.helpContent
+                    break
+                }
+            }
         },
     },
     methods: {
