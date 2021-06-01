@@ -84,4 +84,10 @@
         values(#{factoryBrandID}, #{modelID}, 0, '')
     </insert>
 
+    <update id="updateSku">
+        update w_sku
+        set factory_brand_id = #{factroyBrandID}
+        where sku_id = #{skuID}
+    </update>
+
 </mapper>

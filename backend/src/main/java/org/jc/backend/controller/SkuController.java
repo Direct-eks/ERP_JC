@@ -54,4 +54,15 @@ public class SkuController {
 
         skuService.modifySkuPricing(listUpdateVO.getElements());
     }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateSku")
+    public void updateSku(
+            @RequestParam("modelID") int modelID,
+            @Validated @RequestBody ListUpdateVO<SkuFullO> updateVO
+    ) {
+        logger.info("POST Request to /sku/updateSku, modelID: {}, info {}", modelID, updateVO);
+
+        skuService.updateSku(modelID, updateVO);
+    }
 }

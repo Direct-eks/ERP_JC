@@ -16,4 +16,5 @@ public interface SkuMapper {
     void updateSkuPricing(SkuFullO skuFullO);
 
     void insertSku(SkuFullO skuFullO);
+    void updateSku(SkuFullO skuFullO);
 }

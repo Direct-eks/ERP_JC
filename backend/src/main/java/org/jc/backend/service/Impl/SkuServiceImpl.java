@@ -5,6 +5,7 @@ import org.jc.backend.dao.SkuMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.SkuFullO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -98,6 +100,35 @@ public class SkuServiceImpl implements SkuService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insertion failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateSku(int modelID, ListUpdateVO<SkuFullO> updateVO) {
+        try {
+            List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);
+            List<SkuFullO> tempSkus = new ArrayList<>(updateVO.getElements());
+
+            // check for added
+            tempSkus.removeIf(s -> s.getSkuID() >= 0);
+            for (var sku : tempSkus) {
+                skuMapper.insertSku(sku);
+            }
+
+            // update all
+            tempSkus = new ArrayList<>(updateVO.getElements());
+            tempSkus.removeIf(s -> s.getSkuID() < 0);
+            for (var sku : tempSkus) {
+                skuMapper.updateSku(sku);
+            }
+
+            // todo remove
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
             throw e;
         }
     }
