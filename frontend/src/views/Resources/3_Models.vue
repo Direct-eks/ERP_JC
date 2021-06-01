@@ -260,10 +260,10 @@ export default {
         },
         brandTableChoose2(row) {
             if (!row.value) {
-                this.brandTableCurrentRow = []
+                this.brandTableCurrentRow.splice(this.brandTableCurrentRow.indexOf(row), 1)
             }
             else {
-                this.brandTableCurrentRow = [row.item]
+                this.brandTableCurrentRow.push(row.item)
             }
         },
         newRow() {
