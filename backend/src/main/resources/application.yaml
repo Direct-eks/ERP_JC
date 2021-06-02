@@ -43,3 +43,15 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  config: classpath:log4j2.yaml
+#  level:
+#    root: INFO
+#    javax.activation: info
+#    org.apache.catalina: INFO
+#    org.apache.commons.beanutils.converters: INFO
+#    org.apache.coyote.http11.Http11Processor: INFO
+#    org.apache.http: INFO
+#    org.apache.tomcat: INFO
+#    org.springframework: INFO

@@ -1,0 +1,62 @@
+# ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF
+Configuration:
+  status: DEBUG
+  monitorInterval: 30
+
+  Properties:
+    Property:
+      - name: log.home
+        value: logs/
+      - name: log.pattern
+        value: "%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger [%L] : %msg%n"
+      - name: log.patternHighlight
+        value: "%date{yyyy-MM-dd HH:mm:ss:SSS} %highlight{%5level} [%thread] %style{%logger}{bright,cyan} [%style{%L}{bright,blue}] : %msg%n"
+
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: ${log.patternHighlight}
+      Filters:
+        ThresholdFilter:
+          - level: debug
+            onMatch: ACCEPT
+            onMismatch: DENY
+    RollingFile:
+      - name: RollingFile
+        filename: ${log.home}/running_logs.log
+        filePattern: "${log.home}/history_log-%d{yyyy-MM-dd}_%i.log.gz"
+        PatternLayout:
+          pattern: ${log.pattern}
+        Filters:
+          ThresholdFilter:
+            - level: TRACE
+              onMatch: DENY
+              onMismatch: ACCEPT
+        Policies:
+          TimeBasedTriggeringPolicy:
+            modulate: true
+            interval: 1
+          SizeBasedTriggeringPolicy:
+            size: 10KB
+        DefaultRolloverStrategy:
+          max: 30
+
+  Loggers:
+    root:
+      level: INFO
+      AppenderRef:
+        ref: Console
+    Logger:
+      - name: org.springframework
+        level: INFO
+        additivity: false
+        AppenderRef:
+          ref: Console
+
+      - name: org.mybatis
+        level: DEBUG
+        additivity: false
+        AppenderRef:
+          ref: Console
