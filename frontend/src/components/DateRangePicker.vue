@@ -18,28 +18,22 @@
                     style="width: 250px">
             </v-text-field>
         </template>
-        <v-card>
-            <v-row>
-                <v-col>
-                    <v-list-item-group v-model="dateRange">
-                        <v-list-item v-for="(item, i) in dateRangePickerOptions"
-                                     :key="i" :value="item.range">
-                            <v-list-item-content>{{item.name}}</v-list-item-content>
-                        </v-list-item>
-                    </v-list-item-group>
-                </v-col>
-                <v-col>
-                    <v-date-picker v-model="dateRange"
-                                   :max="maxDate"
-                                   no-title
-                                   range
-                                   scrollable>
-                        <v-spacer></v-spacer>
-                        <v-btn text color="primary" @click="menu = false">取消</v-btn>
-                        <v-btn text color="primary" @click="choose">确认</v-btn>
-                    </v-date-picker>
-                </v-col>
-            </v-row>
+        <v-card class="d-flex">
+              <v-list-item-group v-model="dateRange">
+                  <v-list-item v-for="(item, i) in dateRangePickerOptions"
+                               :key="i" :value="item.range">
+                      <v-list-item-content>{{item.name}}</v-list-item-content>
+                  </v-list-item>
+              </v-list-item-group>
+              <v-date-picker v-model="dateRange"
+                             :max="maxDate"
+                             no-title
+                             range
+                             scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu = false">取消</v-btn>
+                  <v-btn text color="primary" @click="choose">确认</v-btn>
+              </v-date-picker>
         </v-card>
     </v-menu>
 </template>
