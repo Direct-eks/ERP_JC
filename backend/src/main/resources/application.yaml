@@ -2,6 +2,10 @@ server:
   port: 58080
   shutdown: graceful
   address: localhost
+  undertow:
+    threads:
+      io: 2
+      worker: 2
 
 management:
   endpoints:
