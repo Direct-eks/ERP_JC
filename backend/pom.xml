@@ -182,101 +182,142 @@
 
     </dependencies>
 
-    <build>
-        <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash; 剔除spring-boot打包的org和BOOT-INF文件夹(用于子模块打包) &ndash;&gt;-->
-<!--                    <skip>true</skip>-->
-<!--                    <mainClass>org.jc.backend.BackendApplication</mainClass>-->
-<!--&lt;!&ndash;                    <layout>ZIP</layout>&ndash;&gt;-->
-<!--                    <includes>-->
-<!--                        &lt;!&ndash; 排除第三方依赖jar(只保留本项目的jar) &ndash;&gt;-->
-<!--                        <include>-->
-<!--                            <groupId>${project.groupId}</groupId>-->
-<!--                            <artifactId>${project.artifactId}</artifactId>-->
-<!--                        </include>-->
-<!--                    </includes>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+    <profiles>
+        <!--default dev-->
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profileActive>dev</profileActive>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
-            <!-- maven 打包插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <!-- MANIFEST.MF 中 Class-Path 加入前缀 -->
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <!-- jar包不包含唯一版本标识 -->
-                            <useUniqueVersions>false</useUniqueVersions>
-                            <!-- 指定入口类 -->
-                            <mainClass>org.jc.backend.BackendApplication</mainClass>
-                        </manifest>
-                    </archive>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                </configuration>
-            </plugin>
-
-            <!-- 拷贝依赖 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <overWriteReleases>true</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <mainClass>org.jc.backend.BackendApplication</mainClass>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+                    </plugin>
+                </plugins>
 
-        </plugins>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>application.yaml</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>log4j2.yaml</include>
+                            <include>**/*.xml</include>
+                            <include>application-dev.yaml</include>
+                        </includes>
+                        <filtering>false</filtering>
+                    </resource>
+                </resources>
+            </build>
 
-<!--        <resources>-->
-<!--            &lt;!&ndash; 打包src/main/java下的xml文件 &ndash;&gt;-->
-<!--            <resource>-->
-<!--                <directory>src/main/java</directory>-->
-<!--                <includes>-->
-<!--                    <include>**/*.xml</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--            &lt;!&ndash; 排除resources下的配置文件 &ndash;&gt;-->
-<!--            <resource>-->
-<!--                <filtering>true</filtering>-->
-<!--                <directory>src/main/resources</directory>-->
-<!--                <excludes>-->
-<!--                    <exclude>static/**</exclude>-->
-<!--                    <exclude>templates/**</exclude>-->
-<!--                    <exclude>*.yml</exclude>-->
-<!--                    <exclude>*.properties</exclude>-->
-<!--                    <exclude>*.xml</exclude>-->
-<!--                    <exclude>*.txt</exclude>-->
-<!--                </excludes>-->
-<!--                <targetPath>BOOT-INF/classes/</targetPath>-->
-<!--            </resource>-->
-<!--            &lt;!&ndash; 打包lib下的jar包 &ndash;&gt;-->
-<!--            <resource>-->
-<!--                <directory>lib</directory>-->
-<!--                <targetPath>BOOT-INF/lib/</targetPath>-->
-<!--                <includes>-->
-<!--                    <include>**/*.jar</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--        </resources>-->
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profileActive>prod</profileActive>
+            </properties>
 
-    </build>
+            <build>
+                <plugins>
+                    <!-- maven 打包插件 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <!-- MANIFEST.MF 中 Class-Path 加入前缀 -->
+                                    <classpathPrefix>lib/</classpathPrefix>
+                                    <!-- jar包不包含唯一版本标识 -->
+                                    <useUniqueVersions>false</useUniqueVersions>
+                                    <!-- 指定入口类 -->
+                                    <mainClass>org.jc.backend.BackendApplication</mainClass>
+                                </manifest>
+                            </archive>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </plugin>
+
+                    <!-- 拷贝依赖 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                    <overWriteReleases>true</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                    <overWriteIfNewer>true</overWriteIfNewer>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/jc/backend/config/swagger2/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <useDefaultDelimiters>true</useDefaultDelimiters>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <excludes>
+                            <exclude>**/*</exclude>
+                        </excludes>
+                        <filtering>true</filtering>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>application.yaml</include>
+                            <include>application-prod.yaml</include>
+                            <include>log4j2.yaml</include>
+                            <include>**/*.xml</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+
+            </build>
+
+        </profile>
+    </profiles>
 
 </project>
