@@ -141,13 +141,6 @@
             <version>5.0.0</version>
         </dependency>
 
-        <!-- devtool -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -193,13 +186,23 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
 
+            <dependencies>
+                <!-- devtool -->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-devtools</artifactId>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
                         <configuration>
-                            <mainClass>org.jc.backend.BackendApplication</mainClass>
+                            <useDefaultDelimiters>true</useDefaultDelimiters>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -207,19 +210,20 @@
                 <resources>
                     <resource>
                         <directory>src/main/resources</directory>
-                        <includes>
-                            <include>application.yaml</include>
-                        </includes>
+                        <excludes>
+                            <exclude>**/*</exclude>
+                        </excludes>
                         <filtering>true</filtering>
                     </resource>
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
+                            <include>application.yaml</include>
+                            <include>application-dev.yaml</include>
                             <include>log4j2.yaml</include>
                             <include>**/*.xml</include>
-                            <include>application-dev.yaml</include>
                         </includes>
-                        <filtering>false</filtering>
+                        <filtering>true</filtering>
                     </resource>
                 </resources>
             </build>
@@ -231,6 +235,14 @@
                 <profileActive>prod</profileActive>
             </properties>
 
+            <dependencies>
+                <!-- indexer -->
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context-indexer</artifactId>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <!-- maven 打包插件 -->
