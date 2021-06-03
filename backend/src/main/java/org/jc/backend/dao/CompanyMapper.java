@@ -5,10 +5,12 @@ import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
+import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Indexed
 @Mapper
 @Repository
 public interface CompanyMapper {

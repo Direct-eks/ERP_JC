@@ -6,12 +6,14 @@ import org.jc.backend.entity.BankAccountO;
 import org.jc.backend.service.BankAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Indexed;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Indexed
 @Api(tags = "BankAccount Related")
 @RestController
 @RequestMapping("/bankAccount")

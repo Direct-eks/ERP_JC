@@ -6,10 +6,12 @@ import org.jc.backend.entity.DepartmentO;
 import org.jc.backend.service.DepartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Indexed;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Indexed
 @Api(tags = "Department Related")
 @RestController
 @RequestMapping("/department")

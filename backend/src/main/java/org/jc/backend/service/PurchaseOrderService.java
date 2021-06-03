@@ -1,10 +1,12 @@
 package org.jc.backend.service;
 
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
+import org.springframework.stereotype.Indexed;
 
 import java.util.Date;
 import java.util.List;
 
+@Indexed
 public interface PurchaseOrderService {
     void createOrder(PurchaseOrderEntryWithProductsVO entryWithProducts);
     List<PurchaseOrderEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id);

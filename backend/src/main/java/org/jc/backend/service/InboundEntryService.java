@@ -4,10 +4,12 @@ import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
+import org.springframework.stereotype.Indexed;
 
 import java.util.Date;
 import java.util.List;
 
+@Indexed
 public interface InboundEntryService {
     void createEntry(InboundEntryWithProductsVO entryWithProductsVO);
     List<InboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,

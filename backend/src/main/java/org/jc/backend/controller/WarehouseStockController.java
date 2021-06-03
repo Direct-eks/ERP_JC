@@ -7,10 +7,12 @@ import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Indexed;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Indexed
 @Api(tags = "WarehouseStock Related")
 @RestController
 @RequestMapping("/warehouseStock")

@@ -7,11 +7,13 @@ import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.FactoryBrandService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Indexed;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Indexed
 @Api(tags = "FactoryBrand Related")
 @RestController
 @RequestMapping("/factoryBrand")

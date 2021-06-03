@@ -10,6 +10,7 @@ import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Indexed;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Indexed
 @Api(tags = "MoneyEntry Related")
 @RestController
 @RequestMapping("/moneyEntry")

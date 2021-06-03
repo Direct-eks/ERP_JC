@@ -2,10 +2,12 @@ package org.jc.backend.service;
 
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.MoneyEntryO;
+import org.springframework.stereotype.Indexed;
 
 import java.util.Date;
 import java.util.List;
 
+@Indexed
 public interface MoneyEntryService {
     void createEntry(MoneyEntryO moneyEntryO, boolean isInbound);
     List<MoneyEntryO> getEntriesInDateRange(Date startDate, Date endDate, int companyID,

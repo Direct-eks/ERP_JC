@@ -1,10 +1,12 @@
 package org.jc.backend.service;
 
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
+import org.springframework.stereotype.Indexed;
 
 import java.util.Date;
 import java.util.List;
 
+@Indexed
 public interface ShippingCostEntryService {
     void createEntry(ShippingCostEntryVO shippingCostEntryVO, boolean isInbound);
     List<ShippingCostEntryVO> getEntriesInDateRange(Date startDate, Date endDate, int companyID, boolean isInbound);

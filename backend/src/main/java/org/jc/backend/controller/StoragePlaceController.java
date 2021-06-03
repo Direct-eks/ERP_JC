@@ -6,11 +6,13 @@ import org.jc.backend.entity.StoragePlaceO;
 import org.jc.backend.service.StoragePlaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Indexed;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Indexed
 @Api(tags = "StoragePlace Related")
 @RestController
 @RequestMapping("/storagePlace")

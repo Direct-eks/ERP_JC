@@ -2,10 +2,12 @@ package org.jc.backend.service;
 
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
+import org.springframework.stereotype.Indexed;
 
 import java.util.Date;
 import java.util.List;
 
+@Indexed
 public interface InvoiceEntryService {
     void createEntry(InvoiceEntryStandAloneVO invoiceEntryStandAloneVO, boolean isInbound);
     List<InvoiceEntryStandAloneVO> getEntriesInDateRange(Date startDate, Date endDate, Date invoiceNumberDate,

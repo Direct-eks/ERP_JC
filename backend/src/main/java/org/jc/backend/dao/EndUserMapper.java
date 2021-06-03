@@ -4,10 +4,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.EndUserO.EndUserDO;
 import org.jc.backend.entity.EndUserO.UserPermission;
 import org.jc.backend.entity.EndUserO.UserRole;
+import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Indexed
 @Mapper
 @Repository
 public interface EndUserMapper {

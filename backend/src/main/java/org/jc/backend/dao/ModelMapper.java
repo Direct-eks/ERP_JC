@@ -3,10 +3,12 @@ package org.jc.backend.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
+import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Indexed
 @Mapper
 @Repository
 public interface ModelMapper {
