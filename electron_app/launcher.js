@@ -3,7 +3,9 @@ const http = require('http')
 
 const path = require('path')
 const springBoot = spawn(path.resolve('C:\\ERP_JC\\fulljre11\\bin\\java'),
-    ['-jar', path.resolve('C:\\ERP_JC\\backend-0.0.1-SNAPSHOT.jar')]);
+    ['-Dlog4j.skipJansi=false', '-XX:TieredStopAtLevel=1', '-noverify',
+        '-Dspring.jmx.enabled=false', '-jar',
+        path.resolve('C:\\ERP_JC\\backend-0.0.1-SNAPSHOT.jar')]);
 
 let applicationStarted = false
 

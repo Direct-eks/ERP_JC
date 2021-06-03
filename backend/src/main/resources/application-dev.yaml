@@ -20,6 +20,8 @@ management:
       show-details: always
 
 spring:
+  main:
+    lazy-initialization: false
   lifecycle:
     timeout-per-shutdown-phase: 1s
   datasource:
