@@ -17,4 +17,5 @@ public interface SkuService {
 
     void createNewSkus(List<ModelO> models, int[] brandIDs);
     void updateSku(int modelID, ListUpdateVO<SkuFullO> updateVO);
+    void updateSkuBulk(int[] modelIDs, int[] brandIDs);
 }

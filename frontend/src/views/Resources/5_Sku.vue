@@ -5,6 +5,16 @@
         <v-card-title class="d-flex">
             商品型号明细
             <v-spacer></v-spacer>
+            <v-radio-group v-model="choiceType"
+                           hide-details="auto"
+                           class="mt-0"
+                           row dense
+                           @change="modelTableCurrentRow = []; multiSkus = [];
+                                    skuTableData = []; skuTableCurrentRow = [];">
+                <v-radio label="单选" value="single"></v-radio>
+                <v-radio label="多选" value="multi"></v-radio>
+            </v-radio-group>
+            <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/resources">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
@@ -40,7 +50,7 @@
                                   calculate-widths
                                   disable-sort
                                   disable-pagination
-                                  :single-select="isSingleSelect"
+                                  :single-select="choiceType === 'single'"
                                   show-select
                                   fixed-header
                                   locale="zh-cn"
@@ -175,7 +185,7 @@ export default {
     data() {
         return {
             mdiArrowLeft,
-            isSingleSelect: true,
+            choiceType: 'single',
 
             treeData: [],
             treeLevelID: -1,
@@ -225,7 +235,10 @@ export default {
             }
         },
         modelTableChoose(row) {
-            if (!this.isSingleSelect) {
+            this.skuTableData = []
+            this.skuTableCurrentRow = []
+
+            if (this.choiceType === 'multi') {
                 if (this.modelTableCurrentRow.indexOf(row) !== -1) {
                     this.modelTableCurrentRow.splice(this.modelTableCurrentRow.indexOf(row), 1)
                 }
@@ -236,9 +249,6 @@ export default {
             }
 
             this.modelTableCurrentRow = [row]
-            this.skuTableData = []
-            this.skuTableCurrentRow = []
-
             this.$getRequest(this.$api.fullSkuByModel +
                 encodeURI(row.modelID)).then((data) => {
                 console.log('received', data)
@@ -246,8 +256,11 @@ export default {
             }).catch(() => {})
         },
         modelTableChoose2(row) {
+            this.skuTableData = []
+            this.skuTableCurrentRow = []
+
             if (!row.value) {
-                this.modelTableCurrentRow.splice(this.modelTableCurrentRow.indexOf(row), 1)
+                this.modelTableCurrentRow.splice(this.modelTableCurrentRow.indexOf(row.item), 1)
             }
             else {
                 this.modelTableCurrentRow.push(row.item)
@@ -263,7 +276,7 @@ export default {
         },
         skuTableChoose2(row) {
             if (!row.value) {
-                this.skuTableCurrentRow.splice(this.skuTableCurrentRow.indexOf(row), 1)
+                this.skuTableCurrentRow.splice(this.skuTableCurrentRow.indexOf(row.item), 1)
             }
             else {
                 this.skuTableCurrentRow.push(row.item)
@@ -279,14 +292,13 @@ export default {
         },
         brandTableChoose2(row) {
             if (!row.value) {
-                this.brandTableCurrentRow.splice(this.brandTableCurrentRow.indexOf(row), 1)
+                this.brandTableCurrentRow.splice(this.brandTableCurrentRow.indexOf(row.item), 1)
             }
             else {
                 this.brandTableCurrentRow.push(row.item)
             }
         },
         addBrands() {
-            if (this.skuTableData.length === 0) return
             if (this.brandTableCurrentRow.length === 0) return
 
             for (const brand of this.brandTableCurrentRow) {
@@ -330,7 +342,34 @@ export default {
             this.skuTableCurrentRow[0].factoryCode = this.brandTableCurrentRow[0].code
         },
         saveChanges() {
+            if (this.choiceType === 'single') {
+                this.$postRequest(this.$api.updateSku, {
+                    elements: this.skuTableData
+                }, {
+                    modelID: this.modelTableCurrentRow[0].modelID
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '保存成功', color: 'success'
+                    })
+                }).catch(() => {})
+            }
+            else {
+                if (this.modelTableCurrentRow.length === 0) return
+                let modelIDArray = "" + this.modelTableCurrentRow[0].modelID
+                this.modelTableCurrentRow.forEach(value => {
+                    modelIDArray += "," + value.modelID
+                })
 
+                this.$postRequest(this.$api.updateSkuBulk, {
+                    elements: this.skuTableData
+                }, {
+                    modelIDs: modelIDArray
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '保存成功', color: 'success'
+                    })
+                }).catch(() => {})
+            }
         }
     }
 }

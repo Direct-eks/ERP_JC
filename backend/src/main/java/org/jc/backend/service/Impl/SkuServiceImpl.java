@@ -132,4 +132,28 @@ public class SkuServiceImpl implements SkuService {
             throw e;
         }
     }
+
+    @Transactional
+    @Override
+    public void updateSkuBulk(int[] modelIDs, int[] brandIDs) {
+        try {
+            SkuFullO sku = new SkuFullO();
+            for (var modelID : modelIDs) {
+                sku.setModelID(modelID);
+                List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);
+
+                for (var brandID : brandIDs) {
+                    sku.setFactoryBrandID(brandID);
+                    if (oldSkus.stream().noneMatch(s -> s.getFactoryBrandID() == brandID)) {
+                        skuMapper.insertSku(sku);
+                    }
+                }
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
 }

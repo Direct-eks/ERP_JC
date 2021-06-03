@@ -127,6 +127,8 @@ const api = {
     fullSkuByModel: '/sku/getFullSkuByModel/', // GET {id}
     skuByCategoryAndFactoryBrand: '/sku/getSkusByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
     modifySkuPricing: '/sku/modifySkuPricing', // POST
+    updateSku: '/sku/updateSku', // POST
+    updateSkuBulk: '/sku/updateSkuBulk', // POST
 
     /* ------ /supplier ------*/
     allSuppliers: '/supplier/getAllSuppliers', // GET
