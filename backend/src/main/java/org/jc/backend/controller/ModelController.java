@@ -2,6 +2,8 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
@@ -70,6 +72,7 @@ public class ModelController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("system:models")
     @PostMapping("/updateModelsWithCategory")
     public void updateModelsWithCategory(
             @RequestParam("categoryID") int categoryID,
@@ -101,6 +104,7 @@ public class ModelController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresRoles("admin")
     @GetMapping("/exportAllModels")
     public void exportAllModels(HttpServletResponse response) {
         logger.info("GET Request to /model/exportAllModels");

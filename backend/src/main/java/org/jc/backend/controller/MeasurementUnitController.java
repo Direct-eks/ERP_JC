@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.entity.MeasurementUnitO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.MeasurementUnitService;
@@ -38,6 +39,7 @@ public class MeasurementUnitController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("system:measurementUnits")
     @PostMapping("/updateUnits")
     public void updateUnits(@RequestBody @Validated ListUpdateVO<MeasurementUnitO> updateVO) {
         logger.info("PATCH Request to /unit/updateUnits, info {}", updateVO);

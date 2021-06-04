@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.entity.SkuO;
@@ -60,6 +61,7 @@ public class SkuController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("system:sku")
     @PostMapping("/updateSku")
     public void updateSku(
             @RequestParam("modelID") int modelID,
@@ -71,6 +73,7 @@ public class SkuController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("system:sku")
     @PostMapping("/updateSkuBulk")
     public void updateSkuBulk(
             @RequestParam("modelIDs") String modelIDs,

@@ -2,6 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.entity.FactoryBrandO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.FactoryBrandService;
@@ -38,6 +39,7 @@ public class FactoryBrandController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("system:factoryBrands")
     @PostMapping("/updateAllFactoryBrands")
     public void updateAllBrands(@RequestBody @Validated ListUpdateVO<FactoryBrandO> updateVO) {
         logger.info("Post Request to /factoryBrand/updateAllFactoryBrands, info {}", updateVO);
