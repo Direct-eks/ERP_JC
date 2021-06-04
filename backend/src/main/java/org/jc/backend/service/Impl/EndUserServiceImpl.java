@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EndUserServiceImpl implements EndUserService {
@@ -181,14 +182,10 @@ public class EndUserServiceImpl implements EndUserService {
             String oldUserRole = endUserMapper.queryRoleByUserId(id);
             String newUserRole = endUserVO.getRole();
             if (!oldUserRole.equals(newUserRole)) {
-                int roleID = -1;
-                for (var r : allRoles) {
-                    if (r.getRole().equals(newUserRole)) {
-                        roleID = r.getRoleID();
-                        break;
-                    }
-                }
-                if (roleID == -1) throw new PersistenceException();
+                int roleID = allRoles.stream()
+                        .filter(r -> r.getRole().equals(newUserRole))
+                        .collect(Collectors.toList())
+                        .get(0).getRoleID();
                 endUserMapper.updateUserRole(id, roleID);
             }
 
@@ -200,14 +197,10 @@ public class EndUserServiceImpl implements EndUserService {
             List<String> tempNewPermissions = new ArrayList<>(newUserPermissions);
             tempNewPermissions.removeAll(oldUserPermissions);
             for (var p : tempNewPermissions) {
-                int permissionID = -1;
-                for (var per : allPermissions) {
-                    if (per.getPermission().equals(p)) {
-                        permissionID = per.getPermissionID();
-                        break;
-                    }
-                }
-                if (permissionID == -1) throw new PersistenceException();
+                int permissionID = allPermissions.stream()
+                        .filter(per -> per.getPermission().equals(p))
+                        .collect(Collectors.toList())
+                        .get(0).getPermissionID();
                 endUserMapper.insertUserPermission(id, permissionID);
             }
 
@@ -215,14 +208,10 @@ public class EndUserServiceImpl implements EndUserService {
             List<String> tempOldPermissions = new ArrayList<>(oldUserPermissions);
             tempOldPermissions.removeAll(newUserPermissions);
             for (var p : tempOldPermissions) {
-                int permissionID = -1;
-                for (var per : allPermissions) {
-                    if (per.getPermission().equals(p)) {
-                        permissionID = per.getPermissionID();
-                        break;
-                    }
-                }
-                if (permissionID == -1) throw new PersistenceException();
+                int permissionID = allPermissions.stream()
+                        .filter(per -> per.getPermission().equals(p))
+                        .collect(Collectors.toList())
+                        .get(0).getPermissionID();
                 endUserMapper.deleteUserPermission(id, permissionID);
             }
 
