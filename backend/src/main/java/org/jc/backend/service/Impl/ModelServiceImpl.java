@@ -84,7 +84,6 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public void updateModelsWithCategory(int categoryID, int[] brands, ListUpdateVO<ModelO> updateVO) {
         try {
-            List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
             List<ModelO> tempModels = new ArrayList<>(updateVO.getElements());
 
             // check for added
@@ -104,6 +103,7 @@ public class ModelServiceImpl implements ModelService {
             }
 
             // todo remove
+            List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

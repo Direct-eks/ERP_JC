@@ -5,6 +5,7 @@ import org.jc.backend.dao.SkuMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.SkuFullO;
+import org.jc.backend.entity.SkuO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
@@ -89,7 +90,7 @@ public class SkuServiceImpl implements SkuService {
     public void createNewSkus(List<ModelO> models, int[] brandIDs) {
         try {
             for (var model : models) {
-                SkuFullO sku = new SkuFullO();
+                SkuO sku = new SkuO();
                 sku.setModelID(model.getModelID());
                 for (var brand : brandIDs) {
                     sku.setFactoryBrandID(brand);
@@ -106,10 +107,9 @@ public class SkuServiceImpl implements SkuService {
 
     @Transactional
     @Override
-    public void updateSku(int modelID, ListUpdateVO<SkuFullO> updateVO) {
+    public void updateSku(int modelID, ListUpdateVO<SkuO> updateVO) {
         try {
-            List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);
-            List<SkuFullO> tempSkus = new ArrayList<>(updateVO.getElements());
+            List<SkuO> tempSkus = new ArrayList<>(updateVO.getElements());
 
             // check for added
             tempSkus.removeIf(s -> s.getSkuID() >= 0);
@@ -125,6 +125,7 @@ public class SkuServiceImpl implements SkuService {
             }
 
             // todo remove
+            List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -137,7 +138,7 @@ public class SkuServiceImpl implements SkuService {
     @Override
     public void updateSkuBulk(int[] modelIDs, int[] brandIDs) {
         try {
-            SkuFullO sku = new SkuFullO();
+            SkuO sku = new SkuO();
             for (var modelID : modelIDs) {
                 sku.setModelID(modelID);
                 List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);

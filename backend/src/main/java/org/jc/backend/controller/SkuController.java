@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.SkuFullO;
+import org.jc.backend.entity.SkuO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class SkuController {
     @PostMapping("/updateSku")
     public void updateSku(
             @RequestParam("modelID") int modelID,
-            @Validated @RequestBody ListUpdateVO<SkuFullO> updateVO
+            @Validated @RequestBody ListUpdateVO<SkuO> updateVO
     ) {
         logger.info("POST Request to /sku/updateSku, modelID: {}, info {}", modelID, updateVO);
 
@@ -73,7 +74,7 @@ public class SkuController {
     @PostMapping("/updateSkuBulk")
     public void updateSkuBulk(
             @RequestParam("modelIDs") String modelIDs,
-            @Validated @RequestBody ListUpdateVO<SkuFullO> updateVO
+            @Validated @RequestBody ListUpdateVO<SkuO> updateVO
     ) throws GlobalParamException {
         logger.info("POST Request to /sku/updateSkuBulk, ");
 

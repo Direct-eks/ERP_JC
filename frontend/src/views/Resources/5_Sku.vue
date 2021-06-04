@@ -313,22 +313,8 @@ export default {
                     this.skuTableData.push({
                         skuID: this.newItemIndex--,
                         factoryBrandID: brand.factoryBrandID,
-                        factoryCode: brand.code,
                         modelID: this.modelTableCurrentRow[0].modelID,
                         unitID: this.modelTableCurrentRow[0].unitID,
-                        stockQuantity: 0,
-                        remark: '',
-                        recordFactoryStock: '',
-                        factoryPriceWithoutTax: '0',
-                        factoryPriceWithTax: '0',
-                        settlementPriceWithoutTax: '0',
-                        priceBaseReference: '',
-                        wholesalePriceDiscount: '0',
-                        wholesalePrice: '0',
-                        retailPriceDiscount: '0',
-                        retailPrice: '0',
-                        stockLowerLimit: -1,
-                        stockUpperLimit: -1,
                     })
                 }
             }

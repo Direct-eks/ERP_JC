@@ -2,6 +2,7 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.SkuFullO;
+import org.jc.backend.entity.SkuO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,6 @@ public interface SkuMapper {
 
     void updateSkuPricing(SkuFullO skuFullO);
 
-    void insertSku(SkuFullO skuFullO);
-    void updateSku(SkuFullO skuFullO);
+    void insertSku(SkuO skuO);
+    void updateSku(SkuO skuO);
 }
