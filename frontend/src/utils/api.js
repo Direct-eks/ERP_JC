@@ -141,6 +141,7 @@ const api = {
 
     /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',
+    updateWarehouses: '/warehouse/updateWarehouses',
 
     /* ------ /warehouseStock ------*/
     warehouseStockBySKu: '/warehouseStock/getWarehouseStocksBySku/', // GET {id}

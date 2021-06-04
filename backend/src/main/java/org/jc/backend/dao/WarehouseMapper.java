@@ -12,4 +12,7 @@ import java.util.List;
 @Repository
 public interface WarehouseMapper {
     List<WarehouseO> queryWarehouses();
+
+    void insertWarehouse(WarehouseO warehouseO);
+    void updateWarehouse(WarehouseO warehouseO);
 }

@@ -16,4 +16,18 @@
         from w_warehouse
     </select>
 
+    <insert id="insertWarehouse" useGeneratedKeys="true"
+        keyProperty="warehouseID" keyColumn="warehouse_id">
+        insert into w_warehouse(name, location, is_default)
+        values (#{name}, #{location}, #{isDefault})
+    </insert>
+
+    <update id="updateWarehouse">
+        update w_warehouse
+        set name = #{name},
+            location = #{location},
+            is_default = #{isDefault}
+        where warehouse_id = #{warehouseID}
+    </update>
+
 </mapper>
