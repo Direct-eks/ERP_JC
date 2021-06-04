@@ -560,86 +560,93 @@ const routes = [
         ]
     },
     {
-        path: '/maintenance',
-        name: '维护',
-        component: () => import('../views/10_Page_maintenance')
-    },
-    {
         path: '/resources',
         name: '资源录入',
-        component: () => import('../views/11_Page_resources'),
+        component: () => import('../views/10_Page_resources'),
         children: [
             {
                 path: 'supplier_resources',
                 name: '供货商资源',
                 component: () => import('../views/Resources/1_Supplier_Resources'),
             },
+        ]
+    },
+    {
+        path: '/system',
+        name: '系统标准',
+        component: () => import('../views/11_Page_system'),
+        children: [
             {
                 path: 'product_categories',
                 name: '商品分类',
-                component: () => import('../views/Resources/2_Product_Categories'),
+                component: () => import('../views/System/1_Product_Categories'),
             },
             {
                 path: 'models',
                 name: '商品型号',
-                component: () => import('../views/Resources/3_Models'),
+                component: () => import('../views/System/2_Models'),
             },
             {
                 path: 'factory_brands',
                 name: '生产厂',
-                component: () => import('../views/Resources/4_Factory_Brands'),
+                component: () => import('../views/System/3_Factory_Brands'),
             },
             {
                 path: 'sku',
                 name: '商品型号明细',
-                component: () => import('../views/Resources/5_Sku'),
+                component: () => import('../views/System/4_Sku'),
             },
             {
                 path: 'partner_company_categories',
                 name: '往来单位区划',
-                component: () => import('../views/Resources/6_Partner_Company_Categories'),
+                component: () => import('../views/System/5_Partner_Company_Categories'),
             },
             {
                 path: 'partner_companies',
                 name: '往来单位',
-                component: () => import('../views/Resources/7_Partner_Companies'),
+                component: () => import('../views/System/6_Partner_Companies'),
             },
             {
                 path: 'staff',
                 name: '系统及人员信息',
-                component: () => import('../views/Resources/8_Staff'),
+                component: () => import('../views/System/7_Staff'),
             },
             {
                 path: 'relevant_company_categories',
                 name: '相关单位分类',
-                component: () => import('../views/Resources/9_Relevant_Company_Categories'),
+                component: () => import('../views/System/8_Relevant_Company_Categories'),
             },
             {
                 path: 'relevant_companies',
                 name: '相关单位',
-                component: () => import('../views/Resources/10_Relevant_Companies'),
+                component: () => import('../views/System/9_Relevant_Companies'),
             },
             {
                 path: 'measurement_units',
                 name: '仓库/计量单位',
-                component: () => import('../views/Resources/11_Measurement_Units'),
+                component: () => import('../views/System/10_Measurement_Units'),
             },
             {
                 path: 'fees',
                 name: '费用收入类别',
-                component: () => import('../views/Resources/12_Fees'),
+                component: () => import('../views/System/11_Fees'),
             },
         ]
     },
     {
+        path: '/maintenance',
+        name: '系统维护',
+        component: () => import('../views/12_Page_maintenance')
+    },
+    {
         path: '/accessibility',
         name: '辅助功能',
-        component: () => import('../views/12_Page_accessibility')
+        component: () => import('../views/13_Page_accessibility')
     },
     {
         path: '/help',
         name: '帮助',
-        component: () => import('../views/13_Page_help')
+        component: () => import('../views/14_Page_help')
     },
 
     //Redirect to Home

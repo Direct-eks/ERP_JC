@@ -14,7 +14,7 @@
                 保存修改
             </v-btn>
             <v-btn color="accent"
-                   to="/resources">
+                   to="/system">
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
                 返回
             </v-btn>
@@ -114,7 +114,7 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
-                this.$router.replace('/resources')
+                this.$router.replace('/system')
             }).catch(() => {})
         }
     }

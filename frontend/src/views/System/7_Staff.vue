@@ -10,7 +10,7 @@
                 新增用户
             </v-btn>
             <v-btn color="accent"
-                   to="/resources">
+                   to="/system">
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
                 返回
             </v-btn>
@@ -202,7 +202,19 @@
                         <v-tab-item key="resources">
                             <v-row class="ml-10">
                                 <v-col cols="auto">
-                                    <v-checkbox v-model="form.permissions" label="" value=""/>
+                                    <v-checkbox v-model="form.permissions" label="商品分类" value="system:productCategories"/>
+                                    <v-checkbox v-model="form.permissions" label="商品型号" value="system:models"/>
+                                    <v-checkbox v-model="form.permissions" label="生产厂" value="system:factoryBrands"/>
+                                    <v-checkbox v-model="form.permissions" label="商品型号明细" value="system:sku"/>
+                                    <v-checkbox v-model="form.permissions" label="往来单位区划" value="system:partnerCompanyCategories"/>
+                                    <v-checkbox v-model="form.permissions" label="往来单位" value="system:partnerCompanies"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="系统及人员信息" value="system:staff"/>
+                                    <v-checkbox v-model="form.permissions" label="相关单位分类" value="system:relevantCompanyCategories"/>
+                                    <v-checkbox v-model="form.permissions" label="相关单位" value="system:relevantCompanies"/>
+                                    <v-checkbox v-model="form.permissions" label="仓库/计量单位" value="system:measurementUnits"/>
+                                    <v-checkbox v-model="form.permissions" label="费用收入类别" value="system:fees"/>
                                 </v-col>
                             </v-row>
                         </v-tab-item>
@@ -307,7 +319,7 @@ export default {
                         })
                     }).catch(() => {})
                 }
-                this.$router.replace('/resources')
+                this.$router.replace('/system')
                 return
             }
             if (this.$refs.form.validate()) {
@@ -325,7 +337,7 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '删除成功', color: 'success'
                 })
-                this.$router.replace('/resources')
+                this.$router.replace('/system')
             }).catch(() => {})
         },
     }

@@ -6,7 +6,7 @@
             相关单位分类
             <v-spacer></v-spacer>
             <v-btn color="accent"
-                   to="/resources">
+                   to="/system">
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
                 返回
             </v-btn>

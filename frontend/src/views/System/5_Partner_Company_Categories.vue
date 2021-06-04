@@ -1,12 +1,12 @@
 <template>
     <!--  <p>资源录入</p>-->
-    <!--  <p>商品分类</p>-->
+    <!--  <p>往来单位区划</p>-->
     <v-card>
         <v-card-title class="d-flex">
-            商品分类
+            往来单位区划
             <v-spacer></v-spacer>
             <v-btn color="accent"
-                   to="/resources">
+                   to="/system">
                 <v-icon>{{ mdiArrowLeftPath }}</v-icon>
                 返回
             </v-btn>
@@ -21,7 +21,7 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "ProductCategories",
+    name: "PartnerCompanyCategories",
     data() {
         return {
             mdiArrowLeftPath: mdiArrowLeft,

@@ -41,6 +41,10 @@ export default {
             url: '/resources',
         },
         {
+            name: '系统标准',
+            url: '/system',
+        },
+        {
             name: '系统维护',
             url: '/maintenance',
         },
@@ -751,60 +755,73 @@ export default {
             url: '/resources/supplier_resources',
             color: '#7FFFD4'
         },
+    ],
+    system_nav: [
         {
             name: '商品分类',
-            url: '/resources/product_categories',
-            color: '#A6CAF0'
+            url: '/system/product_categories',
+            color: '#A6CAF0',
+            requiredPermission: 'system:productCategories',
         },
         {
             name: '商品型号',
-            url: '/resources/models',
-            color: '#A6CAF0'
+            url: '/system/models',
+            color: '#A6CAF0',
+            requiredPermission: 'system:models',
         },
         {
             name: '生产厂',
-            url: '/resources/factory_brands',
-            color: '#A6CAF0'
+            url: '/system/factory_brands',
+            color: '#A6CAF0',
+            requiredPermission: 'system:factoryBrands',
         },
         {
             name: '商品型号明细',
-            url: '/resources/sku',
-            color: '#A6CAF0'
+            url: '/system/sku',
+            color: '#A6CAF0',
+            requiredPermission: 'system:sku',
         },
         {
             name: '往来单位区划',
-            url: '/resources/partner_company_categories',
-            color: '#C0DCC0'
+            url: '/system/partner_company_categories',
+            color: '#C0DCC0',
+            requiredPermission: 'system:partnerCompanyCategories',
         },
         {
             name: '往来单位',
-            url: '/resources/partner_companies',
-            color: '#C0DCC0'
+            url: '/system/partner_companies',
+            color: '#C0DCC0',
+            requiredPermission: 'system:partnerCompanies',
         },
         {
             name: '系统及人员信息',
-            url: '/resources/staff',
-            color: '#FF00FF'
+            url: '/system/staff',
+            color: '#FF00FF',
+            requiredPermission: 'system:staff',
         },
         {
             name: '相关单位分类',
-            url: '/resources/relevant_company_categories',
-            color: '#FFFF00'
+            url: '/system/relevant_company_categories',
+            color: '#FFFF00',
+            requiredPermission: 'system:relevantCompanyCategories',
         },
         {
             name: '相关单位',
-            url: '/resources/relevant_companies',
-            color: '#FFFF00'
+            url: '/system/relevant_companies',
+            color: '#FFFF00',
+            requiredPermission: 'system:relevantCompanies',
         },
         {
             name: '仓库/计量单位',
-            url: '/resources/measurement_units',
-            color: '#00FF00'
+            url: '/system/measurement_units',
+            color: '#00FF00',
+            requiredPermission: 'system:measurementUnits',
         },
         {
             name: '费用收入类别',
-            url: '/resources/fees',
-            color: '#00FFFF'
+            url: '/system/fees',
+            color: '#00FFFF',
+            requiredPermission: 'system:fees',
         },
     ],
     maintenance_nav: [

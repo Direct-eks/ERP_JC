@@ -16,7 +16,7 @@
             </v-radio-group>
             <v-spacer></v-spacer>
             <v-btn color="accent"
-                   to="/resources">
+                   to="/system">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>

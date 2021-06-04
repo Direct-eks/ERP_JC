@@ -8,25 +8,25 @@ export default {
         },
         {
             name: '商品分类',
-            url: '/resources/product_categories',
+            url: '/system/product_categories',
             helpContent: [
             ]
         },
         {
             name: '商品型号',
-            url: '/resources/models',
+            url: '/system/models',
             helpContent: [
             ]
         },
         {
             name: '生产厂',
-            url: '/resources/factory_brands',
+            url: '/system/factory_brands',
             helpContent: [
             ]
         },
         {
             name: '商品型号明细',
-            url: '/resources/sku',
+            url: '/system/sku',
             helpContent: [
                 '界面分为左中右三个表格（不算最左侧的分类选择）',
                 '1. 在选择完型号后，中间表格会出现现有的此型号的所有厂牌',
@@ -43,43 +43,43 @@ export default {
         },
         {
             name: '往来单位区划',
-            url: '/resources/partner_company_categories',
+            url: '/system/partner_company_categories',
             helpContent: [
             ]
         },
         {
             name: '往来单位',
-            url: '/resources/partner_companies',
+            url: '/system/partner_companies',
             helpContent: [
             ]
         },
         {
             name: '系统及人员信息',
-            url: '/resources/staff',
+            url: '/system/staff',
             helpContent: [
             ]
         },
         {
             name: '相关单位分类',
-            url: '/resources/relevant_company_categories',
+            url: '/system/relevant_company_categories',
             helpContent: [
             ]
         },
         {
             name: '相关单位',
-            url: '/resources/relevant_companies',
+            url: '/system/relevant_companies',
             helpContent: [
             ]
         },
         {
             name: '仓库/计量单位',
-            url: '/resources/measurement_units',
+            url: '/system/measurement_units',
             helpContent: [
             ]
         },
         {
             name: '费用收入类别',
-            url: '/resources/fees',
+            url: '/system/fees',
             helpContent: [
             ]
         },
