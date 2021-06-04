@@ -1,5 +1,5 @@
 <template>
-    <!--  <p>资源录入</p>-->
+    <!--  <p>系统标准</p>-->
     <!--  <p>生产厂</p>-->
     <v-card>
         <v-card-title class="d-flex">
@@ -100,7 +100,12 @@ export default {
             ],
             currentRow: [],
             tableData: [],
-            newRowIndex: -1
+            newRowIndex: -1,
+
+            isDefaultOptions: [
+                {option: '是', value: 0},
+                {option: '否', value: 1}
+            ]
         }
     },
     methods: {

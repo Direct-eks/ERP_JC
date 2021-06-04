@@ -1,5 +1,5 @@
 <template>
-    <!--  <p>资源录入</p>-->
+    <!--  <p>系统标准</p>-->
     <!--  <p>系统及人员信息</p>-->
     <v-card>
         <v-card-title class="d-flex">
@@ -208,12 +208,14 @@
                                     <v-checkbox v-model="form.permissions" label="商品型号明细" value="system:sku"/>
                                     <v-checkbox v-model="form.permissions" label="往来单位区划" value="system:partnerCompanyCategories"/>
                                     <v-checkbox v-model="form.permissions" label="往来单位" value="system:partnerCompanies"/>
+                                    <v-checkbox v-model="form.permissions" label="系统及人员信息" value="system:staff"/>
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-checkbox v-model="form.permissions" label="系统及人员信息" value="system:staff"/>
                                     <v-checkbox v-model="form.permissions" label="相关单位分类" value="system:relevantCompanyCategories"/>
                                     <v-checkbox v-model="form.permissions" label="相关单位" value="system:relevantCompanies"/>
-                                    <v-checkbox v-model="form.permissions" label="仓库/计量单位" value="system:measurementUnits"/>
+                                    <v-checkbox v-model="form.permissions" label="计量单位" value="system:measurementUnits"/>
+                                    <v-checkbox v-model="form.permissions" label="仓库" value="system:warehouses"/>
+                                    <v-checkbox v-model="form.permissions" label="部门" value="system:departments"/>
                                     <v-checkbox v-model="form.permissions" label="费用收入类别" value="system:fees"/>
                                 </v-col>
                             </v-row>

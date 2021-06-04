@@ -1,5 +1,5 @@
 <template>
-    <!--  <p>资源录入</p>-->
+    <!--  <p>系统标准</p>-->
     <!--  <p>商品分类</p>-->
     <v-card>
         <v-card-title class="d-flex">

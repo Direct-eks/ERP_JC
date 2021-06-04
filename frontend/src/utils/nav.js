@@ -812,10 +812,22 @@ export default {
             requiredPermission: 'system:relevantCompanies',
         },
         {
-            name: '仓库/计量单位',
+            name: '计量单位',
             url: '/system/measurement_units',
             color: '#00FF00',
             requiredPermission: 'system:measurementUnits',
+        },
+        {
+            name: '仓库',
+            url: '/system/warehouses',
+            color: '#00FF00',
+            requiredPermission: 'system:warehouses'
+        },
+        {
+            name: '部门',
+            url: '/system/departments',
+            color: '#00FF00',
+            requiredPermission: 'system:departments'
         },
         {
             name: '费用收入类别',

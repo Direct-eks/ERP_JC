@@ -623,13 +623,23 @@ const routes = [
             },
             {
                 path: 'measurement_units',
-                name: '仓库/计量单位',
+                name: '计量单位',
                 component: () => import('../views/System/10_Measurement_Units'),
+            },
+            {
+                path: 'warehouses',
+                name: '仓库',
+                component: () => import('../views/System/11_Warehouses'),
+            },
+            {
+                path: 'departments',
+                name: '部门',
+                component: () => import('../views/System/12_Departments'),
             },
             {
                 path: 'fees',
                 name: '费用收入类别',
-                component: () => import('../views/System/11_Fees'),
+                component: () => import('../views/System/13_Fees'),
             },
         ]
     },

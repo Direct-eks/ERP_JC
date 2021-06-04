@@ -1,9 +1,9 @@
 <template>
-    <!--  <p>资源录入</p>-->
-    <!--  <p>仓库/计量单位</p>-->
+    <!--  <p>系统标准</p>-->
+    <!--  <p>计量单位</p>-->
     <v-card>
         <v-card-title class="d-flex">
-            仓库/计量单位
+            计量单位
             <v-spacer></v-spacer>
             <v-btn class="mr-3" color="primary"
                    @click="newRow">
@@ -15,7 +15,7 @@
             </v-btn>
             <v-btn color="accent"
                    to="/system">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
         </v-card-title>
@@ -76,7 +76,7 @@ export default {
     },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
 
             headers: [
                 { text: '序号', value: 'index', width: '70px' },
