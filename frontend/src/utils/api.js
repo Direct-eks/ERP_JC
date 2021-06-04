@@ -34,6 +34,7 @@ const api = {
 
     /* ------ /department ------*/
     departmentOptions: '/department/getDepartmentOptions', // GET
+    updateDepartments: '/department/updateDepartments',
 
     /* ------ /factoryBrand ------*/
     allFactoryBrands: '/factoryBrand/allFactoryBrands', // GET

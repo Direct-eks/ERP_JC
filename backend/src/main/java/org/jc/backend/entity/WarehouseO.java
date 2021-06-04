@@ -20,7 +20,6 @@ public class WarehouseO {
     private String name;
 
     @NotNull(message = "location null error")
-    @NotBlank(message = "location blank error")
     private String location;
 
     @NotNull(message = "isDefault option null error")

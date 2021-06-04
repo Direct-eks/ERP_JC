@@ -16,4 +16,18 @@
         from e_department
     </select>
 
+    <insert id="insertDepartment" useGeneratedKeys="true"
+        keyProperty="departmentID" keyColumn="department_id">
+        insert into e_department(name, remark, is_default)
+        values (#{name}, #{remark}, #{isDefault})
+    </insert>
+
+    <update id="updateDepartment">
+        update e_department
+        set name = #{name},
+            remark = #{remark},
+            is_default = #{isDefault}
+        where department_id = #{departmentID}
+    </update>
+
 </mapper>

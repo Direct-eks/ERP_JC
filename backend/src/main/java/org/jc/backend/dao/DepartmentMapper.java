@@ -12,4 +12,7 @@ import java.util.List;
 @Repository
 public interface DepartmentMapper {
     List<DepartmentO> queryDepartments();
+
+    void insertDepartment(DepartmentO departmentO);
+    void updateDepartment(DepartmentO departmentO);
 }

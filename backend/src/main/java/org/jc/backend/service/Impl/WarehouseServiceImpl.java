@@ -62,7 +62,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
+            logger.error("update failed");
             throw e;
         }
     }
