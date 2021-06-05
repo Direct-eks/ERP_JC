@@ -20,6 +20,12 @@ public interface CompanyMapper {
 
     CompanyO querySelfCompany();
 
+    void insertCompany(CompanyO companyO);
+    void updateCompany(CompanyO companyO);
+
     List<RelevantCompanyCategoryO> queryRelevantCompanyCategories();
     List<RelevantCompanyO> queryRelevantCompaniesByCategory(int id);
+
+    void insertRelevantCompany(RelevantCompanyO companyO);
+    void updateRelevantCompany(RelevantCompanyO companyO);
 }

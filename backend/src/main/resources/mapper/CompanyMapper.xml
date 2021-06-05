@@ -72,6 +72,40 @@
         where partner_company_id = 1
     </select>
 
+    <insert id="insertCompany" useGeneratedKeys="true"
+        keyProperty="companyID" keyColumn="partner_company_id">
+        insert into c_partner_company(
+            sequence_number, brand_code, abbreviated_name, area_id, phone, address,
+            fax, classification, full_name, contact_person, contact_number, remark,
+            is_active, zipcode, email, website
+        )
+        values (#{sequenceNumber}, #{brandCode}, #{abbreviatedName}, #{areaID},
+                #{phone}, #{address}, #{fax}, #{classification}, #{fullName},
+                #{contactPerson}, #{contactNumber}, #{remark}, #{isActive},
+                #{zipcode}, #{email}, #{website})
+    </insert>
+
+    <update id="updateCompany">
+        update c_partner_company
+        set sequence_number = #{sequeceNumber},
+            brand_code = #{brandCode},
+            abbreviated_name = ${abbreviatedName},
+            area_id = ${areaID},
+            phone = #{phone},
+            address = #{address},
+            fax = ${fax},
+            classification = ${classification},
+            full_name = ${fullName},
+            contact_person = #{contactPerson},
+            contact_number = #{contactNumber},
+            remark = ${remark},
+            is_active = ${isActive},
+            zipcode = ${zipcode},
+            email = ${email},
+            website = ${website}
+        where partner_company_id = ${companyID}
+    </update>
+
 
     <resultMap id="RelevantCompanyResultMap" type="org.jc.backend.entity.RelevantCompanyO">
         <result property="companyID" column="relevant_company_id" />
@@ -107,5 +141,34 @@
         from c_relevant_company
         where category_id = #{id}
     </select>
-    
+
+    <insert id="insertRelevantCompany" useGeneratedKeys="true"
+        keyProperty="companyID" keyColumn="relevant_company_id">
+        insert into c_relevant_company(
+            abbreviated_name, full_name, phone, contact_person,
+            contact_number, address, fax, zipcode, email, website,
+            category_id, remark
+        )
+        values (#{abbreviatedName}, #{fullName}, #{phone}, #{contactPerson},
+                #{contactNumber}, #{address}, #{fax}, #{zipcode},
+                #{email}, #{website}, #{categoryID}, #{remark})
+    </insert>
+
+    <update id="updateRelevantCompany">
+        update c_relevant_company
+        set abbreviated_name = #{abbreviatedName},
+            full_name = #{fullName},
+            phone = #{phone},
+            contact_person = #{contactPerson},
+            contact_number = #{contactNumber},
+            address = #{address},
+            fax = #{fax},
+            zipcode = #{zipcode},
+            email = #{email},
+            website = #{website},
+            category_id = #{categoryID},
+            remark = ${remark}
+        where relevant_company_id = #{companyID}
+    </update>
+
 </mapper>

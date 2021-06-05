@@ -1,16 +1,19 @@
 package org.jc.backend.service.Impl;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.CompanyMapper;
 import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,32 +30,135 @@ public class CompanyServiceImpl implements CompanyService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional(readOnly = true)
+    @Override
     public List<CompanyO> getCompanyByFuzzySearch(String phone, String name) {
-        return companyMapper.queryCompanyByFuzzySearch(phone, name);
+        try {
+            return companyMapper.queryCompanyByFuzzySearch(phone, name);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<CompanyCategoryO> getCompanyCategories() {
-        return companyMapper.queryCompanyCategories();
+        try {
+            return companyMapper.queryCompanyCategories();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
     
     @Transactional(readOnly = true)
+    @Override
     public List<CompanyO>getCompaniesByCategory(int id) {
-         return companyMapper.queryCompaniesByCategory(id);
+        try {
+            return companyMapper.queryCompaniesByCategory(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public CompanyO getSelfCompany() {
-        return companyMapper.querySelfCompany();
+        try {
+            return companyMapper.querySelfCompany();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updatePartnerCompanyWithArea(int areaID, ListUpdateVO<CompanyO> updateVO) {
+        try {
+            List<CompanyO> tempCompanies = new ArrayList<>(updateVO.getElements());
+
+            tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
+            for (var company : tempCompanies) {
+                companyMapper.insertCompany(company);
+            }
+
+            tempCompanies = new ArrayList<>(updateVO.getElements());
+            tempCompanies.removeIf(c -> c.getCompanyID() < 0);
+            for (var company : tempCompanies) {
+                companyMapper.updateCompany(company);
+            }
+
+            // todo remove
+            List<CompanyO> oldCompanies = companyMapper.queryCompaniesByCategory(areaID);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<RelevantCompanyCategoryO> getRelevantCompanyCategories() {
-        return companyMapper.queryRelevantCompanyCategories();
+        try {
+            return companyMapper.queryRelevantCompanyCategories();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<RelevantCompanyO> getRelevantCompaniesByCategory(int id) {
-        return companyMapper.queryRelevantCompaniesByCategory(id);
+        try {
+            return companyMapper.queryRelevantCompaniesByCategory(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateRelevantCompanyWithCategory(int categoryID, ListUpdateVO<RelevantCompanyO> updateVO) {
+        try {
+
+            List<RelevantCompanyO> tempCompanies = new ArrayList<>(updateVO.getElements());
+
+            tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
+            for (var company : tempCompanies) {
+                companyMapper.insertRelevantCompany(company);
+            }
+
+            tempCompanies = new ArrayList<>(updateVO.getElements());
+            tempCompanies.removeIf(c -> c.getCompanyID() < 0);
+            for (var company : tempCompanies) {
+                companyMapper.updateRelevantCompany(company);
+            }
+
+            // todo remove
+            List<RelevantCompanyO> oldCompanies = companyMapper.queryRelevantCompaniesByCategory(categoryID);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
     }
 }

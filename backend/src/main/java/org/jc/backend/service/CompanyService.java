@@ -4,6 +4,7 @@ import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.springframework.stereotype.Indexed;
 
 import java.util.List;
@@ -16,6 +17,10 @@ public interface CompanyService {
 
     CompanyO getSelfCompany();
 
+    void updatePartnerCompanyWithArea(int areaID, ListUpdateVO<CompanyO> updateVO);
+
     List<RelevantCompanyCategoryO> getRelevantCompanyCategories();
     List<RelevantCompanyO> getRelevantCompaniesByCategory(int id);
+
+    void updateRelevantCompanyWithCategory(int categoryID, ListUpdateVO<RelevantCompanyO> updateVO);
 }

@@ -2,14 +2,17 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,6 +67,18 @@ public class CompanyController {
         return companyService.getSelfCompany();
     }
 
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updatePartnerCompanyWithArea")
+    public void updatePartnerCompanyWithArea(
+            @RequestParam("areaID") int areaID,
+            @RequestBody @Validated ListUpdateVO<CompanyO> updateVO
+    ) {
+        logger.info("POST Request to /company/updatePartnerCompanyWithArea, " +
+                "areaID: {}, info: {}", areaID, updateVO);
+
+        companyService.updatePartnerCompanyWithArea(areaID, updateVO);
+    }
+
 
     @ApiOperation(value = "", response = RelevantCompanyCategoryO.class)
     @GetMapping("/getRelevantCompanyCategories")
@@ -79,5 +94,17 @@ public class CompanyController {
         logger.info("GET Request to /company/getRelevantCompaniesByCategory, id: " + id);
 
         return companyService.getRelevantCompaniesByCategory(id);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateRelevantCompanyWithCategory")
+    public void updateRelevantCompanyWithCategory(
+            @RequestParam("categoryID") int categoryID,
+            @RequestBody @Validated ListUpdateVO<RelevantCompanyO> updateVO
+    ) {
+        logger.info("POST Request to /company/updateRelevantCompanyWithCategory, " +
+                "categoryID: {}, info: {}", categoryID, updateVO);
+
+        companyService.updateRelevantCompanyWithCategory(categoryID, updateVO);
     }
 }
