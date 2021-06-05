@@ -37,6 +37,14 @@
                     </v-responsive>
                 </v-card>
                 <v-card outlined>
+                    <v-card-title>
+                        <v-text-field
+                            v-model="searchField"
+                            append-icon="mdi-magnify"
+                            label="搜索"
+                            single-line
+                            hide-details/>
+                    </v-card-title>
                     <v-data-table v-model="modelTableCurrentRow"
                                   :headers="modelTableHeaders"
                                   :items="modelTableData"
@@ -46,7 +54,10 @@
                                   height="80vh"
                                   hide-default-footer
                                   calculate-widths
-                                  disable-sort
+                                  :sort-by="['sequenceNumber', 'code']"
+                                  :sort-desc="[false, true]"
+                                  multi-sort
+                                  :search="searchField"
                                   disable-pagination
                                   single-select
                                   show-select
@@ -198,13 +209,15 @@ export default {
             treeLevelID: -1,
 
             modelTableHeaders: [
-                { text: '序号', value: 'sequenceNumber', width: '70px' },
+                { text: '序号', value: 'sequenceNumber', width: '95px' },
                 { text: '代号', value: 'code', width: '180px' },
                 { text: '单位', value: 'unitID', width: '120px' },
             ],
             modelTableData: [],
             modelTableCurrentRow: [],
             newItemIndex: -1,
+
+            searchField: '',
 
             units: [],
 
