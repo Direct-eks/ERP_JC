@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RelevantCompanyCategoryO {
-    private int categoryID;
+    private Integer categoryID;
     private String name;
     private String remark;
 }

@@ -10,7 +10,9 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class RelevantCompanyO {
-    private int companyID;
+    @NotNull(message = "companyID null error")
+    private Integer companyID;
+
     @NotNull(message = "abbreviatedName null error")
     @NotNull(message = "abbreviatedName blank error")
     private String abbreviatedName;

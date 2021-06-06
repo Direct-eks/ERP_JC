@@ -98,8 +98,13 @@ public class CompanyServiceImpl implements CompanyService {
                 companyMapper.updateCompany(company);
             }
 
-            // todo remove
+            // check for remove is possible
             List<CompanyO> oldCompanies = companyMapper.queryCompaniesByCategory(areaID);
+            oldCompanies.removeIf(oldC -> updateVO.getElements().stream()
+                    .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
+            for (var company : oldCompanies) {
+                // todo remove
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -138,7 +143,6 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public void updateRelevantCompanyWithCategory(int categoryID, ListUpdateVO<RelevantCompanyO> updateVO) {
         try {
-
             List<RelevantCompanyO> tempCompanies = new ArrayList<>(updateVO.getElements());
 
             tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
@@ -152,8 +156,13 @@ public class CompanyServiceImpl implements CompanyService {
                 companyMapper.updateRelevantCompany(company);
             }
 
-            // todo remove
+            // check for remove is possible
             List<RelevantCompanyO> oldCompanies = companyMapper.queryRelevantCompaniesByCategory(categoryID);
+            oldCompanies.removeIf(oldC -> updateVO.getElements().stream()
+                    .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
+            for (var company : oldCompanies) {
+                // todo remove
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

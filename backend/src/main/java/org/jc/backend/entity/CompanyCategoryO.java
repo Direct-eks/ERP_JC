@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CompanyCategoryO {
-    private int areaID;
+    private Integer areaID;
     private String name;
     private String remark;
     private String treeLevel;

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class CompanyO {
+    @NotNull(message = "companyID null error")
     private Integer companyID;
 
     @NotNull(message = "sequenceNumber null error")
