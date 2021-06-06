@@ -10,6 +10,7 @@ import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -83,27 +84,40 @@ public class ModelServiceImpl implements ModelService {
     @Transactional
     @Override
     public void updateModelsWithCategory(int categoryID, int[] brands, ListUpdateVO<ModelO> updateVO) {
+        List<String> permissions = MyUtils.getUserPermissions();
+
         try {
             List<ModelO> tempModels = new ArrayList<>(updateVO.getElements());
 
             // check for added
-            tempModels.removeIf(m -> m.getModelID() >= 0);
-            for (var model : tempModels) {
-                modelMapper.insertModel(model);
+            if (permissions.contains("system:models:create")) {
+                tempModels.removeIf(m -> m.getModelID() >= 0);
+                for (var model : tempModels) {
+                    modelMapper.insertModel(model);
+                }
+                // now modelIDs are created, create sku based on the brands
+                if (brands.length > 0 && tempModels.size() > 0)
+                    skuService.createNewSkus(tempModels, brands);
             }
-            // now modelIDs are created, create sku based on the brands
-            if (brands.length > 0 && tempModels.size() > 0)
-                skuService.createNewSkus(tempModels, brands);
 
             // update all
-            tempModels = new ArrayList<>(updateVO.getElements());
-            tempModels.removeIf(i -> i.getModelID() < 0);
-            for (var model : tempModels) {
-                modelMapper.updateModel(model);
+            if (permissions.contains("system:models:update")) {
+                tempModels = new ArrayList<>(updateVO.getElements());
+                tempModels.removeIf(i -> i.getModelID() < 0);
+                for (var model : tempModels) {
+                    modelMapper.updateModel(model);
+                }
             }
 
-            // todo remove
-            List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
+            if (permissions.contains("system:models:remove")) {
+                // check for remove is possible
+                List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
+                oldModels.removeIf(oldM -> updateVO.getElements().stream()
+                        .anyMatch(m -> m.getModelID() == oldM.getModelID()));
+                for (var model : oldModels) {
+                    // todo remove
+                }
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

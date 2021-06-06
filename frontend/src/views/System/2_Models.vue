@@ -318,7 +318,13 @@ export default {
             }
         },
         removeItem() {
-
+            if (this.modelTableCurrentRow.length === 0) return
+            // update sequence number
+            const index = this.modelTableData.indexOf(this.modelTableCurrentRow[0])
+            for (let i = index + 1; i < this.modelTableData.length; ++i) {
+                this.modelTableData[i].sequenceNumber--
+            }
+            this.modelTableData.splice(index, 1)
         },
         saveChanges() {
             if (this.modelTableData.length === 0) return
