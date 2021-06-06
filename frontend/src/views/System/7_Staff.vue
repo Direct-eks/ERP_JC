@@ -212,6 +212,9 @@
                                     <v-checkbox v-model="form.permissions" label="生产厂" value="system:factoryBrands"/>
                                     <v-checkbox v-model="form.permissions" label="商品型号明细" value="system:sku"/>
                                     <v-checkbox v-model="form.permissions" label="往来单位区划" value="system:partnerCompanyCategories"/>
+                                    <v-checkbox v-model="form.permissions" label="往来单位区划：增加" value="system:partnerCompanyCategories:create"/>
+                                    <v-checkbox v-model="form.permissions" label="往来单位区划：修改" value="system:partnerCompanyCategories:update"/>
+                                    <v-checkbox v-model="form.permissions" label="往来单位区划：删除" value="system:partnerCompanyCategories:remove"/>
                                     <v-checkbox v-model="form.permissions" label="往来单位" value="system:partnerCompanies"/>
                                     <v-checkbox v-model="form.permissions" label="系统及人员信息" value="system:staff"/>
                                 </v-col>

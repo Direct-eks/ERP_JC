@@ -26,6 +26,8 @@ const api = {
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=
     companyAreas: '/company/getCompanyAreas', // GET
     companiesByCategory: '/company/getCompaniesByCategory/', // GET
+    updateCompanyAreas: '/company/updateCompanyAreas', // POST
+    updateCompanies: '',
 
     selfCompany: '/company/getSelfCompany', // GET
 
