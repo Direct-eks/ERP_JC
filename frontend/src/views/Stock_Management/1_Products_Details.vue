@@ -230,7 +230,7 @@ export default {
         }
         this.$getRequest(this.$api.modelCategories).then((data) => {
             console.log('received', data)
-            this.treeData = this.$createTree(data)
+            this.treeData = this.$createTree(data, true)
             this.$store.commit('modifyModelList', this.treeData)
         }).catch(() => {})
     },

@@ -112,8 +112,7 @@ export default {
         }
         this.$getRequest(this.$api.companyAreas).then((data) => {
             console.log('received', data)
-            this.treeData = this.$createTree(data)
-            console.log(this.treeData)
+            this.treeData = this.$createTree(data, false)
             this.$store.commit('modifyCompanyList', this.treeData)
         }).catch(() => {})
     },
