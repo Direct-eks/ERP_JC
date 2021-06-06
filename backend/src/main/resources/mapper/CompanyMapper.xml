@@ -54,6 +54,7 @@
     <select id="queryCompanyCategories" resultMap="CompanyCategoryResultMap">
         select partner_company_area_id, name, remark, tree_level
         from c_partner_company_area
+        order by tree_level
     </select>
 
     <select id="queryCompaniesByCategory" resultMap="CompanyResultMap">

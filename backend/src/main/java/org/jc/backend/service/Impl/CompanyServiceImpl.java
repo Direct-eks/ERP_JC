@@ -57,7 +57,7 @@ public class CompanyServiceImpl implements CompanyService {
     
     @Transactional(readOnly = true)
     @Override
-    public List<CompanyO>getCompaniesByCategory(int id) {
+    public List<CompanyO> getCompaniesByCategory(int id) {
         try {
             return companyMapper.queryCompaniesByCategory(id);
 
