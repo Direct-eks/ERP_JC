@@ -53,11 +53,12 @@ function validateNumber(value) {
 Vue.prototype.$validateNumber = validateNumber
 
 function createTree(data, modelSearch) {
-    function createTreeHelper (tree, lastLevelIndex, data, prefix, depth) {
+    function createTreeHelper (tree, lastLevelIndex, data, prefix) {
         let count = 0;
         for (let item of data) {
-            if (item.treeLevel.startsWith(prefix + '-') &&
-                item.treeLevel.length === depth * 2 + 1) {
+            if (item.treeLevel.startsWith(prefix + '-') && // no children
+                item.treeLevel.lastIndexOf('-') ===
+                    item.treeLevel.indexOf('-', prefix.length)) {
                 tree[lastLevelIndex].children.push(modelSearch ? {
                     label: item.code,
                     categoryID: item.modelCategoryID,
@@ -75,14 +76,14 @@ function createTree(data, modelSearch) {
         if (count === 0) return
 
         const children = tree[lastLevelIndex].children
-        for (let index in children) {
-            createTreeHelper(children, index, data, children[index].treeLevel, depth + 1)
+        for (let index = 0; index < children.length; ++index) {
+            createTreeHelper(children, index, data, children[index].treeLevel)
         }
     }
 
     const tree = [];
-    for (let item of data) {
-        if (item.treeLevel.length === 1) { // first level object
+    for (const item of data) {
+        if (item.treeLevel.indexOf('-') === -1) { // first level object
             tree.push(modelSearch ? {
                 label: item.code,
                 categoryID: item.modelCategoryID,
@@ -97,7 +98,7 @@ function createTree(data, modelSearch) {
         }
     }
     for (let index in tree) {
-        createTreeHelper(tree, index, data, tree[index].treeLevel, 1)
+        createTreeHelper(tree, index, data, tree[index].treeLevel)
     }
     console.log('tree: ', tree)
     return tree
