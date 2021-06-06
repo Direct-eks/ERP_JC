@@ -7,9 +7,11 @@ import org.jc.backend.entity.DO.QuotaEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Indexed;
 
 import java.math.BigDecimal;
 
+@Indexed
 @Component
 public class IOModificationUtils {
 
