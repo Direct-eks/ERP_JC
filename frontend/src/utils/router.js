@@ -579,67 +579,80 @@ const routes = [
             {
                 path: 'product_categories',
                 name: '商品分类',
-                component: () => import('../views/System/1_Product_Categories'),
+                component: () => import(/* webpackChunkName: "System1_Product_Categories" */
+                    '../views/System/1_Product_Categories'),
             },
             {
                 path: 'models',
                 name: '商品型号',
-                component: () => import('../views/System/2_Models'),
+                component: () => import(/* webpackChunkName: "System2_Models" */
+                    '../views/System/2_Models'),
             },
             {
                 path: 'factory_brands',
                 name: '生产厂',
-                component: () => import('../views/System/3_Factory_Brands'),
+                component: () => import(/* webpackChunkName: "System3_Factory_Brands" */
+                    '../views/System/3_Factory_Brands'),
             },
             {
                 path: 'sku',
                 name: '商品型号明细',
-                component: () => import('../views/System/4_Sku'),
+                component: () => import(/* webpackChunkName: "System4_Sku" */
+                    '../views/System/4_Sku'),
             },
             {
                 path: 'partner_company_categories',
                 name: '往来单位区划',
-                component: () => import('../views/System/5_Partner_Company_Categories'),
+                component: () => import(/* webpackChunkName: "System5_Partner_Company_Categories" */
+                    '../views/System/5_Partner_Company_Categories'),
             },
             {
                 path: 'partner_companies',
                 name: '往来单位',
-                component: () => import('../views/System/6_Partner_Companies'),
+                component: () => import(/* webpackChunkName: "System6_Partner_Companies" */
+                    '../views/System/6_Partner_Companies'),
             },
             {
                 path: 'staff',
                 name: '系统及人员信息',
-                component: () => import('../views/System/7_Staff'),
+                component: () => import(/* webpackChunkName: "System7_Staff" */
+                    '../views/System/7_Staff'),
             },
             {
                 path: 'relevant_company_categories',
                 name: '相关单位分类',
-                component: () => import('../views/System/8_Relevant_Company_Categories'),
+                component: () => import(/* webpackChunkName: "System8_Relevant_Company_Categories" */
+                    '../views/System/8_Relevant_Company_Categories'),
             },
             {
                 path: 'relevant_companies',
                 name: '相关单位',
-                component: () => import('../views/System/9_Relevant_Companies'),
+                component: () => import(/* webpackChunkName: "System9_Relevant_Companies" */
+                    '../views/System/9_Relevant_Companies'),
             },
             {
                 path: 'measurement_units',
                 name: '计量单位',
-                component: () => import('../views/System/10_Measurement_Units'),
+                component: () => import(/* webpackChunkName: "System10_Measurement_Units" */
+                    '../views/System/10_Measurement_Units'),
             },
             {
                 path: 'warehouses',
                 name: '仓库',
-                component: () => import('../views/System/11_Warehouses'),
+                component: () => import(/* webpackChunkName: "System11_Warehouses" */
+                    '../views/System/11_Warehouses'),
             },
             {
                 path: 'departments',
                 name: '部门',
-                component: () => import('../views/System/12_Departments'),
+                component: () => import(/* webpackChunkName: "System12_Departments" */
+                    '../views/System/12_Departments'),
             },
             {
                 path: 'fees',
                 name: '费用收入类别',
-                component: () => import('../views/System/13_Fees'),
+                component: () => import(/* webpackChunkName: "System13_Fees" */
+                    '../views/System/13_Fees'),
             },
         ]
     },
