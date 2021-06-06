@@ -11,6 +11,7 @@ import javax.validation.constraints.Pattern;
 @Setter
 @ToString
 public class SkuFullO {
+    @NotNull(message = "skuID null error")
     private Integer skuID;
 
     @NotNull(message = "factoryBrandID null error")

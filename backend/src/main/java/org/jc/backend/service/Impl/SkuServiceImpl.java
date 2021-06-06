@@ -124,8 +124,13 @@ public class SkuServiceImpl implements SkuService {
                 skuMapper.updateSku(sku);
             }
 
-            // todo remove
+            // check for remove if possible
             List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);
+            oldSkus.removeIf(oldS -> updateVO.getElements().stream()
+                    .anyMatch(s -> s.getSkuID().equals(oldS.getSkuID())));
+            for (var sku : oldSkus) {
+                // todo remoev
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

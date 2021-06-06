@@ -113,7 +113,7 @@ public class ModelServiceImpl implements ModelService {
                 // check for remove is possible
                 List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
                 oldModels.removeIf(oldM -> updateVO.getElements().stream()
-                        .anyMatch(m -> m.getModelID() == oldM.getModelID()));
+                        .anyMatch(m -> m.getModelID().equals(oldM.getModelID())));
                 for (var model : oldModels) {
                     // todo remove
                 }

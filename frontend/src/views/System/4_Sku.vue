@@ -85,7 +85,7 @@
                         </v-row>
                         <v-row class="ma-3">
                             <v-btn color="accent"
-                                   @click="">
+                                   @click="removeBrand">
                                 删除
                             </v-btn>
                         </v-row>
@@ -285,6 +285,10 @@ export default {
                     })
                 }
             }
+        },
+        removeBrand() {
+            if (this.skuTableCurrentRow.length === 0) return
+            this.skuTableData.splice(this.skuTableData.indexOf(this.skuTableCurrentRow[0]), 1)
         },
         modifyBrand() {
             if (this.skuTableData.length === 0) return

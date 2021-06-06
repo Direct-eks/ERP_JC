@@ -11,7 +11,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class ModelO {
-    private int modelID;
+    @NotNull(message = "modelID null error")
+    private Integer modelID;
 
     @NotNull(message = "sequenceNumber null error")
     private Integer sequenceNumber;
