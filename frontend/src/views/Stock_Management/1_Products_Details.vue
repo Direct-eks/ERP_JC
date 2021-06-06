@@ -223,39 +223,6 @@ export default {
         }
     },
     beforeMount() {
-        const creatTree = (data) => {
-            const tree = [];
-            for (let item of data) {
-                if (item.treeLevel.length === 1) { //first level object
-                    tree.push({label: item.code, children: [],
-                        categoryID: item.modelCategoryID, treeLevel: item.treeLevel})
-                }
-            }
-            console.log(tree)
-            for (let index in tree) {
-                creatTreeHelper(tree, index, data, tree[index].treeLevel, 1)
-            }
-            return tree
-        }
-        const creatTreeHelper = (tree, lastLevelIndex, data, prefix, depth) => {
-            let count = 0;
-            for (let item of data) {
-                if (item.treeLevel.startsWith(prefix + '-') &&
-                    item.treeLevel.length === depth * 2 + 1) {
-                    tree[lastLevelIndex].children.push({
-                        label: item.code, children: [],
-                        categoryID: item.modelCategoryID, treeLevel: item.treeLevel
-                    })
-                    count++
-                }
-            }
-            if (count === 0) return
-
-            for (let index in tree[lastLevelIndex].children) {
-                creatTreeHelper(tree[lastLevelIndex].children, index, data, tree[lastLevelIndex].children[index].treeLevel, depth + 1)
-            }
-        }
-
         let result = this.$store.getters.productList
         if (result) {
             this.treeData = result
@@ -263,7 +230,7 @@ export default {
         }
         this.$getRequest(this.$api.modelCategories).then((data) => {
             console.log('received', data)
-            this.treeData = creatTree(data)
+            this.treeData = this.$createTree(data)
             this.$store.commit('modifyModelList', this.treeData)
         }).catch(() => {})
     },

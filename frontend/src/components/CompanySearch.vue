@@ -105,41 +105,6 @@ export default {
     },
     name: "CompanySearch",
     beforeMount() {
-        const creatTree = (data) => {
-            const tree = [];
-            for (const item of data) {
-                if (item.treeLevel.length === 1) { // first level object
-                    tree.push({
-                        label: item.name, children: [],
-                        areaID: item.areaID, treeLevel: item.treeLevel
-                    })
-                }
-            }
-            console.log(tree)
-            for (const index in tree) {
-                creatTreeHelper(tree, index, data, tree[index].treeLevel, 1)
-            }
-            return tree
-        }
-        const creatTreeHelper = (tree, lastLevelIndex, data, prefix, depth) => {
-            let count = 0;
-            for (const item of data) {
-                if (item.treeLevel.startsWith(`${prefix}-`)
-                        && item.treeLevel.length === depth * 2 + 1) {
-                    tree[lastLevelIndex].children.push({
-                        label: item.name, children: [],
-                        areaID: item.areaID, treeLevel: item.treeLevel
-                    })
-                    count++
-                }
-            }
-            if (count === 0) return
-
-            for (const index in tree[lastLevelIndex].children) {
-                creatTreeHelper(tree[lastLevelIndex].children, index, data, tree[lastLevelIndex].children[index].treeLevel, depth + 1)
-            }
-        }
-
         const result = this.$store.getters.companyCategoryList
         if (result) {
             this.treeData = result
@@ -147,7 +112,7 @@ export default {
         }
         this.$getRequest(this.$api.companyAreas).then((data) => {
             console.log('received', data)
-            this.treeData = creatTree(data)
+            this.treeData = this.$createTree(data)
             console.log(this.treeData)
             this.$store.commit('modifyCompanyList', this.treeData)
         }).catch(() => {})

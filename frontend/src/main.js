@@ -52,6 +52,50 @@ function validateNumber(value) {
 }
 Vue.prototype.$validateNumber = validateNumber
 
+function createTree(data) {
+    const tree = [];
+    for (let item of data) {
+        if (item.treeLevel.length === 1) { // first level object
+            tree.push({label: item.code, children: [],
+                categoryID: item.modelCategoryID, treeLevel: item.treeLevel})
+        }
+    }
+    console.log('tree: ', tree)
+    for (let index in tree) {
+        createTreeHelper(tree, index, data, tree[index].treeLevel, 1)
+    }
+    return tree
+}
+function createTreeHelper(tree, lastLevelIndex, data, prefix, depth) {
+    let count = 0;
+    for (let item of data) {
+        if (item.treeLevel.startsWith(prefix + '-') &&
+            item.treeLevel.length === depth * 2 + 1) {
+            tree[lastLevelIndex].children.push({
+                label: item.code, children: [],
+                categoryID: item.modelCategoryID, treeLevel: item.treeLevel
+            })
+            count++
+        }
+    }
+    if (count === 0) return
+
+    const children = tree[lastLevelIndex].children
+    for (let index in children) {
+        createTreeHelper(children, index, data, children[index].treeLevel, depth + 1)
+    }
+}
+Vue.prototype.$createTree = createTree
+
+function createOneLevelTree(data) {
+    const tree = [];
+    data.forEach(item => {
+        tree.push({label: item.name, children: [], categoryID: item.categoryID})
+    })
+    return tree
+}
+Vue.prototype.$createOneLevelTree = createOneLevelTree
+
 import Big from "big.js"
 Vue.prototype.$Big = Big
 

@@ -80,14 +80,6 @@ export default {
         }
     },
     beforeMount() {
-        const creatTree = (data => {
-            const tree = [];
-            data.forEach(item => {
-                tree.push({label: item.name, children: [], categoryID: item.categoryID})
-            })
-            return tree
-        })
-
         let result = this.$store.getters.relevantCompanyCategoryList
         if (result) {
             this.treeData = result
@@ -95,7 +87,7 @@ export default {
         }
         this.$getRequest(this.$api.relevantCompanyCategories).then((data) => {
             console.log('received', data)
-            this.treeData = creatTree(data)
+            this.treeData = this.$createOneLevelTree(data)
             this.$store.commit('modifyRelevantCompanyList', this.treeData)
         }).catch(() => {})
     },
