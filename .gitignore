@@ -28,13 +28,13 @@ dist/
 npm-debug.log
 
 #electron_app
-electron_app/logs/
 electron_app/dist/
-electron_app/db
 electron_app/webpages/
-electron_app/springboot/
-
+electron_app/build/
 electron-vue-demo/
+
+#build dir
+build/
 
 ### STS ###
 .apt_generated
@@ -51,7 +51,6 @@ electron-vue-demo/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 

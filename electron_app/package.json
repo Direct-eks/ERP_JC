@@ -16,7 +16,7 @@
     "appId": "testJC",
     "asar": true,
     "directories": {
-      "output": "build"
+      "output": "../build"
     },
     "files": [
       "**/*"

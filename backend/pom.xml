@@ -173,6 +173,20 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- indexer -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+            <version>5.3.7</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- devtool -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -185,16 +199,6 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-
-            <dependencies>
-                <!-- devtool -->
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-devtools</artifactId>
-                    <scope>runtime</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
 
             <build>
                 <plugins>
@@ -236,14 +240,6 @@
                 <profileActive>prod</profileActive>
             </properties>
 
-            <dependencies>
-                <!-- indexer -->
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context-indexer</artifactId>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <!-- maven 打包插件 -->
@@ -262,7 +258,7 @@
                                     <mainClass>org.jc.backend.BackendApplication</mainClass>
                                 </manifest>
                             </archive>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <outputDirectory>${project.build.directory}/../../build</outputDirectory>
                         </configuration>
                     </plugin>
 
@@ -278,7 +274,7 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/../../build/lib</outputDirectory>
                                     <overWriteReleases>true</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>
                                     <overWriteIfNewer>true</overWriteIfNewer>
@@ -287,15 +283,15 @@
                         </executions>
                     </plugin>
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/org/jc/backend/config/swagger2/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
+<!--                    <plugin>-->
+<!--                        <groupId>org.apache.maven.plugins</groupId>-->
+<!--                        <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                        <configuration>-->
+<!--                            <excludes>-->
+<!--                                <exclude>**/org/jc/backend/config/swagger2/**</exclude>-->
+<!--                            </excludes>-->
+<!--                        </configuration>-->
+<!--                    </plugin>-->
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
