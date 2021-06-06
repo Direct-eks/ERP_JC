@@ -51,6 +51,7 @@ export default {
             name: '往来单位',
             url: '/system/partner_companies',
             helpContent: [
+                '1. 窗口上部的“电话”和“简称”只能在当前分类的所有单位内搜索'
             ]
         },
         {

@@ -2,42 +2,36 @@
     <v-card>
         <v-card-title>
             往来单位
-            <v-row>
-                <v-spacer></v-spacer>
-                <v-col>
-                    <v-text-field v-model="phone"
-                                  label="电话"
-                                  hide-details="auto"
-                                  clearable
-                                  @keydown.enter.native="searchCompanies"
-                                  style="width: 200px">
-                    </v-text-field>
-                </v-col>
-                <v-col>
-                    <v-text-field v-model="name"
-                                  label="简称"
-                                  hide-details="auto"
-                                  clearable
-                                  @keydown.enter.native="searchCompanies"
-                                  style="width: 200px">
-                    </v-text-field>
-                </v-col>
-                <v-col>
-                    <v-btn color="primary"
-                           @click="searchCompanies">
-                        搜索
-                    </v-btn>
-                </v-col>
-                <v-spacer></v-spacer>
-                <v-btn color="primary"
-                       class="mr-6"
-                       @click="chooseHandle">
-                    选择
-                </v-btn>
-                <v-btn icon @click="close">
-                    <v-icon>{{mdiClosePath}}</v-icon>
-                </v-btn>
-            </v-row>
+            <v-spacer></v-spacer>
+            <div class="mr-3" style="width: 160px">
+                <v-text-field v-model="phone"
+                              label="电话"
+                              hide-details="auto"
+                              clearable
+                              @keydown.enter.native="searchCompanies">
+                </v-text-field>
+            </div>
+            <div class="mr-3" style="width: 160px">
+                <v-text-field v-model="name"
+                              label="简称"
+                              hide-details="auto"
+                              clearable
+                              @keydown.enter.native="searchCompanies">
+                </v-text-field>
+            </div>
+            <v-btn color="primary"
+                   @click="searchCompanies">
+                搜索
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   class="mr-6"
+                   @click="chooseHandle">
+                选择
+            </v-btn>
+            <v-btn icon @click="close">
+                <v-icon>{{ mdiClose }}</v-icon>
+            </v-btn>
         </v-card-title>
 
         <v-card-text class="d-flex">
@@ -54,15 +48,17 @@
                             dense>
                 </v-treeview>
             </v-responsive>
-            <v-responsive height="68vh" max-width="64vw"
+            <v-responsive max-width="64vw"
                           style="overflow: auto">
                 <v-data-table v-model="currentRow"
                               :headers="headers"
                               :items="tableData"
                               item-key="companyID"
                               @click:row="handleTableClick"
-                              height="60vh"
+                              height="65vh"
                               disable-sort
+                              disable-pagination
+                              hide-default-footer
                               show-select
                               single-select
                               fixed-header
@@ -80,7 +76,7 @@ import { mdiClose } from '@mdi/js'
 export default {
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             phone: '',
             name: '',
