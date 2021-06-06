@@ -84,17 +84,56 @@
                 <v-row>
                     <v-col cols="auto">
                         <v-row class="ma-3">
-                            <v-btn color="accent" fab small elevation="0" outlined
+                            <v-btn v-if="canUpdate" color="accent" fab small elevation="0" outlined
                                    @click="moveItem(true)">
                                 <v-icon>{{ mdiChevronUp }}</v-icon>
                             </v-btn>
-                            <v-btn v-if="canCreate" class="ml-3" color="accent"
-                                   @click="newRow">
-                                新增
-                            </v-btn>
+                            <v-dialog v-if="canCreate"
+                                      v-model="addNewDialog"
+                                      width="35vw">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn class="ml-3" color="accent"
+                                           v-bind="attrs"
+                                           v-on="on">
+                                        新增
+                                    </v-btn>
+                                </template>
+                                <v-card outlined>
+                                    <v-card-text>
+                                        <v-row class="my-2">
+                                            <v-col cols="auto">
+                                                <v-text-field v-model="newCode"
+                                                              label="代号"
+                                                              single-line
+                                                              hide-details="auto"
+                                                              outlined dense
+                                                              style="width: 120px">
+                                                </v-text-field>
+                                            </v-col>
+                                            <v-col cols="auto">
+                                                <v-select v-model="newUnitID"
+                                                          :items="units"
+                                                          item-text="unitName"
+                                                          item-value="unitID"
+                                                          label="计量单位"
+                                                          hide-details
+                                                          outlined
+                                                          dense
+                                                          style="width: 120px">
+                                                </v-select>
+                                            </v-col>
+                                            <v-col cols="auto" class="ml-2">
+                                                <v-btn color="primary" @click="newRow">
+                                                    确认
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
                         </v-row>
                         <v-row class="ma-3">
-                            <v-btn color="accent" fab small elevation="0" outlined
+                            <v-btn v-if="canUpdate" color="accent" fab small elevation="0" outlined
                                    @click="moveItem(false)">
                                 <v-icon>{{ mdiChevronDown }}</v-icon>
                             </v-btn>
@@ -179,6 +218,10 @@ export default {
             canUpdate: false,
             canRemove: false,
 
+            addNewDialog: false,
+            newCode: '',
+            newUnitID: -1,
+
             treeData: [],
             treeLevelID: -1,
 
@@ -208,6 +251,8 @@ export default {
         treeSelect(data) {
             this.modelTableData = []
             this.modelTableCurrentRow = [] //reset model table
+
+            if (data.length === 0) return;
 
             let val = data[0]
             if (val.children.length === 0) { // end node
@@ -254,13 +299,17 @@ export default {
             }
         },
         newRow() {
+            if (this.modelTableData.length === 0 || this.treeLevelID === -1) return
+            this.addNewDialog = false
             this.modelTableData.push({
                 modelID: this.newItemIndex--,
                 sequenceNumber: this.modelTableData.length + 1,
-                code: '',
+                code: this.newCode,
                 categoryID: this.treeLevelID,
-                unitID: this.units[0].unitID
+                unitID: this.newUnitID
             })
+            this.newCode = ''
+            this.newUnitID = -1
         },
         moveItem(up) {
             if (this.modelTableData.length === 0) return
