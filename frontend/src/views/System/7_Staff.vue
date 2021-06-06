@@ -204,6 +204,11 @@
                                 <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="商品分类" value="system:productCategories"/>
                                     <v-checkbox v-model="form.permissions" label="商品型号" value="system:models"/>
+                                    <v-checkbox v-model="form.permissions" label="商品型号：增加" value="system:models:create"/>
+                                    <v-checkbox v-model="form.permissions" label="商品型号：修改" value="system:models:update"/>
+                                    <v-checkbox v-model="form.permissions" label="商品型号：删除" value="system:models:remove"/>
+                                </v-col>
+                                <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="生产厂" value="system:factoryBrands"/>
                                     <v-checkbox v-model="form.permissions" label="商品型号明细" value="system:sku"/>
                                     <v-checkbox v-model="form.permissions" label="往来单位区划" value="system:partnerCompanyCategories"/>
@@ -330,6 +335,11 @@ export default {
                         message: '保存成功', color: 'success'
                     })
                 }).catch(() => {})
+                // refresh curr user permissions
+                if (this.form.username === this.$store.getters.currentUser) {
+                    this.$store.commit('modifyCurrentUserPermissions', this.form.permissions)
+                    sessionStorage.setItem('userPermissions', JSON.stringify(this.form.permissions))
+                }
             }
         },
         deleteUser() {

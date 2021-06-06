@@ -5,6 +5,13 @@
         <v-card-title class="d-flex">
             商品型号
             <v-spacer></v-spacer>
+            <v-text-field
+                v-model="searchField"
+                :append-icon="mdiMagnify"
+                label="搜索"
+                single-line
+                hide-details/>
+            <v-spacer></v-spacer>
             <v-btn class="mr-3" color="primary"
                    @click="exportExcel">
                 导出Excel
@@ -37,14 +44,6 @@
                     </v-responsive>
                 </v-card>
                 <v-card outlined>
-                    <v-card-title>
-                        <v-text-field
-                            v-model="searchField"
-                            append-icon="mdi-magnify"
-                            label="搜索"
-                            single-line
-                            hide-details/>
-                    </v-card-title>
                     <v-data-table v-model="modelTableCurrentRow"
                                   :headers="modelTableHeaders"
                                   :items="modelTableData"
@@ -55,8 +54,6 @@
                                   hide-default-footer
                                   calculate-widths
                                   :sort-by="['sequenceNumber', 'code']"
-                                  :sort-desc="[false, true]"
-                                  multi-sort
                                   :search="searchField"
                                   disable-pagination
                                   single-select
@@ -64,7 +61,7 @@
                                   fixed-header
                                   locale="zh-cn"
                                   dense>
-                        <template v-slot:item.code="{ item }">
+                        <template v-if="canUpdate" v-slot:item.code="{ item }">
                             <v-edit-dialog :return-value="item.code"
                                            persistent large save-text="确认" cancel-text="取消">
                                 {{ item.code }}
@@ -73,7 +70,7 @@
                                 </template>
                             </v-edit-dialog>
                         </template>
-                        <template v-slot:item.unitID="{ item }">
+                        <template v-if="canUpdate" v-slot:item.unitID="{ item }">
                             <v-select v-model="item.unitID"
                                       :items="units"
                                       item-text="unitName"
@@ -91,7 +88,7 @@
                                    @click="moveItem(true)">
                                 <v-icon>{{ mdiChevronUp }}</v-icon>
                             </v-btn>
-                            <v-btn class="ml-3" color="accent"
+                            <v-btn v-if="canCreate" class="ml-3" color="accent"
                                    @click="newRow">
                                 新增
                             </v-btn>
@@ -101,8 +98,8 @@
                                    @click="moveItem(false)">
                                 <v-icon>{{ mdiChevronDown }}</v-icon>
                             </v-btn>
-                            <v-btn class="ml-3" color="accent"
-                                   @click="">
+                            <v-btn v-if="canRemove" class="ml-3" color="accent"
+                                   @click="removeItem">
                                 删除
                             </v-btn>
                         </v-row>
@@ -137,7 +134,7 @@
 </template>
 
 <script>
-import { mdiArrowLeft, mdiChevronUp, mdiChevronDown } from "@mdi/js";
+import { mdiArrowLeft, mdiChevronUp, mdiChevronDown, mdiMagnify } from "@mdi/js";
 
 export default {
     name: "Models",
@@ -175,6 +172,11 @@ export default {
             }
         }
 
+        const userPermissions = this.$store.getters.currentUserPermissions
+        if (userPermissions.includes("system:models:create")) this.canCreate = true
+        if (userPermissions.includes("system:models:update")) this.canUpdate = true
+        if (userPermissions.includes("system:models:remove")) this.canRemove = true
+
         this.$getRequest(this.$api.allUnits).then(data => {
             console.log('received', data)
             this.units = data
@@ -204,6 +206,11 @@ export default {
             mdiArrowLeft,
             mdiChevronUp,
             mdiChevronDown,
+            mdiMagnify,
+
+            canCreate: false,
+            canUpdate: false,
+            canRemove: false,
 
             treeData: [],
             treeLevelID: -1,
@@ -309,6 +316,9 @@ export default {
                 this.modelTableData[index + 1] =
                     this.modelTableData.splice(index, 1, this.modelTableData[index + 1])[0]
             }
+        },
+        removeItem() {
+
         },
         saveChanges() {
             if (this.modelTableData.length === 0) return
