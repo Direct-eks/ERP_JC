@@ -19,7 +19,8 @@
 
         <v-col cols="12"
                md="10"
-               lg="8">
+               lg="9"
+               xl="8">
             <router-view></router-view>
         </v-col>
     </v-row>

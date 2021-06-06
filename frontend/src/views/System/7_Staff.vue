@@ -11,7 +11,7 @@
             </v-btn>
             <v-btn color="accent"
                    to="/system">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
         </v-card-title>
@@ -256,7 +256,7 @@
 </template>
 
 <script>
-import {mdiArrowLeft} from "@mdi/js";
+import { mdiArrowLeft } from "@mdi/js";
 
 export default {
     name: "Staff",
@@ -276,7 +276,7 @@ export default {
     },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
 
             userTableHeaders: [
                 { text: '序号', value: 'index', width: '65px' },
