@@ -387,6 +387,7 @@ export default {
             this.modifiedTableData = []
         },
         searchSku() {
+            if (this.treeSelection.length === 0) return
             this.isQuerying = true
             this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
                 modelCategoryID: this.treeSelection[0].categoryID,
