@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.CompanyMapper">
 
-    <resultMap id="CompanyCategoryResultMap" type="org.jc.backend.entity.CompanyCategoryO">
+    <resultMap id="CompanyAreaResultMap" type="org.jc.backend.entity.CompanyAreaO">
         <result property="areaID" column="partner_company_area_id"/>
         <result property="name" column="name"/>
         <result property="remark" column="remark"/>
@@ -12,7 +12,7 @@
     </resultMap>
 
 
-    <select id="queryCompanyCategories" resultMap="CompanyCategoryResultMap">
+    <select id="queryCompanyAreas" resultMap="CompanyAreaResultMap">
         select partner_company_area_id, name, remark, tree_level
         from c_partner_company_area
         order by tree_level
@@ -73,7 +73,7 @@
         </choose>
     </select>
 
-    <select id="queryCompaniesByCategory" resultMap="CompanyResultMap">
+    <select id="queryCompaniesByAreaID" resultMap="CompanyResultMap">
         select partner_company_id, sequence_number, brand_code, abbreviated_name,
                area_id, phone, address, fax, classification, full_name, contact_person,
                contact_number, remark, is_active, zipcode, email, website

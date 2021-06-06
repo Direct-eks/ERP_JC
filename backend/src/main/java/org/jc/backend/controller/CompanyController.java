@@ -2,8 +2,7 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.entity.CompanyCategoryO;
+import org.jc.backend.entity.CompanyAreaO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
@@ -43,20 +42,20 @@ public class CompanyController {
         return companyService.getCompanyByFuzzySearch(phone, name);
     }
 
-    @ApiOperation(value = "", response = CompanyCategoryO.class)
+    @ApiOperation(value = "", response = CompanyAreaO.class)
     @GetMapping("/getCompanyAreas")
-    public List<CompanyCategoryO> getCompanyAreas() {
+    public List<CompanyAreaO> getCompanyAreas() {
         logger.info("GET Request to /company/getCompanyAreas");
         //category is area here!
-        return companyService.getCompanyCategories();
+        return companyService.getCompanyAreas();
     }
 
     @ApiOperation(value = "", response = CompanyO.class)
-    @GetMapping("/getCompaniesByCategory/{id}")
-    public List<CompanyO> getCompaniesByCategory(@PathVariable("id") int id) {
-        logger.info("GET Request to /company/getCompaniesByCategory, id: " + id);
+    @GetMapping("/getCompaniesByAreaID/{id}")
+    public List<CompanyO> getCompaniesByAreaID(@PathVariable("id") int id) {
+        logger.info("GET Request to /company/getCompaniesByAreaID, id: " + id);
 
-        return companyService.getCompaniesByCategory(id);
+        return companyService.getCompaniesByAreaID(id);
     }
 
     @ApiOperation(value = "", response = CompanyO.class)
@@ -69,7 +68,7 @@ public class CompanyController {
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/updateCompanyAreas")
-    public void updateCompanyAreas(@RequestBody @Validated ListUpdateVO<CompanyCategoryO> updateVO) {
+    public void updateCompanyAreas(@RequestBody @Validated ListUpdateVO<CompanyAreaO> updateVO) {
         logger.info("POST Request to /company/updateCompanyAreas, info: {}", updateVO);
 
         companyService.updateCompanyAreas(updateVO);

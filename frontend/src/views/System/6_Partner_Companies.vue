@@ -122,7 +122,7 @@ export default {
                     this.tableData = result
                     return
                 }
-                this.$getRequest(this.$api.companiesByCategory
+                this.$getRequest(this.$api.companiesByAreaID
                     + encodeURI(val.areaID)).then((data) => {
                     console.log('received', data)
                     this.tableData = data

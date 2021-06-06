@@ -1,7 +1,7 @@
 package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.jc.backend.entity.CompanyCategoryO;
+import org.jc.backend.entity.CompanyAreaO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
@@ -14,12 +14,12 @@ import java.util.List;
 @Mapper
 @Repository
 public interface CompanyMapper {
-    List<CompanyCategoryO> queryCompanyCategories();
-    void insertPartnerCompanyArea(CompanyCategoryO categoryO);
-    void updatePartnerCompanyArea(CompanyCategoryO categoryO);
+    List<CompanyAreaO> queryCompanyAreas();
+    void insertPartnerCompanyArea(CompanyAreaO categoryO);
+    void updatePartnerCompanyArea(CompanyAreaO categoryO);
 
     List<CompanyO> queryCompanyByFuzzySearch(String phone, String name);
-    List<CompanyO> queryCompaniesByCategory(int id);
+    List<CompanyO> queryCompaniesByAreaID(int id);
     CompanyO querySelfCompany();
     void insertCompany(CompanyO companyO);
     void updateCompany(CompanyO companyO);

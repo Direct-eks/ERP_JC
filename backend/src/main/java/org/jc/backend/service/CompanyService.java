@@ -1,6 +1,6 @@
 package org.jc.backend.service;
 
-import org.jc.backend.entity.CompanyCategoryO;
+import org.jc.backend.entity.CompanyAreaO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
@@ -12,12 +12,12 @@ import java.util.List;
 @Indexed
 public interface CompanyService {
     List<CompanyO> getCompanyByFuzzySearch(String phone, String name);
-    List<CompanyCategoryO> getCompanyCategories();
-    List<CompanyO> getCompaniesByCategory(int id);
+    List<CompanyAreaO> getCompanyAreas();
+    List<CompanyO> getCompaniesByAreaID(int id);
 
     CompanyO getSelfCompany();
 
-    void updateCompanyAreas(ListUpdateVO<CompanyCategoryO> updateVO);
+    void updateCompanyAreas(ListUpdateVO<CompanyAreaO> updateVO);
     void updatePartnerCompanyWithArea(int areaID, ListUpdateVO<CompanyO> updateVO);
 
     List<RelevantCompanyCategoryO> getRelevantCompanyCategories();

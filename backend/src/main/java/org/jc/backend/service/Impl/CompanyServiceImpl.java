@@ -4,13 +4,12 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.dao.CompanyMapper;
-import org.jc.backend.entity.CompanyCategoryO;
+import org.jc.backend.entity.CompanyAreaO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.CompanyService;
-import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -47,9 +46,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CompanyCategoryO> getCompanyCategories() {
+    public List<CompanyAreaO> getCompanyAreas() {
         try {
-            return companyMapper.queryCompanyCategories();
+            return companyMapper.queryCompanyAreas();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -60,9 +59,9 @@ public class CompanyServiceImpl implements CompanyService {
     
     @Transactional(readOnly = true)
     @Override
-    public List<CompanyO> getCompaniesByCategory(int id) {
+    public List<CompanyO> getCompaniesByAreaID(int id) {
         try {
-            return companyMapper.queryCompaniesByCategory(id);
+            return companyMapper.queryCompaniesByAreaID(id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -86,11 +85,11 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     @Override
-    public void updateCompanyAreas(ListUpdateVO<CompanyCategoryO> updateVO) {
+    public void updateCompanyAreas(ListUpdateVO<CompanyAreaO> updateVO) {
         Subject subject = SecurityUtils.getSubject();
 
         try {
-            List<CompanyCategoryO> tempAreas = new ArrayList<>(updateVO.getElements());
+            List<CompanyAreaO> tempAreas = new ArrayList<>(updateVO.getElements());
 
             if (subject.isPermitted("system:partnerCompanyCategories:create")) {
                 tempAreas.removeIf(a -> a.getAreaID() >= 0);
@@ -109,7 +108,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             // check for removed
             if (subject.isPermitted("system:partnerCompanyCategories:remove")) {
-                List<CompanyCategoryO> oldAreas = companyMapper.queryCompanyCategories();
+                List<CompanyAreaO> oldAreas = companyMapper.queryCompanyAreas();
                 oldAreas.removeIf(oldA -> updateVO.getElements().stream()
                         .anyMatch(a -> a.getAreaID().equals(oldA.getAreaID())));
                 for (var area : oldAreas) {
@@ -142,7 +141,7 @@ public class CompanyServiceImpl implements CompanyService {
             }
 
             // check for remove is possible
-            List<CompanyO> oldCompanies = companyMapper.queryCompaniesByCategory(areaID);
+            List<CompanyO> oldCompanies = companyMapper.queryCompaniesByAreaID(areaID);
             oldCompanies.removeIf(oldC -> updateVO.getElements().stream()
                     .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
             for (var company : oldCompanies) {

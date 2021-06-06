@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
-public class CompanyCategoryO {
+public class CompanyAreaO {
     @NotNull(message = "areaID null error")
     private Integer areaID;
 
