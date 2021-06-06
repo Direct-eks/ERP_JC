@@ -14,17 +14,21 @@ import java.util.List;
 @Mapper
 @Repository
 public interface CompanyMapper {
-    List<CompanyO> queryCompanyByFuzzySearch(String phone, String name);
     List<CompanyCategoryO> queryCompanyCategories();
+    void insertPartnerCompanyArea(CompanyCategoryO categoryO);
+    void updatePartnerCompanyArea(CompanyCategoryO categoryO);
+
+    List<CompanyO> queryCompanyByFuzzySearch(String phone, String name);
     List<CompanyO> queryCompaniesByCategory(int id);
-
     CompanyO querySelfCompany();
-
     void insertCompany(CompanyO companyO);
     void updateCompany(CompanyO companyO);
 
-    List<RelevantCompanyCategoryO> queryRelevantCompanyCategories();
     List<RelevantCompanyO> queryRelevantCompaniesByCategory(int id);
+    void insertRelevantCompanyCategory(RelevantCompanyCategoryO categoryO);
+    void updateRelevantCompanyCategory(RelevantCompanyCategoryO categoryO);
+
+    List<RelevantCompanyCategoryO> queryRelevantCompanyCategories();
 
     void insertRelevantCompany(RelevantCompanyO companyO);
     void updateRelevantCompany(RelevantCompanyO companyO);

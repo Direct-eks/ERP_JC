@@ -17,6 +17,7 @@ public interface CompanyService {
 
     CompanyO getSelfCompany();
 
+    void updateCompanyAreas(ListUpdateVO<CompanyCategoryO> updateVO);
     void updatePartnerCompanyWithArea(int areaID, ListUpdateVO<CompanyO> updateVO);
 
     List<RelevantCompanyCategoryO> getRelevantCompanyCategories();

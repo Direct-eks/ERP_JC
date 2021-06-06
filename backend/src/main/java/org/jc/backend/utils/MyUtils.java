@@ -1,6 +1,5 @@
 package org.jc.backend.utils;
 
-import org.apache.shiro.SecurityUtils;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -60,15 +59,6 @@ public class MyUtils {
         logger.info("New serial: " + newSerial);
 
         return newSerial;
-    }
-
-    /**
-     * get shiro user permissions
-     * @return user permission strings
-     */
-    @SuppressWarnings("unchecked cast")
-    public static List<String> getUserPermissions() {
-        return (List<String>) SecurityUtils.getSubject().getSession().getAttribute("permissions");
     }
 
     /**

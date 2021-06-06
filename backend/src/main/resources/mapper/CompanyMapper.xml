@@ -11,6 +11,28 @@
         <result property="treeLevel" column="tree_level"/>
     </resultMap>
 
+
+    <select id="queryCompanyCategories" resultMap="CompanyCategoryResultMap">
+        select partner_company_area_id, name, remark, tree_level
+        from c_partner_company_area
+        order by tree_level
+    </select>
+
+    <insert id="insertPartnerCompanyArea" useGeneratedKeys="true"
+        keyProperty="areaID" keyColumn="partner_company_area_id">
+        insert into c_partner_company_area(name, remark, tree_level)
+        values (#{name}, #{remark}, #{treeLevel})
+    </insert>
+
+    <update id="updatePartnerCompanyArea">
+        update c_partner_company_area
+        set name = #{name},
+            remark = #{remark},
+            tree_level = #{treeLevel}
+        where partner_company_area_id = #{areaID}
+    </update>
+
+
     <resultMap id="CompanyResultMap" type="org.jc.backend.entity.CompanyO">
         <result property="companyID" column="partner_company_id"/>
         <result property="sequenceNumber" column="sequence_number"/>
@@ -49,12 +71,6 @@
                 phone like '%'||#{phone}||'%'
             </when>
         </choose>
-    </select>
-
-    <select id="queryCompanyCategories" resultMap="CompanyCategoryResultMap">
-        select partner_company_area_id, name, remark, tree_level
-        from c_partner_company_area
-        order by tree_level
     </select>
 
     <select id="queryCompaniesByCategory" resultMap="CompanyResultMap">
@@ -108,6 +124,27 @@
     </update>
 
 
+    <resultMap id="RelevantCompanyCategoryResultMap" type="org.jc.backend.entity.RelevantCompanyCategoryO">
+        <result property="categoryID" column="relevant_company_category_id" />
+        <result property="name" column="name" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+
+    <select id="queryRelevantCompanyCategories" resultMap="RelevantCompanyCategoryResultMap">
+        select relevant_company_category_id, name, remark
+        from c_relevant_company_category
+    </select>
+
+    <insert id="insertRelevantCompanyCategory">
+
+    </insert>
+
+    <update id="updateRelevantCompanyCategory">
+
+    </update>
+
+
     <resultMap id="RelevantCompanyResultMap" type="org.jc.backend.entity.RelevantCompanyO">
         <result property="companyID" column="relevant_company_id" />
         <result property="abbreviatedName" column="abbreviated_name" />
@@ -125,17 +162,6 @@
         <result property="isActive" column="is_active" />
     </resultMap>
 
-    <resultMap id="RelevantCompanyCategoryResultMap" type="org.jc.backend.entity.RelevantCompanyCategoryO">
-        <result property="categoryID" column="relevant_company_category_id" />
-        <result property="name" column="name" />
-        <result property="remark" column="remark" />
-    </resultMap>
-
-    
-    <select id="queryRelevantCompanyCategories" resultMap="RelevantCompanyCategoryResultMap">
-        select relevant_company_category_id, name, remark
-        from c_relevant_company_category
-    </select>
 
     <select id="queryRelevantCompaniesByCategory" resultMap="RelevantCompanyResultMap">
         select relevant_company_id, abbreviated_name, full_name, phone, contact_person, contact_number, address, fax, zipcode, email, website, category_id, remark, is_active

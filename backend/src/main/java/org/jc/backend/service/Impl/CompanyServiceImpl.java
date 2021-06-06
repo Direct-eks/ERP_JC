@@ -1,6 +1,8 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.jc.backend.dao.CompanyMapper;
 import org.jc.backend.entity.CompanyCategoryO;
 import org.jc.backend.entity.CompanyO;
@@ -8,6 +10,7 @@ import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.CompanyService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,6 +80,46 @@ public class CompanyServiceImpl implements CompanyService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateCompanyAreas(ListUpdateVO<CompanyCategoryO> updateVO) {
+        Subject subject = SecurityUtils.getSubject();
+
+        try {
+            List<CompanyCategoryO> tempAreas = new ArrayList<>(updateVO.getElements());
+
+            if (subject.isPermitted("system:partnerCompanyCategories:create")) {
+                tempAreas.removeIf(a -> a.getAreaID() >= 0);
+                for (var area : tempAreas) {
+                    companyMapper.insertPartnerCompanyArea(area);
+                }
+            }
+
+            if (subject.isPermitted("system:partnerCompanyCategories:update")) {
+                tempAreas = new ArrayList<>(updateVO.getElements());
+                tempAreas.removeIf(a -> a.getAreaID() < 0);
+                for (var area :  tempAreas) {
+                    companyMapper.updatePartnerCompanyArea(area);
+                }
+            }
+
+            // check for removed
+            if (subject.isPermitted("system:partnerCompanyCategories:remove")) {
+                List<CompanyCategoryO> oldAreas = companyMapper.queryCompanyCategories();
+                oldAreas.removeIf(oldA -> updateVO.getElements().stream()
+                        .anyMatch(a -> a.getAreaID().equals(oldA.getAreaID())));
+                for (var area : oldAreas) {
+                    // todo remove
+                }
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
             throw e;
         }
     }

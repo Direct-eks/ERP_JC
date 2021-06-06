@@ -4,13 +4,14 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.jc.backend.dao.ModelMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
-import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -84,13 +85,13 @@ public class ModelServiceImpl implements ModelService {
     @Transactional
     @Override
     public void updateModelsWithCategory(int categoryID, int[] brands, ListUpdateVO<ModelO> updateVO) {
-        List<String> permissions = MyUtils.getUserPermissions();
+        Subject subject = SecurityUtils.getSubject();
 
         try {
             List<ModelO> tempModels = new ArrayList<>(updateVO.getElements());
 
             // check for added
-            if (permissions.contains("system:models:create")) {
+            if (subject.isPermitted("system:models:create")) {
                 tempModels.removeIf(m -> m.getModelID() >= 0);
                 for (var model : tempModels) {
                     modelMapper.insertModel(model);
@@ -101,7 +102,7 @@ public class ModelServiceImpl implements ModelService {
             }
 
             // update all
-            if (permissions.contains("system:models:update")) {
+            if (subject.isPermitted("system:models:update")) {
                 tempModels = new ArrayList<>(updateVO.getElements());
                 tempModels.removeIf(i -> i.getModelID() < 0);
                 for (var model : tempModels) {
@@ -109,7 +110,7 @@ public class ModelServiceImpl implements ModelService {
                 }
             }
 
-            if (permissions.contains("system:models:remove")) {
+            if (subject.isPermitted("system:models:remove")) {
                 // check for remove is possible
                 List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
                 oldModels.removeIf(oldM -> updateVO.getElements().stream()

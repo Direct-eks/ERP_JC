@@ -68,6 +68,14 @@ public class CompanyController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateCompanyAreas")
+    public void updateCompanyAreas(@RequestBody @Validated ListUpdateVO<CompanyCategoryO> updateVO) {
+        logger.info("POST Request to /company/updateCompanyAreas, info: {}", updateVO);
+
+        companyService.updateCompanyAreas(updateVO);
+    }
+
+    @ApiOperation(value = "", response = void.class)
     @PostMapping("/updatePartnerCompanyWithArea")
     public void updatePartnerCompanyWithArea(
             @RequestParam("areaID") int areaID,
