@@ -1,11 +1,13 @@
 package org.jc.backend.utils;
 
+import org.apache.shiro.SecurityUtils;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Indexed;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -15,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Indexed
 @Component
 public class MyUtils {
 
@@ -32,16 +35,15 @@ public class MyUtils {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date date;
         try {
-            date = dateFormat.parse(dateString);
+            return dateFormat.parse(dateString);
+
         } catch (ParseException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
             String errorInfo = "Invalid date String: " + dateString;
             logger.info(errorInfo);
             throw new GlobalParamException(errorInfo);
         }
-
-        return date;
     }
 
     /**
@@ -52,14 +54,21 @@ public class MyUtils {
      * @return new formed serial String
      */
     public static String formNewSerial(String base, int currentCount, String date) {
-
-//        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String dateString = date;
         dateString = dateString.substring(2).replaceAll("-", "");
         String newSerial = String.format("%s%s-%03d", base, dateString, currentCount + 1);
         logger.info("New serial: " + newSerial);
 
         return newSerial;
+    }
+
+    /**
+     * get shiro user permissions
+     * @return user permission strings
+     */
+    @SuppressWarnings("unchecked cast")
+    public static List<String> getUserPermissions() {
+        return (List<String>) SecurityUtils.getSubject().getSession().getAttribute("permissions");
     }
 
     /**

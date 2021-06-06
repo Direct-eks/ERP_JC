@@ -89,18 +89,13 @@ public class MyShiroRealm extends AuthorizingRealm {
         HashSet<String> roles = new HashSet<>();
         roles.add(userService.getRoleByUserId(user.getUserID()));
         authorizationInfo.setRoles(roles);
-        authorizationInfo.addStringPermissions(userService.getPermissionsByUserId(user.getUserID()));
 
-//        User userInfo = (User) principals.getPrimaryPrincipal();
-//        for (SysRole role : userInfo.getRoleList()) {
-//            authorizationInfo.addRole(role.getRole());
-//            for (SysPermission p : role.getPermissions()) {
-//                authorizationInfo.addStringPermission(p.getPermission());
-//            }
-//        }
+        var permissions = userService.getPermissionsByUserId(user.getUserID());
+        authorizationInfo.addStringPermissions(permissions);
 
-//        authorizationInfo.setRoles(userService.findRoles(username));
-//        authorizationInfo.setStringPermissions(userService.findPermissions(username));
+        SecurityUtils.getSubject().getSession().setAttribute("permissions", permissions);
+        SecurityUtils.getSubject().getSession().setAttribute("role", roles);
+
         return authorizationInfo;
     }
 
