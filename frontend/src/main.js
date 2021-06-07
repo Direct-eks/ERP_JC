@@ -23,11 +23,7 @@ Vue.prototype.$getFileRequest = getFileRequest
 Vue.prototype.$api = api
 
 
-if (process.env.NODE_ENV === "development") {
-
-}
-
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" || process.env.BUILD_ENV === 'webOnly') {
     Vue.config.productionTip = false
 }
 
@@ -100,7 +96,6 @@ function createTree(data, modelSearch) {
     for (let index in tree) {
         createTreeHelper(tree, index, data, tree[index].treeLevel)
     }
-    console.log('tree: ', tree)
     return tree
 }
 Vue.prototype.$createTree = createTree

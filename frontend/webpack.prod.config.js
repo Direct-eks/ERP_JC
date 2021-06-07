@@ -1,18 +1,19 @@
 const { merge } = require('webpack-merge')
 const common = require('./webpack.base.config')
+const webpack = require('webpack')
 
 const { resolve } = require('path')
 const publicPath = ''
 const bundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-// const PurgeCSSPlugin = require('purgecss-webpack-plugin')
-// const glob = require('glob-all')
 
-module.exports = merge(common, {
+module.exports = env => merge(common, {
     mode: 'production',
     output: {
-        path: resolve(__dirname, '../electron_app/webpages'),
+        path: env.BUILD_ENV === 'webOnly' ?
+            resolve(__dirname, '../backend/src/main/resources/static') :
+            resolve(__dirname, '../electron_app/webpages'),
         filename: '[name].js',
         chunkFilename: "[name].bundle.js",
         publicPath: publicPath
@@ -46,7 +47,11 @@ module.exports = merge(common, {
             },
         ]
     },
+    target: 'web',
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env.BUILD_ENV': JSON.stringify(env.BUILD_ENV)
+        }),
         new MiniCssExtractPlugin({
             filename: '[name].[fullhash].css',
             chunkFilename: '[id].[fullhash].css',

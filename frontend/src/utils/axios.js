@@ -70,12 +70,14 @@ axios.interceptors.response.use((response) => {
 })
 
 let base
-if (process.env.NODE_ENV === 'development') {
+if (process.env.BUILD_ENV === 'development') {
     base = '/api'
 }
-else {
+else if (process.env.BUILD_ENV === 'production') {
     base = 'http://127.0.0.1:58080' // for electron
-    // base = '' // for web
+}
+else {
+    base = '' // for web
 }
 
 export const getRequest = (url, params) => {
