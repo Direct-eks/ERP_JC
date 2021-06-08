@@ -13,4 +13,6 @@ public interface SupplierService {
     List<SupplierResourceO> getResourcesBySupplier(int id);
     void updateSupplierWithResources(SupplierWithResourcesVO vo);
     List<SupplierResourceO> getSupplierResourcesBySku(int id);
+
+    void deleteResourcesBySupplierID(int id);
 }

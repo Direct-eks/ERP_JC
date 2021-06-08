@@ -116,7 +116,7 @@
                               persistent
                               scrollable
                               no-click-animation
-                              max-width="45vw">
+                              max-width="55vw">
                         <template v-slot:activator="{on}">
                             <v-btn class="ml-4"
                                    color="accent"

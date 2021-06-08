@@ -137,6 +137,7 @@ const api = {
     allSuppliers: '/supplier/getAllSuppliers', // GET
     resourceBySupplier: '/supplier/getResourcesBySupplier/', // GET {id}
     supplierResourcesBySku: '/supplier/getSupplierResourcesBySku/', // GET {id}
+    deleteResourcesBySupplierID: '/supplier/deleteResourcesBySupplierID', // DELETE {id}
 
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET

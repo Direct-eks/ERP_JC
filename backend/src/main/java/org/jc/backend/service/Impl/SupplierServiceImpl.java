@@ -86,7 +86,7 @@ public class SupplierServiceImpl implements SupplierService {
 
             // compare resources for deleted resources
             oldResources.removeAll(newResources); // remove overlapping resource, left with deleted ones
-            oldResources.forEach(r -> supplierMapper.deleteResource()); //todo complete param and mapper
+//            oldResources.forEach(r -> supplierMapper.deleteResource()); //todo complete param and mapper
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -104,6 +104,20 @@ public class SupplierServiceImpl implements SupplierService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteResourcesBySupplierID(int id) {
+        try {
+            supplierMapper.deleteResourceBySupplierID(id);
+            supplierMapper.deleteSupplierByID(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("delete failed");
             throw e;
         }
     }

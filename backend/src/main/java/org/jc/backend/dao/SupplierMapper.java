@@ -16,8 +16,10 @@ public interface SupplierMapper {
     List<SupplierResourceO> queryResourcesBySupplier(int id);
 
     void createSupplier();
-    void insertResource();
-    void deleteResource();
+    void deleteSupplierByID(int id);
 
     List<SupplierResourceO> queryResourceBySku(int id);
+
+    void insertResource();
+    void deleteResourceBySupplierID(int id);
 }

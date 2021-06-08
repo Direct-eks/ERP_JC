@@ -61,4 +61,12 @@ public class SupplierController {
 
         return supplierService.getSupplierResourcesBySku(id);
     }
+
+    @ApiOperation(value = "", response = void.class)
+    @DeleteMapping("/deleteResourcesBySupplierID/{id}")
+    public void deleteResourcesBySupplierID(@PathVariable("id") int id) {
+        logger.info("DELETE Request to /supplier/deleteResourcesBySupplierID, id: {}", id);
+
+        supplierService.deleteResourcesBySupplierID(id);
+    }
 }

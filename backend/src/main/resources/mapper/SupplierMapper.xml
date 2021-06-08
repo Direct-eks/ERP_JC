@@ -57,12 +57,9 @@
 
     </insert>
 
-    <insert id="insertResource">
-
-    </insert>
-
-    <delete id="deleteResource">
-
+    <delete id="deleteSupplierByID">
+        delete from w_supplier
+        where supplier_id = #{id}
     </delete>
 
     <select id="queryResourceBySku" resultMap="resourceResultMap">
@@ -75,5 +72,14 @@
             join c_partner_company c on r.supplier_id = c.partner_company_id
         where r.sku_id = #{id}
     </select>
+
+    <insert id="insertResource">
+
+    </insert>
+
+    <delete id="deleteResourceBySupplierID">
+        delete from w_supplier_resource
+        where supplier_id = #{id}
+    </delete>
 
 </mapper>
