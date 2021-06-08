@@ -1,10 +1,11 @@
 const { merge } = require('webpack-merge')
 const common = require('./webpack.base.config')
+const webpack = require('webpack')
 
 const { resolve } = require('path')
 const url = require('url')
 
-module.exports = merge(common, {
+module.exports = env => merge(common, {
     mode: 'development',
     output: {
         path: resolve(__dirname, 'dist'),
@@ -41,6 +42,11 @@ module.exports = merge(common, {
             },
         ]
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env.BUILD_ENV': JSON.stringify(env.BUILD_ENV)
+        })
+    ],
     devtool: 'eval-source-map',
     target: 'web',
     devServer: {
