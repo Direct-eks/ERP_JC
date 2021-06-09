@@ -46,6 +46,24 @@ public class SupplierController {
         return supplierService.getResourcesBySupplier(id);
     }
 
+    /**
+     * Query sku by modelCategoryID and factoryBrandID, then transform skus into supplierResourceO
+     * @param modelCategoryID sku categoryID
+     * @param factoryBrandID sku factoryBrandID
+     * @return supplierResourceO corresponding to the result sku
+     */
+    @ApiOperation(value = "", response = SupplierResourceO.class)
+    @GetMapping("/resourcesByCategoryAndFactoryBrand")
+    public List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(
+            @RequestParam("modelCategoryID") int modelCategoryID,
+            @RequestParam("factoryBrandID") int factoryBrandID
+    ) {
+        logger.info("GET Request to /supplier/resourcesByCategoryAndFactoryBrand, " +
+                "modelCategoryID: {}, factoryBrandID: {}", modelCategoryID, factoryBrandID);
+
+        return supplierService.resourcesByCategoryAndFactoryBrand(modelCategoryID, factoryBrandID);
+    }
+
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/createSupplierWithResources")
     public void updateSupplierWithResources(@Validated @RequestBody SupplierWithResourcesVO vo) {

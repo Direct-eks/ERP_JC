@@ -56,6 +56,29 @@ public class SupplierServiceImpl implements SupplierService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(int categoryID, int brandID) {
+        try {
+            List<SupplierResourceO> rawResources = supplierMapper.queryResourcesByCategoryAndBrand(categoryID, brandID);
+            List<SupplierResourceO> resources = new ArrayList<>();
+            rawResources.forEach(r -> {
+                var resource = new SupplierResourceO();
+                resource.setSkuID(r.getSkuID());
+                if (r.getSupplierID() != null) {
+                    resource.setHistory(r.getHistory());
+                }
+                resources.add(resource);
+            });
+            return resources;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
     @Transactional
     @Override
     public void updateSupplierWithResources(SupplierWithResourcesVO vo) {

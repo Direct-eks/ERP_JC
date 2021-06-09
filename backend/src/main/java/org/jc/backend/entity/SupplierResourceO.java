@@ -1,5 +1,6 @@
 package org.jc.backend.entity;
 
+import io.swagger.models.auth.In;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,19 +50,20 @@ public class SupplierResourceO {
             message = "factoryPriceWithTax value error")
     private String factoryPriceWithTax;
 
+    @NotNull(message = "floatDownRate null error")
     @Min(value = 0, message = "floatDownRate smaller than zero error")
-    private int floatDownRate;
+    private Integer floatDownRate;
 
     @NotNull(message = "settlementPriceWithoutTax null error")
     @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
             message = "settlementPriceWithoutTax value error")
     private String settlementPriceWithoutTax;
 
-    @NotNull(message = "numberOfBoxes null error")
-    private String numberOfBoxes;
-
-    private String lastSettlementPrice;
+    @NotNull(message = "quantityPerBox null error")
+    private String quantityPerBox;
 
     @NotNull(message = "remark null error")
     private String remark;
+
+    private String history;
 }

@@ -13,7 +13,9 @@ import java.util.List;
 @Repository
 public interface SupplierMapper {
     List<SupplierO> queryAllSuppliers();
+
     List<SupplierResourceO> queryResourcesBySupplier(int id);
+    List<SupplierResourceO> queryResourcesByCategoryAndBrand(int categoryID, int brandID);
 
     void createSupplier();
     void deleteSupplierByID(int id);

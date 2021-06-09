@@ -9,16 +9,14 @@
         <result property="supplierAbbreviatedName" column="abbreviated_name"/>
         <result property="supplierFullName" column="full_name"/>
         <result property="supplierPhone" column="phone"/>
-        <result property="lastQuoteDate" column="last_quote_date"/>
-        <result property="thisQuoteDate" column="this_quote_date"/>
         <result property="remark" column="remark"/>
     </resultMap>
 
     <select id="queryAllSuppliers" resultMap="supplierResultMap">
-        select supplier_id, c.abbreviated_name, c.full_name, c.phone, last_quote_date,
-               this_quote_date, s.remark
+        select supplier_id, c.abbreviated_name, c.full_name, c.phone, s.remark
         from w_supplier as s join c_partner_company as c on s.supplier_id = c.partner_company_id
     </select>
+
 
     <resultMap id="resourceResultMap" type="org.jc.backend.entity.SupplierResourceO">
         <result property="supplierID" column="supplier_id"/>
@@ -37,9 +35,9 @@
         <result property="factoryPriceWithTax" column="factory_price_with_tax"/>
         <result property="floatDownRate" column="float_down_rate"/>
         <result property="settlementPriceWithoutTax" column="settlement_price_without_tax"/>
-        <result property="numberOfBoxes" column="number_of_boxes"/>
-        <result property="lastSettlementPrice" column="last_settlement_price"/>
+        <result property="quantityPerBox" column="quantity_per_box"/>
         <result property="remark" column="remark"/>
+        <result property="history" column="history"/>
     </resultMap>
 
     <select id="queryResourcesBySupplier" resultMap="resourceResultMap">
@@ -47,10 +45,24 @@
                r.sku_id, s.model_id, s.code, s.factory_brand_id, s.factory_code,
                s.unit_id, s.unit_name, quantity_record, r.factory_price_without_tax,
                r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
-               r.number_of_boxes, r.last_settlement_price, r.remark
+               r.quantity_per_box, r.remark
         from w_supplier_resource as r join sku_full as s on r.sku_id = s.sku_id
             join c_partner_company as c on r.supplier_id = c.partner_company_id
         where r.supplier_id = #{id}
+    </select>
+
+    <select id="queryResourcesByCategoryAndBrand" resultMap="resourceResultMap">
+        select r.supplier_id, s.sku_id, s.code, s.factory_code, r.quantity_record,
+               r.factory_price_without_tax, r.factory_price_with_tax, r.float_down_rate,
+               r.settlement_price_without_tax, r.quantity_per_box, r.remark, r.history
+        from sku_full as s join (
+            select m.model_id
+            from w_model as m join w_model_category as c
+                on m.category_id = c.model_category_id
+            where c.model_category_id = #{categoryID}
+        ) as model on s.model_id = model.model_id
+        left join w_supplier_resource as r on s.sku_id = r.sku_id
+        where s.factory_brand_id = #{brandID}
     </select>
 
     <insert id="createSupplier">

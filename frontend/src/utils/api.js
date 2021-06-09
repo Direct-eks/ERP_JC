@@ -139,6 +139,8 @@ const api = {
     supplierResourcesBySku: '/supplier/getSupplierResourcesBySku/', // GET {id}
     deleteResourcesBySupplierID: '/supplier/deleteResourcesBySupplierID', // DELETE {id}
 
+    resourcesByCategoryAndFactoryBrand: '/supplier/resourcesByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
+
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET
     updateUnits: '/unit/updateUnits', // POST

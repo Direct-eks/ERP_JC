@@ -15,7 +15,5 @@ public class SupplierO {
     private String supplierFullName;
     private String supplierPhone;
 
-    private String lastQuoteDate;
-    private String thisQuoteDate;
     private String remark;
 }
