@@ -61,8 +61,6 @@ export default {
 
             supplierTableHeaders: [
                 { text: '供应商简称', value: 'supplierAbbreviatedName', width: '110px' },
-                { text: '上次报价日期', value: 'lastQuoteDate', width: '100px' },
-                { text: '本次报价日期', value: 'thisQuoteDate', width: '100px' },
                 { text: '备注', value: 'remark', width: '200px' },
             ],
             supplierTableData: [],

@@ -9,7 +9,7 @@
                       persistent
                       scrollable
                       no-click-animation
-                      max-width="55vw">
+                      max-width="45vw">
                 <template v-slot:activator="{on}">
                     <v-btn color="primary" v-on="on"
                            :disabled="resourceCompanySearchPanel">
@@ -64,7 +64,7 @@
             <div class="d-flex">
                 <div class="ma-2">
                     <v-text-field v-model="resourceCompany.remark"
-                                  label="备注"
+                                  label="资源单位备注"
                                   hide-details="auto"
                                   outlined
                                   dense
@@ -180,15 +180,16 @@
                               item-key="skuID"
                               :loading="isQuerying"
                               calculate-widths
-                              :height="tableHeight"
+                              height="40vh"
                               disable-sort
+                              disable-pagination
+                              hide-default-footer
                               show-select
                               @click:row="tableSelect"
                               @item-selected="tableSelect2"
                               fixed-header
                               show-expand
-                              locale="zh-cn"
-                              :footer-props="{'items-per-page-options': [10,20,30]}">
+                              locale="zh-cn">
                     <template v-slot:item.index="{ item }">
                         {{tableData.indexOf(item) + 1}}
                     </template>
@@ -212,6 +213,15 @@
                             </template>
                         </v-edit-dialog>
                     </template>
+                    <template v-slot:item.floatDownRate="{ item }">
+                        <v-edit-dialog :return-value="item.floatDownRate"
+                                       persistent large save-text="确认" cancel-text="取消">
+                            {{item.floatDownRate}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.floatDownRate" single-line/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
                     <template v-slot:item.settlementPriceWithoutTax="{ item }">
                         <v-edit-dialog :return-value="item.settlementPriceWithoutTax"
                                        persistent large save-text="确认" cancel-text="取消"
@@ -222,18 +232,31 @@
                             </template>
                         </v-edit-dialog>
                     </template>
-                    <template v-slot:expanded-item="{ item }">
-                        <td>{{ item.history }}</td>
+                    <template v-slot:item.quantityPerBox="{ item }">
+                        <v-edit-dialog :return-value="item.quantityPerBox"
+                                       persistent large save-text="确认" cancel-text="取消">
+                            {{item.quantityPerBox}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.quantityPerBox" single-line/>
+                            </template>
+                        </v-edit-dialog>
                     </template>
-                    <template v-slot:footer.prepend>
-                        <v-btn color="accent"
-                               @click="hideTop">
-                            隐藏上半部分
-                        </v-btn>
+                    <template v-slot:expanded-item="{ item }">
+                        <td :colspan="item.history.length">{{ item.history }}</td>
                     </template>
                 </v-data-table>
             </v-card>
         </v-card-text>
+        <v-card-actions>
+            <v-btn color="warning"
+                   @click="removeRows">
+                删除
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="saveChanges">
+                保存
+            </v-btn>
+        </v-card-actions>
     </v-card>
 </template>
 
@@ -272,6 +295,7 @@ export default {
             modelImportPanel: false,
 
             resourceCompany: {
+                supplierID: -1,
                 phone: '',
                 abbreviatedName: '',
                 fullName: '',
@@ -292,8 +316,8 @@ export default {
             brandSelected: '',
 
             tableHeaders: [
-                { text: '序号', value: 'index', width: '65px' },
-                { text: '商品分类', value: '', width: '80px' },
+                // { text: '序号', value: 'index', width: '65px' },
+                // { text: '商品分类', value: '', width: '80px' },
                 { text: '代号', value: 'code', width: '120px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px' },
                 { text: '无税厂价', value: 'factoryPriceWithoutTax', width: '80px' },
@@ -304,14 +328,15 @@ export default {
             ],
             tableData: [],
             tableCurrentRow: [],
-            tableHeight: '40vh',
-            isHiding: false,
         }
     },
     methods: {
         fullSearchChooseAction(val) {
             if (val) {
-                this.resourceCompany = val
+                this.resourceCompany.supplierID = val.companyID
+                this.resourceCompany.abbreviatedName = val.abbreviatedName
+                this.resourceCompany.fullName = val.fullName
+                this.resourceCompany.phone = val.phone
             }
             this.fullSearchPanelOpen = false
         },
@@ -351,29 +376,46 @@ export default {
             }).catch(() => {})
         },
         tableSelect(row) {
-            this.tableCurrentRow = [row]
+            if (this.tableCurrentRow.indexOf(row) !== -1) {
+                this.tableCurrentRow.splice(this.tableCurrentRow.indexOf(row), 1)
+            }
+            else {
+                this.tableCurrentRow.push(row)
+            }
         },
         tableSelect2(row) {
             if (!row.value) {
-                this.tableCurrentRow = []
+                this.tableCurrentRow.splice(this.tableCurrentRow.indexOf(row.item), 1)
             }
             else {
-                this.tableCurrentRow = [row.item]
+                this.tableSelect(row.item)
             }
         },
         saveEditing(item) {
             // todo validate fields
         },
-        hideTop() {
-            if (this.isHiding) {
-                this.isHiding = false
-                this.tableHeight = '40vh'
-            }
-            else {
-                this.isHiding = true
-                this.tableHeight = '75vh'
+        removeRows() {
+            if (this.tableCurrentRow.length === 0) return
+            for (const row of this.tableCurrentRow) {
+                this.tableData.splice(this.tableData.indexOf(row), 1)
             }
         },
+        saveChanges() {
+            if (this.resourceCompany.supplierID === -1) return
+            if (this.tableData.length === 0) return
+
+            this.$postRequest(this.$api.createSupplierWithResources, {
+                elements: this.tableData
+            }, {
+                supplierID: this.resourceCompany.supplierID,
+                remark: this.resourceCompany.remark
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '保存成功', color: 'success'
+                })
+                this.$router.replace('/resources')
+            })
+        }
     }
 }
 </script>

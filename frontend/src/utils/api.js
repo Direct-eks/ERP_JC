@@ -140,6 +140,7 @@ const api = {
     deleteResourcesBySupplierID: '/supplier/deleteResourcesBySupplierID', // DELETE {id}
 
     resourcesByCategoryAndFactoryBrand: '/supplier/resourcesByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
+    createSupplierWithResources: '/supplier/createSupplierWithResources', // POST supplierID, list
 
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET

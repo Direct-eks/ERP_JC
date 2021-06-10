@@ -4,8 +4,9 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.SupplierMapper;
 import org.jc.backend.entity.SupplierO;
 import org.jc.backend.entity.SupplierResourceO;
-import org.jc.backend.entity.VO.SupplierWithResourcesVO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.SupplierService;
+import org.jc.backend.utils.IOModificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SupplierServiceImpl implements SupplierService {
@@ -64,9 +63,13 @@ public class SupplierServiceImpl implements SupplierService {
             List<SupplierResourceO> resources = new ArrayList<>();
             rawResources.forEach(r -> {
                 var resource = new SupplierResourceO();
-                resource.setSkuID(r.getSkuID());
                 if (r.getSupplierID() != null) {
-                    resource.setHistory(r.getHistory());
+                    BeanUtils.copyProperties(r, resource);
+                }
+                else {
+                    resource.setSkuID(r.getSkuID());
+                    resource.setCode(r.getCode());
+                    resource.setFactoryCode(r.getFactoryCode());
                 }
                 resources.add(resource);
             });
@@ -81,35 +84,38 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Transactional
     @Override
-    public void updateSupplierWithResources(SupplierWithResourcesVO vo) {
-
-        SupplierO supplier = new SupplierO();
-        BeanUtils.copyProperties(vo, supplier);
-        List<SupplierResourceO> newResources = vo.getResources();
-
+    public void updateSupplierWithResources(SupplierO supplierO, ListUpdateVO<SupplierResourceO> updateVO) {
         try {
-            List<SupplierResourceO> oldResources = supplierMapper.queryResourcesBySupplier(supplier.getSupplierID());
+            List<SupplierResourceO> newResources = new ArrayList<>(updateVO.getElements());
+            List<SupplierResourceO> oldResources = supplierMapper.queryResourcesBySupplier(supplierO.getSupplierID());
             if (oldResources.isEmpty()) { // new supplier
-                //todo create new supplier
+                supplierMapper.createSupplier(supplierO);
             }
 
-            Map<Integer, SupplierResourceO> oldResourcesMap = new HashMap<>();
-            oldResources.forEach(r -> oldResourcesMap.put(r.getSkuID(), r));
-
-            // compare resources for new added resources
-            for (var r : newResources) {
-                SupplierResourceO tempResource = oldResourcesMap.get(r.getSkuID());
-                if (tempResource != null) { // compare & check changes
-                    //todo compare
-                }
-                else { // new resource, insert
-                    //todo insert new
-                }
+            // check for new added resources
+            newResources.removeIf(r -> oldResources.stream()
+                    .anyMatch(or -> or.getSkuID().equals(r.getSkuID())));
+            for (var resource : newResources) {
+                resource.setSupplierID(supplierO.getSupplierID());
+                resource.setHistory("无历史报价记录");
+                supplierMapper.insertResource(resource);
             }
 
-            // compare resources for deleted resources
-            oldResources.removeAll(newResources); // remove overlapping resource, left with deleted ones
-//            oldResources.forEach(r -> supplierMapper.deleteResource()); //todo complete param and mapper
+            List<SupplierResourceO> updatedResources = new ArrayList<>(updateVO.getElements());
+            updatedResources.removeAll(newResources);
+            for (var resource : updatedResources) {
+                String history = null;
+                for (var oldResource : oldResources) {
+                    if (oldResource.getSkuID().equals(resource.getSkuID())) {
+                        history = IOModificationUtils.formResourceHistory(oldResource);
+                        break;
+                    }
+                }
+                resource.setHistory(history);
+                supplierMapper.updateResource(resource);
+            }
+
+            // todo remove old resources
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

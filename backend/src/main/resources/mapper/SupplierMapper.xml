@@ -17,6 +17,15 @@
         from w_supplier as s join c_partner_company as c on s.supplier_id = c.partner_company_id
     </select>
 
+    <insert id="createSupplier" useGeneratedKeys="true">
+        insert into w_supplier(supplier_id, remark)
+        values (#{supplierID}, #{remark})
+    </insert>
+
+    <delete id="deleteSupplierByID">
+        delete from w_supplier
+        where supplier_id = #{id}
+    </delete>
 
     <resultMap id="resourceResultMap" type="org.jc.backend.entity.SupplierResourceO">
         <result property="supplierID" column="supplier_id"/>
@@ -38,6 +47,7 @@
         <result property="quantityPerBox" column="quantity_per_box"/>
         <result property="remark" column="remark"/>
         <result property="history" column="history"/>
+        <result property="quoteDate" column="quote_date"/>
     </resultMap>
 
     <select id="queryResourcesBySupplier" resultMap="resourceResultMap">
@@ -45,7 +55,7 @@
                r.sku_id, s.model_id, s.code, s.factory_brand_id, s.factory_code,
                s.unit_id, s.unit_name, quantity_record, r.factory_price_without_tax,
                r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
-               r.quantity_per_box, r.remark
+               r.quantity_per_box, r.remark, r.history, r.quote_date
         from w_supplier_resource as r join sku_full as s on r.sku_id = s.sku_id
             join c_partner_company as c on r.supplier_id = c.partner_company_id
         where r.supplier_id = #{id}
@@ -54,7 +64,7 @@
     <select id="queryResourcesByCategoryAndBrand" resultMap="resourceResultMap">
         select r.supplier_id, s.sku_id, s.code, s.factory_code, r.quantity_record,
                r.factory_price_without_tax, r.factory_price_with_tax, r.float_down_rate,
-               r.settlement_price_without_tax, r.quantity_per_box, r.remark, r.history
+               r.settlement_price_without_tax, r.quantity_per_box, r.remark, r.history, r.quote_date
         from sku_full as s join (
             select m.model_id
             from w_model as m join w_model_category as c
@@ -65,29 +75,42 @@
         where s.factory_brand_id = #{brandID}
     </select>
 
-    <insert id="createSupplier">
-
-    </insert>
-
-    <delete id="deleteSupplierByID">
-        delete from w_supplier
-        where supplier_id = #{id}
-    </delete>
-
     <select id="queryResourceBySku" resultMap="resourceResultMap">
         select r.supplier_id, c.abbreviated_name, c.full_name, c.phone,
                r.sku_id, s.model_id, s.code, s.factory_brand_id, s.factory_code,
                s.unit_id, s.unit_name, quantity_record, r.factory_price_without_tax,
                r.factory_price_with_tax, r.float_down_rate, r.settlement_price_without_tax,
-               r.number_of_boxes, r.last_settlement_price, r.remark
+               r.quantity_per_box, r.remark, r.history, r.quote_date
         from w_supplier_resource as r join sku_full as s on r.sku_id = s.sku_id
             join c_partner_company c on r.supplier_id = c.partner_company_id
         where r.sku_id = #{id}
     </select>
 
     <insert id="insertResource">
-
+        insert into w_supplier_resource(
+            supplier_id, sku_id, quantity_record, factory_price_without_tax, factory_price_with_tax,
+            float_down_rate, settlement_price_without_tax, quantity_per_box, remark, history, quote_date
+        )
+        values (
+            #{supplierID}, #{skuID}, #{quantityRecord}, #{factoryPriceWithoutTax},
+            #{factoryPriceWithTax}, #{floatDownRate}, #{settlementPriceWithoutTax},
+            #{quantityPerBox}, #{remark}, #{history}, date('now', 'localtime')
+        )
     </insert>
+
+    <update id="updateResource">
+        update w_supplier_resource
+        set quantity_record = #{quantityRecord},
+            factory_price_without_tax = #{factoryPriceWithoutTax},
+            factory_price_with_tax = #{factoryPriceWithTax},
+            float_down_rate = #{floatDownRate},
+            settlement_price_without_tax = #{settlementPriceWithoutTax},
+            quantity_per_box = #{quantityPerBox},
+            remark = #{remark},
+            history = #{history},
+            quote_date = date('now', 'localtime')
+        where supplier_id = #{supplierID} and sku_id = #{skuID}
+    </update>
 
     <delete id="deleteResourceBySupplierID">
         delete from w_supplier_resource

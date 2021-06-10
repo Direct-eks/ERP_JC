@@ -5,6 +5,7 @@ import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.DO.QuotaEntryDO;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.SupplierResourceO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
@@ -232,6 +233,14 @@ public class IOModificationUtils {
         }
 
         return bool;
+    }
+
+    public static String formResourceHistory(SupplierResourceO resourceO) {
+        return  "上次报价: " + "报价时间(" + resourceO.getQuoteDate() + ") 无税厂价:(" +
+                resourceO.getFactoryPriceWithoutTax() + ") 含税厂价:(" +
+                resourceO.getFactoryPriceWithTax() + ") 下浮率:(" +
+                resourceO.getFloatDownRate() + ") 无税结算价:(" +
+                resourceO.getSettlementPriceWithoutTax();
     }
 
 }

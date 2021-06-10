@@ -23,14 +23,6 @@ public class SupplierWithResourcesVO {
     private String supplierFullName;
     private String supplierPhone;
 
-    @NotNull(message = "lastQuoteDate null error")
-    @NotBlank(message = "lastQuoteDate blank error")
-    private String lastQuoteDate;
-
-    @NotNull(message = "thisQuoteDate null error")
-    @NotBlank(message = "thisQuoteDate blank error")
-    private String thisQuoteDate;
-
     @NotNull(message = "remark null error")
     private String remark;
 

@@ -38,32 +38,33 @@ public class SupplierResourceO {
     private String unitName;
 
     @NotNull(message = "quantityRecord null error")
-    private String quantityRecord;
+    private String quantityRecord = "";
 
     @NotNull(message = "factoryPriceWithoutTax null error")
     @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
             message = "factoryPriceWithoutTax value error")
-    private String factoryPriceWithoutTax;
+    private String factoryPriceWithoutTax = "0";
 
     @NotNull(message = "factoryPriceWithTax null error")
     @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
             message = "factoryPriceWithTax value error")
-    private String factoryPriceWithTax;
+    private String factoryPriceWithTax = "0";
 
     @NotNull(message = "floatDownRate null error")
     @Min(value = 0, message = "floatDownRate smaller than zero error")
-    private Integer floatDownRate;
+    private Integer floatDownRate = 0;
 
     @NotNull(message = "settlementPriceWithoutTax null error")
     @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
             message = "settlementPriceWithoutTax value error")
-    private String settlementPriceWithoutTax;
+    private String settlementPriceWithoutTax = "0";
 
     @NotNull(message = "quantityPerBox null error")
-    private String quantityPerBox;
+    private String quantityPerBox = "";
 
     @NotNull(message = "remark null error")
-    private String remark;
+    private String remark = "";
 
-    private String history;
+    private String history = "";
+    private String quoteDate = "";
 }

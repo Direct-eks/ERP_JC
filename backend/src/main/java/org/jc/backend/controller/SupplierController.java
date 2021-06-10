@@ -2,8 +2,10 @@ package org.jc.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.SupplierO;
 import org.jc.backend.entity.SupplierResourceO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.entity.VO.SupplierWithResourcesVO;
 import org.jc.backend.service.SupplierService;
 import org.slf4j.Logger;
@@ -66,10 +68,20 @@ public class SupplierController {
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/createSupplierWithResources")
-    public void updateSupplierWithResources(@Validated @RequestBody SupplierWithResourcesVO vo) {
-        logger.info("POST Request to /supplier/createSupplierWithResources, data: {}", vo.toString());
+    public void createSupplierWithResources(
+            @RequestParam("supplierID") int supplierID,
+            @RequestParam("remark") String remark,
+            @Validated @RequestBody ListUpdateVO<SupplierResourceO> updateVO
+    ) throws GlobalParamException {
+        logger.info("POST Request to /supplier/createSupplierWithResources, supplier: {}, " +
+                        "remark: {}, data: {}", supplierID, remark, updateVO.toString());
 
-        supplierService.updateSupplierWithResources(vo);
+        var supplier = new SupplierO();
+        if (supplierID < 0 || remark == null) throw new GlobalParamException("request param error");
+        supplier.setSupplierID(supplierID);
+        supplier.setRemark(remark);
+
+        supplierService.updateSupplierWithResources(supplier, updateVO);
     }
 
     @ApiOperation(value = "", response = SupplierResourceO.class)

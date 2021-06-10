@@ -13,15 +13,14 @@ import java.util.List;
 @Repository
 public interface SupplierMapper {
     List<SupplierO> queryAllSuppliers();
+    void createSupplier(SupplierO supplierO);
+    void deleteSupplierByID(int id);
 
     List<SupplierResourceO> queryResourcesBySupplier(int id);
     List<SupplierResourceO> queryResourcesByCategoryAndBrand(int categoryID, int brandID);
-
-    void createSupplier();
-    void deleteSupplierByID(int id);
-
     List<SupplierResourceO> queryResourceBySku(int id);
 
-    void insertResource();
+    void insertResource(SupplierResourceO resourceO);
+    void updateResource(SupplierResourceO resourceO);
     void deleteResourceBySupplierID(int id);
 }
