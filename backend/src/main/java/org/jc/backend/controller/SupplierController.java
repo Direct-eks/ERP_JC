@@ -40,6 +40,14 @@ public class SupplierController {
         return supplierService.getAllSuppliers();
     }
 
+    @ApiOperation(value = "", response = String.class)
+    @GetMapping("/getSupplier/{id}")
+    public SupplierO getSupplier(@PathVariable("id") int id) {
+        logger.info("GET Request to /supplier/getSupplier, id: {}", id);
+
+        return supplierService.getSupplier(id);
+    }
+
     @ApiOperation(value = "", response = SupplierResourceO.class)
     @GetMapping("/getResourcesBySupplier/{id}")
     public List<SupplierResourceO> getResourcesBySupplier(@PathVariable("id") int id) {
@@ -49,7 +57,8 @@ public class SupplierController {
     }
 
     /**
-     * Query sku by modelCategoryID and factoryBrandID, then transform skus into supplierResourceO
+     * Query sku by modelCategoryID and factoryBrandID, filter with given supplier
+     * then transform skus into supplierResourceO
      * @param modelCategoryID sku categoryID
      * @param factoryBrandID sku factoryBrandID
      * @return supplierResourceO corresponding to the result sku
@@ -58,12 +67,14 @@ public class SupplierController {
     @GetMapping("/resourcesByCategoryAndFactoryBrand")
     public List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(
             @RequestParam("modelCategoryID") int modelCategoryID,
-            @RequestParam("factoryBrandID") int factoryBrandID
+            @RequestParam("factoryBrandID") int factoryBrandID,
+            @RequestParam("supplierID") int supplierID
     ) {
         logger.info("GET Request to /supplier/resourcesByCategoryAndFactoryBrand, " +
-                "modelCategoryID: {}, factoryBrandID: {}", modelCategoryID, factoryBrandID);
+                "modelCategoryID: {}, factoryBrandID: {}, supplierID: {}",
+                modelCategoryID, factoryBrandID, supplierID);
 
-        return supplierService.resourcesByCategoryAndFactoryBrand(modelCategoryID, factoryBrandID);
+        return supplierService.resourcesByCategoryAndFactoryBrand(modelCategoryID, factoryBrandID, supplierID);
     }
 
     @ApiOperation(value = "", response = void.class)

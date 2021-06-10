@@ -240,7 +240,7 @@ public class IOModificationUtils {
                 resourceO.getFactoryPriceWithoutTax() + ") 含税厂价:(" +
                 resourceO.getFactoryPriceWithTax() + ") 下浮率:(" +
                 resourceO.getFloatDownRate() + ") 无税结算价:(" +
-                resourceO.getSettlementPriceWithoutTax();
+                resourceO.getSettlementPriceWithoutTax() + ")";
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SupplierServiceImpl implements SupplierService {
@@ -44,6 +45,27 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Transactional(readOnly = true)
     @Override
+    public SupplierO getSupplier(int id) {
+        try {
+            List<SupplierO> suppliers = supplierMapper.queryAllSuppliers();
+            for (var supplier : suppliers) {
+                if (supplier.getSupplierID() == id) {
+                    return supplier;
+                }
+            }
+            var supplier = new SupplierO();
+            supplier.setRemark("");
+            return supplier;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<SupplierResourceO> getResourcesBySupplier(int id) {
         try {
             return supplierMapper.queryResourcesBySupplier(id);
@@ -57,22 +79,38 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(int categoryID, int brandID) {
+    public List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(int categoryID, int brandID, int supplierID) {
         try {
             List<SupplierResourceO> rawResources = supplierMapper.queryResourcesByCategoryAndBrand(categoryID, brandID);
             List<SupplierResourceO> resources = new ArrayList<>();
-            rawResources.forEach(r -> {
-                var resource = new SupplierResourceO();
-                if (r.getSupplierID() != null) {
-                    BeanUtils.copyProperties(r, resource);
-                }
-                else {
-                    resource.setSkuID(r.getSkuID());
-                    resource.setCode(r.getCode());
-                    resource.setFactoryCode(r.getFactoryCode());
-                }
-                resources.add(resource);
-            });
+            /*
+            Because the way queryResourcesByCategoryAndBrand works, if there exists multiple
+            supplier resource for the same skuID (different supplierIDs), there will be multiple
+            results in the rawResources for the same skuID.
+            keep the one with the given supplierID, if none match, return new such resource
+             */
+            rawResources.stream().collect(Collectors.groupingBy(SupplierResourceO::getSkuID))
+                    .forEach((k, v) -> {
+                        if (v.stream().anyMatch(r ->
+                                r.getSupplierID() != null && r.getSupplierID() == supplierID)) {
+                            for (var r : v) {
+                                if (r.getSupplierID() != null && r.getSupplierID() == supplierID) {
+                                    var resource = new SupplierResourceO();
+                                    BeanUtils.copyProperties(r, resource);
+                                    resources.add(resource);
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            var r = v.get(0);
+                            var resource = new SupplierResourceO();
+                            resource.setSkuID(k);
+                            resource.setCode(r.getCode());
+                            resource.setFactoryCode(r.getFactoryCode());
+                            resources.add(resource);
+                        }
+                    });
             return resources;
 
         } catch (PersistenceException e) {

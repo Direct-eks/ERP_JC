@@ -185,14 +185,21 @@
                         </v-card-text>
                     </v-card>
                 </v-dialog>
-                <v-btn class="ma-1" color="warning"
-                       @click="removeRows">
-                    删除
-                </v-btn>
+                <v-btn class="ma-1" color="warning" @click="removeRows">删除</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn class="ma-1" color="primary" @click="saveChanges">
-                    保存
-                </v-btn>
+                <v-dialog v-model="dialogSave" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn class="ma-1" color="primary" v-on="on">保存</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认保存？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="warning" @click="dialogSave = false">取消</v-btn>
+                            <v-btn color="success" @click="saveChanges">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </div>
             <v-card outlined>
                 <v-data-table v-model="tableCurrentRow"
@@ -201,8 +208,8 @@
                               item-key="skuID"
                               :loading="isQuerying"
                               calculate-widths
-                              height="40vh"
-                              disable-sort
+                              height="65vh"
+                              sort-by="code"
                               disable-pagination
                               hide-default-footer
                               show-select
@@ -211,55 +218,63 @@
                               fixed-header
                               show-expand
                               locale="zh-cn">
-                    <template v-slot:item.index="{ item }">
-                        {{tableData.indexOf(item) + 1}}
-                    </template>
+<!--                    <template v-slot:item.index="{ item }">-->
+<!--                        {{tableData.indexOf(item) + 1}}-->
+<!--                    </template>-->
                     <template v-slot:item.factoryPriceWithoutTax="{ item }">
                         <v-edit-dialog :return-value="item.factoryPriceWithoutTax"
-                                       persistent large save-text="确认" cancel-text="取消"
-                                       @save="savePriceWithoutTax(item)">
+                                       @save="savePriceWithoutTax(item)"
+                                       @cancel="savePriceWithoutTax(item)"
+                                       @close="savePriceWithoutTax(item)">
                             {{item.factoryPriceWithoutTax}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.factoryPriceWithoutTax" single-line/>
+                                <v-text-field v-model="item.factoryPriceWithoutTax" single-line
+                                              @focus="$event.target.setSelectionRange(0, item.factoryPriceWithoutTax.length)"/>
                             </template>
                         </v-edit-dialog>
                     </template>
                     <template v-slot:item.factoryPriceWithTax="{ item }">
                         <v-edit-dialog :return-value="item.factoryPriceWithTax"
-                                       persistent large save-text="确认" cancel-text="取消"
-                                       @save="savePriceWithTax(item)">
+                                       @save="savePriceWithTax(item)"
+                                       @cancel="savePriceWithTax(item)"
+                                       @close="savePriceWithTax(item)">
                             {{item.factoryPriceWithTax}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.factoryPriceWithTax" single-line/>
+                                <v-text-field v-model="item.factoryPriceWithTax" single-line
+                                              @focus="$event.target.setSelectionRange(0, item.factoryPriceWithTax.length)"/>
                             </template>
                         </v-edit-dialog>
                     </template>
                     <template v-slot:item.floatDownRate="{ item }">
                         <v-edit-dialog :return-value="item.floatDownRate"
-                                       persistent large save-text="确认" cancel-text="取消"
-                                       @save="saveFloatDownRate(item)">
+                                       @save="saveFloatDownRate(item)"
+                                       @cancel="saveFloatDownRate(item)"
+                                       @close="saveFloatDownRate(item)">
                             {{item.floatDownRate}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.floatDownRate" single-line/>
+                                <v-text-field v-model="item.floatDownRate" single-line
+                                              @focus="$event.target.setSelectionRange(0, item.floatDownRate.length)"/>
                             </template>
                         </v-edit-dialog>
                     </template>
                     <template v-slot:item.settlementPriceWithoutTax="{ item }">
                         <v-edit-dialog :return-value="item.settlementPriceWithoutTax"
-                                       persistent large save-text="确认" cancel-text="取消"
-                                       @save="saveSettlementPrice(item)">
+                                       @save="saveSettlementPrice(item)"
+                                       @cancel="saveSettlementPrice(item)"
+                                       @close="saveSettlementPrice(item)">
                             {{item.settlementPriceWithoutTax}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.settlementPriceWithoutTax" single-line/>
+                                <v-text-field v-model="item.settlementPriceWithoutTax" single-line
+                                              @focus="$event.target.setSelectionRange(0,item.settlementPriceWithoutTax.length)"/>
                             </template>
                         </v-edit-dialog>
                     </template>
                     <template v-slot:item.quantityPerBox="{ item }">
-                        <v-edit-dialog :return-value="item.quantityPerBox"
-                                       persistent large save-text="确认" cancel-text="取消">
+                        <v-edit-dialog :return-value="item.quantityPerBox">
                             {{item.quantityPerBox}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.quantityPerBox" single-line/>
+                                <v-text-field v-model="item.quantityPerBox" single-line
+                                              @focus="$event.target.setSelectionRange(0, item.quantityPerBox.length)"/>
                             </template>
                         </v-edit-dialog>
                     </template>
@@ -306,8 +321,9 @@ export default {
             mdiClose,
             mdiPercentOutline,
             isQuerying: false,
+            dialogSave: false,
 
-            taxRate: '0',
+            taxRate: '16',
             taxRateOptions: [],
 
             resourceCompanySearchPanel: false,
@@ -357,6 +373,14 @@ export default {
                 this.resourceCompany.abbreviatedName = val.abbreviatedName
                 this.resourceCompany.fullName = val.fullName
                 this.resourceCompany.phone = val.phone
+                this.$getRequest(this.$api.supplierInfo +
+                    encodeURI(val.companyID)).then(data => {
+                    this.resourceCompany.remark = data.remark
+                })
+                this.$getRequest(this.$api.resourceBySupplier +
+                    encodeURI(val.companyID)).then(data => {
+                    this.tableData = data
+                })
             }
             this.fullSearchPanelOpen = false
         },
@@ -382,16 +406,29 @@ export default {
         },
         importSku() {
             if (this.treeSelection.length === 0 || this.brandSelected.length === 0) return
-            if (this.treeSelection[0].children.length !== 0) return;
+            if (this.treeSelection[0].children.length !== 0) return
+            if (this.resourceCompany.supplierID === -1) return
             this.isQuerying = true
             this.$getRequest(this.$api.resourcesByCategoryAndFactoryBrand, {
                 modelCategoryID: this.treeSelection[0].categoryID,
-                factoryBrandID: this.brandTableCurrentRow[0].factoryBrandID
+                factoryBrandID: this.brandTableCurrentRow[0].factoryBrandID,
+                supplierID: this.resourceCompany.supplierID
             }).then((data) => {
                 this.$store.commit('setSnackbar', {
                     message: '导入成功', color: 'success'
                 })
-                this.tableData = this.tableData.concat(data)
+                for (const item of data) {
+                    let found = false
+                    for (const row of this.tableData) {
+                        if (row.skuID === item.skuID) {
+                            found = true
+                            break
+                        }
+                    }
+                    if (!found) {
+                        this.tableData.push(item)
+                    }
+                }
                 this.isQuerying = false
             }).catch(() => {})
         },
@@ -413,30 +450,30 @@ export default {
         },
         savePriceWithTax(item) {
             let withTax = this.$Big(this.$validateFloat(item.factoryPriceWithTax))
+            item.factoryPriceWithTax = withTax.toString()
+            item.factoryPriceWithoutTax = withTax.div(this.$Big(this.taxRate).div('100').add('1')).toString()
             let withoutTax = this.$Big(item.factoryPriceWithoutTax)
-            let rate = this.$Big(item.floatDownRate)
-
-            item.factoryPriceWithoutTax =
-            item.factoryPriceWithTax =
-
-            item.settlementPriceWithoutTax = this.$validateFloat(item.settlementPriceWithoutTax)
-
+            item.settlementPriceWithoutTax = withoutTax.times(this.$Big('1').sub(this.$Big(item.floatDownRate).div('100'))).toString()
         },
         savePriceWithoutTax(item) {
             let withoutTax = this.$Big(this.$validateFloat(item.factoryPriceWithoutTax))
-            let withTax = this.$Big(item.factoryPriceWithTax)
-            let rate = this.$Big(item.floatDownRate)
-
+            item.factoryPriceWithoutTax = withoutTax.toString()
+            item.factoryPriceWithTax = withoutTax.times(this.$Big(this.taxRate).div('100').add('1')).toString()
+            item.settlementPriceWithoutTax = withoutTax.times(this.$Big('1').sub(this.$Big(item.floatDownRate).div('100'))).toString()
         },
         saveFloatDownRate(item) {
-            let rate = this.$validateNumber(item.floatDownRate)
-
+            let rate = this.$Big(this.$validateNumber(item.floatDownRate))
+            item.floatDownRate = rate.toString()
+            let withoutTax = this.$Big(item.factoryPriceWithoutTax)
+            item.settlementPriceWithoutTax = withoutTax.times(this.$Big('1').sub(rate.div('100'))).toString()
         },
         saveSettlementPrice(item) {
-            let price = this.$Big(this.$validateFloat(item.settlementPriceWithoutTax))
+            item.settlementPriceWithoutTax = this.$validateFloat(item.settlementPriceWithoutTax)
         },
         changeTaxRate() {
-
+            this.tableData.forEach(item => {
+                this.savePriceWithoutTax(item)
+            })
         },
         removeRows() {
             if (this.tableCurrentRow.length === 0) return

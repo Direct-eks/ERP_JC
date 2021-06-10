@@ -51,7 +51,6 @@ public class SupplierResourceO {
     private String factoryPriceWithTax = "0";
 
     @NotNull(message = "floatDownRate null error")
-    @Min(value = 0, message = "floatDownRate smaller than zero error")
     private Integer floatDownRate = 0;
 
     @NotNull(message = "settlementPriceWithoutTax null error")

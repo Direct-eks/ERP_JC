@@ -11,12 +11,13 @@ import java.util.List;
 @Indexed
 public interface SupplierService {
     List<SupplierO> getAllSuppliers();
+    SupplierO getSupplier(int id);
 
     List<SupplierResourceO> getResourcesBySupplier(int id);
     void updateSupplierWithResources(SupplierO supplierO, ListUpdateVO<SupplierResourceO> updateVO);
 
     List<SupplierResourceO> getSupplierResourcesBySku(int id);
-    List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(int categoryID, int brandID);
+    List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(int categoryID, int brandID, int supplierID);
 
     void deleteResourcesBySupplierID(int id);
 }
