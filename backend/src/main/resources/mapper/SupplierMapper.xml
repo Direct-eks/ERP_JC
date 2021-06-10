@@ -94,7 +94,7 @@
         values (
             #{supplierID}, #{skuID}, #{quantityRecord}, #{factoryPriceWithoutTax},
             #{factoryPriceWithTax}, #{floatDownRate}, #{settlementPriceWithoutTax},
-            #{quantityPerBox}, #{remark}, #{history}, date('now', 'localtime')
+            #{quantityPerBox}, #{remark}, #{history}, datetime('now', 'localtime')
         )
     </insert>
 

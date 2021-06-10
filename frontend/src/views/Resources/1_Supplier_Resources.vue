@@ -89,17 +89,6 @@
                         </CompanySearch>
                     </v-dialog>
                 </div>
-                <div class="ma-2">
-                    <v-select v-model="taxRate"
-                              :items="taxRateOptions"
-                              @change="changeTaxRate"
-                              label="税率"
-                              hide-details="auto"
-                              :append-icon="mdiPercentOutline"
-                              outlined dense
-                              style="width: 110px">
-                    </v-select>
-                </div>
             </div>
             <div class="d-flex">
                 <v-dialog v-model="modelImportPanel"
@@ -187,6 +176,25 @@
                 </v-dialog>
                 <v-btn class="ma-1" color="warning" @click="removeRows">删除</v-btn>
                 <v-spacer></v-spacer>
+                <div class="ma-1">
+                    <v-select v-model="taxRate"
+                              :items="taxRateOptions"
+                              @change="changeTaxRate"
+                              label="更改税率"
+                              hide-details="auto"
+                              :append-icon="mdiPercentOutline"
+                              outlined dense
+                              style="width: 110px"/>
+                </div>
+                <div class="ma-1">
+                    <v-select v-model="taxRateBase"
+                              :items="taxRateBaseOptions"
+                              label="价格基准"
+                              hide-details="auto"
+                              outlined dense
+                              style="width: 140px"/>
+                </div>
+                <v-spacer></v-spacer>
                 <v-dialog v-model="dialogSave" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn class="ma-1" color="primary" v-on="on">保存</v-btn>
@@ -208,10 +216,13 @@
                               item-key="skuID"
                               :loading="isQuerying"
                               calculate-widths
-                              height="65vh"
+                              height="60vh"
                               sort-by="code"
-                              disable-pagination
-                              hide-default-footer
+                              :footer-props="{
+                                  'items-per-page-options': [10, 30, 50],
+                                  'show-current-page': true,
+                                  'show-first-last-page': true
+                              }"
                               show-select
                               @click:row="tableSelect"
                               @item-selected="tableSelect2"
@@ -325,6 +336,8 @@ export default {
 
             taxRate: '16',
             taxRateOptions: [],
+            taxRateBase: '无税厂价',
+            taxRateBaseOptions: ['无税厂价', '含税厂价'],
 
             resourceCompanySearchPanel: false,
             fullSearchPanelOpen: false,
@@ -361,6 +374,7 @@ export default {
                 { text: '下浮率', value: 'floatDownRate', width: '95px' },
                 { text: '无税结算价', value: 'settlementPriceWithoutTax', width: '95px' },
                 { text: '装箱数', value: 'quantityPerBox', width: '90px' },
+                { text: '录入时间', value: 'quoteDate', width: '100px' }
             ],
             tableData: [],
             tableCurrentRow: [],
@@ -472,7 +486,10 @@ export default {
         },
         changeTaxRate() {
             this.tableData.forEach(item => {
-                this.savePriceWithoutTax(item)
+                if (this.taxRateBase === '无税厂价')
+                    this.savePriceWithoutTax(item)
+                else
+                    this.savePriceWithTax(item)
             })
         },
         removeRows() {
