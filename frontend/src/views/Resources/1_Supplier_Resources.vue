@@ -217,7 +217,7 @@
                     <template v-slot:item.factoryPriceWithoutTax="{ item }">
                         <v-edit-dialog :return-value="item.factoryPriceWithoutTax"
                                        persistent large save-text="确认" cancel-text="取消"
-                                       @save="saveEditing(item)">
+                                       @save="savePriceWithoutTax(item)">
                             {{item.factoryPriceWithoutTax}}
                             <template v-slot:input>
                                 <v-text-field v-model="item.factoryPriceWithoutTax" single-line/>
@@ -227,7 +227,7 @@
                     <template v-slot:item.factoryPriceWithTax="{ item }">
                         <v-edit-dialog :return-value="item.factoryPriceWithTax"
                                        persistent large save-text="确认" cancel-text="取消"
-                                       @save="saveEditing(item)">
+                                       @save="savePriceWithTax(item)">
                             {{item.factoryPriceWithTax}}
                             <template v-slot:input>
                                 <v-text-field v-model="item.factoryPriceWithTax" single-line/>
@@ -236,7 +236,8 @@
                     </template>
                     <template v-slot:item.floatDownRate="{ item }">
                         <v-edit-dialog :return-value="item.floatDownRate"
-                                       persistent large save-text="确认" cancel-text="取消">
+                                       persistent large save-text="确认" cancel-text="取消"
+                                       @save="saveFloatDownRate(item)">
                             {{item.floatDownRate}}
                             <template v-slot:input>
                                 <v-text-field v-model="item.floatDownRate" single-line/>
@@ -246,7 +247,7 @@
                     <template v-slot:item.settlementPriceWithoutTax="{ item }">
                         <v-edit-dialog :return-value="item.settlementPriceWithoutTax"
                                        persistent large save-text="确认" cancel-text="取消"
-                                       @save="saveEditing(item)">
+                                       @save="saveSettlementPrice(item)">
                             {{item.settlementPriceWithoutTax}}
                             <template v-slot:input>
                                 <v-text-field v-model="item.settlementPriceWithoutTax" single-line/>
@@ -410,8 +411,29 @@ export default {
                 this.tableSelect(row.item)
             }
         },
-        saveEditing(item) {
-            // todo validate fields
+        savePriceWithTax(item) {
+            let withTax = this.$Big(this.$validateFloat(item.factoryPriceWithTax))
+            let withoutTax = this.$Big(item.factoryPriceWithoutTax)
+            let rate = this.$Big(item.floatDownRate)
+
+            item.factoryPriceWithoutTax =
+            item.factoryPriceWithTax =
+
+            item.settlementPriceWithoutTax = this.$validateFloat(item.settlementPriceWithoutTax)
+
+        },
+        savePriceWithoutTax(item) {
+            let withoutTax = this.$Big(this.$validateFloat(item.factoryPriceWithoutTax))
+            let withTax = this.$Big(item.factoryPriceWithTax)
+            let rate = this.$Big(item.floatDownRate)
+
+        },
+        saveFloatDownRate(item) {
+            let rate = this.$validateNumber(item.floatDownRate)
+
+        },
+        saveSettlementPrice(item) {
+            let price = this.$Big(this.$validateFloat(item.settlementPriceWithoutTax))
         },
         changeTaxRate() {
 
