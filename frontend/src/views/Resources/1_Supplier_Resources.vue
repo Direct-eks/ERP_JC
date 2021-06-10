@@ -89,90 +89,111 @@
                         </CompanySearch>
                     </v-dialog>
                 </div>
+                <div class="ma-2">
+                    <v-select v-model="taxRate"
+                              :items="taxRateOptions"
+                              @change="changeTaxRate"
+                              label="税率"
+                              hide-details="auto"
+                              :append-icon="mdiPercentOutline"
+                              outlined dense
+                              style="width: 110px">
+                    </v-select>
+                </div>
             </div>
-            <v-dialog v-model="modelImportPanel"
-                      persistent
-                      scrollable
-                      no-click-animation
-                      width="55vw">
-                <template v-slot:activator="{on}">
-                    <v-btn color="accent"
-                           v-on="on"
-                           :disabled="modelImportPanel">
-                        导入型号
-                    </v-btn>
-                </template>
-                <v-card>
-                    <v-card-title>
-                        商品型号选择
-                        <v-spacer></v-spacer>
-                        <v-text-field v-model="treeSelectedLevel"
-                                      label="已选分类"
-                                      hide-details="auto"
-                                      outlined
-                                      readonly
-                                      dense
-                                      class="ml-4"
-                                      style="max-width: 180px">
-                        </v-text-field>
-                        <v-text-field v-model="brandSelected"
-                                      label="已选厂牌"
-                                      hide-details="auto"
-                                      outlined
-                                      readonly
-                                      dense
-                                      class="ml-2"
-                                      style="max-width: 100px">
-                        </v-text-field>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" :loading="isQuerying" @click="importSku">
-                            导入
+            <div class="d-flex">
+                <v-dialog v-model="modelImportPanel"
+                          persistent
+                          scrollable
+                          no-click-animation
+                          width="55vw">
+                    <template v-slot:activator="{on}">
+                        <v-btn class="ma-1" color="accent"
+                               v-on="on"
+                               :disabled="modelImportPanel">
+                            导入型号
                         </v-btn>
-                        <v-btn class="ml-3" icon @click="modelImportPanel = false">
-                            <v-icon>{{ mdiClose }}</v-icon>
-                        </v-btn>
-                    </v-card-title>
-                    <v-card-text class="d-flex">
-                        <v-responsive max-height="65vh" style="overflow: auto">
-                            <v-treeview v-model="treeSelection"
-                                        :items="treeData"
-                                        item-text="label"
-                                        item-key="categoryID"
-                                        return-object
-                                        activatable
-                                        selectable
-                                        @input="treeSelect"
-                                        @update:open="treeSelect"
-                                        @update:active="treeSelect"
-                                        selection-type="independent"
-                                        color="primary"
-                                        open-on-click
-                                        dense>
-                            </v-treeview>
-                        </v-responsive>
-                        <v-card outlined>
-                            <v-data-table v-model="brandTableCurrentRow"
-                                          :headers="brandTableHeaders"
-                                          :items="brandTableData"
-                                          item-key="factoryBrandID"
-                                          calculate-widths
-                                          height="65vh"
-                                          disable-sort
-                                          show-select
-                                          single-select
-                                          @click:row="brandTableChoose"
-                                          @item-selected="brandTableChoose2"
-                                          checkbox-color="accent"
-                                          fixed-header
-                                          disable-pagination
-                                          hide-default-footer
-                                          locale="zh-cn"
-                                          dense>
-                            </v-data-table>
-                        </v-card>
-                    </v-card-text>
-                </v-card>
-            </v-dialog>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            商品型号选择
+                            <v-spacer></v-spacer>
+                            <v-text-field v-model="treeSelectedLevel"
+                                          label="已选分类"
+                                          hide-details="auto"
+                                          outlined
+                                          readonly
+                                          dense
+                                          class="ml-4"
+                                          style="max-width: 180px">
+                            </v-text-field>
+                            <v-text-field v-model="brandSelected"
+                                          label="已选厂牌"
+                                          hide-details="auto"
+                                          outlined
+                                          readonly
+                                          dense
+                                          class="ml-2"
+                                          style="max-width: 100px">
+                            </v-text-field>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" :loading="isQuerying" @click="importSku">
+                                导入
+                            </v-btn>
+                            <v-btn class="ml-3" icon @click="modelImportPanel = false">
+                                <v-icon>{{ mdiClose }}</v-icon>
+                            </v-btn>
+                        </v-card-title>
+                        <v-card-text class="d-flex">
+                            <v-responsive max-height="65vh" style="overflow: auto">
+                                <v-treeview v-model="treeSelection"
+                                            :items="treeData"
+                                            item-text="label"
+                                            item-key="categoryID"
+                                            return-object
+                                            activatable
+                                            selectable
+                                            @input="treeSelect"
+                                            @update:open="treeSelect"
+                                            @update:active="treeSelect"
+                                            selection-type="independent"
+                                            color="primary"
+                                            open-on-click
+                                            dense>
+                                </v-treeview>
+                            </v-responsive>
+                            <v-card outlined>
+                                <v-data-table v-model="brandTableCurrentRow"
+                                              :headers="brandTableHeaders"
+                                              :items="brandTableData"
+                                              item-key="factoryBrandID"
+                                              calculate-widths
+                                              height="65vh"
+                                              disable-sort
+                                              show-select
+                                              single-select
+                                              @click:row="brandTableChoose"
+                                              @item-selected="brandTableChoose2"
+                                              checkbox-color="accent"
+                                              fixed-header
+                                              disable-pagination
+                                              hide-default-footer
+                                              locale="zh-cn"
+                                              dense>
+                                </v-data-table>
+                            </v-card>
+                        </v-card-text>
+                    </v-card>
+                </v-dialog>
+                <v-btn class="ma-1" color="warning"
+                       @click="removeRows">
+                    删除
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn class="ma-1" color="primary" @click="saveChanges">
+                    保存
+                </v-btn>
+            </div>
             <v-card outlined>
                 <v-data-table v-model="tableCurrentRow"
                               :headers="tableHeaders"
@@ -247,21 +268,11 @@
                 </v-data-table>
             </v-card>
         </v-card-text>
-        <v-card-actions>
-            <v-btn color="warning"
-                   @click="removeRows">
-                删除
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="saveChanges">
-                保存
-            </v-btn>
-        </v-card-actions>
     </v-card>
 </template>
 
 <script>
-import { mdiArrowLeft, mdiClose } from "@mdi/js";
+import { mdiArrowLeft, mdiClose, mdiPercentOutline } from "@mdi/js";
 
 export default {
     name: "SupplierResources",
@@ -272,6 +283,10 @@ export default {
     beforeMount() {
         this.$getRequest(this.$api.allFactoryBrands).then(data => {
             this.brandTableData = data
+        }).catch(() => {})
+
+        this.$getRequest(this.$api.allTaxRates).then((data) => {
+            this.taxRateOptions = data
         }).catch(() => {})
 
         let result = this.$store.getters.productList
@@ -288,7 +303,11 @@ export default {
         return {
             mdiArrowLeft,
             mdiClose,
+            mdiPercentOutline,
             isQuerying: false,
+
+            taxRate: '0',
+            taxRateOptions: [],
 
             resourceCompanySearchPanel: false,
             fullSearchPanelOpen: false,
@@ -394,6 +413,9 @@ export default {
         saveEditing(item) {
             // todo validate fields
         },
+        changeTaxRate() {
+
+        },
         removeRows() {
             if (this.tableCurrentRow.length === 0) return
             for (const row of this.tableCurrentRow) {
@@ -403,6 +425,7 @@ export default {
         saveChanges() {
             if (this.resourceCompany.supplierID === -1) return
             if (this.tableData.length === 0) return
+            if (this.taxRate === '0') return
 
             this.$postRequest(this.$api.createSupplierWithResources, {
                 elements: this.tableData
