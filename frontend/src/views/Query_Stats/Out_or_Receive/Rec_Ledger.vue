@@ -1,15 +1,36 @@
 <template>
     <!--    <p>查询统计</p>-->
     <!--    <p>应收款总账</p>-->
-    <div>
-        <strong>应收款总账</strong>
-    </div>
+    <v-card>
+        <v-card-title class="d-flex">
+            应收款总账
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/query_stats">
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
+                返回
+            </v-btn>
+        </v-card-title>
+        <v-card-text>
+
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
-    export default {
-        name: "Rec_Ledger"
+import {mdiArrowLeft} from "@mdi/js";
+
+export default {
+    name: "Rec_Ledger",
+    data() {
+        return {
+            mdiArrowLeft,
+        }
+    },
+    methods: {
+
     }
+}
 </script>
 
 <style scoped>

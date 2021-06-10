@@ -20,18 +20,18 @@ export default {
             name: '库存管理',
             url: '/stock_management',
         },
-        {
-            name: '生产管理',
-            url: '/production_management',
-        },
-        {
-            name: '账目管理',
-            url: '/accounts_management',
-        },
-        {
-            name: '固定资产管理',
-            url: '/assets_management',
-        },
+        // {
+        //     name: '生产管理',
+        //     url: '/production_management',
+        // },
+        // {
+        //     name: '账目管理',
+        //     url: '/accounts_management',
+        // },
+        // {
+        //     name: '固定资产管理',
+        //     url: '/assets_management',
+        // },
         {
             name: '查询统计',
             url: '/query_stats',
@@ -44,18 +44,18 @@ export default {
             name: '系统标准',
             url: '/system',
         },
-        {
-            name: '系统维护',
-            url: '/maintenance',
-        },
-        {
-            name: '辅助功能',
-            url: '/accessibility',
-        },
-        {
-            name: '帮助',
-            url: '/help',
-        }
+        // {
+        //     name: '系统维护',
+        //     url: '/maintenance',
+        // },
+        // {
+        //     name: '辅助功能',
+        //     url: '/accessibility',
+        // },
+        // {
+        //     name: '帮助',
+        //     url: '/help',
+        // }
     ],
     inbound_management_nav: [
         {

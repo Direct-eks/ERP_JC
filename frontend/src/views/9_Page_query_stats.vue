@@ -1,39 +1,74 @@
 <template>
     <v-row justify="center" dense>
-        <v-col md="auto">
+        <v-col cols="auto" v-show="showStatus">
             <v-card>
                 <v-list>
-                    <v-list-item-group v-model="active" color="primary">
-                        <v-list-item v-for="(item, i) in navItem"
+                    <template v-for="(item, i) in navItem">
+                        <v-list-group v-if="item.children"
+                                      :key="i"
+                                      no-action>
+                            <template v-slot:activator>
+                                <v-list-item-content>{{item.name}}</v-list-item-content>
+                            </template>
+                            <v-list-item v-for="(subItem, j) in item.children"
+                                         :key="j"
+                                         :to="subItem.url">
+                                <v-list-item-content>{{subItem.name}}</v-list-item-content>
+                            </v-list-item>
+                        </v-list-group>
+                        <v-list-item v-else
                                      :key="i"
                                      :to="item.url">
                             <v-list-item-content>{{item.name}}</v-list-item-content>
                         </v-list-item>
-                    </v-list-item-group>
+                    </template>
                 </v-list>
             </v-card>
         </v-col>
 
-        <v-col cols="12"
-               md="10"
-               lg="8">
+        <v-col md="10"
+               lg="9"
+               xl="8">
             <router-view></router-view>
         </v-col>
     </v-row>
 </template>
 
 <script>
-    import nav from "~/utils/nav";
+import nav from "~/utils/nav";
 
-    export default {
-        name: "Page_query_stats",
-        data() {
-            return {
-                navItem: nav.query_stats_nav,
-                active: 0
-            }
+export default {
+    name: "Page_query_stats",
+    beforeMount() {
+        // const userPermissions = this.$store.getters.currentUserPermissions
+        let navItems = JSON.parse(JSON.stringify(nav.query_stats_nav))
+        // let itemsToBeRemoved = []
+        // for (const item of navItems) {
+        //     if (!userPermissions.includes(item.requiredPermission)) {
+        //         itemsToBeRemoved.push(item)
+        //     }
+        // }
+        // itemsToBeRemoved.forEach(item => {
+        //     navItems.splice(navItems.indexOf(item), 1)
+        // })
+        this.navItem = navItems
+
+        if (this.$route.path !== '/query_stats') {
+            this.showStatus = false
         }
-    }
+    },
+    data() {
+        return {
+            navItem: [],
+            showStatus: true,
+        }
+    },
+    watch: {
+        $route(to, from) {
+            this.showStatus = to.path === '/query_stats';
+        },
+    },
+}
 </script>
 
 <style scoped>
