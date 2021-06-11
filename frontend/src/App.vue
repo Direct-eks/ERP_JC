@@ -1,16 +1,14 @@
 <template>
     <v-app>
-        <v-navigation-drawer
-                app
-                v-model="navDrawer"
-                stateless
-                disable-resize-watcher>
+        <v-navigation-drawer v-model="navDrawer"
+                             app
+                             stateless
+                             disable-resize-watcher>
             <v-list dense nav>
-                <v-list-item
-                        v-for="(item, i) in nav"
-                        :key="i"
-                        :to="item.url"
-                        @click.stop="navDrawer = !navDrawer">
+                <v-list-item v-for="(item, i) in nav"
+                             :key="i"
+                             :to="item.url"
+                             @click.stop="navDrawer = !navDrawer">
                     <v-list-item-content>
                         <v-list-item-title>
                             {{ item.name }}
@@ -24,7 +22,6 @@
                    dense
                    flat
                    color="white">
-
             <v-app-bar-nav-icon @click.stop="navDrawer = !navDrawer"></v-app-bar-nav-icon>
 
             <v-toolbar-title>精诚轴承</v-toolbar-title>
@@ -40,8 +37,7 @@
                         </v-icon>
                     </v-btn>
                 </template>
-                <v-sheet class="text-center"
-                         >
+                <v-sheet class="text-center">
                     <v-list-item v-for="(item, i) in helpContent"
                                  :key="i">
                         <v-list-item-content>
@@ -146,33 +142,11 @@
 
 <script>
 import { mdiLogout, mdiHome, mdiPower, mdiHelpCircle,
-        mdiArchiveArrowDown, mdiArchiveArrowDownOutline,
-        mdiArchiveArrowUp, mdiArchiveArrowUpOutline  } from '@mdi/js'
+    mdiArchiveArrowDown, mdiArchiveArrowDownOutline,
+    mdiArchiveArrowUp, mdiArchiveArrowUpOutline  } from '@mdi/js'
 import nav from "~/utils/nav";
 import helpContent from "~/utils/helpContent";
 import SnackMessage from "~/components/SnackMessage";
-
-// eslint-disable-next-line no-extend-native,func-names
-Date.prototype.format = function (fmt) {
-    const o = {
-        "M+": this.getMonth() + 1, // 月份
-        "d+": this.getDate(), // 日
-        "h+": this.getHours(), // 小时
-        "m+": this.getMinutes(), // 分
-        "s+": this.getSeconds(), // 秒
-        "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
-        S: this.getMilliseconds() // 毫秒
-    };
-    if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (`${this.getFullYear()}`).substr(4 - RegExp.$1.length));
-    }
-    for (const k in o) {
-        if (new RegExp(`(${k})`).test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : ((`00${o[k]}`).substr((`${o[k]}`).length)));
-        }
-    }
-    return fmt;
-}
 
 export default {
     components: {
@@ -197,7 +171,8 @@ export default {
         }
     },
     watch: {
-        $route(to, from) {
+        $route(to, _) {
+            if (to.path === '/home') this.navDrawer = true
             this.navBottomShow = to.path === '/home'
             this.helpContent = []
             for (const item of helpContent.items) {

@@ -1,7 +1,6 @@
 <template>
     <v-row justify="center" class="green" dense>
-        <v-col cols="auto"
-               v-show="showStatus">
+        <v-col cols="auto" v-show="showStatus">
             <v-card>
                 <v-list expand>
                     <template v-for="(item, i) in navItem">
@@ -27,9 +26,7 @@
             </v-card>
         </v-col>
 
-        <v-col cols="12"
-               md="11"
-               lg="8">
+        <v-col cols="12" md="11" lg="9" xl="8">
             <router-view></router-view>
         </v-col>
     </v-row>
@@ -67,7 +64,7 @@ export default {
         }
     },
     watch: {
-        $route(to, from) {
+        $route(to, _) {
             this.showStatus = to.path === '/outbound_management';
         },
     },
