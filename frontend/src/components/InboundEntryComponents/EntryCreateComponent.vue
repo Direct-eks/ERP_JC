@@ -431,27 +431,27 @@
             </template>
         </v-data-table>
 
-        <v-row>
+        <div class="d-flex">
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <span>税额合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{tax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>不含税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithoutTax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>价税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithTax}}
-            </v-col>
-        </v-row>
+            <div class="my-2">
+                <strong>税额合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ tax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>不含税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithoutTax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>价税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithTax }}</strong>
+            </div>
+        </div>
     </v-container>
 </template>
 
