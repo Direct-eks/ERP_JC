@@ -35,8 +35,7 @@
         </v-card-title>
 
         <v-card-text class="d-flex">
-            <v-responsive height="65vh" max-width="15vw"
-                          style="overflow: auto">
+            <v-responsive height="65vh" max-width="230px" style="overflow: auto">
                 <v-treeview :items="treeData"
                             item-text="label"
                             item-key="areaID"
@@ -48,19 +47,21 @@
                             dense>
                 </v-treeview>
             </v-responsive>
-            <v-responsive max-width="64vw"
-                          style="overflow: auto">
+            <v-responsive max-width="60vw">
                 <v-data-table v-model="currentRow"
                               :headers="headers"
                               :items="tableData"
                               item-key="companyID"
-                              @click:row="handleTableClick"
                               height="65vh"
+                              calculate-widths
                               disable-sort
                               disable-pagination
                               hide-default-footer
                               show-select
                               single-select
+                              @click:row="tableClick"
+                              @item-selected="tableClick2"
+                              checkbox-color="accent"
                               fixed-header
                               locale="zh-cn"
                               dense>
@@ -74,31 +75,6 @@
 import { mdiClose } from '@mdi/js'
 
 export default {
-    data() {
-        return {
-            mdiClose,
-
-            phone: '',
-            name: '',
-
-            headers: [
-                { text: '单位简称', value: 'abbreviatedName', width: '120px' },
-                { text: '电话', value: 'phone', width: '120px' },
-                { text: '传真', value: 'fax', width: '120px' },
-                { text: '重要提示', value: 'remark', width: '120px' },
-                { text: '单位类别', value: 'classification', width: '120px' },
-                { text: '联系人', value: 'contactPerson', width: '120px' },
-                { text: '联系人电话', value: 'contactNumber', width: '120px' },
-                { text: '地址', value: 'address', width: '120px' },
-                { text: '邮政编码', value: 'zipcode', width: '120px' },
-                { text: '单位全称', value: 'fullName', width: '120px' },
-            ],
-            tableData: [],
-            currentRow: [],
-
-            treeData: []
-        }
-    },
     name: "CompanySearch",
     beforeMount() {
         const result = this.$store.getters.companyCategoryList
@@ -107,34 +83,77 @@ export default {
             return
         }
         this.$getRequest(this.$api.companyAreas).then((data) => {
-            console.log('received', data)
             this.treeData = this.$createTree(data, false)
             this.$store.commit('modifyCompanyList', this.treeData)
         }).catch(() => {})
     },
+    data() {
+        return {
+            mdiClose,
+
+            phone: '',
+            name: '',
+
+            treeData: [],
+
+            headers: [
+                { text: '单位简称', value: 'abbreviatedName', width: '200px' },
+                { text: '电话', value: 'phone', width: '180px' },
+                { text: '传真', value: 'fax', width: '180px' },
+                { text: '重要提示', value: 'remark', width: '250px' },
+                { text: '单位类别', value: 'classification', width: '90px' },
+                { text: '联系人', value: 'contactPerson', width: '90px' },
+                { text: '联系人电话', value: 'contactNumber', width: '120px' },
+                { text: '地址', value: 'address', width: '220px' },
+                { text: '邮政编码', value: 'zipcode', width: '90px' },
+                { text: '单位全称', value: 'fullName', width: '220px' },
+            ],
+            tableData: [],
+            currentRow: [],
+        }
+    },
     methods: {
         close() {
-            this.$emit('fullSearchChoose', null)
+            this.$emit('fullSearchChoose')
         },
         searchCompanies() {
+            if (this.phone === '' && this.name === '') return
             this.$getRequest(this.$api.companyFuzzySearch, {
                 name: this.name,
                 phone: this.phone,
             }).then((data) => {
-                console.log('receive', data)
                 this.tableData = data
             }).catch(() => {})
         },
-        handleTableClick(val) {
-            this.currentRow = [val]
+        tableClick(row) {
+            if (this.currentRow.indexOf(row) === -1) {
+                this.currentRow = [row]
+            }
+            else {
+                this.currentRow = []
+            }
+        },
+        tableClick2(row) {
+            if (!row.value) {
+                this.currentRow = []
+            }
+            else {
+                this.currentRow = [row.item]
+            }
         },
         chooseHandle() {
-            if (this.currentRow.length !== 0) this.$emit('fullSearchChoose', this.currentRow[0])
+            if (this.currentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '请选择要导入的单位', color: 'warning'
+                })
+                return
+            }
+            this.$emit('fullSearchChoose', this.currentRow[0])
         },
         treeSelect(data) {
+            if (data.length === 0) return
             const val = data[0]
             if (val.children.length === 0) { // end node
-                // console.log(data)
                 const result = this.$store.getters.companies(val.areaID)
                 if (result) {
                     this.tableData = result
@@ -142,7 +161,6 @@ export default {
                 }
                 this.$getRequest(this.$api.companiesByAreaID
                         + encodeURI(val.areaID)).then((data) => {
-                    console.log('received', data)
                     this.tableData = data
                     this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
                 }).catch(() => {})

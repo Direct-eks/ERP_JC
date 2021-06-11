@@ -8,26 +8,28 @@
             <v-btn color="accent"
                    v-on="on"
                    @click="simpleSearch"
-                   :disabled="phoneSearchField === ''">
+                   :disabled="phoneSearchField === '' && companyNameSearchField === ''">
                 单位检索
             </v-btn>
         </template>
         <v-card>
             <v-card-title>
-                <v-toolbar dense flat>
-                    <v-toolbar-title>重复单位检查</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon @click="simpleSearchClose">
-                        <v-icon>{{mdiClosePath}}</v-icon>
-                    </v-btn>
-                </v-toolbar>
+                重复单位检查
+                <v-spacer></v-spacer>
+                <v-btn class="mr-3" color="primary" @click="simpleSearchChoose">
+                    选择
+                </v-btn>
+                <v-btn icon @click="simpleSearchClose">
+                    <v-icon>{{ mdiClose }}</v-icon>
+                </v-btn>
             </v-card-title>
             <v-card-text>
                 <v-data-table v-model="simpleSearchCurrentRow"
                               :headers="simpleSearchTableHeaders"
                               :items="simpleSearchTable"
                               item-key="companyID"
-                              @click:row="handleTableClick"
+                              @click:row="tableClick"
+                              @item-selected="tableClick2"
                               disable-sort
                               height="50vh"
                               disable-pagination
@@ -39,12 +41,6 @@
                               dense>
                 </v-data-table>
             </v-card-text>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" @click="simpleSearchChoose">
-                    选择
-                </v-btn>
-            </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
@@ -69,14 +65,14 @@ export default {
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             simpleSearchPanelOpen: false,
             simpleSearchTableHeaders: [
-                {text: '单位简称', value: 'abbreviatedName', width: '220px'},
-                {text: '电话', value: 'phone', width: '200px'},
-                {text: '单位全称', value: 'fullName', width: '280px'},
-                {text: '重要提示', value: 'remark'}
+                {text: '单位简称', value: 'abbreviatedName', width: '200px'},
+                {text: '电话', value: 'phone', width: '180px'},
+                {text: '单位全称', value: 'fullName', width: '220px'},
+                {text: '重要提示', value: 'remark', width: '250px'}
             ],
             simpleSearchCurrentRow: [],
             simpleSearchTable: [],
@@ -84,24 +80,43 @@ export default {
     },
     methods: {
         simpleSearch() {
+            if (this.phone === '' && this.name === '') return
             this.$getRequest(this.$api.companyFuzzySearch, {
                 phone: this.phoneSearchField,
                 name: this.companyNameSearchField
             }).then((data) => {
-                console.log('received', data)
                 this.simpleSearchTable = data
                 // open panel
                 this.simpleSearchPanelOpen = true
             }).catch(() => {})
         },
-        handleTableClick(val) {
-            this.simpleSearchCurrentRow = [val]
+        tableClick(row) {
+            if (this.simpleSearchCurrentRow.indexOf(row) === -1) {
+                this.simpleSearchCurrentRow = [row]
+            }
+            else {
+                this.simpleSearchCurrentRow = [row]
+            }
+        },
+        tableClick2(row) {
+            if (!row.value) {
+                this.simpleSearchCurrentRow = []
+            }
+            else {
+                this.simpleSearchCurrentRow = [row.item]
+            }
         },
         simpleSearchClose() {
-            this.$emit('simpleSearchChoose',null)
+            this.$emit('simpleSearchChoose')
             this.simpleSearchPanelOpen = false
         },
         simpleSearchChoose() {
+            if (this.simpleSearchCurrentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '请选择要导入的单位', color: 'warning'
+                })
+                return
+            }
             this.$emit('simpleSearchChoose', this.simpleSearchCurrentRow[0])
             this.simpleSearchPanelOpen = false
         }

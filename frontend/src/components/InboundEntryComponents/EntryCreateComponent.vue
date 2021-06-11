@@ -39,9 +39,9 @@
                                           v-on="on"
                                           label="入库日期"
                                           hide-details="auto"
-                                          outlined
+                                          outlined dense
                                           readonly
-                                          dense>
+                                          style="width: 140px">
                             </v-text-field>
                         </template>
                         <v-date-picker v-model="form.entryDate"
@@ -72,7 +72,7 @@
                                   outlined
                                   readonly
                                   dense
-                                  style="width: 150px">
+                                  style="width: 120px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">

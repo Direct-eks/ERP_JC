@@ -1,5 +1,16 @@
 export default {
     items: [
+        /* ---------- 入库管理 ---------- */
+        {
+            name: '录入',
+            url: '/inbound_management/entry_in',
+            helpContent: [
+                '1. 在“电话”和“供货单位简称”输入框中输入任意内容后' +
+                '将会激活“单位检索”按钮，此时检索内容为输入内容，直接' +
+                '按下“回车”键也可直接搜索',
+            ]
+        },
+        /* ---------- 出库管理 ---------- */
         {
             name: '供货商资源',
             url: '/resources/supplier_resources',
