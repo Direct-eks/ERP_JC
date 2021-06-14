@@ -11,9 +11,10 @@
             </v-btn>
         </v-card-title>
 
-        <InboundEntryCreateComponent editMode="inboundEntry">
-        </InboundEntryCreateComponent>
-
+        <v-card-text>
+            <InboundEntryCreateComponent editMode="inboundEntry">
+            </InboundEntryCreateComponent>
+        </v-card-text>
     </v-card>
 </template>
 
@@ -23,8 +24,7 @@ import { mdiArrowLeft } from '@mdi/js'
 export default {
     name: "Entry_In",
     components: {
-        InboundEntryCreateComponent: () => import(
-            /* webpackChunkName: "InboundEntryCreateComponent" */
+        InboundEntryCreateComponent: () => import(/* webpackChunkName: "InboundEntryCreateComponent" */
             '~/components/InboundEntryComponents/EntryCreateComponent'
         ),
     },

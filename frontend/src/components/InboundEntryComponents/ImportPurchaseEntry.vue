@@ -5,7 +5,7 @@
                 <v-toolbar-title>采购订单查询</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="close">
-                    <v-icon>{{mdiClosePath}}</v-icon>
+                    <v-icon>{{ mdiClose }}</v-icon>
                 </v-btn>
             </v-toolbar>
         </v-card-title>
@@ -13,8 +13,9 @@
             <v-data-table v-model="queryTableCurrentRow"
                           :headers="purchaseQueryTableHeaders"
                           :items="queryTableData"
-                          item-key="entryID"
+                          item-key="purchaseOrderEntryID"
                           @click:row="tableClick"
+                          @item-selected="tableClick2"
                           height="25vh"
                           calculate-widths
                           disable-sort
@@ -25,13 +26,17 @@
                           locale="zh-cn">
             </v-data-table>
 
-            <v-data-table :headers="entryProductsTableHeaders"
+            <v-data-table v-model="entryProductsCurrRow"
+                          :headers="entryProductsTableHeaders"
                           :items="entryProductsData"
-                          item-key="id"
+                          item-key="purchaseOrderProductID"
                           height="35vh"
                           calculate-widths
                           disable-sort
                           fixed-header
+                          show-select
+                          @click:row="table2Click"
+                          @item-selected="table2Click2"
                           disable-pagination
                           hide-default-footer
                           locale="zh-cn">
@@ -68,7 +73,6 @@ export default {
                 this.$getRequest(this.$api.purchaseOrdersByCompanyID +
                     encodeURI(String(this.companyID))
                 ).then((data) => {
-                    console.log('received', data)
                     this.queryTableData = data
                 }).catch(() => {})
             },
@@ -77,7 +81,7 @@ export default {
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             purchaseQueryTableHeaders: [
                 {text: '采购订单', value: 'purchaseOrderEntryID', width: '80px'},
@@ -110,25 +114,65 @@ export default {
                 {text: '库存数量', value: 'stockQuantity', width: '70px'},
                 {text: '库存单价', value: 'stockUnitPrice', width: '70px'}
             ],
-            entryProductsData: []
+            entryProductsData: [],
+            entryProductsCurrRow: []
         }
     },
     methods: {
         close() {
             this.$emit('purchaseOrderChoose', null)
         },
-        tableClick(val) {
-            this.queryTableCurrentRow = [val]
-
-            let tempProducts = val.purchaseOrderProducts
-            for (let item of tempProducts) {
-                item.totalWithoutTax = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item.totalTax = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
+        calculateTax(row) {
+            let tempProducts = row.purchaseOrderProducts
+            for (const item of tempProducts) {
+                item['totalWithoutTax'] = this.$Big(item.unitPriceWithoutTax).times(item.quantity).toString()
+                item['totalTax'] = this.$Big(item.unitPriceWithTax).times(item.quantity).sub(item.totalWithoutTax).toString()
             }
             this.entryProductsData = tempProducts
         },
+        tableClick(row) {
+            if (this.queryTableCurrentRow.indexOf(row) !== -1) {
+                this.queryTableCurrentRow = []
+                this.entryProductsData = []
+                this.entryProductsCurrRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row]
+                this.calculateTax(row)
+                this.entryProductsCurrRow = []
+            }
+        },
+        tableClick2(row) {
+            if (!row.value) {
+                this.queryTableCurrentRow = []
+                this.entryProductsData = []
+                this.entryProductsCurrRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row.item]
+                this.calculateTax(row)
+                this.entryProductsCurrRow = []
+            }
+        },
+        table2Click(row) {
+            if (this.entryProductsCurrRow.indexOf(row) !== -1) {
+                this.entryProductsCurrRow.splice(this.entryProductsCurrRow.indexOf(row), 1)
+            }
+            else {
+                this.entryProductsCurrRow.push(row)
+            }
+        },
+        table2Click2(row) {
+            if (!row.value) {
+                this.entryProductsCurrRow.splice(this.entryProductsCurrRow.indexOf(row.item), 1)
+            }
+            else {
+                this.table2Click(row.item)
+            }
+        },
         choose() {
-            this.$emit('purchaseOrderChoose', this.entryProductsData)
+            if (this.entryProductsCurrRow.length === 0) return
+            this.$emit('purchaseOrderChoose', this.entryProductsCurrRow)
         }
     }
 }
