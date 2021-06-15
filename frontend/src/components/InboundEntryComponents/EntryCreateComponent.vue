@@ -151,9 +151,8 @@
                               no-click-animation
                               width="80vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="accent"
-                                   v-on="on"
-                                   :disabled="fullSearchPanelOpen">
+                            <v-btn color="accent" v-on="on"
+                                   :disabled="tableData.length !== 0">
                                 单位助选
                             </v-btn>
                         </template>
@@ -501,7 +500,7 @@ export default {
             break
         }
 
-        this.enableEditing = this.$store.getters.currentUserIsPermitted('inboundEntry:Creation:changePrice')
+        this.editPermitted = this.$store.getters.currentUserIsPermitted('inboundEntry:Creation:changePrice')
 
         this.$getRequest(this.$api.warehouseOptions).then((data) => {
             this.warehouseOptions = data
@@ -526,6 +525,10 @@ export default {
         this.$getRequest(this.$api.allTaxRates).then((data) => {
             this.taxRateOptions = data
         }).catch(() => {})
+
+        this.$getRequest(this.$api.allSuppliers).then(data => {
+            this.suppliers = data
+        })
     },
     data() {
         return {
@@ -600,7 +603,9 @@ export default {
             submitPopup2: false,
             submitPopup3: false,
             tableCurrRows: [],
-            enableEditing: true,
+
+            suppliers: [],
+            editPermitted: false,
 
             tax: 0,
             sumWithTax: 0,
@@ -798,6 +803,16 @@ export default {
         }
     },
     computed: {
+        enableEditing() {
+            // 如果是资源单位，则只有拥有改价权限才能修改价格
+            for (const supplier of this.suppliers) {
+                if (supplier.supplierID === this.form.partnerCompanyID) {
+                    return this.editPermitted
+                }
+            }
+            // 如果不是资源单位，所有人都可改价
+            return true
+        },
         totalSumPlusShippingCost() {
             let sum = this.$Big(this.sumWithTax)
             switch (this.form.shippingCostType) {
