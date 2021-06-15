@@ -27,7 +27,6 @@
                                    dense>
                         <v-radio label="前匹配" value="prefix"></v-radio>
                         <v-radio label="模糊" value="infix"></v-radio>
-                        <v-radio label="后匹配" value="suffix"></v-radio>
                     </v-radio-group>
                 </v-col>
                 <v-col cols="auto">
@@ -46,94 +45,77 @@
                     <v-icon>{{mdiClosePath}}</v-icon>
                 </v-btn>
             </v-card-title>
-            <v-card-text>
+            <v-card-text class="d-flex">
+                <v-card outlined>
+                    <v-responsive height="65vh"
+                                  style="overflow: auto">
+                        <v-treeview :items="treeData"
+                                    item-text="label"
+                                    item-key="categoryID"
+                                    activatable
+                                    return-object
+                                    @update:active="treeSelect"
+                                    color="primary"
+                                    open-on-click
+                                    dense>
+                        </v-treeview>
+                    </v-responsive>
+                </v-card>
+                <v-card outlined>
+                    <v-data-table v-model="modelTableCurrentRow"
+                                  :headers="modelTableHeaders"
+                                  :items="modelTableData"
+                                  item-key="modelID"
+                                  @click:row="modelTableChoose"
+                                  @item-selected="modelTableChoose2"
+                                  :search="modelCode"
+                                  height="65vh"
+                                  hide-default-footer
+                                  calculate-widths
+                                  disable-sort
+                                  disable-pagination
+                                  single-select
+                                  show-select
+                                  checkbox-color="accent"
+                                  fixed-header
+                                  locale="zh-cn"
+                                  dense>
+                    </v-data-table>
+                </v-card>
+
                 <div class="d-flex">
                     <v-card outlined>
-                        <v-responsive height="65vh"
-                        style="overflow: auto">
-                            <v-treeview :items="treeData"
-                                        item-text="label"
-                                        item-key="categoryID"
-                                        activatable
-                                        return-object
-                                        @update:active="treeSelect"
-                                        color="primary"
-                                        open-on-click
-                                        dense>
-                            </v-treeview>
-                        </v-responsive>
-                    </v-card>
-                    <v-card outlined>
-                        <v-data-table v-model="modelTableCurrentRow"
-                                      :headers="modelTableHeaders"
-                                      :items="modelTableData"
-                                      item-key="modelID"
-                                      @click:row="modelTableChoose"
-                                      :search="modelCode"
-                                      height="65vh"
-                                      hide-default-footer
+                        <v-data-table v-model="skuTableCurrentRow"
+                                      :headers="skuTableHeaders"
+                                      :items="skuTableData"
+                                      item-key="skuID"
+                                      @click:row="skuTableChoose"
+                                      @item-selected="skuTableChoose2"
+                                      height="20vh"
                                       calculate-widths
                                       disable-sort
-                                      disable-pagination
                                       single-select
+                                      show-select
                                       fixed-header
+                                      checkbox-color="accent"
+                                      hide-default-footer
                                       locale="zh-cn"
                                       dense>
                         </v-data-table>
                     </v-card>
-
-                    <div class="d-flex flex-column">
-                        <div class="d-flex">
-                            <v-card outlined>
-                                <v-responsive max-height="25vh" style="overflow: auto">
-                                    <v-data-table v-model="skuTableCurrentRow"
-                                                  :headers="skuTableHeaders"
-                                                  :items="skuTableData"
-                                                  item-key="skuID"
-                                                  @click:row="skuTableChoose"
-                                                  height="20vh"
-                                                  calculate-widths
-                                                  disable-sort
-                                                  single-select
-                                                  fixed-header
-                                                  hide-default-footer
-                                                  locale="zh-cn"
-                                                  dense>
-                                    </v-data-table>
-                                </v-responsive>
-                            </v-card>
-                            <v-card outlined>
-                                <v-responsive max-height="25vh"
-                                              max-width="35vw"
-                                              style="overflow: auto">
-                                    <v-data-table v-model="warehouseStockCurrentRow"
-                                                  :headers="warehouseStockTableHeaders"
-                                                  :items="warehouseStockTableData"
-                                                  item-key="warehouseStockID"
-                                                  height="20vh"
-                                                  calculate-widths
-                                                  disable-sort
-                                                  single-select
-                                                  fixed-header
-                                                  hide-default-footer
-                                                  locale="zh-cn"
-                                                  dense>
-                                    </v-data-table>
-                                </v-responsive>
-                            </v-card>
-                        </div>
-
-                        <v-row>
-                            <v-col cols="auto">
-                                <v-btn class="mr-8"
-                                       color="accent"
-                                       @click="addNewHandle">
-                                    新增商品
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-
-                    </div>
+                    <v-card outlined>
+                        <v-data-table :headers="warehouseStockTableHeaders"
+                                      :items="warehouseStockTableData"
+                                      item-key="warehouseStockID"
+                                      height="20vh"
+                                      calculate-widths
+                                      disable-sort
+                                      fixed-header
+                                      hide-default-footer
+                                      locale="zh-cn"
+                                      dense>
+                        </v-data-table>
+                    </v-card>
                 </div>
 
             </v-card-text>
@@ -159,7 +141,8 @@ export default {
             treeData: [],
 
             modelTableHeaders: [
-                {text: '代号', value: 'code', width: '180px'},
+                {text: '分类', value: 'categoryCode', width: '110px'},
+                {text: '代号', value: 'code', width: '200px'},
             ],
             modelTableData: [],
             modelTableCurrentRow: [],
@@ -171,13 +154,12 @@ export default {
             skuTableCurrentRow: [],
 
             warehouseStockTableHeaders: [
-                {text: '仓库', value: 'warehouseName', width: '120px'},
-                {text: '架位', value: '', width: '120px'},
-                {text: '库存数量', value: 'stockQuantity', width: '120px'},
-                {text: '库存无税价', value: 'stockUnitPriceWithoutTax', width: '120px'}
+                {text: '仓库', value: 'warehouseName', width: '90px'},
+                {text: '架位', value: '', width: '100px'},
+                {text: '库存数量', value: 'stockQuantity', width: '90px'},
+                {text: '库存无税价', value: 'stockUnitPriceWithoutTax', width: '100px'}
             ],
             warehouseStockTableData: [],
-            warehouseStockCurrentRow: []
         }
     },
     beforeMount() {
@@ -187,7 +169,6 @@ export default {
             return
         }
         this.$getRequest(this.$api.modelCategories).then((data) => {
-            console.log('received', data)
             this.treeData = this.$createTree(data, true)
             this.$store.commit('modifyModelList', this.treeData)
         }).catch(() => {})
@@ -204,7 +185,6 @@ export default {
                 name: this.modelSearchName,
                 method: this.modelSearchMethod
             }).then((data) => {
-                console.log('received', data)
                 this.modelTableData = data
             }).catch(() => {})
         },
@@ -214,11 +194,9 @@ export default {
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
             this.warehouseStockTableData = []
-            this.warehouseStockCurrentRow = []
 
             let val = data[0]
             if (val.children.length === 0) { // end node
-                console.log(val.categoryID)
                 let result = this.$store.getters.models(val.categoryID)
                 if (result) {
                     this.modelTableData = result
@@ -226,41 +204,74 @@ export default {
                 }
                 this.$getRequest(this.$api.modelsByCategory +
                         encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
                     this.modelTableData = data
                     this.$store.commit('modifyModels', { key: val.categoryID, value: data })
                 }).catch(() => {})
             }
         },
         modelTableChoose(val) {
-            this.modelTableCurrentRow = [val]
             this.skuTableData = []
-            this.skuTableCurrentRow = [] //reset stock table
+            this.skuTableCurrentRow = []
             this.warehouseStockTableData = []
-            this.warehouseStockCurrentRow = []
 
-            this.$getRequest(this.$api.fullSkuByModel +
-                encodeURI(val.modelID)).then((data) => {
-                console.log('received', data)
-                this.skuTableData = data
-            }).catch(() => {})
+            if (this.modelTableCurrentRow.indexOf(val) !== -1) {
+                this.modelTableCurrentRow = []
+            }
+            else {
+                this.modelTableCurrentRow = [val]
+
+                this.$getRequest(this.$api.fullSkuByModel +
+                    encodeURI(val.modelID)).then((data) => {
+                    this.skuTableData = data
+                }).catch(() => {})
+            }
+        },
+        modelTableChoose2(row) {
+            this.skuTableData = []
+            this.skuTableCurrentRow = []
+            this.warehouseStockTableData = []
+
+            if (!row.value) {
+                this.modelTableCurrentRow = []
+            }
+            else {
+                this.modelTableChoose(row.item)
+            }
         },
         skuTableChoose(val) {
-            this.skuTableCurrentRow = [val]
             this.warehouseStockTableData = []
-            this.warehouseStockCurrentRow = []
 
-            this.$getRequest(this.$api.warehouseStockBySKu +
-                encodeURI(val.skuID)).then((data) => {
-                console.log('received', data)
-                this.warehouseStockTableData = data
-            }).catch(() => {})
+            if (this.skuTableCurrentRow.indexOf(val) !== -1) {
+                this.skuTableCurrentRow = []
+            }
+            else {
+                this.skuTableCurrentRow = [val]
+
+                this.$getRequest(this.$api.warehouseStockBySKu +
+                    encodeURI(val.skuID)).then((data) => {
+                    this.warehouseStockTableData = data
+                }).catch(() => {})
+            }
+        },
+        skuTableChoose2(row) {
+            this.warehouseStockTableData = []
+
+            if (!row.value) {
+                this.skuTableCurrentRow = []
+            }
+            else {
+                this.skuTableChoose(row.item)
+            }
         },
         chooseHandle() {
             //check if sku is chosen
-            if (this.modelTableCurrentRow.length !== 0 &&
-                    this.skuTableCurrentRow.length !== 0) {
-
+            if (this.modelTableCurrentRow.length === 0 ||
+                    this.skuTableCurrentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '请选择型号与厂牌', color: 'warning'
+                })
+            }
+            else {
                 let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = 0.0
                 for (let item of this.warehouseStockTableData) {
                     if (item.warehouseID === this.warehouseID) {
