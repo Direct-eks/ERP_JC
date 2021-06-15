@@ -32,11 +32,10 @@ import nav from "~/utils/nav";
 export default {
     name: "Page_system",
     beforeMount() {
-        const userPermissions = this.$store.getters.currentUserPermissions
         let navItems = JSON.parse(JSON.stringify(nav.system_nav))
         let itemsToBeRemoved = []
         for (const item of navItems) {
-            if (!userPermissions.includes(item.requiredPermission)) {
+            if (!this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
                 itemsToBeRemoved.push(item)
             }
         }

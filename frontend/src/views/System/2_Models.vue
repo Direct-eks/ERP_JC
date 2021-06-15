@@ -178,18 +178,15 @@ import { mdiArrowLeft, mdiChevronUp, mdiChevronDown, mdiMagnify } from "@mdi/js"
 export default {
     name: "Models",
     beforeMount() {
-        const userPermissions = this.$store.getters.currentUserPermissions
-        if (userPermissions.includes("system:models:create")) this.canCreate = true
-        if (userPermissions.includes("system:models:update")) this.canUpdate = true
-        if (userPermissions.includes("system:models:remove")) this.canRemove = true
+        this.canCreate = this.$store.getters.currentUserIsPermitted("system:models:create")
+        this.canUpdate = this.$store.getters.currentUserIsPermitted("system:models:update")
+        this.canRemove = this.$store.getters.currentUserIsPermitted("system:models:remove")
 
         this.$getRequest(this.$api.allUnits).then(data => {
-            console.log('received', data)
             this.units = data
         }).catch(() => {})
 
         this.$getRequest(this.$api.allFactoryBrands).then(data => {
-            console.log('received', data)
             this.brandTableData = data
         }).catch(() => {})
 
@@ -202,7 +199,6 @@ export default {
             return
         }
         this.$getRequest(this.$api.modelCategories).then((data) => {
-            console.log('received', data)
             this.treeData = this.$createTree(data, true)
             this.$store.commit('modifyModelList', this.treeData)
         }).catch(() => {})

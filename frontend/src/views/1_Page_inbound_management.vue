@@ -38,12 +38,11 @@ import nav from "~/utils/nav";
 export default {
     name: "Inbound_Management_Page",
     beforeMount() {
-        const userPermissions = this.$store.getters.currentUserPermissions
         let navItems = JSON.parse(JSON.stringify(nav.inbound_management_nav))
         for (const item of navItems) {
             let itemsToBeRemoved = []
             for (const subItem of item.children) {
-                if (!userPermissions.includes(subItem.requiredPermission)) {
+                if (!this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
                     itemsToBeRemoved.push(subItem)
                 }
             }

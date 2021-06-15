@@ -52,6 +52,11 @@ const store = new Vuex.Store({
             }
             return state.currentUserPermissions
         },
+        currentUserIsPermitted(state) {
+            return (permission) => {
+                return state.currentUserPermissions.includes(permission)
+            }
+        },
 
         /*----------- company data ------------*/
         companyCategoryList(state) {

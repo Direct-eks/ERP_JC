@@ -145,10 +145,9 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "PartnerCompanyCategories",
     beforeMount() {
-        const userPermissions = this.$store.getters.currentUserPermissions
-        if (userPermissions.includes("system:partnerCompanyCategories:create")) this.canCreate = true
-        if (userPermissions.includes("system:partnerCompanyCategories:update")) this.canUpdate = true
-        if (userPermissions.includes("system:partnerCompanyCategories:remove")) this.canRemove = true
+        this.canCreate = !this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:create")
+        this.canUpdate = !this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:update")
+        this.canRemove = !this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:remove")
 
         this.$getRequest(this.$api.companyAreas).then((data) => {
             console.log('received', data)
