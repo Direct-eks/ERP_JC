@@ -13,6 +13,9 @@ import java.util.List;
 @Repository
 public interface ModelMapper {
     List<ModelCategoryO> queryModelCategories();
+    void insertModelCategory(ModelCategoryO categoryO);
+    void updateModelCategory(ModelCategoryO categoryO);
+
     List<ModelO> queryModelsByCategory(int id);
     List<ModelO> queryModelsByName(String name, String method);
 

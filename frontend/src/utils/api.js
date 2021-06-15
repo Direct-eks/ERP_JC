@@ -72,6 +72,8 @@ const api = {
     exportModels: '/model/exportAllModels', // GET
     updateModelsWithCategory: '/model/updateModelsWithCategory', // POST category= brands=
 
+    updateModelCategories: '/model/updateModelCategories',
+
     /* ------ /miscellaneousData ------*/
     allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
 

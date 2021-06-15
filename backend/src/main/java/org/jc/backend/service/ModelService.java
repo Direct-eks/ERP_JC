@@ -11,6 +11,8 @@ import java.util.List;
 @Indexed
 public interface ModelService {
     List<ModelCategoryO> getModelCategories();
+    void updateModelCategories(ListUpdateVO<ModelCategoryO> updateVO);
+
     List<ModelO> getModelsByCategory(int id);
     List<ModelO> getModelsByName(String name, String method);
 

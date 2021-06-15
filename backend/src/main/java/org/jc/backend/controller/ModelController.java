@@ -42,6 +42,14 @@ public class ModelController {
         return modelService.getModelCategories();
     }
 
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateModelCategories")
+    public void updateModelCategories(@RequestBody @Validated ListUpdateVO<ModelCategoryO> updateVO) {
+        logger.info("POST Request to /model/updateModelCategories, info: {}", updateVO);
+
+        modelService.updateModelCategories(updateVO);
+    }
+
     @ApiOperation(value = "", response = ModelO.class)
     @GetMapping("/getModelsByCategory/{id}")
     public List<ModelO> getModelsByCategory(@PathVariable("id") int id) {

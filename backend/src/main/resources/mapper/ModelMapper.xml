@@ -6,7 +6,6 @@
 
     <resultMap id="ModelCategoryResultMap" type="org.jc.backend.entity.ModelCategoryO">
         <result property="modelCategoryID" column="model_category_id"/>
-        <result property="sequenceNumber" column="sequence_number"/>
         <result property="code" column="code"/>
         <result property="name" column="name"/>
         <result property="remark" column="remark"/>
@@ -14,10 +13,26 @@
     </resultMap>
 
     <select id="queryModelCategories" resultMap="ModelCategoryResultMap">
-        select model_category_id, sequence_number, code, name, remark, tree_level
+        select model_category_id, code, name, remark, tree_level
         from w_model_category
-        order by sequence_number
+        order by tree_level
     </select>
+
+    <insert id="insertModelCategory" useGeneratedKeys="true"
+        keyProperty="modelCategoryID" keyColumn="model_category_id">
+        insert into w_model_category(code, name, remark, tree_level)
+        values (#{code}, #{name}, #{remark}, #{treeLevel})
+    </insert>
+
+    <update id="updateModelCategory">
+        update w_model_category
+        set code = #{code},
+            name = #{name},
+            remark = #{remark},
+            tree_level = #{treeLevel}
+        where model_category_id = #{modelCategoryID}
+    </update>
+
 
     <resultMap id="ModelResultMap" type="org.jc.backend.entity.ModelO">
         <result property="modelID" column="model_id"/>
@@ -68,7 +83,7 @@
                c.code as category_code, unit_id, u.name as unit_name
         from w_model as m join w_model_category as c on m.category_id = c.model_category_id
             join w_measurement_unit as u on m.unit_id = u.measurement_unit_id
-        order by c.sequence_number, m.sequence_number
+        order by c.tree_level, m.sequence_number
     </select>
 
 </mapper>

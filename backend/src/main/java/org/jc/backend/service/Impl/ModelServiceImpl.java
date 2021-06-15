@@ -69,6 +69,37 @@ public class ModelServiceImpl implements ModelService {
         }
     }
 
+    @Override
+    public void updateModelCategories(ListUpdateVO<ModelCategoryO> updateVO) {
+        try {
+            List<ModelCategoryO> tempCategories = new ArrayList<>(updateVO.getElements());
+
+            tempCategories.removeIf(c -> c.getModelCategoryID() >= 0);
+            for (var category : tempCategories) {
+                modelMapper.insertModelCategory(category);
+            }
+
+            tempCategories = new ArrayList<>(updateVO.getElements());
+            tempCategories.removeIf(c -> c.getModelCategoryID() < 0);
+            for (var category : tempCategories) {
+                modelMapper.updateModelCategory(category);
+            }
+
+            // check for removed
+            List<ModelCategoryO> oldCategories = modelMapper.queryModelCategories();
+            oldCategories.removeIf(oldC -> updateVO.getElements().stream()
+                .anyMatch(c -> c.getModelCategoryID().equals(oldC.getModelCategoryID())));
+            for (var category : oldCategories) {
+                // todo remove
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update error");
+            throw e;
+        }
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<ModelO> getModelsByName(String name, String method) {
