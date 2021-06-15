@@ -42,7 +42,7 @@
                     选择
                 </v-btn>
                 <v-btn icon @click="close">
-                    <v-icon>{{mdiClosePath}}</v-icon>
+                    <v-icon>{{ mdiClose }}</v-icon>
                 </v-btn>
             </v-card-title>
             <v-card-text class="d-flex">
@@ -82,31 +82,45 @@
                                   dense>
                     </v-data-table>
                 </v-card>
-
-                <div class="d-flex">
+                <div>
+                    <div class="d-flex">
+                        <v-card outlined>
+                            <v-data-table v-model="skuTableCurrentRow"
+                                          :headers="skuTableHeaders"
+                                          :items="skuTableData"
+                                          item-key="skuID"
+                                          @click:row="skuTableChoose"
+                                          @item-selected="skuTableChoose2"
+                                          height="20vh"
+                                          calculate-widths
+                                          disable-sort
+                                          single-select
+                                          show-select
+                                          fixed-header
+                                          checkbox-color="accent"
+                                          hide-default-footer
+                                          locale="zh-cn"
+                                          dense>
+                            </v-data-table>
+                        </v-card>
+                        <v-card outlined>
+                            <v-data-table :headers="warehouseStockTableHeaders"
+                                          :items="warehouseStockTableData"
+                                          item-key="warehouseStockID"
+                                          height="20vh"
+                                          calculate-widths
+                                          disable-sort
+                                          fixed-header
+                                          hide-default-footer
+                                          locale="zh-cn"
+                                          dense>
+                            </v-data-table>
+                        </v-card>
+                    </div>
                     <v-card outlined>
-                        <v-data-table v-model="skuTableCurrentRow"
-                                      :headers="skuTableHeaders"
-                                      :items="skuTableData"
-                                      item-key="skuID"
-                                      @click:row="skuTableChoose"
-                                      @item-selected="skuTableChoose2"
-                                      height="20vh"
-                                      calculate-widths
-                                      disable-sort
-                                      single-select
-                                      show-select
-                                      fixed-header
-                                      checkbox-color="accent"
-                                      hide-default-footer
-                                      locale="zh-cn"
-                                      dense>
-                        </v-data-table>
-                    </v-card>
-                    <v-card outlined>
-                        <v-data-table :headers="warehouseStockTableHeaders"
-                                      :items="warehouseStockTableData"
-                                      item-key="warehouseStockID"
+                        <v-data-table :headers="resourceTableHeader"
+                                      :items="resourceTableData"
+                                      item-key="supplierID"
                                       height="20vh"
                                       calculate-widths
                                       disable-sort
@@ -128,11 +142,12 @@ import {mdiClose} from '@mdi/js'
 export default {
     name: "ModelSearch",
     props: {
-        warehouseID: {type: Number, required: true, default: -1}
+        warehouseID: {type: Number, required: true, default: -1},
+        companyID: {type: Number, required: true, default: -1}
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             modelCode: '',
             modelSearchName: '',
@@ -160,6 +175,15 @@ export default {
                 {text: '库存无税价', value: 'stockUnitPriceWithoutTax', width: '100px'}
             ],
             warehouseStockTableData: [],
+
+            resourceTableHeader: [
+                { text: '供应商简称', value: 'supplierAbbreviatedName', width: '100px' },
+                { text: '厂牌', value: 'factoryCode', width: '80px' },
+                { text: '含税厂价', value: 'factoryPriceWithTax', width: '65px' },
+                { text: '无税厂价', value: 'factoryPriceWithoutTax', width: '65px' },
+                { text: '无税结算价', value: 'settlementPriceWithoutTax', width: '80px' },
+            ],
+            resourceTableData: [],
         }
     },
     beforeMount() {
@@ -177,15 +201,13 @@ export default {
         close() {
             this.$emit('modelSearchClose')
         },
-        addNewHandle() {
-
-        },
         modelSearch() {
             this.modelTableData = []
             this.modelTableCurrentRow = [] //reset model table
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
             this.warehouseStockTableData = []
+            this.resourceTableData = []
 
             this.$getRequest(this.$api.modelsByName, {
                 name: this.modelSearchName,
@@ -200,7 +222,9 @@ export default {
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
             this.warehouseStockTableData = []
+            this.resourceTableData = []
 
+            if (data.length === 0) return
             let val = data[0]
             if (val.children.length === 0) { // end node
                 let result = this.$store.getters.models(val.categoryID)
@@ -219,6 +243,7 @@ export default {
             this.skuTableData = []
             this.skuTableCurrentRow = []
             this.warehouseStockTableData = []
+            this.resourceTableData = []
 
             if (this.modelTableCurrentRow.indexOf(val) !== -1) {
                 this.modelTableCurrentRow = []
@@ -236,6 +261,7 @@ export default {
             this.skuTableData = []
             this.skuTableCurrentRow = []
             this.warehouseStockTableData = []
+            this.resourceTableData = []
 
             if (!row.value) {
                 this.modelTableCurrentRow = []
@@ -246,6 +272,7 @@ export default {
         },
         skuTableChoose(val) {
             this.warehouseStockTableData = []
+            this.resourceTableData = []
 
             if (this.skuTableCurrentRow.indexOf(val) !== -1) {
                 this.skuTableCurrentRow = []
@@ -256,6 +283,11 @@ export default {
                 this.$getRequest(this.$api.warehouseStockBySKu +
                     encodeURI(val.skuID)).then((data) => {
                     this.warehouseStockTableData = data
+                }).catch(() => {})
+
+                this.$getRequest(this.$api.supplierResourcesBySku +
+                    encodeURI(val.skuID)).then(data => {
+                    this.resourceTableData = data
                 }).catch(() => {})
             }
         },
@@ -278,12 +310,20 @@ export default {
                 })
             }
             else {
-                let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = 0.0
+                let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = '0'
                 for (let item of this.warehouseStockTableData) {
                     if (item.warehouseID === this.warehouseID) {
                         stockQuantity = item.stockQuantity
                         warehouseStockID = item.warehouseStockID
                         stockUnitPrice = item.stockUnitPriceWithTax
+                        break
+                    }
+                }
+
+                let settlementPriceWithoutTax = '0'
+                for (const resource of this.resourceTableData) {
+                    if (resource.supplierID === this.companyID) {
+                        settlementPriceWithoutTax = resource.settlementPriceWithoutTax
                         break
                     }
                 }
@@ -299,7 +339,7 @@ export default {
                     warehouseStockID: warehouseStockID,
                     warehouseID: this.warehouseID,
                     taxRate: '',
-                    unitPriceWithoutTax: '0',
+                    unitPriceWithoutTax: settlementPriceWithoutTax,
                     unitPriceWithTax: '0',
                     stockUnitPrice: stockUnitPrice,
                     //statistic fields

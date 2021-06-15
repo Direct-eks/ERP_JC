@@ -314,6 +314,7 @@
                     </template>
                     <ModelSearch
                         :warehouseID="form.warehouseID"
+                        :companyID="form.partnerCompanyID"
                         @modelSearchClose="modelSearchCloseAction"
                         @modelSearchChoose="modelSearchChooseAction">
                     </ModelSearch>
@@ -396,7 +397,7 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.quantity="{ item }">
+            <template v-if="enableEditing" v-slot:item.quantity="{ item }">
                 <v-edit-dialog :return-value="item.quantity"
                                @save="handleQuantityChange(item)"
                                @cancel="handleQuantityChange(item)"
@@ -408,7 +409,7 @@
                     </template>
                 </v-edit-dialog>
             </template>
-            <template v-slot:item.unitPriceWithTax="{ item }">
+            <template v-if="enableEditing" v-slot:item.unitPriceWithTax="{ item }">
                 <v-edit-dialog :return-value="item.unitPriceWithTax"
                                @save="handlePriceWithTaxChange(item)"
                                @cancel="handlePriceWithTaxChange(item)"
@@ -420,7 +421,7 @@
                     </template>
                 </v-edit-dialog>
             </template>
-            <template v-slot:item.unitPriceWithoutTax="{ item }">
+            <template v-if="enableEditing" v-slot:item.unitPriceWithoutTax="{ item }">
                 <v-edit-dialog :return-value="item.unitPriceWithoutTax"
                                @save="handlePriceWithoutTaxChange(item)"
                                @cancel="handlePriceWithoutTaxChange(item)"
@@ -500,10 +501,12 @@ export default {
             break
         }
 
+        this.enableEditing = this.$store.getters.currentUserIsPermitted('inboundEntry:Creation:changePrice')
+
         this.$getRequest(this.$api.warehouseOptions).then((data) => {
             this.warehouseOptions = data
             for (const item of this.warehouseOptions) {
-                if (item.isDefault === 1) {
+                if (item.isInDefault === 1) {
                     this.form.warehouseID = item.warehouseID
                     break
                 }
@@ -597,6 +600,7 @@ export default {
             submitPopup2: false,
             submitPopup3: false,
             tableCurrRows: [],
+            enableEditing: true,
 
             tax: 0,
             sumWithTax: 0,

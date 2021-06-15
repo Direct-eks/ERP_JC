@@ -95,6 +95,7 @@
                             <v-row class="ml-10">
                                 <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="入库单录入" value="inboundEntry:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="入库单录入：改价" value="inboundEntry:Creation:changePrice"/>
                                     <v-checkbox v-model="form.permissions" label="入库单完善" value="inboundEntry:Completion"/>
                                     <v-checkbox v-model="form.permissions" label="入库单修改" value="inboundEntry:Modification"/>
                                     <v-checkbox v-model="form.permissions" label="入库单退货" value="inboundEntry:Return"/>
@@ -265,15 +266,12 @@ export default {
     name: "Staff",
     beforeMount() {
         this.$getRequest(this.$api.allUsers).then(data => {
-            console.log('received', data)
             this.userTableData = data
         })
         this.$getRequest(this.$api.allRoles).then(data => {
-            console.log('received', data)
             this.allRoles = data
         })
         this.$getRequest(this.$api.allPermissions).then(data => {
-            console.log('received', data)
             this.allPermissions = data
         })
     },

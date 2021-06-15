@@ -93,7 +93,7 @@
                     <v-data-table v-model="supplierTableCurrentRow"
                                   :headers="supplierTableHeaders"
                                   :items="supplierTableData"
-                                  item-key="partnerCompanyID"
+                                  item-key="supplierID"
                                   height="23vh"
                                   calculate-widths
                                   disable-sort
