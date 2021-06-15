@@ -51,8 +51,7 @@
                                   locale="zh-cn"
                                   dense>
                         <template v-if="canUpdate" v-slot:item.name="{ item }">
-                            <v-edit-dialog :return-value="item.name"
-                                           persistent large save-text="确认" cancel-text="取消">
+                            <v-edit-dialog :return-value="item.name">
                                 {{item.name}}
                                 <template v-slot:input>
                                     <v-text-field v-model="item.name" single-line/>
@@ -60,8 +59,7 @@
                             </v-edit-dialog>
                         </template>
                         <template v-if="canUpdate" v-slot:item.remark="{ item }">
-                            <v-edit-dialog :return-value="item.remark"
-                                           persistent large save-text="确认" cancel-text="取消">
+                            <v-edit-dialog :return-value="item.remark">
                                 {{item.remark}}
                                 <template v-slot:input>
                                     <v-text-field v-model="item.remark" single-line/>
@@ -79,6 +77,7 @@
                                   width="35vw">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn color="accent" class="ml-3"
+                                       :disabled="treeSelection.length === 0"
                                        v-bind="attrs"
                                        v-on="on">
                                     在当前层级下新增
@@ -117,6 +116,7 @@
                     </v-row>
                     <v-row class="ml-1 mt-5">
                         <v-btn v-if="canRemove" color="accent" class="ml-3"
+                               :disabled="treeSelection.length === 0"
                                @click="removeItem">
                             删除
                         </v-btn>
@@ -184,7 +184,11 @@ export default {
             if (data.length === 0) return
             let val = data[data.length - 1]
             this.treeSelection = [val]
-            this.currRow = [val]
+            this.tableData.forEach(item => {
+                if (item.areaID === val.areaID) {
+                    this.currRow = [val]
+                }
+            })
         },
         addNewItem() {
             if (this.treeSelection.length === 0) return
