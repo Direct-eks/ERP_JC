@@ -54,6 +54,11 @@ const store = new Vuex.Store({
         },
         currentUserIsPermitted(state) {
             return (permission) => {
+                if (state.currentUserPermissions.length === 0) {
+                    const allPermissions = sessionStorage.getItem('userPermissions') != null ?
+                        JSON.parse(sessionStorage.getItem('userPermissions')) : []
+                    return allPermissions.includes(permission)
+                }
                 return state.currentUserPermissions.includes(permission)
             }
         },
