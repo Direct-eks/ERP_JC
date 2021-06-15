@@ -5,18 +5,37 @@
         <v-card-title class="d-flex">
             商品型号
             <v-spacer></v-spacer>
-            <v-text-field
-                v-model="searchField"
-                :append-icon="mdiMagnify"
-                label="搜索"
-                single-line
-                hide-details/>
+            <v-col cols="auto">
+                <v-text-field v-model="modelSearchName"
+                              label="代号搜索"
+                              hide-details="auto"
+                              clearable
+                              style="width: 120px"
+                              @keydown.enter.native="modelSearch">
+                </v-text-field>
+            </v-col>
+            <v-col cols="auto">
+                <v-radio-group v-model="modelSearchMethod"
+                               hide-details="auto"
+                               class="mt-0"
+                               dense>
+                    <v-radio label="前匹配" value="prefix"></v-radio>
+                    <v-radio label="模糊" value="infix"></v-radio>
+                </v-radio-group>
+            </v-col>
+            <v-col cols="auto">
+                <v-btn color="accent"
+                       @click="modelSearch">
+                    查询
+                </v-btn>
+            </v-col>
             <v-spacer></v-spacer>
             <v-btn class="mr-3" color="primary"
                    @click="exportExcel">
                 导出Excel
             </v-btn>
             <v-btn class="mr-3" color="success"
+                   :disabled="!enableModification"
                    @click="saveChanges">
                 保存修改
             </v-btn>
@@ -54,7 +73,6 @@
                                   hide-default-footer
                                   calculate-widths
                                   :sort-by="['sequenceNumber', 'code']"
-                                  :search="searchField"
                                   disable-pagination
                                   single-select
                                   show-select
@@ -81,7 +99,7 @@
                         </template>
                     </v-data-table>
                 </v-card>
-                <v-row>
+                <v-row v-if="enableModification">
                     <v-col cols="auto">
                         <v-row class="ma-3">
                             <v-btn v-if="canUpdate" color="accent" fab small elevation="0" outlined
@@ -173,7 +191,7 @@
 </template>
 
 <script>
-import { mdiArrowLeft, mdiChevronUp, mdiChevronDown, mdiMagnify } from "@mdi/js";
+import { mdiArrowLeft, mdiChevronUp, mdiChevronDown } from "@mdi/js";
 
 export default {
     name: "Models",
@@ -208,7 +226,6 @@ export default {
             mdiArrowLeft,
             mdiChevronUp,
             mdiChevronDown,
-            mdiMagnify,
 
             canCreate: false,
             canUpdate: false,
@@ -223,6 +240,7 @@ export default {
 
             modelTableHeaders: [
                 { text: '序号', value: 'sequenceNumber', width: '95px' },
+                { text: '分类', value: 'categoryCode', width: '110px' },
                 { text: '代号', value: 'code', width: '180px' },
                 { text: '单位', value: 'unitID', width: '120px' },
             ],
@@ -230,7 +248,8 @@ export default {
             modelTableCurrentRow: [],
             newItemIndex: -1,
 
-            searchField: '',
+            modelSearchName: '',
+            modelSearchMethod: 'prefix',
 
             units: [],
 
@@ -240,10 +259,23 @@ export default {
             brandTableData: [],
             brandTableCurrentRow: [],
 
+            enableModification: true,
             overlay: false,
         }
     },
     methods: {
+        modelSearch() {
+            this.enableModification = false
+            this.modelTableData = []
+            this.modelTableCurrentRow = [] //reset model table
+
+            this.$getRequest(this.$api.modelsByName, {
+                name: this.modelSearchName,
+                method: this.modelSearchMethod
+            }).then((data) => {
+                this.modelTableData = data
+            }).catch(() => {})
+        },
         treeSelect(data) {
             this.modelTableData = []
             this.modelTableCurrentRow = [] //reset model table
@@ -252,7 +284,6 @@ export default {
 
             let val = data[0]
             if (val.children.length === 0) { // end node
-                console.log(val.categoryID)
                 this.treeLevelID = val.categoryID
                 let result = this.$store.getters.models(val.categoryID)
                 if (result) {
@@ -265,6 +296,7 @@ export default {
                     this.modelTableData = data
                     this.$store.commit('modifyModels', { key: val.categoryID, value: data })
                 }).catch(() => {})
+                this.enableModification = true
             }
         },
         modelTableChoose(row) {
