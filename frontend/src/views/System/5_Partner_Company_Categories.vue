@@ -145,12 +145,11 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "PartnerCompanyCategories",
     beforeMount() {
-        this.canCreate = !this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:create")
-        this.canUpdate = !this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:update")
-        this.canRemove = !this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:remove")
+        this.canCreate = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:create")
+        this.canUpdate = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:update")
+        this.canRemove = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:remove")
 
         this.$getRequest(this.$api.companyAreas).then((data) => {
-            console.log('received', data)
             this.tableData = data
             this.treeData = this.$createTree(data, false)
             this.$store.commit('modifyCompanyList', this.treeData)
