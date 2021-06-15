@@ -243,6 +243,7 @@
                 </v-col>
                 <v-col cols="auto" v-if="inboundEntryMode && form.shippingCostType !== '无'">
                     <v-text-field v-model.number="form.shippingCost"
+                                  :rules="rules.shippingCost"
                                   label="运费"
                                   @change="handleShippingCostChange"
                                   hide-details="auto"
@@ -571,6 +572,8 @@ export default {
                 invoiceType: [v => !!v || ' 请选择单据类型'], // no need to validate if is purchase order
                 company: [v => !!v || '请选择单位'],
                 shippingCostType: [v => !!v || '请选择运费类型'],
+                shippingCost: [v =>
+                    (this.form.shippingCostType !== '无' ? v !== '' : true) || '请填写运费' ]
             },
 
             warehouseOptions: [],
@@ -607,9 +610,9 @@ export default {
             suppliers: [],
             editPermitted: false,
 
-            tax: 0,
-            sumWithTax: 0,
-            sumWithoutTax: 0,
+            tax: '0',
+            sumWithTax: '0',
+            sumWithoutTax: '0',
         }
     },
     methods: {
@@ -669,6 +672,9 @@ export default {
 
             this.$store.commit('setSnackbar', {
                 message: '添加成功', color: 'success'
+            })
+            this.tableData.forEach(row => {
+                this.handlePriceWithoutTaxChange(row)
             })
         },
         tableSelect(row) {
@@ -734,7 +740,6 @@ export default {
             }
             this.tableData.forEach(row => {
                 row.taxRate = this.taxRate
-                console.log('row', row.taxRate)
                 this.handlePriceWithoutTaxChange(row)
             })
         },
@@ -820,7 +825,7 @@ export default {
             case '自付':
                 break
             case '代垫':
-                sum.plus(this.form.shippingCost)
+                sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
                 break
             }
             this.form.totalCost = sum.toString()
