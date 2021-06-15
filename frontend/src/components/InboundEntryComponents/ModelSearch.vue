@@ -181,6 +181,12 @@ export default {
 
         },
         modelSearch() {
+            this.modelTableData = []
+            this.modelTableCurrentRow = [] //reset model table
+            this.skuTableData = []
+            this.skuTableCurrentRow = [] //reset stock table
+            this.warehouseStockTableData = []
+
             this.$getRequest(this.$api.modelsByName, {
                 name: this.modelSearchName,
                 method: this.modelSearchMethod
