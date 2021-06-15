@@ -242,7 +242,7 @@
                         <v-radio label="代垫运费" value="代垫"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="auto" v-if="inboundEntryMode">
+                <v-col cols="auto" v-if="inboundEntryMode && form.shippingCostType !== '无'">
                     <v-text-field v-model.number="form.shippingCost"
                                   label="运费"
                                   @change="handleShippingCostChange"
@@ -252,14 +252,15 @@
                                   style="width: 100px">
                     </v-text-field>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-text-field v-model.number="totalSumPlusShippingCost"
                                   label="总金额"
                                   hide-details="auto"
-                                  outlined
+                                  filled
                                   dense
                                   readonly
-                                  style="width: 100px">
+                                  style="width: 120px">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -324,8 +325,7 @@
                         <v-btn color="red lighten-1" v-on="on">删除</v-btn>
                     </template>
                     <v-card>
-                        <v-card-title>确认删除？</v-card-title>
-                        <v-card-text>{{rowDeletionConfirm}}</v-card-text>
+                        <v-card-title>确认删除选中行？</v-card-title>
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="primary" @click="deleteTableRowPopup = false">取消</v-btn>
@@ -396,9 +396,6 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{ tableData.indexOf(item) + 1 }}
-            </template>
             <template v-slot:item.quantity="{ item }">
                 <v-edit-dialog :return-value="item.quantity"
                                @save="handleQuantityChange(item)"
@@ -580,7 +577,6 @@ export default {
             ],
 
             tableHeaders: [
-                { text: '序号', value: 'index', width: '60px' },
                 { text: '代号', value: 'code', width: '180px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px' },
                 { text: '入库数量', value: 'quantity', width: '90px' },
@@ -798,13 +794,6 @@ export default {
         }
     },
     computed: {
-        rowDeletionConfirm() {
-            let result = '确认删除以下序号的行: '
-            this.tableCurrRows.forEach(item => {
-                result += `${(this.tableData.indexOf(item) + 1).toString()} `
-            })
-            return result
-        },
         totalSumPlusShippingCost() {
             let sum = this.$Big(this.sumWithTax)
             switch (this.form.shippingCostType) {
