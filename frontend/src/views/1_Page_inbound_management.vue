@@ -42,7 +42,7 @@ export default {
         for (const item of navItems) {
             let itemsToBeRemoved = []
             for (const subItem of item.children) {
-                if (!this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
+                if (!this.$store.getters.currentUserIsPermitted(subItem.requiredPermission)) {
                     itemsToBeRemoved.push(subItem)
                 }
             }
