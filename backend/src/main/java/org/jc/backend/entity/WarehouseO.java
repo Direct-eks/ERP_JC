@@ -22,8 +22,16 @@ public class WarehouseO {
     @NotNull(message = "location null error")
     private String location;
 
-    @NotNull(message = "isDefault option null error")
-    @Min(value = 0, message = "min value 0 violation")
-    @Max(value = 1, message = "max value 1 violation")
-    private Integer isDefault;
+    @NotNull(message = "isInDefault option null error")
+    @Min(value = 0, message = "isInDefault min value 0 violation")
+    @Max(value = 1, message = "isInDefault max value 1 violation")
+    private Integer isInDefault;
+
+    @NotNull(message = "isOutDefault option null error")
+    @Min(value = 0, message = "isOutDefault min value 0 violation")
+    @Max(value = 1, message = "isOutDefault max value 1 violation")
+    private Integer isOutDefault;
+
+    @NotNull(message = "permittedCategory null error")
+    private Integer permittedCategory;
 }

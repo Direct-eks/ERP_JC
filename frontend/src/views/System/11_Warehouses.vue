@@ -29,6 +29,7 @@
                               disable-sort
                               single-select
                               show-select
+                              checkbox-color="accent"
                               @click:row="tableSelect"
                               @item-selected="tableSelect2"
                               fixed-header
@@ -57,8 +58,16 @@
                             </template>
                         </v-edit-dialog>
                     </template>
-                    <template v-slot:item.isDefault="{ item }">
-                        <v-select v-model="item.isDefault"
+                    <template v-slot:item.isInDefault="{ item }">
+                        <v-select v-model="item.isInDefault"
+                                  :items="options"
+                                  item-text="name"
+                                  item-value="value"
+                                  hide-details="auto"
+                                  dense/>
+                    </template>
+                    <template v-slot:item.isOutDefault="{ item }">
+                        <v-select v-model="item.isOutDefault"
                                   :items="options"
                                   item-text="name"
                                   item-value="value"
@@ -90,7 +99,9 @@ export default {
                 { text: '序号', value: 'index', width: '70px' },
                 { text: '仓库名称', value: 'name', width: '100px' },
                 { text: '仓库位置', value: 'location', width: '100px' },
-                { text: '默认仓库', value: 'isDefault', width: '100px' },
+                { text: '默认为入库仓库', value: 'isInDefault', width: '120px' },
+                { text: '默认为出库仓库', value: 'isOutDefault', width: '120px' },
+                { text: '允许入/出库商品分类', value: 'permittedCategory', width: '150px' },
             ],
             currentRow: [],
             tableData: [],

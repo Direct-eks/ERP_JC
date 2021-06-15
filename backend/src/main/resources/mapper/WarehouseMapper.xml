@@ -8,25 +8,29 @@
         <result property="warehouseID" column="warehouse_id"/>
         <result property="name" column="name"/>
         <result property="location" column="location"/>
-        <result property="isDefault" column="is_default"/>
+        <result property="isInDefault" column="is_in_default"/>
+        <result property="isOutDefault" column="is_out_default"/>
+        <result property="permittedCategory" column="permitted_category"/>
     </resultMap>
 
     <select id="queryWarehouses" resultMap="WarehouseResultMap">
-        select warehouse_id, name, location, is_default
+        select warehouse_id, name, location, is_in_default, is_out_default, permitted_category
         from w_warehouse
     </select>
 
     <insert id="insertWarehouse" useGeneratedKeys="true"
         keyProperty="warehouseID" keyColumn="warehouse_id">
-        insert into w_warehouse(name, location, is_default)
-        values (#{name}, #{location}, #{isDefault})
+        insert into w_warehouse(name, location, is_in_default, is_out_default, permitted_category)
+        values (#{name}, #{location}, #{isInDefault}, #{isOutDefault}, #{permittedCategory})
     </insert>
 
     <update id="updateWarehouse">
         update w_warehouse
         set name = #{name},
             location = #{location},
-            is_default = #{isDefault}
+            is_in_default = #{isInDefault},
+            is_out_default = #{isOutDefault},
+            permitted_category = #{permittedCategory}
         where warehouse_id = #{warehouseID}
     </update>
 
