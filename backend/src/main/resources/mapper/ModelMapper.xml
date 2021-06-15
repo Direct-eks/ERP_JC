@@ -30,19 +30,22 @@
     </resultMap>
 
     <select id="queryModelsByCategory" resultMap="ModelResultMap">
-        select model_id, sequence_number, code, category_id, unit_id
-        from w_model
+        select model_id, m.sequence_number, m.code, category_id,
+               c.code as category_code, unit_id
+        from w_model as m join w_model_category as c
+            on m.category_id = c.model_category_id
         where category_id = #{id}
-        order by sequence_number
+        order by m.sequence_number
     </select>
 
     <select id="queryModelsByName" resultMap="ModelResultMap">
-        select model_id, sequence_number, code, category_id, unit_id
-        from w_model
+        select model_id, m.sequence_number, m.code, category_id,
+               c.code as category_code, unit_id
+        from w_model as m join w_model_category as c
+            on m.category_id = c.model_category_id
         <choose>
-            <when test="method == 'prefix'">and code like #{name}||'%'</when>
-            <when test="method == 'infix'">and code like '%'||#{name}||'%'</when>
-            <when test="method == 'suffix'">and code like '%'||#{name}</when>
+            <when test="method == 'prefix'">and m.code like #{name}||'%'</when>
+            <when test="method == 'infix'">and m.code like '%'||#{name}||'%'</when>
         </choose>
     </select>
 
