@@ -41,7 +41,7 @@
                     <v-list-item v-for="(item, i) in helpContent"
                                  :key="i">
                         <v-list-item-content>
-                            {{ item }}
+                            <p style="text-align: left">{{ item }}</p>
                         </v-list-item-content>
                     </v-list-item>
                 </v-sheet>
