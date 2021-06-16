@@ -35,6 +35,9 @@ public class InboundEntryWithProductsVO {
     @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
     private String invoiceType;
 
+    @NotNull(message = "taxRate null error")
+    private Integer taxRate;
+
     @NotNull(message = "drawer null error")
     @NotBlank(message = "drawer blank error")
     private String drawer;

@@ -12,14 +12,14 @@
 
     <insert id="insertNewEntry">
         insert into e_inbound_entry(
-            inbound_entry_id, entry_date, creation_date, total_cost, invoice_type, drawer,
-            partner_company_id, department_id, warehouse_id, remark, classification,
+            inbound_entry_id, entry_date, creation_date, total_cost, invoice_type, tax_rate,
+            drawer, partner_company_id, department_id, warehouse_id, remark, classification,
             shipping_cost, shipping_cost_type, shipping_quantity, shipping_number,
             shipping_method_id
         )
         values (
             #{inboundEntryID}, #{entryDate}, date('now', 'localtime'), #{totalCost}, #{invoiceType},
-            #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
+            #{taxRate}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark},
             #{classification}, #{shippingCost}, #{shippingCostType}, #{shippingQuantity},
             #{shippingNumber}, #{shippingMethodID}
         )
@@ -44,6 +44,7 @@
         <result property="creationDate" column="creation_date"/>
         <result property="totalCost" column="total_cost"/>
         <result property="invoiceType" column="invoice_type"/>
+        <result property="taxRate" column="tax_rate"/>
         <result property="drawer" column="drawer"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
@@ -91,7 +92,7 @@
 
 
     <select id="queryEntriesInDateRangeByInvoiceTypeAndCompanyID" resultMap="entryResultMap">
-        select i.inbound_entry_id, i.entry_date, i.creation_date, i.total_cost, i.invoice_type,
+        select i.inbound_entry_id, i.entry_date, i.creation_date, i.total_cost, i.invoice_type, i.tax_rate
                i.drawer, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
                c.phone, c.full_name, d.department_id, d.name as department_name, i.warehouse_id,
                w.name as warehouse_name, i.remark, i.classification, i.shipping_cost,
@@ -142,7 +143,7 @@
 
 
     <select id="selectEntryForCompare" resultMap="entryResultMap">
-        select inbound_entry_id, total_cost, invoice_type, drawer, i.department_id,
+        select inbound_entry_id, total_cost, invoice_type, tax_rate, drawer, i.department_id,
                d.name as department_name, i.remark
         from e_inbound_entry as i join e_department as d on i.department_id = d.department_id
         where inbound_entry_id = #{id}
@@ -298,7 +299,7 @@
     <select id="queryNotYetCheckoutDetailByCompanyID" resultMap="productResultMap">
         select inbound_product_id, p.inbound_entry_id, p.sku_id, sku_full.code,
                sku_full.unit_name, sku_full.factory_code, quantity, p.stock_quantity, p.remark,
-               warehouse_stock_id, p.warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax,
+               warehouse_stock_id, p.warehouse_id, p.tax_rate, unit_price_without_tax, unit_price_with_tax,
                stock_unit_price, return_status, checkout_serial, invoice_serial
         from (e_inbound_entry as e join (
                 e_inbound_product as p join sku_full on p.sku_id = sku_full.sku_id
@@ -317,7 +318,7 @@
     <select id="queryNotYetInvoiceDetailByCompanyID" resultMap="productResultMap">
         select inbound_product_id, p.inbound_entry_id, p.sku_id, sku_full.code,
                sku_full.unit_name, sku_full.factory_code, quantity, p.stock_quantity, p.remark,
-               warehouse_stock_id, p.warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax,
+               warehouse_stock_id, p.warehouse_id, p.tax_rate, unit_price_without_tax, unit_price_with_tax,
                stock_unit_price, return_status, checkout_serial, invoice_serial
         from (e_inbound_entry as e join (
                 e_inbound_product as p join sku_full on p.sku_id = sku_full.sku_id

@@ -38,9 +38,7 @@ public class InboundProductO {
     private Integer warehouseID;
 
     @NotNull(message = "taxRate null error")
-    @NotBlank(message = "taxRate blank error")
-    @Pattern(regexp = "^[\\d]*$", message = "unitPriceWithoutTax value error")
-    private String taxRate;
+    private Integer taxRate;
 
     @NotNull(message = "unitPriceWithoutTax null error")
     @NotBlank(message = "unitPriceWithoutTax blank error")

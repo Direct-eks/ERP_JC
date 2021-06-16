@@ -11,6 +11,7 @@ public class InboundEntryDO {
     private String creationDate;
     private String totalCost;
     private String invoiceType;
+    private int taxRate;
     private String drawer;
 
     private int partnerCompanyID;

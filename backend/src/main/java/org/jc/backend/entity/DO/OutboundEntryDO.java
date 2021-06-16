@@ -12,6 +12,7 @@ public class OutboundEntryDO {
     private String totalAmount;
     private String deliveryMethod;
     private String invoiceType;
+    private int taxRate;
     private String drawer;
 
     private int partnerCompanyID;
