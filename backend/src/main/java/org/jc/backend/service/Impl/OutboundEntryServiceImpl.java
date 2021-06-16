@@ -4,6 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
+import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
@@ -76,6 +77,57 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
+            throw e;
+        }
+    }
+
+    /**
+     * replenish products while validating dates
+     * @param products replenishment products
+     * @param entryDate entryDate of replenishment
+     * @return true if replenishment successful, false if entryDate is incorrect
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean replenishPresaleProducts(List<InboundProductO> products, String entryDate) {
+        try {
+            // date check
+            for (var product : products) {
+                int id = product.getWarehouseStockID();
+                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
+                for (var presale : presales) {
+                    // if entryDate is newer (larger) than selling date
+                    String entryID = presale.getOutboundEntryID();
+                    if (MyUtils.restoreDateFromString(entryID).compareTo(entryDate) > 0) {
+                        return false;
+                    }
+                }
+            }
+            // do replenishment todo change warehouseStock price and quantity
+            for (var product : products) {
+                int replenishQuantity = product.getQuantity();
+                int id = product.getWarehouseStockID();
+                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
+                for (var presale : presales) {
+                    if (replenishQuantity == 0) break;
+                    if (replenishQuantity < presale.getNotReplenishedQuantity()) { // replenish as much as possible
+                        int quantityAfterReplenish = presale.getNotReplenishedQuantity() - replenishQuantity;
+                        presale.setNotReplenishedQuantity(quantityAfterReplenish);
+                        replenishQuantity = 0;
+                    }
+                    else { // replenish and set replenished status to true
+                        replenishQuantity -= presale.getNotReplenishedQuantity();
+                        presale.setNotReplenishedQuantity(0);
+                        presale.setPresaleReplenished(1);
+                    }
+                    outboundEntryMapper.updateReplenishment(presale);
+                }
+            }
+            return true;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

@@ -73,6 +73,43 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
+    /**
+     * @return -1 if products (involve no presales)
+     * or 0 if products (involve only presales)
+     * or 1 if products (involve mixed presales and non-presales)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public int passPresaleCheck(List<InboundProductO> inboundProducts) {
+        try {
+            // check if all products are non-presales
+            if (inboundProducts.stream().noneMatch(p -> {
+                int id = p.getWarehouseStockID();
+                if (id == -1) return false;
+                return warehouseStockMapper.queryWarehouseStockByID(id).getStockQuantity() < 0;
+            })) {
+                return -1;
+            }
+            // check if all products are presales
+            if (inboundProducts.stream().allMatch(p -> {
+                int id = p.getWarehouseStockID();
+                if (id == -1) return false;
+                return warehouseStockMapper.queryWarehouseStockByID(id).getStockQuantity() < 0;
+            })) {
+                return 0;
+            }
+
+            return 1;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+
+
     @Transactional
     @Override
     public void increaseStockAndUpdateStockUnitPrice(InboundProductO product) {
@@ -86,6 +123,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             int productQuantity = product.getQuantity();
             BigDecimal productUnitPriceWithoutTax = new BigDecimal(product.getUnitPriceWithoutTax());
 
+            // todo changes in presale condition, avoid negative numbers
             String calculatedPrice = productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(productQuantity))
                     .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity)))
                     .divide(BigDecimal.valueOf(productQuantity + stockQuantity), RoundingMode.HALF_EVEN)

@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Indexed
 public interface InboundEntryService {
-    void createEntry(InboundEntryWithProductsVO entryWithProductsVO);
+    void createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException;
     List<InboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
                                                                              String type, int companyID);
     void completeEntry(InboundEntryWithProductsVO completionVO);

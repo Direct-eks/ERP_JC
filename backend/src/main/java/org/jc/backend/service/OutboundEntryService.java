@@ -1,6 +1,7 @@
 package org.jc.backend.service;
 
 import org.jc.backend.entity.DO.OutboundEntryDO;
+import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
@@ -12,6 +13,8 @@ import java.util.List;
 @Indexed
 public interface OutboundEntryService {
     void createEntry(OutboundEntryWithProductsVO entryWithProductsVO);
+    boolean replenishPresaleProducts(List<InboundProductO> products, String entryDate);
+
     List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                             String type, int id);
     void completeEntry(OutboundEntryWithProductsVO outboundEntryWithProductsVO);

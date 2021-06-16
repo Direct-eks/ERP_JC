@@ -1,6 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InboundEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
@@ -11,6 +12,7 @@ import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
+import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -32,20 +34,23 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     private final InboundEntryMapper inboundEntryMapper;
     private final ModificationMapper modificationMapper;
     private final WarehouseStockService warehouseStockService;
+    private final OutboundEntryService outboundEntryService;
 
     public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper,
                                    ModificationMapper modificationMapper,
-                                   WarehouseStockService warehouseStockService) {
+                                   WarehouseStockService warehouseStockService,
+                                   OutboundEntryService outboundEntryService) {
         this.inboundEntryMapper = inboundEntryMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockService = warehouseStockService;
+        this.outboundEntryService = outboundEntryService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
     @Override
-    public void createEntry(InboundEntryWithProductsVO entryWithProductsVO) {
+    public void createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException{
 
         InboundEntryDO newEntry = new InboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
@@ -57,6 +62,21 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         }
 
         try {
+            // presale checks
+            switch (warehouseStockService.passPresaleCheck(newProducts)) {
+                case -1:
+                    break;
+                case 0:
+                    // do entryDate check and do replenishment
+                    if (!outboundEntryService.replenishPresaleProducts(newProducts,
+                            entryWithProductsVO.getEntryDate())) {
+                        throw new GlobalParamException("入库单日期必须大于所有预销售产品出库日期");
+                    }
+                    break;
+                case 1:
+                    throw new GlobalParamException("入库单不能同时含有预销售和普通入库产品");
+            }
+
             int count = inboundEntryMapper.countNumberOfEntriesOfToday();
             String newSerial = MyUtils.formNewSerial("购入", count, newEntry.getEntryDate());
 
@@ -65,12 +85,12 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             inboundEntryMapper.insertNewEntry(newEntry);
 
             // set inbound entry serial for products, and insert
+            int warehouseID = entryWithProductsVO.getWarehouseID();
             for (var product : newProducts) {
                 //set entry serial id for product
                 product.setInboundEntryID(newSerial);
 
                 //check warehouseStock for existence, if not, create new one
-                int warehouseID = product.getWarehouseID();
                 int skuID = product.getSkuID();
                 if (product.getWarehouseStockID() == -1
                         || warehouseStockService.getWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
@@ -83,12 +103,10 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
                 inboundEntryMapper.insertNewProduct(product);
                 int id = product.getInboundProductID();
-                logger.info("Insert new inbound product id: " + id);
+                logger.info("Insert new inbound product id: {}", id);
 
                 // calculate stock unit price for product
                 warehouseStockService.increaseStockAndUpdateStockUnitPrice(product);
-
-                //todo replenish presales
             }
 
         } catch (PersistenceException e) {

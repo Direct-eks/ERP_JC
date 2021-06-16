@@ -88,6 +88,9 @@
         <result property="returnStatus" column="return_status"/>
         <result property="checkoutSerial" column="checkout_serial"/>
         <result property="invoiceSerial" column="invoice_serial"/>
+        <result property="isPresale" column="is_presale"/>
+        <result property="presaleReplenished" column="presale_replenished"/>
+        <result property="notReplenishedQuantity" column="not_replenished_quantity"/>
     </resultMap>
 
     <select id="queryEntriesInDateRangeByTypeAndCompanyID" resultMap="entryResultMap">
@@ -113,12 +116,30 @@
         select outbound_product_id, outbound_entry_id, p.sku_id, sku_full.code,
                sku_full.unit_name, sku_full.factory_code, quantity, p.stock_quantity, p.remark,
                warehouse_stock_id, warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax,
-               stock_unit_price, return_status, checkout_serial, invoice_serial
+               stock_unit_price, return_status, checkout_serial, invoice_serial,
+               is_presale, presale_replenished, not_replenished_quantity
         from e_outbound_product as p join sku_full on p.sku_id = sku_full.sku_id
         where outbound_entry_id = #{id}
         order by outbound_product_id
     </select>
 
+    <select id="queryPresaleProductsByWarehouseStockID" resultMap="productResultMap">
+        select outbound_product_id, outbound_entry_id, sku_id, quantity, stock_quantity,
+               remark, warehouse_stock_id, warehouse_id, tax_rate, unit_price_without_tax,
+               unit_price_with_tax, stock_unit_price, return_status, checkout_serial,
+               invoice_serial, is_presale, presale_replenished, not_replenished_quantity
+        from e_outbound_product
+        where warehouse_stock_id = #{id} and is_presale = 1 and presale_replenished = 0
+        order by outbound_entry_id, outbound_product_id
+    </select>
+
+    <update id="updateReplenishment">
+        update e_outbound_product
+        set is_presale = #{isPresale},
+            presale_replenished = #{presaleReplenished},
+            not_replenished_quantity = #{notReplenishedQuantity}
+        where outbound_product_id = #{outboundProductID}
+    </update>
 
     <select id="selectEntryShippingInfoForCompare" resultMap="entryResultMap">
         select outbound_entry_id, shipping_cost, shipping_cost_type, shipping_number,

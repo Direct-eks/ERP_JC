@@ -38,7 +38,7 @@ public class InboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("inboundEntry:Creation")
     @PutMapping("/createEntry")
-    public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) {
+    public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) throws GlobalParamException {
         logger.info("PUT Request to /inboundEntry/createEntry, data: {}", inboundEntryVO.toString());
 
         inboundEntryService.createEntry(inboundEntryVO);

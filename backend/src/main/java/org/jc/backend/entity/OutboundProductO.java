@@ -56,4 +56,8 @@ public class OutboundProductO {
     private int returnStatus;
     private String checkoutSerial;
     private String invoiceSerial;
+
+    private int isPresale;
+    private int presaleReplenished;
+    private int notReplenishedQuantity;
 }

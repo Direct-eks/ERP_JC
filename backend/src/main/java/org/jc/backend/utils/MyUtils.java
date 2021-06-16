@@ -62,6 +62,17 @@ public class MyUtils {
     }
 
     /**
+     * // 销出20210809-001 -> 20210809 -> 2021-08-09
+     * @param base string such as 销出20210809-001
+     * @return date string in format yyyy-MM-dd
+     */
+    public static String restoreDateFromString(String base) {
+        String unformattedDate = base.substring(2, 8);
+        return unformattedDate.substring(0,4) + "-" + unformattedDate.substring(4, 6) +
+                "-" + unformattedDate.substring(6);
+    }
+
+    /**
      * group entries by companyID, and calculate the sum of total amounts, return VO
      * @param rawStats ungrouped and summed entry data
      * @return grouped and summed entry data

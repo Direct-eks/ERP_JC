@@ -13,6 +13,8 @@ public interface WarehouseStockService {
     List<WarehouseStockO> getWarehouseStocksBySku(int id);
     int insertNewWarehouseStock(WarehouseStockO warehouseStockO);
     WarehouseStockO getWarehouseStockByWarehouseAndSku(int warehouse, int sku);
+    int passPresaleCheck(List<InboundProductO> inboundProducts);
+
     void increaseStockAndUpdateStockUnitPrice(InboundProductO product);
     void increaseStockAndUpdateStockUnitPrice(InboundProductO modifiedProduct,
                                               InboundProductO originProduct);

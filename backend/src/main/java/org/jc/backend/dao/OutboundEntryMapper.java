@@ -21,6 +21,9 @@ public interface OutboundEntryMapper {
                                                                     String type, int id);
     List<OutboundProductO> queryProductsByEntryID(String id);
 
+    List<OutboundProductO> queryPresaleProductsByWarehouseStockID(int id);
+    void updateReplenishment(OutboundProductO productO);
+
     OutboundEntryDO selectEntryShippingInfoForCompare(String id);
     void updateShippingInfo(OutboundEntryDO completeO);
 
