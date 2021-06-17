@@ -13,7 +13,7 @@ module.exports = env => merge(common, {
     output: {
         path: env.BUILD_ENV === 'webOnly' ?
             resolve(__dirname, '../backend/src/main/resources/static') :
-            resolve(__dirname, '../electron_app/webpages'),
+            resolve(__dirname, '../client_app/webpages'),
         filename: '[name].js',
         chunkFilename: "[name].bundle.js",
         publicPath: publicPath

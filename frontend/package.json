@@ -13,7 +13,7 @@
     "private": true,
     "scripts": {
         "dev": "webpack serve --env BUILD_ENV=development --config webpack.dev.config.js",
-        "buildElectron": "rimraf ../electron_app/webpages && webpack --progress --env BUILD_ENV=production --config webpack.prod.config.js",
+        "buildElectron": "rimraf ../client_app/webpages && webpack --progress --env BUILD_ENV=production --config webpack.prod.config.js",
         "buildWeb": "rimraf ../backend/src/main/resources/static && webpack --progress --env BUILD_ENV=webOnly --config webpack.prod.config.js"
     },
     "dependencies": {
