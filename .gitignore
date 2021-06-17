@@ -33,6 +33,9 @@ electron_app/webpages/
 electron_app/build/
 electron-vue-demo/
 
+#client_app
+client_app/webpages/
+
 #build dir
 build/
 
