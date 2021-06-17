@@ -1,4 +1,4 @@
-const {app, BrowserWindow, dialog} = require('electron')
+const {app, ipcMain, BrowserWindow, dialog, Menu} = require('electron')
 
 /* ---------------------- */
 
@@ -29,71 +29,57 @@ if (!backendFilesExist || !jreFilesExist || !databaseFilesExist) {
 const child = require('child_process')
 const springBootLauncher = child.fork(__dirname + '/launcher.js')
 
-let win
+springBootLauncher.on('message', (message) => {
+    if (message.msg === 'launched') {
+        launchWin.webContents.send('async-msg', "launched")
+        launchWin.setClosable(true)
+    } else if (message.msg === 'exited') {
+        app.quit()
+    } else {
+        launchWin.webContents.send('async-msg', "")
+    }
+})
+
 let launchWin
+Menu.setApplicationMenu(null)
 
 app.whenReady().then(() => {
     launchWin = new BrowserWindow({
         width: 500,
         height: 300,
-        frame: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
         },
-        useContentSize: true,
+        useContentSize: false,
+        resizable: false,
+        maximizable: false,
+        closable: false,
         show: false
     })
-    launchWin.on('ready-to-show',()=>{
-        launchWin.show();
-    })
     launchWin.loadFile(__dirname + '/launch_page/index.html')
-})
-
-springBootLauncher.on('message', (message) => {
-    if (`${message}` === 'launched') {
-        win = new BrowserWindow({
-            webPreferences: {
-                nodeIntegration: false,
-            },
-            useContentSize: true,
-            show: false
+        .then(() => launchWin.show())
+    launchWin.on('close', (e) => {
+        let result = dialog.showMessageBoxSync({
+            type: "warning",
+            title: '退出确认',
+            message: '确认退出？',
+            buttons: ['取消', '确认']
         })
-        win.on('ready-to-show',()=>{
-            win.show();
-        })
-        win.on('close', (e) => {
-            // e.preventDefault();
-            let result = dialog.showMessageBoxSync({
-                type: "warning",
-                title: '退出确认',
-                message: '确认退出？',
-                buttons: ['取消', '确认']
-            })
-            if (result === 0) {
-                e.preventDefault()
-            } else {
-                return null
-            }
-        })
-        win.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
-        win.maximize()
-        launchWin.close()
-        launchWin.destroy()
-        launchWin = null
-    } else if (`${message}` === 'exited') {
-        app.quit()
-    } else {
-        launchWin.webContents.send('async-msg')
-    }
+        if (result === 0) {
+            e.preventDefault()
+        } else {
+            return null
+        }
+    })
+    ipcMain.once('ip', (ipAddress) => {
+        springBootLauncher.send({ msg: 'ip', ipAddress: `${ipAddress}` })
+    })
 })
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        console.log('window closed')
-        // app.quit()
         springBootLauncher.send('shutdown')
-        console.log('message passed')
     }
 })
 
@@ -102,15 +88,3 @@ app.on('activate', () => {
         // createWindow()
     }
 })
-
-
-/* ---------------------- */
-
-
-
-
-
-
-
-
-

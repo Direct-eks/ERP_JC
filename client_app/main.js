@@ -13,8 +13,9 @@ app.whenReady().then(() => {
         },
         useContentSize: true
     })
+    win.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
+        .then(() => win.maximize())
     win.on('close', (e) => {
-        // e.preventDefault();
         let result = dialog.showMessageBoxSync({
             type: "warning",
             title: '退出确认',
@@ -27,8 +28,6 @@ app.whenReady().then(() => {
             return null
         }
     })
-    win.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
-        .then(() => win.maximize())
 })
 
 app.on('window-all-closed', () => {
