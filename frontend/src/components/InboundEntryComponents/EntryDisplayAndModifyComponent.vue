@@ -108,7 +108,7 @@
                               label="预计单据类型"
                               hide-details="auto"
                               outlined dense
-                              style="width: 180px">
+                              style="width: 150px">
                     </v-select>
                     <v-text-field v-else
                                   v-model="form.invoiceType"
@@ -117,8 +117,20 @@
                                   outlined
                                   readonly
                                   dense
-                                  style="width: 180px">
+                                  style="width: 150px">
                     </v-text-field>
+                    <v-col v-if="form.invoiceType === '增值税票'">
+                        <v-select v-model="form.taxRate"
+                                  :rules="rules.taxRate"
+                                  :items="taxRateOptions"
+                                  @change="changeTaxRate"
+                                  label="税率"
+                                  hide-details="auto"
+                                  :append-icon="mdiPercentOutline"
+                                  outlined dense
+                                  style="width: 110px">
+                        </v-select>
+                    </v-col>
                 </v-col>
             </v-row>
 
@@ -144,7 +156,7 @@
                     </v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row dense>
                 <v-col cols="auto">
                     <v-text-field v-model="form.companyFullName"
                                   label="供货单位全称"
@@ -191,7 +203,7 @@
                 </v-col>
             </v-row>
 
-            <v-row>
+            <v-row dense>
                 <v-col cols="auto" v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
@@ -203,7 +215,8 @@
                         <v-radio label="代垫运费" value="代垫"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="auto" v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
+                <v-col cols="auto" v-if="(inboundEntryDisplayMode || inboundEntryModifyMode)
+                                            && form.shippingCostType !== '无'">
                     <v-text-field v-model.number="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
@@ -213,14 +226,15 @@
                                   style="width: 100px">
                     </v-text-field>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-text-field v-model.number="form.totalCost"
                                   label="总金额"
                                   hide-details="auto"
-                                  outlined
+                                  filled
                                   dense
                                   readonly
-                                  style="width: 100px">
+                                  style="width: 120px">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -234,58 +248,63 @@
                                 :readonly="(!inboundEntryReturnMode && inboundEntryDisplayMode)
                                             || purchaseOrderDisplayMode"
                                 auto-grow
-                                rows="1"
-                                counter="200">
+                                rows="1">
                     </v-textarea>
                 </v-col>
             </v-row>
         </v-form>
 
-        <v-row v-if="inboundEntryModifyMode || purchaseOrderModifyMode">
+        <v-row v-if="inboundEntryModifyMode || purchaseOrderModifyMode" class="my-2" dense>
             <v-col>
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="red lighten-1"
-                               v-on="on">
-                            删除
-                        </v-btn>
+                        <v-btn color="red lighten-1" v-on="on">删除</v-btn>
                     </template>
                     <v-card>
-                        <v-card-title>
-                            确认删除？
-                        </v-card-title>
-                        <v-card-text>
-                            {{rowDeletionConfirm}}
-                        </v-card-text>
+                        <v-card-title>确认删除选中行？</v-card-title>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="primary"
-                                   @click="deleteTableRowPopup = false">
-                                取消
-                            </v-btn>
-                            <v-btn color="success"
-                                   @click="handleDeleteRow">
-                                确认
-                            </v-btn>
+                            <v-btn color="primary" @click="deleteTableRowPopup = false">取消</v-btn>
+                            <v-btn color="success" @click="handleDeleteRow">确认</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
             </v-col>
             <v-col>
-                <v-btn color="primary"
-                       @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
-                    保存修改
-                </v-btn>
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                    </v-card>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                        <v-btn color="primary" @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
+                            确认
+                        </v-btn>
+                    </v-card-actions>
+                </v-dialog>
             </v-col>
         </v-row>
 
-        <v-row v-if="inboundEntryReturnMode">
+        <v-row v-if="inboundEntryReturnMode" class="my-2" dense>
             <v-spacer></v-spacer>
             <v-col>
-                <v-btn color="primary"
-                       @click="saveEntryReturn()">
-                    保存修改
-                </v-btn>
+                <v-dialog v-model="submitPopup2" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                    </v-card>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" @click="submitPopup2 = false">取消</v-btn>
+                        <v-btn color="primary" @click="saveEntryReturn">确认</v-btn>
+                    </v-card-actions>
+                </v-dialog>
             </v-col>
         </v-row>
 
@@ -446,17 +465,7 @@
 </template>
 
 <script>
-
-function validateFloat(value) {
-    value = value.replace(/[^\d.]/g, "")  // 清除“数字”和“.”以外的字符
-    value = value.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    value = value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    value = value.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (value.indexOf(".") < 0 && value !== "") // 如果没有小数点，首位不能为0
-        value = parseFloat(value)
-    console.log('float', value)
-    return value
-}
+import {mdiPercentOutline} from "@mdi/js";
 
 export default {
     name: "InboundEntryDisplayComponent",
@@ -491,19 +500,22 @@ export default {
         }
         if (this.inboundEntryModifyMode || this.purchaseOrderModifyMode) {
             this.$getRequest(this.$api.departmentOptions).then((data) => {
-                console.log(data)
                 this.departmentOptions = data
             }).catch(() => {})
         }
         if (this.purchaseOrderModifyMode) {
             this.$getRequest(this.$api.warehouseOptions).then((data) => {
-                console.log(data)
                 this.warehouseOptions = data
             }).catch(() => {})
         }
+
+        this.$getRequest(this.$api.allTaxRates).then((data) => {
+            this.taxRateOptions = data
+        }).catch(() => {})
     },
     data() {
         return {
+            mdiPercentOutline,
             inboundEntryDisplayMode: false,
             purchaseOrderDisplayMode: false,
             inboundEntryModifyMode: false,
@@ -514,10 +526,12 @@ export default {
                 warehouseID: [v => !!v || '请选择仓库'],
                 departmentID: [v => !!v || '请选择部门'],
                 invoiceType: [v => !!v || ' 请选择单据类型'], //no need to validate if is purchase order
+                taxRate: [v => !!v || '请选择税率'],
             },
 
             warehouseOptions: [],
             departmentOptions: [],
+            taxRateOptions: [],
             executionStatusOptions: [
                 {value: '执行', label: '执行'},
                 {value: '中止', label: '中止'}
@@ -562,6 +576,8 @@ export default {
 
             deleteTableRowPopup: false,
             tableRowsSelectedForDeletion: [],
+            submitPopup: false,
+            submitPopup2: false,
 
             tax: 0.0,
             sumWithTax: 0.0,
@@ -572,39 +588,61 @@ export default {
         /* ----- number calculation ----- */
         handleQuantityChange(row) {
             //calculate for each row
-            row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
-            row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
-            row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
+            row.quantity = this.$validateNumber(row.quantity)
+            const tempQuantity = this.$Big(row.quantity)
+            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
+            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
 
-            let tempSumWithTax = 0
+            let tempSumWithTax = this.$Big('0')
+            let tempSumWithoutTax = this.$Big('0')
             if (this.inboundEntryModifyMode || this.inboundEntryReturnMode) {
                 this.form.inboundProducts.forEach((item) => {
-                    tempSumWithTax += item.unitPriceWithTax * item.quantity
+                    const itemQuantity = this.$Big(item.quantity)
+                    tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                    tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
                 })
             }
             else if (this.purchaseOrderModifyMode) {
                 this.form.purchaseOrderProducts.forEach((item) => {
-                    tempSumWithTax += item.unitPriceWithTax * item.quantity
+                    const itemQuantity = this.$Big(item.quantity)
+                    tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                    tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
                 })
             }
-
-            this.form.totalCost = (this.form.shippingCostType === '代垫' ?
-                tempSumWithTax + this.form.shippingCost : tempSumWithTax).toFixed(2)
+            this.sumWithTax = tempSumWithTax.toString()
+            this.sumWithoutTax = tempSumWithoutTax.toString()
+            this.tax = tempSumWithTax.minus(tempSumWithoutTax).toString()
         },
         handlePriceWithTaxChange(row) {
-            row.unitPriceWithTax = validateFloat(row.unitPriceWithTax.toString())
-            row.unitPriceWithoutTax = (row.unitPriceWithTax / 1.16).toFixed(2)
+            row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
+            const tempValue = this.$Big(row.unitPriceWithTax)
+            row.unitPriceWithoutTax = tempValue.div(this.$Big(this.form.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         handlePriceWithoutTaxChange(row) {
-            row.unitPriceWithoutTax = validateFloat(row.unitPriceWithoutTax.toString())
-            row.unitPriceWithTax = (row.unitPriceWithoutTax * 1.16).toFixed(2)
+            row.unitPriceWithoutTax = this.$validateFloat(row.unitPriceWithoutTax)
+            const tempValue = this.$Big(row.unitPriceWithoutTax)
+            row.unitPriceWithTax = tempValue.times(this.$Big(this.form.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         handleReturnQuantityChange(row) {
-            row.originalQuantity = row.originalQuantity.toString().replace(/[^\d]/g, "")
+            row.originalQuantity = this.$validateNumber(row.originalQuantity)
             row.quantity = Number(row.originalQuantity) - Number(row.returnQuantity)
             this.handleQuantityChange(row)
+        },
+        changeTaxRate() {
+            if (this.inboundEntryModifyMode || this.inboundEntryReturnMode) {
+                this.form.inboundProducts.forEach((row) => {
+                    row.taxRate = this.form.taxRate
+                    this.handlePriceWithoutTaxChange(row)
+                })
+            }
+            else if (this.purchaseOrderModifyMode) {
+                this.form.purchaseOrderProducts.forEach((row) => {
+                    row.taxRate = this.form.taxRate
+                    this.handlePriceWithoutTaxChange(row)
+                })
+            }
         },
         /*------- table & entry submission -------*/
         handleDeleteRow() {
@@ -676,17 +714,6 @@ export default {
                 this.$router.replace('/inbound_management')
             }).catch(() => {})
         }
-    },
-    computed: {
-        rowDeletionConfirm() {
-            let result = '确认删除以下序号的行: '
-            this.tableRowsSelectedForDeletion.forEach(item => {
-                result += (this.inboundEntryModifyMode ?
-                    this.form.inboundProducts.indexOf(item) + 1
-                    : this.form.purchaseOrderProducts.indexOf(item) + 1).toString() + ' '
-            })
-            return result
-        },
     },
     watch: {
         form: {

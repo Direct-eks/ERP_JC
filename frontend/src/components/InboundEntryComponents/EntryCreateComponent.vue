@@ -83,19 +83,18 @@
                               item-text="label"
                               label="预计单据类型"
                               hide-details="auto"
-                              @change="changeTaxRate"
                               outlined dense
                               style="width: 150px">
                     </v-select>
                 </v-col>
                 <v-col v-if="form.invoiceType === '增值税票'">
-                    <v-select v-model="taxRate"
+                    <v-select v-model="form.taxRate"
                               :rules="rules.taxRate"
                               :items="taxRateOptions"
                               @change="changeTaxRate"
                               label="税率"
                               hide-details="auto"
-                              :append-icon="mdiPercentOutlinePath"
+                              :append-icon="mdiPercentOutline"
                               outlined dense
                               style="width: 110px">
                     </v-select>
@@ -254,7 +253,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="totalSumPlusShippingCost"
+                    <v-text-field v-model="totalSumPlusShippingCost"
                                   label="总金额"
                                   hide-details="auto"
                                   filled
@@ -524,7 +523,9 @@ export default {
         }).catch(() => {})
 
         this.$getRequest(this.$api.allTaxRates).then((data) => {
-            this.taxRateOptions = data
+            for (const option of data) {
+                this.taxRateOptions.push(Number(option))
+            }
         }).catch(() => {})
 
         this.$getRequest(this.$api.allSuppliers).then(data => {
@@ -542,14 +543,13 @@ export default {
             modelSearchPanelOpen: false,
             purchaseOrderPanelOpen: false,
 
-            mdiPercentOutlinePath: mdiPercentOutline,
+            mdiPercentOutline,
             allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
-            taxRate: '0',
 
             form: {
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
-                totalCost: 0.0, invoiceType: '',
+                totalCost: '0.0', invoiceType: '', taxRate: 0,
                 drawer: this.$store.getters.currentUser,
                 partnerCompanyID: -1, companyRemark: '',
                 companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
@@ -602,10 +602,10 @@ export default {
             tableData: [],
 
             deleteTableRowPopup: false,
+            tableCurrRows: [],
             submitPopup: false,
             submitPopup2: false,
             submitPopup3: false,
-            tableCurrRows: [],
 
             suppliers: [],
             editPermitted: false,
@@ -722,24 +722,18 @@ export default {
         handlePriceWithTaxChange(row) {
             row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
             const tempValue = this.$Big(row.unitPriceWithTax)
-            row.unitPriceWithoutTax = tempValue.div(this.$Big(this.taxRate).div('100').add('1'))
+            row.unitPriceWithoutTax = tempValue.div(this.$Big(this.form.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         handlePriceWithoutTaxChange(row) {
             row.unitPriceWithoutTax = this.$validateFloat(row.unitPriceWithoutTax)
             const tempValue = this.$Big(row.unitPriceWithoutTax)
-            row.unitPriceWithTax = tempValue.times(this.$Big(this.taxRate).div('100').add('1'))
+            row.unitPriceWithTax = tempValue.times(this.$Big(this.form.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         changeTaxRate() {
-            if (this.form.invoiceType !== '增值税票') {
-                this.taxRate = '0'
-            }
-            else if (this.form.invoiceType === '增值税票' && this.taxRate === '0') {
-                this.taxRate = '16' // first time initialize
-            }
             this.tableData.forEach(row => {
-                row.taxRate = this.taxRate
+                row.taxRate = this.form.taxRate
                 this.handlePriceWithoutTaxChange(row)
             })
         },
@@ -825,7 +819,7 @@ export default {
             case '自付':
                 break
             case '代垫':
-                sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
+                sum = sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
                 break
             }
             this.form.totalCost = sum.toString()
