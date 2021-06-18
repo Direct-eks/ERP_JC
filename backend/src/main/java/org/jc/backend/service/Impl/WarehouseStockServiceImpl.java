@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.jc.backend.utils.MyUtils.myRoundingMode;
+import static org.jc.backend.utils.MyUtils.myScale;
+
 @Service
 public class WarehouseStockServiceImpl implements WarehouseStockService {
 
@@ -108,8 +111,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
-
-
+    /**
+     * For usage of increase stock quantity for inbound product entry
+     */
     @Transactional
     @Override
     public void increaseStockAndUpdateStockUnitPrice(InboundProductO product) {
@@ -126,7 +130,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             // todo changes in presale condition, avoid negative numbers
             String calculatedPrice = productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(productQuantity))
                     .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity)))
-                    .divide(BigDecimal.valueOf(productQuantity + stockQuantity), RoundingMode.HALF_EVEN)
+                    .divide(BigDecimal.valueOf(productQuantity + stockQuantity), myScale, myRoundingMode)
                     .toPlainString();
 
             warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock.getWarehouseStockID(),
@@ -139,6 +143,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
+    /**
+     * For usage of increase stock quantity for inbound product modification
+     */
     @Transactional
     @Override
     public void increaseStockAndUpdateStockUnitPrice(InboundProductO modifiedProduct,

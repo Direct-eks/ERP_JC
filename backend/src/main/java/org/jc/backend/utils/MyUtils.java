@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,6 +72,12 @@ public class MyUtils {
         return unformattedDate.substring(0,4) + "-" + unformattedDate.substring(4, 6) +
                 "-" + unformattedDate.substring(6);
     }
+
+    /**
+     * BigDecimal format
+     */
+    public final static RoundingMode myRoundingMode = RoundingMode.HALF_UP;
+    public final static int myScale = 8;
 
     /**
      * group entries by companyID, and calculate the sum of total amounts, return VO
