@@ -3,6 +3,7 @@ package org.jc.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -24,7 +25,7 @@ public class OutboundProductO {
     private String factoryCode;
 
     @NotNull(message = "quantity null error")
-    @Min(value = 1, message = "quantity smaller than one error")
+    @Min(value = 1, message = "出库数量必须大于0")
     private Integer quantity;
     private int stockQuantity;
 
@@ -35,19 +36,21 @@ public class OutboundProductO {
     private Integer warehouseStockID;
 
     @NotNull(message = "warehouseID null error")
+    @Min(value = -1, message = "商品出库仓库错误")
     private Integer warehouseID;
 
     @NotNull(message = "taxRate null error")
+    @Min(value = 0, message = "出库商品税率错误")
     private Integer taxRate;
 
     @NotNull(message = "unitPriceWithoutTax null error")
-    @NotBlank(message = "unitPriceWithoutTax blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "unitPriceWithoutTax value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_8,
+            message = "unitPriceWithoutTax value error")
     private String unitPriceWithoutTax;
 
     @NotNull(message = "unitPriceWithTax null error")
-    @NotBlank(message = "unitPriceWithTax blank error")
-    @Pattern(regexp = "^[\\d]*?\\.?[\\d]*?$", message = "unitPriceWithTax value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_8,
+            message = "unitPriceWithTax value error")
     private String unitPriceWithTax;
 
     private String stockUnitPrice;
