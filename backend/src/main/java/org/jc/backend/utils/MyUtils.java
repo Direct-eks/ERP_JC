@@ -32,9 +32,6 @@ public class MyUtils {
      * @throws GlobalParamException if there is an error parsing dateString
      */
     public static Date parseAndCheckDateString(String dateString) throws GlobalParamException {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
         try {
             return dateFormat.parse(dateString);
 
