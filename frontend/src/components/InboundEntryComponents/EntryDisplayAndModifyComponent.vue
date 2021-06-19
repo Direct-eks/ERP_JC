@@ -696,8 +696,15 @@ export default {
     watch: {
         form: {
             handler() {
-                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode || this.inboundEntryReturnMode) {
+                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode) {
                     this.form.inboundProducts.forEach(p => {
+                        this.handleQuantityChange(p)
+                    })
+                }
+                else if (this.inboundEntryReturnMode) {
+                    this.form.inboundProducts.forEach(p => {
+                        p['originalQuantity'] = p.quantity
+                        p['returnQuantity'] = ''
                         this.handleQuantityChange(p)
                     })
                 }

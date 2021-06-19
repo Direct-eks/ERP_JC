@@ -7,7 +7,7 @@
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/inbound_management">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
 
@@ -50,16 +50,20 @@ export default {
         InboundQueryDisplayComponent: () => import('~/components/InboundEntryComponents/QueryDisplayComponent'),
         InboundEntryDisplayAndModifyComponent: () => import('~/components/InboundEntryComponents/EntryDisplayAndModifyComponent'),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 
             form: {
+                purchaseOrderEntryID: '',
                 entryDate: '',
                 creationDate: '',
-                totalCost: 0.0, invoiceType: '',
+                totalCost: 0.0, invoiceType: '', taxRate: '',
                 drawer: '',
                 partnerCompanyID: -1,
                 companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
@@ -68,27 +72,20 @@ export default {
                 remark: '',
                 classification: '',
                 executionStatus: '',
-                shippingCost: 0, shippingCostType: '',
-                shippingQuantity: 0, shippingNumber: '',
-                shippingMethodID: -1, relevantCompanyName: '',
-                inboundProducts: [],
                 purchaseOrderProducts: []
-            }
+            },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm) // reset form
             }
         },
         tableClickAction(val) {
             this.currentTableRow = val
-            //create missing fields and calculate values
-            this.currentTableRow.purchaseOrderProducts.forEach(item => {
-                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
-            })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
     }
