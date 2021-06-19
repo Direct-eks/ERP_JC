@@ -667,7 +667,7 @@ export default {
                 }
             }
             let newVal = JSON.parse(JSON.stringify(val))
-            newVal.taxRate = this.taxRate
+            newVal.taxRate = this.form.taxRate
             this.tableData.push(newVal)
 
             this.$store.commit('setSnackbar', {
