@@ -70,12 +70,14 @@
                       :headers="queryTableHeaders"
                       :items="queryTableData"
                       item-key="inboundEntryID"
-                      @click:row="tableClick"
-                      height="45vh"
-                      calculate-widths
-                      disable-sort
                       show-select
                       single-select
+                      checkbox-color="accent"
+                      @click:row="tableClick"
+                      @item-selected="tableClick2"
+                      height="55vh"
+                      calculate-widths
+                      disable-sort
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
@@ -91,17 +93,23 @@
                       :headers="purchaseQueryTableHeaders"
                       :items="queryTableData"
                       item-key="purchaseOrderEntryID"
-                      @click:row="tableClick"
-                      height="45vh"
-                      calculate-widths
-                      disable-sort
                       show-select
                       single-select
+                      checkbox-color="accent"
+                      @click:row="tableClick"
+                      @item-selected="tableClick2"
+                      height="55vh"
+                      calculate-widths
+                      disable-sort
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
         </v-data-table>
-        <p class="body-1">红色：修改，蓝色：退货，橘色：退货并且修改</p>
+        <div>
+            <strong class="red--text">红色：</strong>修改，
+            <strong class="blue--text">蓝色：</strong>退货，
+            <strong class="orange--text">橘色：</strong>退货并且修改
+        </div>
         <v-divider></v-divider>
 
         <v-data-table :headers="modificationRecordTableHeader"
@@ -274,9 +282,23 @@ export default {
         },
         tableClick(val) {
             this.modificationRecords = []
-            this.queryTableCurrentRow = [val]
-            this.$emit('tableClick', val)
+            if (this.queryTableCurrentRow.indexOf(val) !== -1) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [val]
+                this.$emit('tableClick', val)
+            }
         },
+        tableClick2(row) {
+            if (!row.value) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row.item]
+                this.$emit('tableClick', row.item)
+            }
+        }
     }
 }
 </script>

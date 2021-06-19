@@ -53,6 +53,9 @@ export default {
             '~/components/InboundEntryComponents/EntryDisplayAndModifyComponent'
         ),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
             mdiArrowLeftPath: mdiArrowLeft,
@@ -60,9 +63,9 @@ export default {
             currentTableRow: null,
 
             form: {
-                entryDate: '',
-                creationDate: '',
-                totalCost: 0.0, invoiceType: '',
+                inboundEntryID: '',
+                entryDate: '', creationDate: '',
+                totalCost: '', invoiceType: '', taxRate: '',
                 drawer: '',
                 partnerCompanyID: -1,
                 companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
@@ -70,28 +73,23 @@ export default {
                 warehouseID: -1, warehouseName: '',
                 remark: '',
                 classification: '',
-                executionStatus: '',
-                shippingCost: 0, shippingCostType: '',
+                shippingCost: '', shippingCostType: '',
                 shippingQuantity: 0, shippingNumber: '',
                 shippingMethodID: -1, relevantCompanyName: '',
-                inboundProducts: [],
-                purchaseOrderProducts: []
-            }
+                inboundProducts: []
+            },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm) // reset form
             }
         },
         tableClickAction(val) {
             this.currentTableRow = val
-            //create missing fields and calculate values
-            this.currentTableRow.inboundProducts.forEach(item => {
-                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
-            })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
     }

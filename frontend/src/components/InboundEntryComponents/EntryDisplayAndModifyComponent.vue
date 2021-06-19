@@ -312,7 +312,7 @@
                             || purchaseOrderDisplayMode"
                       :headers="tableHeaders"
                       :items="inboundEntryDisplayMode ? form.inboundProducts : form.purchaseOrderProducts"
-                      item-key="id"
+                      item-key="skuID"
                       height="45vh"
                       calculate-widths
                       disable-sort
@@ -320,10 +320,6 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{inboundEntryDisplayMode ? form.inboundProducts.indexOf(item) + 1
-                : form.purchaseOrderProducts.indexOf(item) + 1}}
-            </template>
         </v-data-table>
 
         <v-data-table v-else-if="inboundEntryModifyMode || purchaseOrderModifyMode"
@@ -334,75 +330,52 @@
                       height="45vh"
                       calculate-widths
                       disable-sort
-                      show-select
                       fixed-header
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{inboundEntryModifyMode ? form.inboundProducts.indexOf(item) + 1
-                : form.purchaseOrderProducts.indexOf(item) + 1}}
-            </template>
             <template v-slot:item.quantity="{ item }">
                 <v-edit-dialog :return-value="item.quantity"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handleQuantityChange(item)">
+                               @save="handleQuantityChange(item)"
+                               @cancel="handleQuantityChange(item)"
+                               @close="handleQuantityChange(item)">
                     {{item.quantity}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.quantity"
-                                      single-line
-                                      counter="8">
-                        </v-text-field>
+                        <v-text-field v-model="item.quantity" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
             <template v-slot:item.unitPriceWithTax="{ item }">
                 <v-edit-dialog :return-value="item.unitPriceWithTax"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handlePriceWithTaxChange(item)">
+                               @save="handlePriceWithTaxChange(item)"
+                               @cancel="handlePriceWithTaxChange(item)"
+                               @close="handlePriceWithTaxChange(item)">
                     {{item.unitPriceWithTax}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.unitPriceWithTax"
-                                      single-line
-                                      counter="12">
-                        </v-text-field>
+                        <v-text-field v-model="item.unitPriceWithTax" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
             <template v-slot:item.unitPriceWithoutTax="{ item }">
                 <v-edit-dialog :return-value="item.unitPriceWithoutTax"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handlePriceWithoutTaxChange(item)">
+                               @save="handlePriceWithoutTaxChange(item)"
+                               @cancel="handlePriceWithoutTaxChange(item)"
+                               @close="handlePriceWithoutTaxChange(item)">
                     {{item.unitPriceWithoutTax}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.unitPriceWithoutTax"
-                                      single-line
-                                      counter="12">
-                        </v-text-field>
+                        <v-text-field v-model="item.unitPriceWithoutTax" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
             <template v-slot:item.remark="{ item }">
-                <v-edit-dialog :return-value="item.remark"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消">
+                <v-edit-dialog :return-value="item.remark">
                     {{item.remark}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.remark"
-                                      single-line
-                                      counter="200">
-                        </v-text-field>
+                        <v-text-field v-model="item.remark" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
@@ -419,48 +392,41 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{ form.inboundProducts.indexOf(item) + 1 }}
-            </template>
             <template v-slot:item.returnQuantity="{ item }">
                 <v-edit-dialog :return-value="item.returnQuantity"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handleReturnQuantityChange(item)">
+                               @save="handleReturnQuantityChange(item)"
+                               @cancel="handleReturnQuantityChange(item)"
+                               @close="handleReturnQuantityChange(item)">
                     {{item.returnQuantity}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.returnQuantity"
-                                      single-line
-                                      counter="8">
-                        </v-text-field>
+                        <v-text-field v-model="item.returnQuantity" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
         </v-data-table>
 
-        <v-row>
+        <div class="d-flex">
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <span>税额合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{tax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>不含税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithoutTax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>价税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithTax}}
-            </v-col>
-        </v-row>
+            <div class="my-2">
+                <strong>税额合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ tax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>不含税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithoutTax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>价税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithTax }}</strong>
+            </div>
+        </div>
     </v-container>
 </template>
 
@@ -543,34 +509,32 @@ export default {
             ],
 
             tableHeaders: [
-                {text: '序号', value: 'index', width: '60px'},
-                {text: '代号', value: 'code', width: '100px'},
+                {text: '代号', value: 'code', width: '180px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
-                {text: '入库数量', value: 'quantity', width: '80px'},
+                {text: '入库数量', value: 'quantity', width: '90px'},
                 {text: '单位', value: 'unitName', width: '60px'},
-                {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
-                {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
-                {text: '无税金额', value: 'totalWithoutTax', width: '80px'},
+                {text: '含税单价', value: 'unitPriceWithTax', width: '100px'},
+                {text: '无税单价', value: 'unitPriceWithoutTax', width: '100px'},
+                {text: '无税金额', value: 'totalWithoutTax', width: '100px'},
                 {text: '税率', value: 'taxRate', width: '65px'},
-                {text: '税额', value: 'totalTax', width: '80px'},
-                {text: '备注', value: 'remark', width: '120px'},
+                {text: '税额', value: 'totalTax', width: '90px'},
+                {text: '备注', value: 'remark', width: '180px'},
                 {text: '库存数量', value: 'stockQuantity', width: '120px'},
                 {text: '库存单价', value: 'stockUnitPrice', width: '120px'}
             ],
 
             returnTableHeaders: [
-                {text: '序号', value: 'index', width: '60px'},
-                {text: '代号', value: 'code', width: '100px'},
+                {text: '代号', value: 'code', width: '180px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
-                {text: '入库数量', value: 'originalQuantity', width: '80px'},
-                {text: '退货数量', value: 'returnQuantity', width: '80px'},
-                {text: '现有数量', value: 'quantity', width: '80px'},
+                {text: '入库数量', value: 'originalQuantity', width: '90px'},
+                {text: '退货数量', value: 'returnQuantity', width: '90px'},
+                {text: '现有数量', value: 'quantity', width: '90px'},
                 {text: '单位', value: 'unitName', width: '60px'},
-                {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
-                {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
-                {text: '无税金额', value: 'totalWithoutTax', width: '80px'},
+                {text: '含税单价', value: 'unitPriceWithTax', width: '100px'},
+                {text: '无税单价', value: 'unitPriceWithoutTax', width: '100px'},
+                {text: '无税金额', value: 'totalWithoutTax', width: '100px'},
                 {text: '税率', value: 'taxRate', width: '65px'},
-                {text: '税额', value: 'totalTax', width: '80px'},
+                {text: '税额', value: 'totalTax', width: '90px'},
                 {text: '备注', value: 'remark', width: '120px'},
             ],
 
@@ -579,30 +543,24 @@ export default {
             submitPopup: false,
             submitPopup2: false,
 
-            tax: 0.0,
-            sumWithTax: 0.0,
-            sumWithoutTax: 0.0
+            tax: '0.0',
+            sumWithTax: '0.0',
+            sumWithoutTax: '0.0'
         }
     },
     methods: {
         /* ----- number calculation ----- */
-        handleQuantityChange(row) {
-            //calculate for each row
-            row.quantity = this.$validateNumber(row.quantity)
-            const tempQuantity = this.$Big(row.quantity)
-            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
-            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
-
+        handleTotalChange() {
             let tempSumWithTax = this.$Big('0')
             let tempSumWithoutTax = this.$Big('0')
-            if (this.inboundEntryModifyMode || this.inboundEntryReturnMode) {
+            if (this.inboundEntryModifyMode || this.inboundEntryReturnMode || this.inboundEntryDisplayMode) {
                 this.form.inboundProducts.forEach((item) => {
                     const itemQuantity = this.$Big(item.quantity)
                     tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
                     tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
                 })
             }
-            else if (this.purchaseOrderModifyMode) {
+            else if (this.purchaseOrderModifyMode || this.purchaseOrderDisplayMode) {
                 this.form.purchaseOrderProducts.forEach((item) => {
                     const itemQuantity = this.$Big(item.quantity)
                     tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
@@ -612,6 +570,26 @@ export default {
             this.sumWithTax = tempSumWithTax.toString()
             this.sumWithoutTax = tempSumWithoutTax.toString()
             this.tax = tempSumWithTax.minus(tempSumWithoutTax).toString()
+
+            // plus shipping
+            let sum = this.$Big(this.sumWithTax)
+            switch (this.form.shippingCostType) {
+            case "无":
+            case '自付':
+                break
+            case '代垫':
+                sum = sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
+                break
+            }
+            this.form.totalCost = sum.toString()
+        },
+        handleQuantityChange(row) {
+            //calculate for each row
+            row.quantity = this.$validateNumber(row.quantity)
+            const tempQuantity = this.$Big(row.quantity)
+            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
+            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
+            this.handleTotalChange()
         },
         handlePriceWithTaxChange(row) {
             row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
@@ -717,27 +695,17 @@ export default {
     },
     watch: {
         form: {
-            handler(newVal) {
-                let tax = 0.0
-                let sumWithTax = 0.0
-                let sumWithoutTax = 0.0
+            handler() {
                 if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode || this.inboundEntryReturnMode) {
-                    for (const item of newVal.inboundProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
+                    this.form.inboundProducts.forEach(p => {
+                        this.handleQuantityChange(p)
+                    })
                 }
                 else if (this.purchaseOrderDisplayMode || this.purchaseOrderModifyMode) {
-                    for (const item of newVal.purchaseOrderProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
+                    this.form.purchaseOrderProducts.forEach(p => {
+                        this.handleQuantityChange(p)
+                    })
                 }
-                this.tax = tax.toFixed(2)
-                this.sumWithTax = sumWithTax.toFixed(2)
-                this.sumWithoutTax = sumWithoutTax.toFixed(2)
             },
             deep: true,
             immediate: true

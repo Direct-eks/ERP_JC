@@ -221,7 +221,8 @@
                                   label="件数"
                                   hide-details="auto"
                                   type="number"
-                                  @change="handleShippingQuantityChange"
+                                  @change="this.form.shippingQuantit =
+                                            this.$validateNumber(this.form.shippingQuantity)"
                                   outlined
                                   dense
                                   style="width: 80px">
@@ -233,6 +234,7 @@
                 <v-col cols="auto" v-if="inboundEntryMode">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
+                                   @change="handleTotalChange"
                                    class="mt-0"
                                    row dense>
                         <v-radio label="无运费" value="无"></v-radio>
@@ -253,7 +255,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-text-field v-model="totalSumPlusShippingCost"
+                    <v-text-field v-model="form.totalCost"
                                   label="总金额"
                                   hide-details="auto"
                                   filled
@@ -694,19 +696,12 @@ export default {
             }
         },
         /* ----- number calculation ----- */
-        handleShippingQuantityChange() {
-            this.form.shippingQuantity = this.$validateNumber(this.form.shippingQuantity)
-        },
         handleShippingCostChange() {
             this.form.shippingCost = this.$validateFloat(this.form.shippingCost)
+            this.handleTotalChange()
         },
-        handleQuantityChange(row) {
-            // calculate for each row
-            row.quantity = this.$validateNumber(row.quantity)
-            const tempQuantity = this.$Big(row.quantity)
-            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
-            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
-
+        handleTotalChange() {
+            // for all products
             let tempSumWithTax = this.$Big('0')
             let tempSumWithoutTax = this.$Big('0')
             this.tableData.forEach((item) => {
@@ -718,6 +713,26 @@ export default {
             this.sumWithTax = tempSumWithTax.toString()
             this.sumWithoutTax = tempSumWithoutTax.toString()
             this.tax = tempSumWithTax.minus(tempSumWithoutTax).toString()
+
+            // plus shipping
+            let sum = this.$Big(this.sumWithTax)
+            switch (this.form.shippingCostType) {
+            case "无":
+            case '自付':
+                break
+            case '代垫':
+                sum = sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
+                break
+            }
+            this.form.totalCost = sum.toString()
+        },
+        handleQuantityChange(row) {
+            // calculate for each row
+            row.quantity = this.$validateNumber(row.quantity)
+            const tempQuantity = this.$Big(row.quantity)
+            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
+            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
+            this.handleTotalChange()
         },
         handlePriceWithTaxChange(row) {
             row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
@@ -811,19 +826,6 @@ export default {
             }
             // 如果不是资源单位，所有人都可改价
             return true
-        },
-        totalSumPlusShippingCost() {
-            let sum = this.$Big(this.sumWithTax)
-            switch (this.form.shippingCostType) {
-            case "无":
-            case '自付':
-                break
-            case '代垫':
-                sum = sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
-                break
-            }
-            this.form.totalCost = sum.toString()
-            return sum
         }
     }
 }
