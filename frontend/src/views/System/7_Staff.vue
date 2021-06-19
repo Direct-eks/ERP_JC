@@ -123,9 +123,9 @@
                                     <v-checkbox v-model="form.permissions" label="销售单查询" value="salesOrder:Query"/>
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-checkbox v-model="form.permissions" label="报价单录入" value="quota:Creation"/>
-                                    <v-checkbox v-model="form.permissions" label="报价单修改" value="quota:Modification"/>
-                                    <v-checkbox v-model="form.permissions" label="报价单查询" value="quota:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="报价单录入" value="quote:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="报价单修改" value="quote:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="报价单查询" value="quote:Query"/>
                                 </v-col>
                             </v-row>
                         </v-tab-item>
