@@ -4,6 +4,10 @@
             <v-card class="elevation-12" width="300px">
                 <v-toolbar color="primary" dark flat>
                     <v-toolbar-title>登录认证</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="refresh">
+                        <v-icon>{{ mdiRefresh }}</v-icon>
+                    </v-btn>
                 </v-toolbar>
 
                 <v-card-text>
@@ -41,19 +45,18 @@
 </template>
 
 <script>
-import {mdiAccount, mdiLock} from '@mdi/js'
+import {mdiAccount, mdiLock, mdiRefresh} from '@mdi/js'
 
 export default {
     name: 'Login',
     beforeMount() {
-        this.$getRequest(this.$api.userNameList).then((data) => {
-            this.userList = data
-        }).catch(() => {})
+        this.refresh()
     },
     data() {
         return {
             mdiAccount,
             mdiLock,
+            mdiRefresh,
 
             userList: [],
 
@@ -69,6 +72,11 @@ export default {
         }
     },
     methods: {
+        refresh() {
+            this.$getRequest(this.$api.userNameList).then(data => {
+                this.userList = data
+            }).catch(() => {})
+        },
         login() {
             if (this.$refs.form.validate()) {
                 this.loading = true;
@@ -76,15 +84,15 @@ export default {
                     username: this.form.username,
                     password: this.form.password
                 }).then((data) => {
-                    console.log('received', data)
                     this.$store.commit('setSnackbar', {
                         message: '登录成功', color: 'success'
                     })
 
+                    // use vuex to store user information
                     this.$store.commit('modifyCurrentUser', data.username)
                     this.$store.commit('modifyCurrentUserRole', data.role)
                     this.$store.commit('modifyCurrentUserPermissions', data.permissions)
-                    // use vuex to store user information
+                    // use sessionStorage to store user information
                     sessionStorage.setItem('userName', data.username)
                     sessionStorage.setItem('userToken', data.sessionID)
                     sessionStorage.setItem('userRole', data.role)
