@@ -32,55 +32,55 @@ public class QuoteEntryController {
     /* ------------------------------ API ------------------------------ */
 
     @ApiOperation(value = "", response = void.class)
-    @RequiresPermissions("quota:Creation")
-    @PutMapping("/createOrder")
-    public void createQuota(@RequestBody @Validated QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
-        logger.info("PUT Request to /quotaEntry/createOrder, data: {}", quoteEntryWithProductsVO.toString());
+    @RequiresPermissions("quote:Creation")
+    @PutMapping("/createQuote")
+    public void createQuote(@RequestBody @Validated QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
+        logger.info("PUT Request to /quoteEntry/createQuote, data: {}", quoteEntryWithProductsVO.toString());
 
-        quoteEntryService.createOrder(quoteEntryWithProductsVO);
+        quoteEntryService.createQuote(quoteEntryWithProductsVO);
     }
 
     @ApiOperation(value = "", response = QuoteEntryWithProductsVO.class,
             notes = "companyID can be null, if null, query all")
-    @RequiresPermissions("quota:Query")
-    @GetMapping("/getOrdersInDateRangeByCompanyID")
-    public List<QuoteEntryWithProductsVO> getQuotasInDateRangeByCompanyID(
+    @RequiresPermissions("quote:Query")
+    @GetMapping("/getQuotesInDateRangeByCompanyID")
+    public List<QuoteEntryWithProductsVO> getQuotesInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalParamException {
-        logger.info("GET Request to /quotaEntry/getOrdersInDateRangeByCompanyID, start date: {}; " +
+        logger.info("GET Request to /quoteEntry/getQuotesInDateRangeByCompanyID, start date: {}; " +
                 "end date: {}; id: {}", startDateString, endDateString, companyID);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        return quoteEntryService.getOrdersInDateRangeByCompanyID(startDate, endDate, companyID);
+        return quoteEntryService.getQuotesInDateRangeByCompanyID(startDate, endDate, companyID);
     }
 
     @ApiOperation(value = "", response = QuoteEntryWithProductsVO.class)
-    @RequiresPermissions("quota:Query")
-    @GetMapping("/getOrdersByCompanyID/{id}")
-    public List<QuoteEntryWithProductsVO> getQuotasByCompanyID(@PathVariable("id") int id) {
-        logger.info("GET Request to /quotaEntry/getOrdersByCompanyID, id: {}", id);
+    @RequiresPermissions("quote:Query")
+    @GetMapping("/getQuotesByCompanyID/{id}")
+    public List<QuoteEntryWithProductsVO> getQuotesByCompanyID(@PathVariable("id") int id) {
+        logger.info("GET Request to /quoteEntry/getQuotesByCompanyID, id: {}", id);
 
-        return quoteEntryService.getOrdersByCompanyID(id);
+        return quoteEntryService.getQuotesByCompanyID(id);
     }
 
     @ApiOperation(value = "", response = void.class)
-    @RequiresPermissions("quota:Modification")
-    @PatchMapping("/modifyOrder")
-    public void modifyQuota(@RequestBody @Validated QuoteEntryWithProductsVO modifyQuotaVO) {
-        logger.info("PATCH Request to /quotaEntry/modifyOrder, data: {}", modifyQuotaVO.toString());
+    @RequiresPermissions("quote:Modification")
+    @PatchMapping("/modifyQuote")
+    public void modifyQuote(@RequestBody @Validated QuoteEntryWithProductsVO modifyQuotaVO) {
+        logger.info("PATCH Request to /quoteEntry/modifyQuote, data: {}", modifyQuotaVO.toString());
 
-        quoteEntryService.modifyOrder(modifyQuotaVO);
+        quoteEntryService.modifyQuote(modifyQuotaVO);
     }
 
     @ApiOperation(value = "", response = void.class)
-    @DeleteMapping("/deleteOrder/{id}")
-    public void deleteQuota(@PathVariable("id") String id) {
-        logger.info("DELETE Request to /quotaEntry/deleteOrder, id: {}", id);
+    @DeleteMapping("/deleteQuote/{id}")
+    public void deleteQuote(@PathVariable("id") String id) {
+        logger.info("DELETE Request to /quoteEntry/deleteQuote, id: {}", id);
 
-        quoteEntryService.deleteOrder(id);
+        quoteEntryService.deleteQuote(id);
     }
 
 }

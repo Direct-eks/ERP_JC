@@ -79,7 +79,7 @@ export default {
                     }).catch(() => {})
                 }
                 else if (this.isQuotaMode) {
-                    this.$getRequest(this.$api.quotaByCompanyID +
+                    this.$getRequest(this.$api.quotesByCompanyID +
                         encodeURI(String(this.companyID))
                     ).then((data) => {
                         console.log('received', data)

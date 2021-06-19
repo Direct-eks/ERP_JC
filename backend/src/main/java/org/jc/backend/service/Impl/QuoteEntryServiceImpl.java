@@ -38,7 +38,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
     @Transactional
     @Override
-    public void createOrder(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
+    public void createQuote(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
 
         QuotaEntryDO newEntry = new QuotaEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, newEntry);
@@ -68,7 +68,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<QuoteEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+    public List<QuoteEntryWithProductsVO> getQuotesInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
         try {
             List<QuotaEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesInDateRangeByCompanyID(
                     MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), id);
@@ -95,7 +95,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<QuoteEntryWithProductsVO> getOrdersByCompanyID(int id) {
+    public List<QuoteEntryWithProductsVO> getQuotesByCompanyID(int id) {
         try {
             List<QuotaEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesByCompanyID(id);
 
@@ -121,7 +121,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
     @Transactional
     @Override
-    public void modifyOrder(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
+    public void modifyQuote(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
 
         QuotaEntryDO currentEntry = new QuotaEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, currentEntry);
@@ -184,7 +184,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
     @Transactional
     @Override
-    public void deleteOrder(String id) {
+    public void deleteQuote(String id) {
         try {
             quoteEntryMapper.deleteOrderProductsByEntryID(id);
             quoteEntryMapper.deleteOrderEntry(id);

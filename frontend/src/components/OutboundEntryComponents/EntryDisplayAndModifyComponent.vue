@@ -751,7 +751,7 @@ export default {
                 //change drawer name for modification
                 this.form.drawer = this.$store.getters.currentUser
 
-                this.$patchRequest(this.$api.modifyQuota, this.form).then(() => {
+                this.$patchRequest(this.$api.modifyQuote, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })

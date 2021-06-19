@@ -275,7 +275,7 @@ export default {
             }
             else if (this.isQuota) {
                 console.log(this.dateRange)
-                this.$getRequest(this.$api.quotaInDateRangeByCompanyID, {
+                this.$getRequest(this.$api.quotesInDateRangeByCompanyID, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     companyID: this.companyID,

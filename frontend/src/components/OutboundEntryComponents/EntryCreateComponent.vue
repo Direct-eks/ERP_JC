@@ -798,7 +798,7 @@ export default {
             if (this.$refs.form.validate()) {
                 this.form.quotaProducts = this.tableData
 
-                this.$putRequest(this.$api.createQuota, this.form).then(() => {
+                this.$putRequest(this.$api.createQuote, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })

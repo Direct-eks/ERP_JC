@@ -8,9 +8,9 @@ import java.util.List;
 
 @Indexed
 public interface QuoteEntryService {
-    void createOrder(QuoteEntryWithProductsVO quoteEntryWithProductsVO);
-    List<QuoteEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id);
-    List<QuoteEntryWithProductsVO> getOrdersByCompanyID(int id);
-    void modifyOrder(QuoteEntryWithProductsVO quoteEntryWithProductsVO);
-    void deleteOrder(String id);
+    void createQuote(QuoteEntryWithProductsVO quoteEntryWithProductsVO);
+    List<QuoteEntryWithProductsVO> getQuotesInDateRangeByCompanyID(Date startDate, Date endDate, int id);
+    List<QuoteEntryWithProductsVO> getQuotesByCompanyID(int id);
+    void modifyQuote(QuoteEntryWithProductsVO quoteEntryWithProductsVO);
+    void deleteQuote(String id);
 }
