@@ -24,7 +24,7 @@ axios.interceptors.response.use((response) => {
     switch (error.response.status) {
     case 400: // Bad Request
         main.$store.commit('setSnackbar', {
-            message: '无效数据', color: 'error'
+            message: error.response.data.msg, color: 'error', timeout: 5000
         })
         break
     case 401: // Unauthorized

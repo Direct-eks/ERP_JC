@@ -36,6 +36,7 @@ export default {
             if (msg !== '') {
                 this.message = msg
                 this.color = this.$store.state.snackbar.color
+                this.timeout = this.$store.state.snackbar.timeout
                 this.visible = true
                 this.$store.commit('setSnackbar', {
                     message: '', color: ''

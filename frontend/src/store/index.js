@@ -114,6 +114,8 @@ const store = new Vuex.Store({
         setSnackbar(state, payload) {
             state.snackbar.message = payload.message
             state.snackbar.color = payload.color
+            state.snackbar.timeout = payload.hasOwnProperty('timeout') ?
+                payload.timeout : 1500
         },
 
         /*----------- company data ------------*/
