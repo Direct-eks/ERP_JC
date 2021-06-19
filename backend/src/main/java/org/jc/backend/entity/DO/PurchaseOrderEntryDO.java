@@ -11,6 +11,7 @@ public class PurchaseOrderEntryDO {
     private String creationDate;
     private String totalCost;
     private String invoiceType;
+    private int taxRate;
     private String executionStatus;
     private String drawer;
 

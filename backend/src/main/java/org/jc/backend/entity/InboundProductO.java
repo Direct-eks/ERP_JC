@@ -6,9 +6,7 @@ import lombok.ToString;
 import org.jc.backend.config.validation.DecimalValidation;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
@@ -25,7 +23,7 @@ public class InboundProductO {
     private String factoryCode;
 
     @NotNull(message = "quantity null error")
-    @Min(value = 1, message = "入库数量必须大于0")
+    @Min(value = 1, message = "商品入库数量必须大于0")
     private Integer quantity;
     private int stockQuantity;
 

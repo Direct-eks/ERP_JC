@@ -12,12 +12,12 @@
 
     <insert id="insertNewOrderEntry">
         insert into e_purchase_order_entry(
-            purchase_order_entry_id, entry_date, creation_date, total_cost, invoice_type,
+            purchase_order_entry_id, entry_date, creation_date, total_cost, invoice_type, tax_rate,
             execution_status, drawer, partner_company_id, department_id, warehouse_id, remark
         )
         values (
             #{purchaseOrderEntryID}, #{entryDate}, date('now', 'localtime'), #{totalCost}, #{invoiceType},
-            #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark}
+            #{taxRate}, #{executionStatus}, #{drawer}, #{partnerCompanyID}, #{departmentID}, #{warehouseID}, #{remark}
         )
     </insert>
 
@@ -40,6 +40,7 @@
         <result property="creationDate" column="creation_date"/>
         <result property="totalCost" column="total_cost"/>
         <result property="invoiceType" column="invoice_type"/>
+        <result property="taxRate" column="tax_rate"/>
         <result property="executionStatus" column="execution_status"/>
         <result property="drawer" column="drawer"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
@@ -74,8 +75,8 @@
 
     <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
         select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
-               p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name, c.phone,
-               c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
+               p.tax_rate, p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name,
+               c.phone, c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
                w.name as warehouse_name, p.remark, p.is_modified
         from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
             join e_department as d on p.department_id = d.department_id)
@@ -89,8 +90,8 @@
 
     <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
         select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
-               p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name, c.phone,
-               c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
+               p.tax_rate, p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name,
+               c.phone, c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
                w.name as warehouse_name, p.remark, p.is_modified
         from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
             join e_department as d on p.department_id = d.department_id)

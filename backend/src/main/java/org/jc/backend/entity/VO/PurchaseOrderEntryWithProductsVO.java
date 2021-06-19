@@ -3,12 +3,11 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 import org.jc.backend.entity.PurchaseOrderProductO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
@@ -18,7 +17,7 @@ public class PurchaseOrderEntryWithProductsVO {
     private String purchaseOrderEntryID;
 
     @NotNull(message = "entryDate null error")
-    @NotBlank(message = "entryDate blank error")
+    @NotBlank(message = "采购日期错误")
     private String entryDate;
 
     @NotNull(message = "creationDate null error")
@@ -26,13 +25,17 @@ public class PurchaseOrderEntryWithProductsVO {
     private String creationDate;
 
     @NotNull(message = "totalCost null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "totalCost value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_8,
+            message = "总金额校验错误")
     private String totalCost;
 
     @NotNull(message = "invoiceType null error")
     @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
     private String invoiceType;
+
+    @NotNull(message = "taxRate null error")
+    @Min(value = 0, message = "税率错误")
+    private Integer taxRate;
 
     @NotNull(message = "executionStatus null error")
     @Pattern(regexp = "^(执行|中止)$", message = "executionStatus value error")
@@ -43,6 +46,7 @@ public class PurchaseOrderEntryWithProductsVO {
     private String drawer;
 
     @NotNull(message = "partnerCompanyID null error")
+    @Min(value = 0, message = "公司错误")
     private Integer partnerCompanyID;
     // from c_partner_company
     private String companyAbbreviatedName;
@@ -50,11 +54,13 @@ public class PurchaseOrderEntryWithProductsVO {
     private String companyFullName;
 
     @NotNull(message = "departmentID null error")
+    @Min(value = 0, message = "采购部门错误")
     private Integer departmentID;
     // from c_department
     private String departmentName;
 
     @NotNull(message = "warehouseID null error")
+    @Min(value = 0, message = "采购仓库错误")
     private Integer warehouseID;
     // from w_warehouse
     private String warehouseName;
@@ -65,5 +71,6 @@ public class PurchaseOrderEntryWithProductsVO {
     private int isModified;
 
     @Valid
+    @NotEmpty(message = "采购单商品不能为空")
     private List<PurchaseOrderProductO> purchaseOrderProducts;
 }
