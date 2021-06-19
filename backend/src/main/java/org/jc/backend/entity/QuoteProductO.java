@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
-public class QuotaProductO {
+public class QuoteProductO {
     private int quotaProductID;
     private String quotaEntryID;
 

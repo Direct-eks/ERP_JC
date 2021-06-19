@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.jc.backend.dao.QuotaEntryMapper">
+<mapper namespace="org.jc.backend.dao.QuoteEntryMapper">
 
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(quota_entry_id)
@@ -47,7 +47,7 @@
         <result property="isModified" column="is_modified"/>
     </resultMap>
 
-    <resultMap id="productResultMap" type="org.jc.backend.entity.QuotaProductO">
+    <resultMap id="productResultMap" type="org.jc.backend.entity.QuoteProductO">
         <result property="quotaProductID" column="quota_product_id"/>
         <result property="quotaEntryID" column="quota_entry_id"/>
         <result property="skuID" column="sku_id"/>

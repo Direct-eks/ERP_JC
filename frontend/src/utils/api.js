@@ -112,11 +112,11 @@ const api = {
     modifyPurchaseOrder: '/purchaseOrder/modifyOrder', // PATCH
 
     /* ------ /quotaEntry ------*/
-    createQuota: '/quotaEntry/createOrder', // PUT
+    createQuota: '/quoteEntry/createOrder', // PUT
     // GET startDate= endDate= companyID=int
-    quotaInDateRangeByCompanyID: '/quotaEntry/getOrdersInDateRangeByCompanyID', // GET
-    quotaByCompanyID: '/quotaEntry/getOrdersByCompanyID/', // GET companyID
-    modifyQuota: '/quotaEntry/modifyOrder', // PATCH
+    quotaInDateRangeByCompanyID: '/quoteEntry/getOrdersInDateRangeByCompanyID', // GET
+    quotaByCompanyID: '/quoteEntry/getOrdersByCompanyID/', // GET companyID
+    modifyQuota: '/quoteEntry/modifyOrder', // PATCH
 
     /* ------ /salesOrder ------*/
     createSalesOrder: '/salesOrder/createOrder', // PUT

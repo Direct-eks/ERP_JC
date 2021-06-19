@@ -2,12 +2,12 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
-import org.jc.backend.dao.QuotaEntryMapper;
+import org.jc.backend.dao.QuoteEntryMapper;
 import org.jc.backend.entity.DO.QuotaEntryDO;
 import org.jc.backend.entity.ModificationO;
-import org.jc.backend.entity.QuotaProductO;
-import org.jc.backend.entity.VO.QuotaEntryWithProductsVO;
-import org.jc.backend.service.QuotaEntryService;
+import org.jc.backend.entity.QuoteProductO;
+import org.jc.backend.entity.VO.QuoteEntryWithProductsVO;
+import org.jc.backend.service.QuoteEntryService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -21,16 +21,16 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class QuotaEntryServiceImpl implements QuotaEntryService {
+public class QuoteEntryServiceImpl implements QuoteEntryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(QuotaEntryServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(QuoteEntryServiceImpl.class);
 
-    private final QuotaEntryMapper quotaEntryMapper;
+    private final QuoteEntryMapper quoteEntryMapper;
     private final ModificationMapper modificationMapper;
 
-    public QuotaEntryServiceImpl(QuotaEntryMapper quotaEntryMapper,
+    public QuoteEntryServiceImpl(QuoteEntryMapper quoteEntryMapper,
                                  ModificationMapper modificationMapper) {
-        this.quotaEntryMapper = quotaEntryMapper;
+        this.quoteEntryMapper = quoteEntryMapper;
         this.modificationMapper = modificationMapper;
     }
 
@@ -38,23 +38,23 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
 
     @Transactional
     @Override
-    public void createOrder(QuotaEntryWithProductsVO quotaEntryWithProductsVO) {
+    public void createOrder(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
 
         QuotaEntryDO newEntry = new QuotaEntryDO();
-        BeanUtils.copyProperties(quotaEntryWithProductsVO, newEntry);
-        List<QuotaProductO> newProducts = quotaEntryWithProductsVO.getQuotaProducts();
+        BeanUtils.copyProperties(quoteEntryWithProductsVO, newEntry);
+        List<QuoteProductO> newProducts = quoteEntryWithProductsVO.getQuotaProducts();
 
         try {
             // calculate the number of entries have been created for today's date, and generate new serial
-            int count = quotaEntryMapper.countNumberOfEntriesOfToday();
+            int count = quoteEntryMapper.countNumberOfEntriesOfToday();
             String newSerial = MyUtils.formNewSerial("报价", count, newEntry.getCreationDate());
 
             newEntry.setQuotaEntryID(newSerial);
-            quotaEntryMapper.insertNewOrderEntry(newEntry);
+            quoteEntryMapper.insertNewOrderEntry(newEntry);
 
             for (var product : newProducts) {
                 product.setQuotaEntryID(newSerial);
-                quotaEntryMapper.insertNewOrderProduct(product);
+                quoteEntryMapper.insertNewOrderProduct(product);
                 int id = product.getQuotaProductID();
                 logger.info("Insert new purchase product id: " + id);
             }
@@ -68,17 +68,17 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<QuotaEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
+    public List<QuoteEntryWithProductsVO> getOrdersInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
         try {
-            List<QuotaEntryDO> entriesFromDatabase = quotaEntryMapper.queryEntriesInDateRangeByCompanyID(
+            List<QuotaEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesInDateRangeByCompanyID(
                     MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), id);
 
-            List<QuotaEntryWithProductsVO> entries = new ArrayList<>();
+            List<QuoteEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
-                QuotaEntryWithProductsVO tempEntry = new QuotaEntryWithProductsVO();
+                QuoteEntryWithProductsVO tempEntry = new QuoteEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
 
-                List<QuotaProductO> products = quotaEntryMapper.queryProductsByEntryID(
+                List<QuoteProductO> products = quoteEntryMapper.queryProductsByEntryID(
                         tempEntry.getQuotaEntryID());
                 tempEntry.setQuotaProducts(products);
 
@@ -95,16 +95,16 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<QuotaEntryWithProductsVO> getOrdersByCompanyID(int id) {
+    public List<QuoteEntryWithProductsVO> getOrdersByCompanyID(int id) {
         try {
-            List<QuotaEntryDO> entriesFromDatabase = quotaEntryMapper.queryEntriesByCompanyID(id);
+            List<QuotaEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesByCompanyID(id);
 
-            List<QuotaEntryWithProductsVO> entries = new ArrayList<>();
+            List<QuoteEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
-                QuotaEntryWithProductsVO tempEntry = new QuotaEntryWithProductsVO();
+                QuoteEntryWithProductsVO tempEntry = new QuoteEntryWithProductsVO();
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
 
-                List<QuotaProductO> products = quotaEntryMapper.queryProductsByEntryID(
+                List<QuoteProductO> products = quoteEntryMapper.queryProductsByEntryID(
                         tempEntry.getQuotaEntryID());
                 tempEntry.setQuotaProducts(products);
 
@@ -121,27 +121,27 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
 
     @Transactional
     @Override
-    public void modifyOrder(QuotaEntryWithProductsVO quotaEntryWithProductsVO) {
+    public void modifyOrder(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
 
         QuotaEntryDO currentEntry = new QuotaEntryDO();
-        BeanUtils.copyProperties(quotaEntryWithProductsVO, currentEntry);
+        BeanUtils.copyProperties(quoteEntryWithProductsVO, currentEntry);
 
-        List<QuotaProductO> currentProducts = quotaEntryWithProductsVO.getQuotaProducts();
+        List<QuoteProductO> currentProducts = quoteEntryWithProductsVO.getQuotaProducts();
 
         try {
             //query database for compare
             String id = currentEntry.getQuotaEntryID();
             logger.info("Serial to be changed: " + id);
 
-            QuotaEntryDO originEntry = quotaEntryMapper.selectEntryForCompare(id);
-            List<QuotaProductO> originProducts = quotaEntryMapper.selectProductsForCompare(id);
+            QuotaEntryDO originEntry = quoteEntryMapper.selectEntryForCompare(id);
+            List<QuoteProductO> originProducts = quoteEntryMapper.selectProductsForCompare(id);
 
             //compare entry
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
             boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
             if (bool1) {
-                quotaEntryMapper.updateOrderEntry(currentEntry);
+                quoteEntryMapper.updateOrderEntry(currentEntry);
             }
 
             boolean bool2 = false; //bool to indicate changes to products
@@ -154,14 +154,14 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
 
                         if (bool3) {
                             bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
-                            quotaEntryMapper.updateOrderProduct(currentProduct);
+                            quoteEntryMapper.updateOrderProduct(currentProduct);
                         }
                         found = true;
                         break;
                     }
                 }
                 if (!found) { //entry is removed
-                    quotaEntryMapper.deleteOrderProductByID(originProduct.getQuotaProductID());
+                    quoteEntryMapper.deleteOrderProductByID(originProduct.getQuotaProductID());
                 }
             }
 
@@ -186,8 +186,8 @@ public class QuotaEntryServiceImpl implements QuotaEntryService {
     @Override
     public void deleteOrder(String id) {
         try {
-            quotaEntryMapper.deleteOrderProductsByEntryID(id);
-            quotaEntryMapper.deleteOrderEntry(id);
+            quoteEntryMapper.deleteOrderProductsByEntryID(id);
+            quoteEntryMapper.deleteOrderEntry(id);
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Delete error");

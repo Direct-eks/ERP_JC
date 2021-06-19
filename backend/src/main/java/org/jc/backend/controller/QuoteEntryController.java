@@ -4,8 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.entity.VO.QuotaEntryWithProductsVO;
-import org.jc.backend.service.QuotaEntryService;
+import org.jc.backend.entity.VO.QuoteEntryWithProductsVO;
+import org.jc.backend.service.QuoteEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +17,16 @@ import java.util.Date;
 import java.util.List;
 
 @Indexed
-@Api(tags = "QuotaEntry Related")
+@Api(tags = "QuoteEntry Related")
 @RestController
-@RequestMapping("/quotaEntry")
-public class QuotaEntryController {
-    private static final Logger logger = LoggerFactory.getLogger(QuotaEntryController.class);
+@RequestMapping("/quoteEntry")
+public class QuoteEntryController {
+    private static final Logger logger = LoggerFactory.getLogger(QuoteEntryController.class);
 
-    private final QuotaEntryService quotaEntryService;
+    private final QuoteEntryService quoteEntryService;
 
-    public QuotaEntryController(QuotaEntryService quotaEntryService) {
-        this.quotaEntryService = quotaEntryService;
+    public QuoteEntryController(QuoteEntryService quoteEntryService) {
+        this.quoteEntryService = quoteEntryService;
     }
 
     /* ------------------------------ API ------------------------------ */
@@ -34,17 +34,17 @@ public class QuotaEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("quota:Creation")
     @PutMapping("/createOrder")
-    public void createQuota(@RequestBody @Validated QuotaEntryWithProductsVO quotaEntryWithProductsVO) {
-        logger.info("PUT Request to /quotaEntry/createOrder, data: {}", quotaEntryWithProductsVO.toString());
+    public void createQuota(@RequestBody @Validated QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
+        logger.info("PUT Request to /quotaEntry/createOrder, data: {}", quoteEntryWithProductsVO.toString());
 
-        quotaEntryService.createOrder(quotaEntryWithProductsVO);
+        quoteEntryService.createOrder(quoteEntryWithProductsVO);
     }
 
-    @ApiOperation(value = "", response = QuotaEntryWithProductsVO.class,
+    @ApiOperation(value = "", response = QuoteEntryWithProductsVO.class,
             notes = "companyID can be null, if null, query all")
     @RequiresPermissions("quota:Query")
     @GetMapping("/getOrdersInDateRangeByCompanyID")
-    public List<QuotaEntryWithProductsVO> getQuotasInDateRangeByCompanyID(
+    public List<QuoteEntryWithProductsVO> getQuotasInDateRangeByCompanyID(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam(value = "companyID", defaultValue = "-1") int companyID) throws GlobalParamException {
@@ -54,25 +54,25 @@ public class QuotaEntryController {
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        return quotaEntryService.getOrdersInDateRangeByCompanyID(startDate, endDate, companyID);
+        return quoteEntryService.getOrdersInDateRangeByCompanyID(startDate, endDate, companyID);
     }
 
-    @ApiOperation(value = "", response = QuotaEntryWithProductsVO.class)
+    @ApiOperation(value = "", response = QuoteEntryWithProductsVO.class)
     @RequiresPermissions("quota:Query")
     @GetMapping("/getOrdersByCompanyID/{id}")
-    public List<QuotaEntryWithProductsVO> getQuotasByCompanyID(@PathVariable("id") int id) {
+    public List<QuoteEntryWithProductsVO> getQuotasByCompanyID(@PathVariable("id") int id) {
         logger.info("GET Request to /quotaEntry/getOrdersByCompanyID, id: {}", id);
 
-        return quotaEntryService.getOrdersByCompanyID(id);
+        return quoteEntryService.getOrdersByCompanyID(id);
     }
 
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("quota:Modification")
     @PatchMapping("/modifyOrder")
-    public void modifyQuota(@RequestBody @Validated QuotaEntryWithProductsVO modifyQuotaVO) {
+    public void modifyQuota(@RequestBody @Validated QuoteEntryWithProductsVO modifyQuotaVO) {
         logger.info("PATCH Request to /quotaEntry/modifyOrder, data: {}", modifyQuotaVO.toString());
 
-        quotaEntryService.modifyOrder(modifyQuotaVO);
+        quoteEntryService.modifyOrder(modifyQuotaVO);
     }
 
     @ApiOperation(value = "", response = void.class)
@@ -80,7 +80,7 @@ public class QuotaEntryController {
     public void deleteQuota(@PathVariable("id") String id) {
         logger.info("DELETE Request to /quotaEntry/deleteOrder, id: {}", id);
 
-        quotaEntryService.deleteOrder(id);
+        quoteEntryService.deleteOrder(id);
     }
 
 }

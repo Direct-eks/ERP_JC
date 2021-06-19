@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.jc.backend.config.validation.DecimalValidation;
-import org.jc.backend.entity.QuotaProductO;
+import org.jc.backend.entity.QuoteProductO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class QuotaEntryWithProductsVO {
+public class QuoteEntryWithProductsVO {
     private String quotaEntryID;
 
     @NotNull(message = "creationDate null error")
@@ -52,5 +52,5 @@ public class QuotaEntryWithProductsVO {
 
     @Valid
     @NotEmpty(message = "报价单商品不能为空")
-    private List<QuotaProductO> quotaProducts;
+    private List<QuoteProductO> quotaProducts;
 }
