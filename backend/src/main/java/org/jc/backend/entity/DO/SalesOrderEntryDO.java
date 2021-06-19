@@ -11,6 +11,7 @@ public class SalesOrderEntryDO {
     private String creationDate;
     private String totalAmount;
     private String invoiceType;
+    private int taxRate;
     private String executionStatus;
     private String drawer;
 

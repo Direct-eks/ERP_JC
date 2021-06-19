@@ -3,12 +3,11 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 import org.jc.backend.entity.QuotaProductO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
@@ -22,19 +21,24 @@ public class QuotaEntryWithProductsVO {
     private String creationDate;
 
     @NotNull(message = "totalAmount null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "totalAmount value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_8,
+            message = "总金额校验错误")
     private String totalAmount;
 
     @NotNull(message = "invoiceType null error")
     @Pattern(regexp = "^(增值税票|普票|收据)$", message = "invoiceType value error")
     private String invoiceType;
 
+    @NotNull(message = "taxRate null error")
+    @Min(value = 0, message = "税率错误")
+    private Integer taxRate;
+
     @NotNull(message = "drawer null error")
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
     @NotNull(message = "partnerCompanyID null error")
+    @Min(value = 0, message = "公司错误")
     private Integer partnerCompanyID;
     // from c_partner_company
     private String companyAbbreviatedName;
@@ -47,5 +51,6 @@ public class QuotaEntryWithProductsVO {
     private int isModified;
 
     @Valid
+    @NotEmpty(message = "报价单商品不能为空")
     private List<QuotaProductO> quotaProducts;
 }

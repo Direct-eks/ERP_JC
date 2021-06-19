@@ -12,10 +12,10 @@
 
     <insert id="insertNewOrderEntry">
         insert into e_quota_entry(
-            quota_entry_id, creation_date, total_amount, invoice_type, drawer, partner_company_id, remark
+            quota_entry_id, creation_date, total_amount, invoice_type, tax_rate, drawer, partner_company_id, remark
         )
         values (
-            #{quotaEntryID}, date('now', 'localtime'), #{totalAmount}, #{invoiceType}, #{drawer},
+            #{quotaEntryID}, date('now', 'localtime'), #{totalAmount}, #{invoiceType}, #{taxRate}, #{drawer},
             #{partnerCompanyID}, #{remark}
         )
     </insert>
@@ -37,6 +37,7 @@
         <result property="creationDate" column="creation_date"/>
         <result property="totalAmount" column="total_amount"/>
         <result property="invoiceType" column="invoice_type"/>
+        <result property="taxRate" column="tax_rate"/>
         <result property="drawer" column="drawer"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
@@ -62,7 +63,7 @@
 
 
     <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
-        select q.quota_entry_id, q.creation_date, q.total_amount, q.invoice_type,
+        select q.quota_entry_id, q.creation_date, q.total_amount, q.invoice_type, q.tax_rate,
         q.drawer, q.partner_company_id, c.abbreviated_name as company_abbreviated_name,
         c.full_name as company_full_name, c.phone as company_phone, q.remark, q.is_modified
         from e_quota_entry as q join c_partner_company as c on q.partner_company_id = c.partner_company_id
@@ -74,7 +75,7 @@
     </select>
 
     <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
-        select q.quota_entry_id, q.creation_date, q.total_amount, q.invoice_type,
+        select q.quota_entry_id, q.creation_date, q.total_amount, q.invoice_type, q.tax_rate,
         q.drawer, q.partner_company_id, c.abbreviated_name as company_abbreviated_name,
         c.full_name as company_full_name, c.phone as company_phone, q.remark, q.is_modified
         from e_quota_entry as q join c_partner_company as c on q.partner_company_id = c.partner_company_id
