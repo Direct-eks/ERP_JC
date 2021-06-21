@@ -30,10 +30,19 @@ public class MiscellaneousDataController {
 
     @ApiOperation(value = "", response = String.class)
     @RequiresAuthentication
-    @GetMapping("getAllTaxRateOptions")
+    @GetMapping("/getAllTaxRateOptions")
     public List<String> getAllTaxRateOptions() {
         logger.info("GET Request to /miscellaneousData/getAllTaxRateOptions");
 
         return miscellaneousDataService.getAllTaxRateOptions();
+    }
+
+    @ApiOperation(value = "", response = String.class)
+    @RequiresAuthentication
+    @GetMapping("/getLastWarehouseStockUpdateTime")
+    public String getLastWarehouseStockUpdateTime() {
+        logger.info("GET Request to /miscellaneousData/getLastWarehouseStockUpdateTime");
+
+        return miscellaneousDataService.getLastWarehouseStockUpdateTime();
     }
 }

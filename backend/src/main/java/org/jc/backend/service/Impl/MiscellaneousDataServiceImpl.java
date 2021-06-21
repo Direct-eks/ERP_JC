@@ -26,13 +26,40 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional(readOnly = true)
+    @Override
     public List<String> getAllTaxRateOptions() {
         try {
             List<MiscellaneousDataO> taxRates = miscellaneousDataMapper.queryAllTaxRateOptions();
             return taxRates.stream().map(MiscellaneousDataO::getPropertyValue).collect(Collectors.toList());
 
         } catch (PersistenceException e) {
-            e.printStackTrace(); // todo remove in production
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public String getLastWarehouseStockUpdateTime() {
+        try {
+            return miscellaneousDataMapper.queryLastWarehouseStockUpdateTime().getPropertyValue();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateLastWarehouseStockUpdateTime() {
+        try {
+            miscellaneousDataMapper.updateLastWarehouseStockUpdateTime();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
         }

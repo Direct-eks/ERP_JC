@@ -7,4 +7,6 @@ import java.util.List;
 @Indexed
 public interface MiscellaneousDataService {
     List<String> getAllTaxRateOptions();
+    String getLastWarehouseStockUpdateTime();
+    void updateLastWarehouseStockUpdateTime();
 }
