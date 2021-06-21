@@ -112,11 +112,11 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     }
 
     /**
-     * For usage of increase stock quantity for inbound product entry
+     * For usage of increase stock quantity for inbound product entry, modify replenish quantity if presale exists
      */
     @Transactional
     @Override
-    public void increaseStockAndUpdateStockUnitPrice(InboundProductO product) {
+    public void increaseStock(InboundProductO product) {
         try {
             int warehouseID = product.getWarehouseID();
             int skuID = product.getSkuID();
@@ -129,19 +129,10 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             product.setStockQuantity(stockQuantity);
             product.setStockUnitPrice(stock.getStockUnitPriceWithoutTax());
 
-            BigDecimal stockUnitPriceWithoutTax = new BigDecimal(stock.getStockUnitPriceWithoutTax());
-            BigDecimal productUnitPriceWithoutTax = new BigDecimal(product.getUnitPriceWithoutTax());
-
             if (stockQuantity < 0) { // exist presales
                 // e.g stockQuantity = -10, totalPresales = 20, 20 + (-10) => there exists 10 replenished quantity
                 int replenishedQuantity = totalPresales + stockQuantity;
-                // (replenishedQuantity * stockPriceWithTax + entryQuantity * productUnitPriceWithoutTax) / (r + e)
-                String calculatedPrice = stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(replenishedQuantity))
-                        .add(productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(entryQuantity)))
-                        .divide(BigDecimal.valueOf(replenishedQuantity + entryQuantity), myScale, myRoundingMode)
-                        .toPlainString();
                 stock.setStockQuantity(stockQuantity + entryQuantity);
-                stock.setStockUnitPriceWithoutTax(calculatedPrice);
                 if (stockQuantity + entryQuantity < 0) { // not enough to top off
                     stock.setTotalPresales(totalPresales - entryQuantity);
                 }
@@ -150,12 +141,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                 }
             }
             else {
-                String calculatedPrice = stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity))
-                        .add(productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(entryQuantity)))
-                        .divide(BigDecimal.valueOf(stockQuantity + entryQuantity), myScale, myRoundingMode)
-                        .toPlainString();
                 stock.setStockQuantity(stockQuantity + entryQuantity);
-                stock.setStockUnitPriceWithoutTax(calculatedPrice);
             }
 
             warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock);
@@ -168,12 +154,11 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     }
 
     /**
-     * For usage of increase stock quantity for inbound product modification
+     * For usage of modify stock quantity for inbound product modification
      */
     @Transactional
     @Override
-    public void increaseStockAndUpdateStockUnitPrice(InboundProductO modifiedProduct,
-                                                     InboundProductO originProduct) {
+    public void modifyStock(InboundProductO modifiedProduct, InboundProductO originProduct) {
         try {
             int warehouseID = originProduct.getWarehouseID();
             int skuID = originProduct.getSkuID();
@@ -186,12 +171,6 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             int newProductQuantity = modifiedProduct.getQuantity();
             int productQuantityChange = newProductQuantity - oldProductQuantity;
             BigDecimal newProductUnitPriceWithoutTax = new BigDecimal(modifiedProduct.getUnitPriceWithoutTax());
-
-            // todo change price
-            String calculatedPrice = newProductUnitPriceWithoutTax.multiply(BigDecimal.valueOf(newProductQuantity))
-                    .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity - oldProductQuantity)))
-                    .divide(BigDecimal.valueOf(stockQuantity + productQuantityChange), RoundingMode.HALF_EVEN)
-                    .toPlainString();
 
             warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock);
 

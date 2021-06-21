@@ -101,14 +101,14 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 }
 
                 // calculate stock unit price for product, and fill in stock quantity & unit price
-                warehouseStockService.increaseStockAndUpdateStockUnitPrice(product);
+                warehouseStockService.increaseStock(product);
 
                 // insert
                 inboundEntryMapper.insertNewProduct(product);
                 int id = product.getInboundProductID();
                 logger.info("Insert new inbound product id: {}", id);
             }
-            // todo change corresponding outbound entry products
+            // change corresponding outbound entry products if presale exists
             outboundEntryService.replenishPresaleProducts(newProducts);
 
         } catch (PersistenceException e) {
@@ -228,7 +228,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                             inboundEntryMapper.updateProduct(currentProduct);
 
                             // calculate new unit stock price
-                            warehouseStockService.increaseStockAndUpdateStockUnitPrice(currentProduct, originProduct);
+                            warehouseStockService.modifyStock(currentProduct, originProduct);
                         }
                         found = true;
                         break;

@@ -116,14 +116,13 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     }
 
     /**
-     *
+     * do replenishment
      * @param products
      */
     @Transactional(readOnly = true)
     @Override
     public void replenishPresaleProducts(List<InboundProductO> products) {
         try {
-            // do replenishment
             for (var product : products) {
                 int inboundQuantity = product.getQuantity();
                 int id = product.getWarehouseStockID();
@@ -131,36 +130,16 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 for (var presale : presales) {
                     if (inboundQuantity == 0) break;
 
-                    int normalQuantity = presale.getStockQuantity();
-                    int presaleQuantity = Math.abs(presale.getStockQuantity() - presale.getQuantity());
                     int notReplenishedQuantity = presale.getNotReplenishedQuantity();
-                    int replenishedQuantity = presaleQuantity - notReplenishedQuantity;
-                    BigDecimal stockUnitPriceWithoutTax = new BigDecimal(presale.getStockUnitPrice());
-                    BigDecimal inboundPrice = new BigDecimal(product.getUnitPriceWithoutTax());
-                    // ((replenishedQuantity + normal outbound quantity) * stockUnitPrice
-                    BigDecimal oldStockUnitPrice = stockUnitPriceWithoutTax
-                            .multiply(BigDecimal.valueOf(replenishedQuantity + normalQuantity));
-
                     if (inboundQuantity < notReplenishedQuantity) { // replenish as much as possible
-                        // + inboundQuantity * inboundPrice) / (r + n + i)
-                        presale.setStockUnitPrice(oldStockUnitPrice
-                                .add(inboundPrice.multiply(BigDecimal.valueOf(inboundQuantity)))
-                                .divide(BigDecimal.valueOf(replenishedQuantity + normalQuantity + inboundQuantity),
-                                        myScale, myRoundingMode).toPlainString());
-
-                        int quantityAfterReplenish = notReplenishedQuantity - inboundQuantity;
-                        presale.setNotReplenishedQuantity(quantityAfterReplenish);
+                        presale.setNotReplenishedQuantity(notReplenishedQuantity - inboundQuantity);
+                        presale.setStockQuantity(presale.getStockQuantity() + inboundQuantity);
                         inboundQuantity = 0;
                     }
                     else { // replenish and set replenished status to true
-                        // + notReplenishedQuantity * inboundPrice) / (r + n + notReplenishedQuantity)
-                        presale.setStockUnitPrice(oldStockUnitPrice
-                                .add(inboundPrice.multiply(BigDecimal.valueOf(notReplenishedQuantity)))
-                                .divide(BigDecimal.valueOf(presale.getQuantity()), myScale, myRoundingMode)
-                                .toPlainString());
-
-                        presale.setNotReplenishedQuantity(0);
                         presale.setPresaleReplenished(1);
+                        presale.setNotReplenishedQuantity(0);
+                        presale.setStockQuantity(presale.getStockQuantity() + inboundQuantity);
                         inboundQuantity -= presale.getNotReplenishedQuantity();
                     }
                     outboundEntryMapper.updateReplenishment(presale);
