@@ -146,6 +146,7 @@
         from e_outbound_entry as e join e_outbound_product as p
             on e.outbound_entry_id = p.outbound_entry_id
         where warehouse_stock_id = #{id} and e.shipment_date >= #{date}
+        order by outbound_product_id
     </select>
 
     <select id="selectEntryShippingInfoForCompare" resultMap="entryResultMap">

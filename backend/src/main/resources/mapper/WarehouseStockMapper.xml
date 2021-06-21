@@ -44,16 +44,11 @@
     </select>
 
 
-    <update id="increaseStock">
+    <update id="updateStockQuantity">
         update w_warehouse_stock
         set stock_quantity = #{quantity}
         where warehouse_stock_id = #{warehouseStockID}
     </update>
 
-    <update id="decreaseStock">
-        update w_warehouse_stock
-        set stock_quantity = #{quantity}
-        where warehouse_stock_id = #{id}
-    </update>
 
 </mapper>

@@ -18,7 +18,7 @@ public interface WarehouseStockService {
     void increaseStock(InboundProductO product);
     void modifyStock(InboundProductO product, int quantityChange);
     void decreaseStock(OutboundProductO product);
-    void decreaseStock(OutboundProductO modifiedProduct, OutboundProductO originProduct);
+    void modifyStock(OutboundProductO product, int quantityChange);
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
 }

@@ -90,7 +90,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 for (var presale : presales) {
                     int stockQuantity = presale.getStockQuantity() + inboundQuantity;
                     presale.setStockQuantity(stockQuantity);
-                    if (stockQuantity >= 0) {
+                    if (stockQuantity - presale.getQuantity() >= 0) { // check if fully replenished
                         presale.setIsPresale(0);
                     }
                     outboundEntryMapper.updateReplenishment(presale);
@@ -114,7 +114,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             for (var product : affectedProducts) {
                 int stockQuantity = product.getStockQuantity() + quantityChange;
                 product.setStockQuantity(stockQuantity);
-                if (stockQuantity < 0) {
+                if (stockQuantity - product.getQuantity() < 0) { // check if cause presale
                     product.setIsPresale(1);
                 } else {
                     product.setIsPresale(0);
@@ -151,14 +151,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
             for (var product : newProducts) {
                 product.setOutboundEntryID(newSerial);
+                // mark if exists presale
+                if (product.getStockQuantity() - product.getQuantity() < 0) {
+                    product.setIsPresale(1);
+                }
                 outboundEntryMapper.insertNewProduct(product);
                 int id = product.getOutboundProductID();
                 logger.info("Insert new outbound product id: " + id);
 
+                // todo support presale on product that does not have warehouseStock record
+
                 warehouseStockService.decreaseStock(product);
             }
-
-            //todo mark replenish
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -246,41 +250,58 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             logger.info("Serial to be changed: " + id);
 
             OutboundEntryDO originEntry = outboundEntryMapper.selectEntryForCompare(id);
-            List<OutboundProductO> originProducts = outboundEntryMapper.selectProductsForCompare(id);
+            List<OutboundProductO> originalProducts = outboundEntryMapper.selectProductsForCompare(id);
 
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(
-                    record, currentEntry, originEntry);
-
-            if (bool1) {
+            boolean entryChanged = false;
+            boolean productsChanged = false;
+            if (IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry)) {
+                entryChanged = true;
                 outboundEntryMapper.updateEntry(currentEntry);
             }
 
-            boolean bool2 = false;
-            for (var originProduct : originProducts) {
+            for (var originalProduct : originalProducts) {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
-                    if (currentProduct.getOutboundProductID() == originProduct.getOutboundProductID()) {
-                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
-                                record, currentProduct, originProduct);
-
-                        if (bool3) {
-                            bool2 = true;
+                    if (currentProduct.getOutboundProductID() == originalProduct.getOutboundProductID()) {
+                        if (IOModificationUtils.productCompareAndFormModificationRecord(
+                                record, currentProduct, originalProduct)) {
+                            productsChanged = true;
                             outboundEntryMapper.updateProduct(currentProduct);
+                            // calculate new stock quantity, quantityChange > 0 if more outbound is detected
+                            int quantityChange = currentProduct.getQuantity() - originalProduct.getQuantity();
+                            warehouseStockService.modifyStock(originalProduct, quantityChange);
+                            // change stock quantity for outbound product entry after the date of this entry
+                            String date = currentEntry.getShipmentDate();
+                            int warehouseStockID = originalProduct.getWarehouseStockID();
 
-                            //todo add warehouse stock
+                            List<OutboundProductO> affectedProducts =
+                                    outboundEntryMapper.queryProductsAfterDateByWarehouseStockID(date, warehouseStockID);
+                            for (var product : affectedProducts) {
+                                if (product.getOutboundProductID() <= currentProduct.getOutboundProductID())
+                                    continue; // skip entry products earlier than this
+                                int stockQuantity = product.getStockQuantity() - quantityChange;
+                                product.setStockQuantity(stockQuantity);
+                                if (stockQuantity - product.getQuantity() < 0) { // check if cause presale
+                                    product.setIsPresale(1);
+                                } else {
+                                    product.setIsPresale(0);
+                                }
+                                outboundEntryMapper.updateReplenishment(product);
+                            }
                         }
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    outboundEntryMapper.deleteProductByID(originProduct.getOutboundProductID());
-                    //todo add warehouse stock
+                    // todo optimize to adapt to delete
+                    logger.error("deleted product found");
+                    throw new RuntimeException();
                 }
             }
 
-            if (bool1 || bool2) {
+            if (entryChanged || productsChanged) {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getOutboundEntryID(), record.toString()));

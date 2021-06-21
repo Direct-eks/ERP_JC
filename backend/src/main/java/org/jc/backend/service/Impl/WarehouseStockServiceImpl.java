@@ -107,7 +107,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     }
 
     /**
-     * For usage of increase stock quantity for inbound product entry, modify replenish quantity if presale exists
+     * For usage of increase stock quantity for inbound product entry, modify replenishment if presale exists
      */
     @Transactional
     @Override
@@ -121,7 +121,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             int entryQuantity = product.getQuantity();
             stock.setStockQuantity(stockQuantity + entryQuantity);
 
-            warehouseStockMapper.increaseStock(stock);
+            warehouseStockMapper.updateStockQuantity(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -139,9 +139,10 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         try {
             WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(product.getWarehouseStockID());
 
+            // add changes
             stock.setStockQuantity(stock.getStockQuantity() + quantityChange);
 
-            warehouseStockMapper.increaseStock(stock);
+            warehouseStockMapper.updateStockQuantity(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -150,6 +151,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
+    /**
+     * for usage of decrease stock quantity for outbound product entry
+     */
     @Transactional
     @Override
     public void decreaseStock(OutboundProductO product) {
@@ -160,8 +164,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
 
             int stockQuantity = stock.getStockQuantity();
             int productQuantity = product.getQuantity();
+            stock.setStockQuantity(stockQuantity - productQuantity);
 
-            warehouseStockMapper.decreaseStock(stock.getWarehouseStockID(), stockQuantity - productQuantity);
+            warehouseStockMapper.updateStockQuantity(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -170,21 +175,19 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
+    /**
+     * For usage of modify stock quantity for inbound product modification
+     */
     @Transactional
     @Override
-    public void decreaseStock(OutboundProductO modifiedProduct, OutboundProductO originProduct) {
+    public void modifyStock(OutboundProductO product, int quantityChange) {
         try {
-            int warehouseID = originProduct.getWarehouseID();
-            int skuID = originProduct.getSkuID();
-            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
+            WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(product.getWarehouseStockID());
 
-            // update stock quantity based on modified and origin product and warehouseStock quantity
-            int stockQuantity = stock.getStockQuantity();
-            int oldProductQuantity = originProduct.getQuantity();
-            int newProductQuantity = modifiedProduct.getQuantity();
-            int productQuantityChange = newProductQuantity - oldProductQuantity;
+            // deduct changes
+            stock.setStockQuantity(stock.getStockQuantity() - quantityChange);
 
-            warehouseStockMapper.decreaseStock(stock.getWarehouseStockID(),stockQuantity - productQuantityChange);
+            warehouseStockMapper.updateStockQuantity(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
