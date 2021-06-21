@@ -47,4 +47,7 @@ public interface OutboundEntryService {
     List<OutboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID);
 
     List<OutboundProductO> getProductsByWarehouseID(int id);
+
+    // for stock price calculation
+    List<OutboundProductO> getAllOutboundProducts();
 }

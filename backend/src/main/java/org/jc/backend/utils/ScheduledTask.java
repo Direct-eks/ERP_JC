@@ -1,11 +1,20 @@
 package org.jc.backend.utils;
 
+import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.OutboundProductO;
+import org.jc.backend.entity.WarehouseStockO;
+import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.MiscellaneousDataService;
+import org.jc.backend.service.OutboundEntryService;
+import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Indexed
 @Component
@@ -13,9 +22,18 @@ public class ScheduledTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTask.class);
 
+    private final WarehouseStockService warehouseStockService;
+    private final InboundEntryService inboundEntryService;
+    private final OutboundEntryService outboundEntryService;
     private final MiscellaneousDataService miscellaneousDataService;
 
-    public ScheduledTask(MiscellaneousDataService miscellaneousDataService) {
+    public ScheduledTask(WarehouseStockService warehouseStockService,
+                         InboundEntryService inboundEntryService,
+                         OutboundEntryService outboundEntryService,
+                         MiscellaneousDataService miscellaneousDataService) {
+        this.warehouseStockService = warehouseStockService;
+        this.inboundEntryService = inboundEntryService;
+        this.outboundEntryService = outboundEntryService;
         this.miscellaneousDataService = miscellaneousDataService;
     }
 
@@ -25,6 +43,11 @@ public class ScheduledTask {
         logger.info("calculateStockPrices task begin");
 
         // todo calculate prices
+        List<WarehouseStockO> warehouseStocks = warehouseStockService.getAllWarehouseStocks();
+        List<InboundProductO> inboundProducts = inboundEntryService.getAllInboundProducts();
+        List<OutboundProductO> outboundProducts = outboundEntryService.getAllOutboundProducts();
+
+        
 
         miscellaneousDataService.updateLastWarehouseStockUpdateTime();
         logger.info("calculateStockPrices task end");

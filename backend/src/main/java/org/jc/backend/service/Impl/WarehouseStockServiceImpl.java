@@ -225,4 +225,17 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             throw e;
         }
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<WarehouseStockO> getAllWarehouseStocks() {
+        try {
+            return warehouseStockMapper.queryAllWarehouseStocks();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

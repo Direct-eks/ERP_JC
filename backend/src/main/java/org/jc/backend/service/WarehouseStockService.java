@@ -21,4 +21,7 @@ public interface WarehouseStockService {
     void modifyStock(OutboundProductO product, int quantityChange);
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
+
+    // for stock price calculation
+    List<WarehouseStockO> getAllWarehouseStocks();
 }

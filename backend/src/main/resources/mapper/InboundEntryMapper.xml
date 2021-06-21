@@ -337,4 +337,10 @@
         order by inbound_product_id
     </select>
 
+    <select id="queryAllInboundProducts" resultMap="productResultMap">
+        select *
+        from e_inbound_product
+        order by inbound_product_id
+    </select>
+
 </mapper>

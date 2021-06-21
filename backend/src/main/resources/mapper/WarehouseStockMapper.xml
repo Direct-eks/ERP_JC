@@ -50,5 +50,10 @@
         where warehouse_stock_id = #{warehouseStockID}
     </update>
 
+    <select id="queryAllWarehouseStocks" resultMap="WarehouseStockResultMap">
+        select *
+        from w_warehouse_stock
+        order by warehouse_stock_id
+    </select>
 
 </mapper>

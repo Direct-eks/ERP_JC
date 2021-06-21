@@ -61,4 +61,7 @@ public interface OutboundEntryMapper {
     List<OutboundProductO> queryNotYetInvoiceDetailByCompanyID(int id);
 
     List<OutboundProductO> queryProductsByWarehouseStockID(int id);
+
+    // for stock price calculation
+    List<OutboundProductO> queryAllOutboundProducts();
 }

@@ -567,4 +567,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             throw e;
         }
     }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<InboundProductO> getAllInboundProducts() {
+        try {
+            return inboundEntryMapper.queryAllInboundProducts();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

@@ -354,4 +354,10 @@
         order by outbound_product_id
     </select>
 
+    <select id="queryAllOutboundProducts" resultMap="productResultMap">
+        select *
+        from e_outbound_product
+        order by outbound_product_id
+    </select>
+
 </mapper>

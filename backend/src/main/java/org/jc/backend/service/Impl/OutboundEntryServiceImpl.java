@@ -623,4 +623,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             throw e;
         }
     }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundProductO> queryAllOutboundProducts() {
+        try {
+            return outboundEntryMapper.queryAllOutboundProducts();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

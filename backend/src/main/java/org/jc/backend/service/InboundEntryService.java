@@ -40,4 +40,7 @@ public interface InboundEntryService {
     List<InboundProductO> getNotYetInvoiceDetailByCompanyID(int companyID);
 
     List<InboundProductO> getProductsByWarehouseID(int id);
+
+    // for stock price calculation
+    List<InboundProductO> getAllInboundProducts();
 }
