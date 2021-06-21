@@ -123,18 +123,42 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
 
             int stockQuantity = stock.getStockQuantity();
+            int totalPresales = stock.getTotalPresales();
+            int entryQuantity = product.getQuantity();
+
+            product.setStockQuantity(stockQuantity);
+            product.setStockUnitPrice(stock.getStockUnitPriceWithoutTax());
+
             BigDecimal stockUnitPriceWithoutTax = new BigDecimal(stock.getStockUnitPriceWithoutTax());
-            int productQuantity = product.getQuantity();
             BigDecimal productUnitPriceWithoutTax = new BigDecimal(product.getUnitPriceWithoutTax());
 
-            // todo changes in presale condition, avoid negative numbers
-            String calculatedPrice = productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(productQuantity))
-                    .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity)))
-                    .divide(BigDecimal.valueOf(productQuantity + stockQuantity), myScale, myRoundingMode)
-                    .toPlainString();
+            if (stockQuantity < 0) { // exist presales
+                // e.g stockQuantity = -10, totalPresales = 20, 20 + (-10) => there exists 10 replenished quantity
+                int replenishedQuantity = totalPresales + stockQuantity;
+                // (replenishedQuantity * stockPriceWithTax + entryQuantity * productUnitPriceWithoutTax) / (r + e)
+                String calculatedPrice = stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(replenishedQuantity))
+                        .add(productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(entryQuantity)))
+                        .divide(BigDecimal.valueOf(replenishedQuantity + entryQuantity), myScale, myRoundingMode)
+                        .toPlainString();
+                stock.setStockQuantity(stockQuantity + entryQuantity);
+                stock.setStockUnitPriceWithoutTax(calculatedPrice);
+                if (stockQuantity + entryQuantity < 0) { // not enough to top off
+                    stock.setTotalPresales(totalPresales - entryQuantity);
+                }
+                else {
+                    stock.setTotalPresales(0);
+                }
+            }
+            else {
+                String calculatedPrice = stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity))
+                        .add(productUnitPriceWithoutTax.multiply(BigDecimal.valueOf(entryQuantity)))
+                        .divide(BigDecimal.valueOf(stockQuantity + entryQuantity), myScale, myRoundingMode)
+                        .toPlainString();
+                stock.setStockQuantity(stockQuantity + entryQuantity);
+                stock.setStockUnitPriceWithoutTax(calculatedPrice);
+            }
 
-            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock.getWarehouseStockID(),
-                    calculatedPrice, stockQuantity + productQuantity);
+            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -163,13 +187,13 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             int productQuantityChange = newProductQuantity - oldProductQuantity;
             BigDecimal newProductUnitPriceWithoutTax = new BigDecimal(modifiedProduct.getUnitPriceWithoutTax());
 
+            // todo change price
             String calculatedPrice = newProductUnitPriceWithoutTax.multiply(BigDecimal.valueOf(newProductQuantity))
                     .add(stockUnitPriceWithoutTax.multiply(BigDecimal.valueOf(stockQuantity - oldProductQuantity)))
                     .divide(BigDecimal.valueOf(stockQuantity + productQuantityChange), RoundingMode.HALF_EVEN)
                     .toPlainString();
 
-            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock.getWarehouseStockID(),
-                    calculatedPrice, stockQuantity + productQuantityChange);
+            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

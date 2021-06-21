@@ -68,8 +68,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     break;
                 case 0:
                     // do entryDate check and do replenishment
-                    if (!outboundEntryService.replenishPresaleProducts(newProducts,
-                            entryWithProductsVO.getEntryDate())) {
+                    if (!outboundEntryService.passPresaleDateCheck(newProducts, entryWithProductsVO.getEntryDate())) {
                         throw new GlobalParamException("入库单日期必须大于所有预销售产品出库日期");
                     }
                     break;
@@ -101,13 +100,16 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     product.setWarehouseStockID(newID);
                 }
 
+                // calculate stock unit price for product, and fill in stock quantity & unit price
+                warehouseStockService.increaseStockAndUpdateStockUnitPrice(product);
+
+                // insert
                 inboundEntryMapper.insertNewProduct(product);
                 int id = product.getInboundProductID();
                 logger.info("Insert new inbound product id: {}", id);
-
-                // calculate stock unit price for product
-                warehouseStockService.increaseStockAndUpdateStockUnitPrice(product);
             }
+            // todo change corresponding outbound entry products
+            outboundEntryService.replenishPresaleProducts(newProducts);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

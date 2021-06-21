@@ -14,7 +14,8 @@ public class WarehouseStockO {
 
     private int stockQuantity;
     private String stockUnitPriceWithoutTax;
-    private String stockUnitPriceWithTax;
     private String remark;
     private int storagePlaceID;
+
+    private int totalPresales;
 }

@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.MyUtils.myRoundingMode;
+import static org.jc.backend.utils.MyUtils.myScale;
+
 @Service
 public class OutboundEntryServiceImpl implements OutboundEntryService {
     private static final Logger logger = LoggerFactory.getLogger(OutboundEntryServiceImpl.class);
@@ -82,14 +85,14 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     }
 
     /**
-     * replenish products while validating dates
-     * @param products replenishment products
-     * @param entryDate entryDate of replenishment
-     * @return true if replenishment successful, false if entryDate is incorrect
+     *
+     * @param products
+     * @param entryDate
+     * @return
      */
     @Transactional(readOnly = true)
     @Override
-    public boolean replenishPresaleProducts(List<InboundProductO> products, String entryDate) {
+    public boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate) {
         try {
             // date check
             for (var product : products) {
@@ -103,27 +106,66 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     }
                 }
             }
-            // do replenishment todo change warehouseStock price and quantity
+            return true;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    /**
+     *
+     * @param products
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public void replenishPresaleProducts(List<InboundProductO> products) {
+        try {
+            // do replenishment
             for (var product : products) {
-                int replenishQuantity = product.getQuantity();
+                int inboundQuantity = product.getQuantity();
                 int id = product.getWarehouseStockID();
                 List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
                 for (var presale : presales) {
-                    if (replenishQuantity == 0) break;
-                    if (replenishQuantity < presale.getNotReplenishedQuantity()) { // replenish as much as possible
-                        int quantityAfterReplenish = presale.getNotReplenishedQuantity() - replenishQuantity;
+                    if (inboundQuantity == 0) break;
+
+                    int normalQuantity = presale.getStockQuantity();
+                    int presaleQuantity = Math.abs(presale.getStockQuantity() - presale.getQuantity());
+                    int notReplenishedQuantity = presale.getNotReplenishedQuantity();
+                    int replenishedQuantity = presaleQuantity - notReplenishedQuantity;
+                    BigDecimal stockUnitPriceWithoutTax = new BigDecimal(presale.getStockUnitPrice());
+                    BigDecimal inboundPrice = new BigDecimal(product.getUnitPriceWithoutTax());
+                    // ((replenishedQuantity + normal outbound quantity) * stockUnitPrice
+                    BigDecimal oldStockUnitPrice = stockUnitPriceWithoutTax
+                            .multiply(BigDecimal.valueOf(replenishedQuantity + normalQuantity));
+
+                    if (inboundQuantity < notReplenishedQuantity) { // replenish as much as possible
+                        // + inboundQuantity * inboundPrice) / (r + n + i)
+                        presale.setStockUnitPrice(oldStockUnitPrice
+                                .add(inboundPrice.multiply(BigDecimal.valueOf(inboundQuantity)))
+                                .divide(BigDecimal.valueOf(replenishedQuantity + normalQuantity + inboundQuantity),
+                                        myScale, myRoundingMode).toPlainString());
+
+                        int quantityAfterReplenish = notReplenishedQuantity - inboundQuantity;
                         presale.setNotReplenishedQuantity(quantityAfterReplenish);
-                        replenishQuantity = 0;
+                        inboundQuantity = 0;
                     }
                     else { // replenish and set replenished status to true
-                        replenishQuantity -= presale.getNotReplenishedQuantity();
+                        // + notReplenishedQuantity * inboundPrice) / (r + n + notReplenishedQuantity)
+                        presale.setStockUnitPrice(oldStockUnitPrice
+                                .add(inboundPrice.multiply(BigDecimal.valueOf(notReplenishedQuantity)))
+                                .divide(BigDecimal.valueOf(presale.getQuantity()), myScale, myRoundingMode)
+                                .toPlainString());
+
                         presale.setNotReplenishedQuantity(0);
                         presale.setPresaleReplenished(1);
+                        inboundQuantity -= presale.getNotReplenishedQuantity();
                     }
                     outboundEntryMapper.updateReplenishment(presale);
                 }
             }
-            return true;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

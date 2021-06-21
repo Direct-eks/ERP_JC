@@ -13,7 +13,8 @@ import java.util.List;
 @Indexed
 public interface OutboundEntryService {
     void createEntry(OutboundEntryWithProductsVO entryWithProductsVO);
-    boolean replenishPresaleProducts(List<InboundProductO> products, String entryDate);
+    boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate);
+    void replenishPresaleProducts(List<InboundProductO> products);
 
     List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                             String type, int id);
