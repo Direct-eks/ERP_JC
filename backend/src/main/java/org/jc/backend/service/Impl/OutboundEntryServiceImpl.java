@@ -346,6 +346,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             String id = modifiedEntry.getOutboundEntryID();
             OutboundEntryDO originEntry = outboundEntryMapper.selectEntryForCompare(id);
 
+            // todo not done
             StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
             boolean bool = false;
             if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {

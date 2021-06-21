@@ -288,6 +288,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             String id = modifiedEntry.getInboundEntryID();
             InboundEntryDO originEntry = inboundEntryMapper.selectEntryForCompare(id);
 
+            // todo not done
             StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
             boolean bool = false;
             if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
