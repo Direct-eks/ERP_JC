@@ -16,14 +16,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import static org.jc.backend.utils.MyUtils.myRoundingMode;
-import static org.jc.backend.utils.MyUtils.myScale;
 
 @Service
 public class WarehouseStockServiceImpl implements WarehouseStockService {
@@ -123,28 +118,10 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
 
             int stockQuantity = stock.getStockQuantity();
-            int totalPresales = stock.getTotalPresales();
             int entryQuantity = product.getQuantity();
+            stock.setStockQuantity(stockQuantity + entryQuantity);
 
-            product.setStockQuantity(stockQuantity);
-            product.setStockUnitPrice(stock.getStockUnitPriceWithoutTax());
-
-            if (stockQuantity < 0) { // exist presales
-                // e.g stockQuantity = -10, totalPresales = 20, 20 + (-10) => there exists 10 replenished quantity
-                int replenishedQuantity = totalPresales + stockQuantity;
-                stock.setStockQuantity(stockQuantity + entryQuantity);
-                if (stockQuantity + entryQuantity < 0) { // not enough to top off
-                    stock.setTotalPresales(totalPresales - entryQuantity);
-                }
-                else {
-                    stock.setTotalPresales(0);
-                }
-            }
-            else {
-                stock.setStockQuantity(stockQuantity + entryQuantity);
-            }
-
-            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock);
+            warehouseStockMapper.increaseStock(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -158,21 +135,13 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
      */
     @Transactional
     @Override
-    public void modifyStock(InboundProductO modifiedProduct, InboundProductO originProduct) {
+    public void modifyStock(InboundProductO product, int quantityChange) {
         try {
-            int warehouseID = originProduct.getWarehouseID();
-            int skuID = originProduct.getSkuID();
-            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
+            WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(product.getWarehouseStockID());
 
-            // update stock quantity based on modified and origin product and warehouseStock quantity
-            int stockQuantity = stock.getStockQuantity();
-            BigDecimal stockUnitPriceWithoutTax = new BigDecimal(stock.getStockUnitPriceWithoutTax());
-            int oldProductQuantity = originProduct.getQuantity();
-            int newProductQuantity = modifiedProduct.getQuantity();
-            int productQuantityChange = newProductQuantity - oldProductQuantity;
-            BigDecimal newProductUnitPriceWithoutTax = new BigDecimal(modifiedProduct.getUnitPriceWithoutTax());
+            stock.setStockQuantity(stock.getStockQuantity() + quantityChange);
 
-            warehouseStockMapper.increaseStockAndChangeStockUnitPrice(stock);
+            warehouseStockMapper.increaseStock(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

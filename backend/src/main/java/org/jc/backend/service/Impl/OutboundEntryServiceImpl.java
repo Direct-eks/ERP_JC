@@ -1,6 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
@@ -25,9 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.jc.backend.utils.MyUtils.myRoundingMode;
-import static org.jc.backend.utils.MyUtils.myScale;
-
 @Service
 public class OutboundEntryServiceImpl implements OutboundEntryService {
     private static final Logger logger = LoggerFactory.getLogger(OutboundEntryServiceImpl.class);
@@ -45,6 +43,91 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
+
+    /**
+     * Check if all presale products is produced later than the inbound entry date
+     * @param products products of inbound entry
+     * @param entryDate date of inbound entry
+     * @return true if all entryDate is earlier than all presale products
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate) {
+        try {
+            // date check
+            for (var product : products) {
+                int id = product.getWarehouseStockID();
+                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
+                for (var presale : presales) {
+                    // if entryDate is newer (larger) than selling date
+                    String entryID = presale.getOutboundEntryID();
+                    if (MyUtils.restoreDateFromString(entryID).compareTo(entryDate) > 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    /**
+     * do replenishment
+     * @param products inbound products as replenishment
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public void replenishPresaleProducts(List<InboundProductO> products) {
+        try {
+            for (var product : products) {
+                int inboundQuantity = product.getQuantity();
+                int id = product.getWarehouseStockID();
+                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
+                for (var presale : presales) {
+                    int stockQuantity = presale.getStockQuantity() + inboundQuantity;
+                    presale.setStockQuantity(stockQuantity);
+                    if (stockQuantity >= 0) {
+                        presale.setIsPresale(0);
+                    }
+                    outboundEntryMapper.updateReplenishment(presale);
+                }
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void modifyProductStockQuantity(String date, int warehouseStockID, int quantityChange) {
+        try {
+            List<OutboundProductO> affectedProducts =
+                    outboundEntryMapper.queryProductsAfterDateByWarehouseStockID(date, warehouseStockID);
+
+            for (var product : affectedProducts) {
+                int stockQuantity = product.getStockQuantity() + quantityChange;
+                product.setStockQuantity(stockQuantity);
+                if (stockQuantity < 0) {
+                    product.setIsPresale(1);
+                } else {
+                    product.setIsPresale(0);
+                }
+                outboundEntryMapper.updateReplenishment(product);
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
 
     @Transactional
     @Override
@@ -80,75 +163,6 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
-            throw e;
-        }
-    }
-
-    /**
-     *
-     * @param products
-     * @param entryDate
-     * @return
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate) {
-        try {
-            // date check
-            for (var product : products) {
-                int id = product.getWarehouseStockID();
-                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
-                for (var presale : presales) {
-                    // if entryDate is newer (larger) than selling date
-                    String entryID = presale.getOutboundEntryID();
-                    if (MyUtils.restoreDateFromString(entryID).compareTo(entryDate) > 0) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
-            throw e;
-        }
-    }
-
-    /**
-     * do replenishment
-     * @param products
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public void replenishPresaleProducts(List<InboundProductO> products) {
-        try {
-            for (var product : products) {
-                int inboundQuantity = product.getQuantity();
-                int id = product.getWarehouseStockID();
-                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
-                for (var presale : presales) {
-                    if (inboundQuantity == 0) break;
-
-                    int notReplenishedQuantity = presale.getNotReplenishedQuantity();
-                    if (inboundQuantity < notReplenishedQuantity) { // replenish as much as possible
-                        presale.setNotReplenishedQuantity(notReplenishedQuantity - inboundQuantity);
-                        presale.setStockQuantity(presale.getStockQuantity() + inboundQuantity);
-                        inboundQuantity = 0;
-                    }
-                    else { // replenish and set replenished status to true
-                        presale.setPresaleReplenished(1);
-                        presale.setNotReplenishedQuantity(0);
-                        presale.setStockQuantity(presale.getStockQuantity() + inboundQuantity);
-                        inboundQuantity -= presale.getNotReplenishedQuantity();
-                    }
-                    outboundEntryMapper.updateReplenishment(presale);
-                }
-            }
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
             throw e;
         }
     }
@@ -247,7 +261,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getOutboundProductID() == originProduct.getOutboundProductID()) {
-                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
                         if (bool3) {

@@ -191,59 +191,62 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     @Transactional
     @Override
     public void modifyEntry(InboundEntryWithProductsVO inboundEntryWithProductsVO) {
-        //extract entryDO
+        // extract entryDO
         InboundEntryDO currentEntry = new InboundEntryDO();
         BeanUtils.copyProperties(inboundEntryWithProductsVO, currentEntry);
 
-        //extract List<productO>
+        // extract List<productO>
         List<InboundProductO> currentProducts = inboundEntryWithProductsVO.getInboundProducts();
 
         try {
             String id = currentEntry.getInboundEntryID();
             logger.info("Serial to be changed: " + id);
 
-            //query database for compare
-            InboundEntryDO originEntry = inboundEntryMapper.selectEntryForCompare(id);
-            List<InboundProductO> originProducts = inboundEntryMapper.selectProductsForCompare(id);
+            // query database for compare
+            InboundEntryDO originalEntry = inboundEntryMapper.selectEntryForCompare(id);
+            List<InboundProductO> originalProducts = inboundEntryMapper.selectProductsForCompare(id);
 
-            //compare entry
+            // compare entry
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
-            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(
-                    record, currentEntry, originEntry);
-
-            if (bool1) {
+            boolean entryChanged = false;
+            boolean productsChanged = false;
+            // check if entry info changed
+            if (IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originalEntry)) {
+                entryChanged = true;
                 inboundEntryMapper.updateEntry(currentEntry);
             }
 
-            boolean bool2 = false;
-            for (var originProduct : originProducts) {
+            for (var originalProduct : originalProducts) {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
-                    if (currentProduct.getInboundProductID() == originProduct.getInboundProductID()) {
-                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
-                                record, currentProduct, originProduct);
-
-                        if (bool3) {
-                            bool2 = true;
+                    if (currentProduct.getInboundProductID() == originalProduct.getInboundProductID()) {
+                        if (IOModificationUtils.productCompareAndFormModificationRecord(
+                                record, currentProduct, originalProduct)) {
+                            productsChanged = true;
                             inboundEntryMapper.updateProduct(currentProduct);
-
-                            // calculate new unit stock price
-                            warehouseStockService.modifyStock(currentProduct, originProduct);
+                            // calculate new stock quantity
+                            int quantityChange = currentProduct.getQuantity() - originalProduct.getQuantity();
+                            warehouseStockService.modifyStock(originalProduct, quantityChange);
+                            // change stock quantity for outbound product entry after the date of this inbound entry
+                            String date = currentEntry.getEntryDate();
+                            int warehouseStockID = originalProduct.getWarehouseStockID();
+                            outboundEntryService.modifyProductStockQuantity(date, warehouseStockID, quantityChange);
                         }
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    inboundEntryMapper.deleteProductByID(originProduct.getInboundProductID());
-                    //todo deduct warehouse stock
+                    // todo optimize to adapt to delete
+                    logger.error("deleted product found");
+                    throw new RuntimeException();
                 }
             }
 
-            if (bool1 || bool2) {
+            if (entryChanged || productsChanged) {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getInboundEntryID(), record.toString()));
+                        originalEntry.getInboundEntryID(), record.toString()));
             }
             else {
                 logger.warn("nothing changed, begin rolling back");

@@ -57,6 +57,4 @@ public class OutboundProductO {
     private String invoiceSerial;
 
     private int isPresale;
-    private int presaleReplenished;
-    private int notReplenishedQuantity;
 }

@@ -191,7 +191,7 @@ public class IOModificationUtils {
      * @param originO the origin product queried from database for compare
      * @return true if any of the fields is changed, false if everything remains unchanged
      */
-    public static <T> boolean productsCompareAndFormModificationRecord(
+    public static <T> boolean productCompareAndFormModificationRecord(
             StringBuilder record,
             T modifiedO,
             T originO

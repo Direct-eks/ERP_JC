@@ -149,7 +149,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getQuotaProductID() == originProduct.getQuotaProductID()) {
-                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
                         if (bool3) {

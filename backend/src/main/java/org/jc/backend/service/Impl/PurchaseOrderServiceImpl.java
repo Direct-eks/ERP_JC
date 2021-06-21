@@ -191,7 +191,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
-                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
                         if (bool3) {

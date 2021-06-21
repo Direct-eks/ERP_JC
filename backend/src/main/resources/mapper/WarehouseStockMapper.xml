@@ -13,7 +13,6 @@
         <result property="stockUnitPriceWithoutTax" column="stock_unit_price_without_tax"/>
         <result property="remark" column="remark"/>
         <result property="storagePlaceID" column="storage_place_id"/>
-        <result property="totalPresales" column="total_presales"/>
     </resultMap>
 
 
@@ -45,11 +44,9 @@
     </select>
 
 
-    <update id="increaseStockAndChangeStockUnitPrice">
+    <update id="increaseStock">
         update w_warehouse_stock
-        set stock_quantity = #{quantity},
-            stock_unit_price_without_tax = #{stockUnitPriceWithoutTax},
-            total_presales = #{totalPresales}
+        set stock_quantity = #{quantity}
         where warehouse_stock_id = #{warehouseStockID}
     </update>
 

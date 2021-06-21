@@ -171,7 +171,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getSalesOrderProductID() == originProduct.getSalesOrderProductID()) {
-                        boolean bool3 = IOModificationUtils.productsCompareAndFormModificationRecord(
+                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
                         if (bool3) {
