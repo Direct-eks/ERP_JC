@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
@@ -37,6 +34,8 @@ public class CompanyO {
     private String fax;
 
     @NotNull(message = "classification null error")
+    @Pattern(regexp = "^(客户|供应商|其他应收|其他应付)$",
+            message = "客户类别输入错误")
     private String classification;
 
     @NotNull(message = "fullName null error")
