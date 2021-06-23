@@ -627,7 +627,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<OutboundProductO> queryAllOutboundProducts() {
+    public List<OutboundProductO> getAllOutboundProducts() {
         try {
             return outboundEntryMapper.queryAllOutboundProducts();
 
