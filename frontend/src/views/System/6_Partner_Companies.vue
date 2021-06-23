@@ -5,11 +5,28 @@
         <v-card-title>
             往来单位
             <v-spacer></v-spacer>
-            <div class="mr-3" style="width: 200px">
-                <v-text-field v-model="searchField"
-                              label="电话/简称"
+            <div class="mr-3" style="width: 160px">
+                <v-text-field v-model="filterField"
+                              label="电话/简称 筛选"
                               hide-details="auto"
                               clearable>
+                </v-text-field>
+            </div>
+            <v-spacer></v-spacer>
+            <div class="mr-3" style="width: 160px">
+                <v-text-field v-model="phoneSearchField"
+                              label="电话搜索"
+                              hide-details="auto"
+                              clearable
+                              @keydown.enter.native="searchCompanies">
+                </v-text-field>
+            </div>
+            <div class="mr-3" style="width: 160px">
+                <v-text-field v-model="nameSearchField"
+                              label="简称搜索"
+                              hide-details="auto"
+                              clearable
+                              @keydown.enter.native="searchCompanies">
                 </v-text-field>
             </div>
             <v-spacer></v-spacer>
@@ -21,8 +38,7 @@
         </v-card-title>
 
         <v-card-text class="d-flex">
-            <v-responsive height="65vh" max-width="15vw"
-                          style="overflow: auto">
+            <v-responsive height="75vh" max-width="230px" style="overflow: auto">
                 <v-treeview :items="treeData"
                             item-text="label"
                             item-key="areaID"
@@ -34,23 +50,103 @@
                             dense>
                 </v-treeview>
             </v-responsive>
-            <v-responsive max-width="60vw"
-                          style="overflow: auto">
+            <v-responsive max-width="60vw">
                 <v-data-table v-model="currentRow"
                               :headers="headers"
                               :items="tableData"
                               item-key="companyID"
-                              @click:row="handleTableClick"
-                              height="65vh"
-                              disable-sort
-                              disable-pagination
-                              :search="searchField"
-                              hide-default-footer
                               show-select
                               single-select
+                              checkbox-color="accent"
+                              @click:row="tableClick"
+                              @item-selected="tableClick2"
+                              height="75vh"
+                              disable-sort
+                              disable-pagination
+                              hide-default-footer
                               fixed-header
+                              :search="filterField"
                               locale="zh-cn"
                               dense>
+                    <template v-slot:item.phone="{ item }">
+                        <v-edit-dialog :return-value="item.phone">
+                            {{item.phone}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.phone" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.fax="{ item }">
+                        <v-edit-dialog :return-value="item.fax">
+                            {{item.fax}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.fax" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.remark="{ item }">
+                        <v-edit-dialog :return-value="item.remark">
+                            {{item.remark}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.remark" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.classification="{ item }">
+                        <v-select v-model="item.classification"
+                                  :items="classificationOptions"
+                                  hide-details="auto"
+                                  dense>
+                        </v-select>
+                    </template>
+                    <template v-slot:item.contactPerson="{ item }">
+                        <v-edit-dialog :return-value="item.contactPerson">
+                            {{item.contactPerson}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.contactPerson" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.contactNumber="{ item }">
+                        <v-edit-dialog :return-value="item.contactNumber">
+                            {{item.contactNumber}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.contactNumber" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.address="{ item }">
+                        <v-edit-dialog :return-value="item.address">
+                            {{item.address}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.address" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.zipcode="{ item }">
+                        <v-edit-dialog :return-value="item.zipcode">
+                            {{item.zipcode}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.zipcode" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.fullName="{ item }">
+                        <v-edit-dialog :return-value="item.fullName">
+                            {{item.fullName}}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.fullName" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
                 </v-data-table>
             </v-responsive>
         </v-card-text>
@@ -78,7 +174,13 @@ export default {
         return {
             mdiArrowLeft,
 
-            searchField: '',
+            classificationOptions: [
+                '客户', '供应商', '其他应收', '其他应付'
+            ],
+            filterField: '',
+            nameSearchField: '',
+            phoneSearchField: '',
+
             headers: [
                 { text: '单位简称', value: 'abbreviatedName', width: '120px' },
                 { text: '电话', value: 'phone', width: '120px' },
@@ -99,24 +201,36 @@ export default {
     },
     methods: {
         searchCompanies() {
+            this.currentRow = []
+            if (this.nameSearchField === '' && this.phoneSearchField === '') return
             this.$getRequest(this.$api.companyFuzzySearch, {
-                name: this.name,
-                phone: this.phone,
+                name: this.nameSearchField,
+                phone: this.phoneSearchField,
             }).then((data) => {
-                console.log('receive', data)
                 this.tableData = data
             }).catch(() => {})
         },
-        handleTableClick(val) {
-            this.currentRow = [val]
+        tableClick(val) {
+            if (this.currentRow.indexOf(val) !== -1) {
+                this.currentRow = []
+            }
+            else {
+                this.currentRow = [val]
+            }
         },
-        chooseHandle() {
-            if (this.currentRow.length !== 0) this.$emit('fullSearchChoose', this.currentRow[0])
+        tableClick2(row) {
+            if (!row.value) {
+                this.currentRow = []
+            }
+            else {
+                this.currentRow = [row.item]
+            }
         },
         treeSelect(data) {
+            this.currentRow = []
+            if (data.length === 0) return
             const val = data[0]
             if (val.children.length === 0) { // end node
-                // console.log(data)
                 const result = this.$store.getters.companies(val.areaID)
                 if (result) {
                     this.tableData = result
@@ -124,7 +238,6 @@ export default {
                 }
                 this.$getRequest(this.$api.companiesByAreaID
                     + encodeURI(val.areaID)).then((data) => {
-                    console.log('received', data)
                     this.tableData = data
                     this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
                 }).catch(() => {})
