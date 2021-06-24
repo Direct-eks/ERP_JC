@@ -85,7 +85,9 @@
         <v-main class="grey lighten-3">
 
             <v-container fluid>
-                <router-view></router-view>
+                <transition name="fade">
+                    <router-view></router-view>
+                </transition>
             </v-container>
 
             <SnackMessage></SnackMessage>

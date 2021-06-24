@@ -27,7 +27,9 @@
         </v-col>
 
         <v-col cols="12" md="11" lg="9" xl="8">
-            <router-view></router-view>
+            <transition name="fade">
+                <router-view></router-view>
+            </transition>
         </v-col>
     </v-row>
 </template>
