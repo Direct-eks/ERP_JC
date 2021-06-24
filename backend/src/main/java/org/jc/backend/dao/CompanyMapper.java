@@ -29,7 +29,6 @@ public interface CompanyMapper {
     void updateRelevantCompanyCategory(RelevantCompanyCategoryO categoryO);
 
     List<RelevantCompanyCategoryO> queryRelevantCompanyCategories();
-
     void insertRelevantCompany(RelevantCompanyO companyO);
     void updateRelevantCompany(RelevantCompanyO companyO);
 }

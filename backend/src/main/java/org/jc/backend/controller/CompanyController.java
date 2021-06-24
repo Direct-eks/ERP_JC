@@ -104,6 +104,16 @@ public class CompanyController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateRelevantCompanyCategories")
+    public void updateRelevantCompanyCategories(
+            @RequestBody @Validated ListUpdateVO<RelevantCompanyCategoryO> updateVO
+    ) {
+        logger.info("POST Request to /company/updateRelevantCompanyCategories, info: {}", updateVO);
+
+        companyService.updateRelevantCompanyCategories(updateVO);
+    }
+
+    @ApiOperation(value = "", response = void.class)
     @PostMapping("/updateRelevantCompanyWithCategory")
     public void updateRelevantCompanyWithCategory(
             @RequestParam("categoryID") int categoryID,

@@ -183,6 +183,38 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     @Override
+    public void updateRelevantCompanyCategories(ListUpdateVO<RelevantCompanyCategoryO> updateVO) {
+        try {
+            List<RelevantCompanyCategoryO> tempCategories = new ArrayList<>(updateVO.getElements());
+
+            tempCategories.removeIf(c -> c.getCategoryID() >= 0);
+            for (var category : tempCategories) {
+                companyMapper.insertRelevantCompanyCategory(category);
+            }
+
+            tempCategories = new ArrayList<>(updateVO.getElements());
+            tempCategories.removeIf(c -> c.getCategoryID() < 0);
+            for (var category : tempCategories) {
+                companyMapper.updateRelevantCompanyCategory(category);
+            }
+
+            // check for removed
+            List<RelevantCompanyCategoryO> oldCategories = companyMapper.queryRelevantCompanyCategories();
+            oldCategories.removeIf(oldC -> updateVO.getElements().stream()
+                    .anyMatch(c -> c.getCategoryID().equals(oldC.getCategoryID())));
+            for (var category : oldCategories) {
+                // todo remove
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
     public void updateRelevantCompanyWithCategory(int categoryID, ListUpdateVO<RelevantCompanyO> updateVO) {
         try {
             List<RelevantCompanyO> tempCompanies = new ArrayList<>(updateVO.getElements());

@@ -33,8 +33,8 @@ const api = {
 
     relevantCompanyCategories: '/company/getRelevantCompanyCategories', // GET
     relevantCompaniesByCategory: '/company/getRelevantCompaniesByCategory/', // GET {id}
-    updateRelevantCompanyCategory: '',
-    updateRelevantCompaniesWithCategoryID: '',
+    updateRelevantCompanyCategories: '/company/updateRelevantCompanyCategories', // POST
+    updateRelevantCompaniesWithCategoryID: '/company/updateRelevantCompanyWithCategory/', // POST {id}
 
     /* ------ /department ------*/
     departmentOptions: '/department/getDepartmentOptions', // GET

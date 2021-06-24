@@ -23,5 +23,6 @@ public interface CompanyService {
     List<RelevantCompanyCategoryO> getRelevantCompanyCategories();
     List<RelevantCompanyO> getRelevantCompaniesByCategory(int id);
 
+    void updateRelevantCompanyCategories(ListUpdateVO<RelevantCompanyCategoryO> updateVO);
     void updateRelevantCompanyWithCategory(int categoryID, ListUpdateVO<RelevantCompanyO> updateVO);
 }
