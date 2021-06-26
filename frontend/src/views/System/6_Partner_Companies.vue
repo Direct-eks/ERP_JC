@@ -38,117 +38,142 @@
         </v-card-title>
 
         <v-card-text class="d-flex">
-            <v-responsive height="75vh" max-width="230px" style="overflow: auto">
-                <v-treeview :items="treeData"
-                            item-text="label"
-                            item-key="areaID"
-                            activatable
-                            return-object
-                            @update:active="treeSelect"
-                            color="primary"
-                            open-on-click
-                            dense>
-                </v-treeview>
-            </v-responsive>
-            <v-responsive max-width="60vw">
-                <v-data-table v-model="currentRow"
-                              :headers="headers"
-                              :items="tableData"
-                              item-key="companyID"
-                              show-select
-                              single-select
-                              checkbox-color="accent"
-                              @click:row="tableClick"
-                              @item-selected="tableClick2"
-                              height="75vh"
-                              disable-sort
-                              disable-pagination
-                              hide-default-footer
-                              fixed-header
-                              :search="filterField"
-                              locale="zh-cn"
-                              dense>
-                    <template v-slot:item.phone="{ item }">
-                        <v-edit-dialog :return-value="item.phone">
-                            {{item.phone}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.phone" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.fax="{ item }">
-                        <v-edit-dialog :return-value="item.fax">
-                            {{item.fax}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.fax" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.remark="{ item }">
-                        <v-edit-dialog :return-value="item.remark">
-                            {{item.remark}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.remark" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.classification="{ item }">
-                        <v-select v-model="item.classification"
-                                  :items="classificationOptions"
-                                  hide-details="auto"
+            <v-card outlined>
+                <v-responsive height="75vh" max-width="230px" style="overflow: auto">
+                    <v-treeview :items="treeData"
+                                item-text="label"
+                                item-key="areaID"
+                                activatable
+                                return-object
+                                @update:active="treeSelect"
+                                color="primary"
+                                open-on-click
+                                dense>
+                    </v-treeview>
+                </v-responsive>
+            </v-card>
+            <v-card outlined>
+                <v-responsive max-width="60vw">
+                    <v-data-table v-model="currentRow"
+                                  :headers="headers"
+                                  :items="tableData"
+                                  item-key="companyID"
+                                  show-select
+                                  single-select
+                                  checkbox-color="accent"
+                                  @click:row="tableClick"
+                                  @item-selected="tableClick2"
+                                  height="65vh"
+                                  disable-sort
+                                  disable-pagination
+                                  hide-default-footer
+                                  fixed-header
+                                  :search="filterField"
+                                  locale="zh-cn"
                                   dense>
-                        </v-select>
-                    </template>
-                    <template v-slot:item.contactPerson="{ item }">
-                        <v-edit-dialog :return-value="item.contactPerson">
-                            {{item.contactPerson}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.contactPerson" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.contactNumber="{ item }">
-                        <v-edit-dialog :return-value="item.contactNumber">
-                            {{item.contactNumber}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.contactNumber" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.address="{ item }">
-                        <v-edit-dialog :return-value="item.address">
-                            {{item.address}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.address" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.zipcode="{ item }">
-                        <v-edit-dialog :return-value="item.zipcode">
-                            {{item.zipcode}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.zipcode" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.fullName="{ item }">
-                        <v-edit-dialog :return-value="item.fullName">
-                            {{item.fullName}}
-                            <template v-slot:input>
-                                <v-text-field v-model="item.fullName" single-line
-                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                </v-data-table>
-            </v-responsive>
+                        <template v-slot:item.phone="{ item }">
+                            <v-edit-dialog :return-value="item.phone">
+                                {{item.phone}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.phone" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.fax="{ item }">
+                            <v-edit-dialog :return-value="item.fax">
+                                {{item.fax}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.fax" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.remark="{ item }">
+                            <v-edit-dialog :return-value="item.remark">
+                                {{item.remark}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.remark" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.classification="{ item }">
+                            <v-select v-model="item.classification"
+                                      :items="classificationOptions"
+                                      hide-details="auto"
+                                      dense>
+                            </v-select>
+                        </template>
+                        <template v-slot:item.contactPerson="{ item }">
+                            <v-edit-dialog :return-value="item.contactPerson">
+                                {{item.contactPerson}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.contactPerson" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.contactNumber="{ item }">
+                            <v-edit-dialog :return-value="item.contactNumber">
+                                {{item.contactNumber}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.contactNumber" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.address="{ item }">
+                            <v-edit-dialog :return-value="item.address">
+                                {{item.address}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.address" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.zipcode="{ item }">
+                            <v-edit-dialog :return-value="item.zipcode">
+                                {{item.zipcode}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.zipcode" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:item.fullName="{ item }">
+                            <v-edit-dialog :return-value="item.fullName">
+                                {{item.fullName}}
+                                <template v-slot:input>
+                                    <v-text-field v-model="item.fullName" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                    </v-data-table>
+                </v-responsive>
+                <v-row class="mt-1">
+                    <v-col cols="auto">
+                        <v-btn color="primary" class="ml-3"
+                               @click="">
+                            新增
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn color="warning" class="ml-3"
+                               @click="">
+                            删除
+                        </v-btn>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="auto">
+                        <v-btn color="success" class="mr-3"
+                               @click="">
+                            保存修改
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-card>
         </v-card-text>
     </v-card>
 </template>
@@ -242,6 +267,15 @@ export default {
                     this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
                 }).catch(() => {})
             }
+        },
+        addNewItem() {
+
+        },
+        removeItem() {
+
+        },
+        saveChanges() {
+
         }
     }
 }

@@ -14,7 +14,8 @@
         <v-card-text class="d-flex">
             <v-card outlined>
                 <v-responsive>
-                    <v-treeview :items="treeData"
+                    <v-treeview v-model="treeSelection"
+                                :items="treeData"
                                 item-text="label"
                                 item-key="categoryID"
                                 activatable
@@ -25,9 +26,10 @@
                                 dense>
                     </v-treeview>
                 </v-responsive>
+                
             </v-card>
             <v-card outlined>
-                <v-responsive>
+                <v-responsive max-width="65vw">
                     <v-data-table v-model="currentRow"
                                   :headers="tableHeaders"
                                   :items="tableData"
@@ -45,6 +47,27 @@
                                   dense>
                     </v-data-table>
                 </v-responsive>
+                <v-row class="mt-1">
+                    <v-col cols="auto">
+                        <v-btn color="primary" class="ml-3"
+                               @click="">
+                            新增
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn color="warning" class="ml-3"
+                               @click="">
+                            删除
+                        </v-btn>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="auto">
+                        <v-btn color="success" class="mr-3"
+                               @click="">
+                            保存修改
+                        </v-btn>
+                    </v-col>
+                </v-row>
             </v-card>
         </v-card-text>
     </v-card>
@@ -80,13 +103,18 @@ export default {
             mdiArrowLeft,
 
             treeData: [],
+            treeSelection: [],
             tableHeaders: [
-                {text: '单位简称', value: 'abbreviatedName', width: '120px'},
-                {text: '电话', value: 'phone', width: '120px'},
-                {text: '联系人', value: 'contactPerson', width: '120px', filterable: false},
-                {text: '联系电话', value: 'contactNumber', width: '120px', filterable: false},
-                {text: '地址', value: 'address', width: '120px', filterable: false},
-                {text: '传真', value: 'fax', width: '120px', filterable: false}
+                { text: '单位简称', value: 'abbreviatedName', width: '120px' },
+                { text: '单位全称', value: 'fullName', width: '120px', filterable: false },
+                { text: '电话', value: 'phone', width: '120px' },
+                { text: '传真', value: 'fax', width: '120px', filterable: false },
+                { text: '重要提示', value: 'remark', width: '120px', filterable: false },
+                { text: '单位类别', value: 'classification', width: '120px', filterable: false },
+                { text: '联系人', value: 'contactPerson', width: '120px', filterable: false },
+                { text: '联系人电话', value: 'contactNumber', width: '120px', filterable: false },
+                { text: '地址', value: 'address', width: '120px', filterable: false },
+                { text: '邮政编码', value: 'zipcode', width: '120px', filterable: false },
             ],
             name: '',
             tableData: [],
@@ -95,7 +123,12 @@ export default {
     },
     methods: {
         tableClick(row) {
-            this.currentRow = [row]
+            if (this.currentRow.indexOf(row) !== -1) {
+                this.currentRow = []
+            }
+            else {
+                this.currentRow = [row]
+            }
         },
         tableClick2(row) {
             if (row.value) {
@@ -106,6 +139,8 @@ export default {
             }
         },
         treeSelect(data) {
+            this.currentRow = []
+            if (data.length === 0) return
             let val = data[0]
             if (val.children.length === 0) {
                 let result = this.$store.getters.relevantCompanies(val.categoryID)
@@ -115,12 +150,20 @@ export default {
                 }
                 this.$getRequest(this.$api.relevantCompaniesByCategory +
                     encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
                     this.tableData = data
                     this.$store.commit('modifyRelevantCompanies', {key: val.categoryID, value: data})
                 }).catch(() => {})
             }
         },
+        addNewItem() {
+
+        },
+        removeItem() {
+
+        },
+        saveChanges() {
+
+        }
     }
 }
 </script>
