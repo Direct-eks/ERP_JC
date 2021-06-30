@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class WarehouseStockStatO {
+public class ProductStatO {
     // identifier
     private boolean isInbound;
     // from e_entry

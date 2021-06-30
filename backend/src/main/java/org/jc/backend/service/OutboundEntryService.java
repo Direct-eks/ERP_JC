@@ -4,6 +4,7 @@ import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
@@ -49,5 +50,5 @@ public interface OutboundEntryService {
     List<OutboundProductO> getProductsByWarehouseID(int id);
 
     // for stock price calculation
-    List<OutboundProductO> getAllOutboundProducts();
+    List<ProductStatO> getAllOutboundProducts(int id);
 }

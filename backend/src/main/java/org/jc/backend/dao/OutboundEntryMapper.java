@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -63,5 +64,5 @@ public interface OutboundEntryMapper {
     List<OutboundProductO> queryProductsByWarehouseStockID(int id);
 
     // for stock price calculation
-    List<OutboundProductO> queryAllOutboundProducts();
+    List<ProductStatO> queryAllOutboundProductsByWarehouseStockID(int id);
 }

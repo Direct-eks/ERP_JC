@@ -4,6 +4,7 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
@@ -42,5 +43,5 @@ public interface InboundEntryService {
     List<InboundProductO> getProductsByWarehouseID(int id);
 
     // for stock price calculation
-    List<InboundProductO> getAllInboundProducts();
+    List<ProductStatO> getAllInboundProducts(int id);
 }

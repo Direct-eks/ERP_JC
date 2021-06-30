@@ -18,6 +18,4 @@ public interface WarehouseStockMapper {
     WarehouseStockO queryWarehouseStockByID(int warehouseStockID);
     void updateStockQuantity(WarehouseStockO warehouseStockO);
 
-    // for stock price calculation
-    List<WarehouseStockO> queryAllWarehouseStocks();
 }

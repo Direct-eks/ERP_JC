@@ -228,9 +228,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<WarehouseStockO> getAllWarehouseStocks() {
+    public WarehouseStockO getWarehouseStockByID(int warehouseStockID) {
         try {
-            return warehouseStockMapper.queryAllWarehouseStocks();
+            return warehouseStockMapper.queryWarehouseStockByID(warehouseStockID);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

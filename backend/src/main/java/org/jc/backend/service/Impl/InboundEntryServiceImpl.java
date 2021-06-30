@@ -9,6 +9,7 @@ import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
@@ -571,9 +572,13 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<InboundProductO> getAllInboundProducts() {
+    public List<ProductStatO> getAllInboundProducts(int id) {
         try {
-            return inboundEntryMapper.queryAllInboundProducts();
+            var list = inboundEntryMapper.queryAllInboundProductsByWarehouseStockID(id);
+            for (var p : list) {
+                p.setInbound(true);
+            }
+            return list;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

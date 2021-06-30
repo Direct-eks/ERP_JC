@@ -1,8 +1,7 @@
 package org.jc.backend.utils;
 
-import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.MiscellaneousDataService;
@@ -14,13 +13,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Indexed
 @Component
@@ -49,27 +45,15 @@ public class ScheduledTask {
         logger.info("calculateStockPrices task begin");
 
         // todo calculate prices
-        List<WarehouseStockO> warehouseStocks = warehouseStockService.getAllWarehouseStocks();
-        List<InboundProductO> inboundProducts = inboundEntryService.getAllInboundProducts();
-        List<OutboundProductO> outboundProducts = outboundEntryService.getAllOutboundProducts();
+        WarehouseStockO warehouseStock = warehouseStockService.getWarehouseStockByID(-1);
+        List<ProductStatO> inboundProducts = inboundEntryService.getAllInboundProducts(-1);
+        List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(-1);
 
-        var warehouseStockMap = warehouseStocks.parallelStream()
-                .collect(Collectors.toMap(WarehouseStockO::getWarehouseStockID, w -> w));
+        var inboundProductMap = inboundProducts.parallelStream()
+                .collect(Collectors.groupingByConcurrent(ProductStatO::getEntryDate));
 
-//        inboundProducts.parallelStream().map(p -> {
-//            EntryProductVO vo = new EntryProductVO();
-//            BeanUtils.copyProperties(p, vo);
-//            return vo;
-//        }).collect(Collectors.groupingByConcurrent(EntryProductVO::getWarehouseStockID))
-//        .forEach((k, listOfProducts) -> {
-//            listOfProducts.sort(Comparator.comparing(p -> p.get));
-//        });
-//
-//        outboundProducts.parallelStream().map(p -> {
-//            EntryProductVO vo = new EntryProductVO();
-//            BeanUtils.copyProperties(p, vo);
-//            return vo;
-//        }).collect(Collectors.groupingByConcurrent(EntryProductVO::getWarehouseStockID));
+        var outboundProductMap = outboundProducts.parallelStream()
+                .collect(Collectors.groupingByConcurrent(ProductStatO::getShipmentDate));
 
         miscellaneousDataService.updateLastWarehouseStockUpdateTime();
         logger.info("calculateStockPrices task end");

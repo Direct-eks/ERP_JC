@@ -1,7 +1,6 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
@@ -10,6 +9,7 @@ import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
@@ -627,9 +627,13 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<OutboundProductO> getAllOutboundProducts() {
+    public List<ProductStatO> getAllOutboundProducts(int id) {
         try {
-            return outboundEntryMapper.queryAllOutboundProducts();
+            var list = outboundEntryMapper.queryAllOutboundProductsByWarehouseStockID(id);
+            for (var p : list) {
+                p.setInbound(false);
+            }
+            return list;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

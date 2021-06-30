@@ -354,9 +354,26 @@
         order by outbound_product_id
     </select>
 
-    <select id="queryAllOutboundProducts" resultMap="productResultMap">
-        select *
-        from e_outbound_product
+    <resultMap id="productStatResultMap" type="org.jc.backend.entity.StatO.ProductStatO">
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="shipmentDate" column="shipment_date"/>
+        <result property="outboundProductID" column="outbound_product_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="stockUnitPrice" column="stock_unit_price"/>
+    </resultMap>
+
+    <select id="queryAllOutboundProductsByWarehouseStockID" resultMap="productStatResultMap">
+        select e.outbound_entry_id, e.shipment_date, p.outbound_product_id,
+               p.sku_id, p.quantity, p.stock_quantity, p.warehouse_stock_id,
+               p.warehouse_id, p.unit_price_without_tax, p.stock_unit_price
+        from e_outbound_entry as e join e_outbound_product as p
+                                       on e.outbound_entry_id = p.outbound_entry_id
+        where warehouse_stock_id = #{id}
         order by outbound_product_id
     </select>
 
