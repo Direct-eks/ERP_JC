@@ -35,18 +35,9 @@
         </v-card-title>
 
         <v-card-text class="d-flex">
-            <v-responsive height="65vh" max-width="230px" style="overflow: auto">
-                <v-treeview :items="treeData"
-                            item-text="label"
-                            item-key="areaID"
-                            activatable
-                            return-object
-                            @update:active="treeSelect"
-                            color="primary"
-                            open-on-click
-                            dense>
-                </v-treeview>
-            </v-responsive>
+            <CompanyTree height="65vh" max-width="230px"
+                         @treeSelectionResult="treeSelect">
+            </CompanyTree>
             <v-responsive max-width="60vw">
                 <v-data-table v-model="currentRow"
                               :headers="headers"
@@ -76,16 +67,8 @@ import { mdiClose } from '@mdi/js'
 
 export default {
     name: "CompanySearch",
-    beforeMount() {
-        const result = this.$store.getters.companyCategoryList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.companyAreas).then((data) => {
-            this.treeData = this.$createTree(data, false)
-            this.$store.commit('modifyCompanyList', this.treeData)
-        }).catch(() => {})
+    components: {
+        CompanyTree: () => import("~/components/CompanyTree")
     },
     data() {
         return {
@@ -93,8 +76,6 @@ export default {
 
             phone: '',
             name: '',
-
-            treeData: [],
 
             headers: [
                 { text: '单位简称', value: 'abbreviatedName', width: '200px' },
@@ -115,6 +96,10 @@ export default {
     methods: {
         close() {
             this.$emit('fullSearchChoose')
+        },
+        treeSelect(data) {
+            this.currentRow = []
+            this.tableData = data
         },
         searchCompanies() {
             if (this.phone === '' && this.name === '') return
@@ -150,22 +135,6 @@ export default {
             }
             this.$emit('fullSearchChoose', this.currentRow[0])
         },
-        treeSelect(data) {
-            if (data.length === 0) return
-            const val = data[0]
-            if (val.children.length === 0) { // end node
-                const result = this.$store.getters.companies(val.areaID)
-                if (result) {
-                    this.tableData = result
-                    return
-                }
-                this.$getRequest(this.$api.companiesByAreaID
-                        + encodeURI(val.areaID)).then((data) => {
-                    this.tableData = data
-                    this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
-                }).catch(() => {})
-            }
-        }
     }
 }
 </script>

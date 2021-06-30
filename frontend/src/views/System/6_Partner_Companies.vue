@@ -39,18 +39,9 @@
 
         <v-card-text class="d-flex">
             <v-card outlined>
-                <v-responsive height="75vh" max-width="230px" style="overflow: auto">
-                    <v-treeview :items="treeData"
-                                item-text="label"
-                                item-key="areaID"
-                                activatable
-                                return-object
-                                @update:active="treeSelect"
-                                color="primary"
-                                open-on-click
-                                dense>
-                    </v-treeview>
-                </v-responsive>
+                <CompanyTree height="75vh" max-width="230px"
+                             @treeSelectionResult="treeSelectionResult">
+                </CompanyTree>
             </v-card>
             <v-card outlined>
                 <v-responsive max-width="60vw">
@@ -183,17 +174,8 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "PartnerCompanies",
-    beforeMount() {
-        const result = this.$store.getters.companyCategoryList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.companyAreas).then((data) => {
-            console.log('received', data)
-            this.treeData = this.$createTree(data, false)
-            this.$store.commit('modifyCompanyList', this.treeData)
-        }).catch(() => {})
+    components: {
+        CompanyTree: () => import('~/components/CompanyTree')
     },
     data() {
         return {
@@ -219,9 +201,7 @@ export default {
                 { text: '单位全称', value: 'fullName', width: '120px', filterable: false },
             ],
             tableData: [],
-            currentRow: [],
-
-            treeData: []
+            currentRow: []
         }
     },
     methods: {
@@ -251,22 +231,9 @@ export default {
                 this.currentRow = [row.item]
             }
         },
-        treeSelect(data) {
+        treeSelectionResult(data) {
             this.currentRow = []
-            if (data.length === 0) return
-            const val = data[0]
-            if (val.children.length === 0) { // end node
-                const result = this.$store.getters.companies(val.areaID)
-                if (result) {
-                    this.tableData = result
-                    return
-                }
-                this.$getRequest(this.$api.companiesByAreaID
-                    + encodeURI(val.areaID)).then((data) => {
-                    this.tableData = data
-                    this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
-                }).catch(() => {})
-            }
+            this.tableData = data
         },
         addNewItem() {
 
