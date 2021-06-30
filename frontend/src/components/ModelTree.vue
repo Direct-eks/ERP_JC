@@ -1,0 +1,108 @@
+<template>
+    <v-responsive :height="height"
+                  :max-width="maxWidth"
+                  style="overflow: auto">
+        <v-treeview v-model="treeSelection"
+                    :items="treeData"
+                    item-text="label"
+                    item-key="categoryID"
+                    activatable
+                    :open-on-click="!showSelect"
+                    :selectable="showSelect"
+                    return-object
+                    @update:active="treeSelect"
+                    @update:open="treeSelect"
+                    @input="treeSelect"
+                    selection-type="independent"
+                    color="primary"
+                    dense>
+        </v-treeview>
+    </v-responsive>
+</template>
+
+<script>
+export default {
+    name: "ModelTree",
+    props: {
+        showSelect: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        selectForSearch: {
+            type: Boolean,
+            required: false,
+            default: true
+        },
+        height: {
+            type: String,
+            required: true,
+            default: '65vh'
+        },
+        maxWidth: {
+            type: String,
+            required: true,
+            default: '230px'
+        },
+    },
+    beforeMount() {
+        let result = this.$store.getters.productList
+        if (result) {
+            this.treeData = result
+            return
+        }
+        this.$getRequest(this.$api.modelCategories).then((data) => {
+            this.treeData = this.$createTree(data, true)
+            this.$store.commit('modifyModelList', this.treeData)
+        }).catch(() => {})
+    },
+    data() {
+        return {
+            treeData: [],
+            treeSelection: [],
+        }
+    },
+    methods: {
+        treeSelect(data) {
+            if (data.length === 0) { // de-select
+                this.treeSelection = []
+                if (!this.selectForSearch) {
+                    this.$emit('treeSelectionObject', {label: '', categoryID: -1, children: []})
+                }
+                else {
+                    this.$emit('treeSelectionResult', [])
+                }
+                return
+            }
+
+            let val = data[data.length - 1] // choose newest active item
+            this.treeSelection = [val]
+
+            if (!this.selectForSearch) {
+                this.$emit('treeSelectionObject', val)
+                return
+            }
+
+            if (val.children.length === 0) { // end node
+                let result = this.$store.getters.models(val.categoryID)
+                if (result) {
+                    this.sendResult(result)
+                    return
+                }
+                this.$getRequest(this.$api.modelsByCategory +
+                    encodeURI(val.categoryID)).then((data) => {
+                    this.sendResult(data)
+                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
+                }).catch(() => {})
+            }
+        },
+        sendResult(data) {
+            this.$emit('treeSelectionResult', data)
+        }
+    }
+}
+</script>
+
+<style scoped>
+
+</style>
