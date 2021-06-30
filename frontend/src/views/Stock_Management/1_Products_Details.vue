@@ -57,20 +57,9 @@
             <v-row class="d-flex">
 
                 <v-card outlined>
-                    <v-responsive height="65vh" max-width="230px"
-                                  style="overflow: auto">
-                        <v-treeview :items="treeData"
-                                    item-text="label"
-                                    item-key="categoryID"
-                                    activatable
-                                    return-object
-                                    @update:active="treeSelect"
-                                    color="primary"
-                                    open-on-click
-                                    hoverable
-                                    dense>
-                        </v-treeview>
-                    </v-responsive>
+                    <ModelTree height="65vh" max-width="230px"
+                               @treeSelectionResult="treeSelect">
+                    </ModelTree>
                 </v-card>
 
                 <v-card outlined>
@@ -173,6 +162,9 @@ import { mdiArrowLeft } from '@mdi/js'
 
 export default {
     name: "Detail_Stats",
+    components: {
+        ModelTree: () => import('~/components/ModelTree'),
+    },
     data() {
         return {
             mdiArrowLeftPath: mdiArrowLeft,
@@ -180,8 +172,6 @@ export default {
             modelCode: '',
             modelSearchName: '',
             modelSearchMethod: 'prefix',
-
-            treeData: [],
 
             modelTableHeaders: [
                 {text: '代号', value: 'code', width: '180px'},
@@ -222,18 +212,6 @@ export default {
             detailTableData: [],
         }
     },
-    beforeMount() {
-        let result = this.$store.getters.productList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            console.log('received', data)
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
-        }).catch(() => {})
-    },
     methods: {
         modelSearch() {
             this.$getRequest(this.$api.modelsByName, {
@@ -245,29 +223,12 @@ export default {
             }).catch(() => {})
         },
         treeSelect(data) {
-            this.modelTableData = []
+            this.modelTableData = data
             this.modelTableCurrentRow = [] //reset model table
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
-            if (data.length === 0) return
-
-            let val = data[0]
-            if (val.children.length === 0) { // end node
-                console.log(val.categoryID)
-                let result = this.$store.getters.models(val.categoryID)
-                if (result) {
-                    this.modelTableData = result
-                    return
-                }
-                this.$getRequest(this.$api.modelsByCategory +
-                    encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
-                    this.modelTableData = data
-                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
-                }).catch(() => {})
-            }
         },
         modelTableChoose(val) {
             this.modelTableCurrentRow = [val]

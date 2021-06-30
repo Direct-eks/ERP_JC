@@ -33,25 +33,15 @@
                 选择
             </v-btn>
             <v-btn icon @click="close">
-                <v-icon>{{mdiClosePath}}</v-icon>
+                <v-icon>{{ mdiClose }}</v-icon>
             </v-btn>
         </v-card-title>
         <v-card-text>
             <div class="d-flex">
                 <v-card outlined>
-                    <v-responsive height="65vh"
-                                  style="overflow: auto">
-                        <v-treeview :items="treeData"
-                                    item-text="label"
-                                    item-key="categoryID"
-                                    activatable
-                                    return-object
-                                    @update:active="treeSelect"
-                                    color="primary"
-                                    open-on-click
-                                    dense>
-                        </v-treeview>
-                    </v-responsive>
+                    <ModelTree height="65vh" max-width=""
+                               @treeSelectionResult="treeSelect">
+                    </ModelTree>
                 </v-card>
                 <v-card outlined>
                     <v-data-table v-model="modelTableCurrentRow"
@@ -107,30 +97,19 @@ import {mdiClose} from "@mdi/js";
 
 export default {
     name: "SkuSearch",
-    beforeMount() {
-        let result = this.$store.getters.productList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            console.log('received', data)
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
-        }).catch(() => {})
+    components: {
+        ModelTree: () => import('~/components/ModelTree'),
     },
     props: {
         supplierID: { type: Number, required: true, default: -1 }
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             modelCode: '',
             modelSearchName: '',
             modelSearchMethod: 'prefix',
-
-            treeData: [],
 
             modelTableHeaders: [
                 {text: '代号', value: 'code', width: '180px'},
@@ -150,35 +129,19 @@ export default {
             this.$emit('skuSearchChoose')
         },
         modelSearch() {
+            if (this.modelSearchName === '') return
             this.$getRequest(this.$api.modelsByName, {
                 name: this.modelSearchName,
                 method: this.modelSearchMethod
             }).then((data) => {
-                console.log('received', data)
                 this.modelTableData = data
             }).catch(() => {})
         },
         treeSelect(data) {
-            this.modelTableData = []
+            this.modelTableData = data
             this.modelTableCurrentRow = [] //reset model table
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
-
-            if (data.length === 0) return
-
-            let val = data[0]
-            if (val.children.length === 0) { // end node
-                let result = this.$store.getters.models(val.categoryID)
-                if (result) {
-                    this.modelTableData = result
-                    return
-                }
-                this.$getRequest(this.$api.modelsByCategory +
-                    encodeURI(val.categoryID)).then((data) => {
-                    this.modelTableData = data
-                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
-                }).catch(() => {})
-            }
         },
         modelTableChoose(val) {
             this.modelTableCurrentRow = [val]

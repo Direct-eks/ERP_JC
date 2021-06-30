@@ -4,7 +4,7 @@
     <v-card>
         <v-card-title>
             商品定价
-            <v-text-field v-model="treeSelectedLevel"
+            <v-text-field v-model="treeSelection.label"
                           label="已选分类"
                           hide-details="auto"
                           outlined
@@ -48,24 +48,11 @@
 
         <div class="d-flex" v-if="!isHiding">
             <v-card outlined>
-                <v-responsive height="30vh"
-                              style="overflow: auto">
-                    <v-treeview v-model="treeSelection"
-                                :items="treeData"
-                                item-text="label"
-                                item-key="categoryID"
-                                return-object
-                                selectable
-                                activatable
-                                @input="treeSelect"
-                                @update:open="treeSelect"
-                                @update:active="treeSelect"
-                                selection-type="independent"
-                                color="primary"
-                                open-on-click
-                                dense>
-                    </v-treeview>
-                </v-responsive>
+                <ModelTree height="65vh" max-width=""
+                           :show-select="true"
+                           :select-for-search="false"
+                           @treeSelectionObject="treeSelect">
+                </ModelTree>
             </v-card>
             <v-card outlined>
                 <v-responsive height="30vh" width="20vw"
@@ -242,23 +229,13 @@ import { mdiArrowLeft } from '@mdi/js'
 export default {
     name: "Product_Pricing",
     components: {
+        ModelTree: () => import('~/components/ModelTree'),
         SupplierResourceQuery: () => import("~/components/SupplierResourceQuery")
     },
     beforeMount() {
         this.$getRequest(this.$api.allFactoryBrands).then((data) => {
             console.log('received', data)
             this.factoryBrandTableData = data
-        }).catch(() => {})
-
-        let result = this.$store.getters.productList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            console.log('received', data)
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
         }).catch(() => {})
     },
     data() {
@@ -267,9 +244,7 @@ export default {
             supplierDialog: false,
             isQuerying: false,
 
-            treeData: [],
-            treeSelection: [],
-            treeSelectedLevel: '',
+            treeSelection: {label: '', categoryID: -1, children: []},
 
             factoryBrandTableHeaders: [
                 { text: '厂牌代号', value: 'code', width: '80px' },
@@ -333,10 +308,7 @@ export default {
             }).catch(() => {})
         },
         treeSelect(data) {
-            if (data.length === 0) return
-            let val = data[data.length - 1]
-            this.treeSelection = [val]
-            this.treeSelectedLevel = val.label
+            this.treeSelection = data
         },
         factoryBrandSelect(data) {
             this.factoryBrandCurrentRow = [data]
@@ -344,7 +316,6 @@ export default {
         },
         clearSearchFields() {
             this.treeSelection = []
-            this.treeSelectedLevel = ''
             this.factoryBrandCurrentRow = []
             this.factoryBrandSelected = ''
             this.supplierTableData = []
@@ -354,7 +325,7 @@ export default {
             this.modifiedTableData = []
         },
         searchSku() {
-            if (this.treeSelection.length === 0) return
+            if (this.treeSelection.label === '') return
             this.isQuerying = true
             this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
                 modelCategoryID: this.treeSelection[0].categoryID,
