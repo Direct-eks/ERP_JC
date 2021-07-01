@@ -44,17 +44,6 @@ public class ScheduledTask {
     public void calculateStockPrices() {
         logger.info("calculateStockPrices task begin");
 
-        // todo calculate prices
-        WarehouseStockO warehouseStock = warehouseStockService.getWarehouseStockByID(-1);
-        List<ProductStatO> inboundProducts = inboundEntryService.getAllInboundProducts(-1);
-        List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(-1);
-
-        var inboundProductMap = inboundProducts.parallelStream()
-                .collect(Collectors.groupingByConcurrent(ProductStatO::getEntryDate));
-
-        var outboundProductMap = outboundProducts.parallelStream()
-                .collect(Collectors.groupingByConcurrent(ProductStatO::getShipmentDate));
-
         miscellaneousDataService.updateLastWarehouseStockUpdateTime();
         logger.info("calculateStockPrices task end");
     }

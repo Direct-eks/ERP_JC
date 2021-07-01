@@ -5,6 +5,7 @@ import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.OutboundEntryService;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class WarehouseStockServiceImpl implements WarehouseStockService {
@@ -113,13 +116,24 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     @Override
     public void increaseStock(InboundProductO product) {
         try {
-            int warehouseID = product.getWarehouseID();
-            int skuID = product.getSkuID();
-            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
+            int stockID = product.getWarehouseStockID();
+            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByID(stockID);
 
-            int stockQuantity = stock.getStockQuantity();
-            int entryQuantity = product.getQuantity();
-            stock.setStockQuantity(stockQuantity + entryQuantity);
+            List<ProductStatO> inboundProducts = inboundEntryService.getAllInboundProducts(stockID);
+            List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(stockID);
+
+            var inboundProductMap = inboundProducts.parallelStream()
+                    .collect(Collectors.groupingBy(ProductStatO::getEntryDate, TreeMap::new, Collectors.toList()));
+
+            int stockQuantity;
+            for (var products : inboundProductMap.values()) {
+                for (var product : products) {
+
+                }
+            }
+
+            var outboundProductMap = outboundProducts.parallelStream()
+                    .collect(Collectors.groupingByConcurrent(ProductStatO::getShipmentDate));
 
             warehouseStockMapper.updateStockQuantity(stock);
 
@@ -197,6 +211,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<EntryProductVO> getProductsByWarehouseStockID(int id) {
         try {
             List<InboundProductO> inboundProducts = inboundEntryService.getProductsByWarehouseID(id);
@@ -226,16 +241,4 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public WarehouseStockO getWarehouseStockByID(int warehouseStockID) {
-        try {
-            return warehouseStockMapper.queryWarehouseStockByID(warehouseStockID);
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
-            throw e;
-        }
-    }
 }

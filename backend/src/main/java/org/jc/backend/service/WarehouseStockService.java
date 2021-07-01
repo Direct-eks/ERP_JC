@@ -22,6 +22,4 @@ public interface WarehouseStockService {
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
 
-    // for stock price calculation
-    WarehouseStockO getWarehouseStockByID(int warehouseStockID);
 }
