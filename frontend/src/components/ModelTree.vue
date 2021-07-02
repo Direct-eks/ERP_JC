@@ -34,6 +34,11 @@ export default {
             required: false,
             default: true
         },
+        selectForLevel: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
         height: {
             type: String,
             required: true,
@@ -66,10 +71,10 @@ export default {
         treeSelect(data) {
             if (data.length === 0) { // de-select
                 this.treeSelection = []
-                if (!this.selectForSearch) {
+                if (this.selectForLevel) {
                     this.$emit('treeSelectionObject', {label: '', categoryID: -1, children: []})
                 }
-                else {
+                if (this.selectForSearch) {
                     this.$emit('treeSelectionResult', [])
                 }
                 return
@@ -78,10 +83,11 @@ export default {
             let val = data[data.length - 1] // choose newest active item
             this.treeSelection = [val]
 
-            if (!this.selectForSearch) {
+            if (this.selectForLevel) {
                 this.$emit('treeSelectionObject', val)
-                return
             }
+
+            if (!this.selectForSearch) return
 
             if (val.children.length === 0) { // end node
                 let result = this.$store.getters.models(val.categoryID)
