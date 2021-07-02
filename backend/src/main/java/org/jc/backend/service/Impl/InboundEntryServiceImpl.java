@@ -102,7 +102,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 }
 
                 // calculate stock unit price for product, and fill in stock quantity & unit price
-                warehouseStockService.increaseStock(product);
+                warehouseStockService.increaseStock(product, newEntry.getEntryDate());
 
                 // insert
                 inboundEntryMapper.insertNewProduct(product);
@@ -583,6 +583,19 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateInboundProduct(ProductStatO productO) {
+        try {
+
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
             throw e;
         }
     }

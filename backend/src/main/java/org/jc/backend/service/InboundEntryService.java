@@ -44,4 +44,5 @@ public interface InboundEntryService {
 
     // for stock price calculation
     List<ProductStatO> getAllInboundProducts(int id);
+    void updateInboundProduct(ProductStatO productO);
 }

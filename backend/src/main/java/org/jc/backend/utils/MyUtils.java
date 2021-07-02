@@ -59,6 +59,10 @@ public class MyUtils {
         return newSerial;
     }
 
+    public static String todayDateString() {
+        return dateFormat.format(new Date());
+    }
+
     /**
      * // 销出20210809-001 -> 20210809 -> 2021-08-09
      * @param base string such as 销出20210809-001

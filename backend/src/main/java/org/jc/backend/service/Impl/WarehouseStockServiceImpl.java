@@ -10,6 +10,7 @@ import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,11 +18,15 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import static org.jc.backend.utils.MyUtils.myScale;
+import static org.jc.backend.utils.MyUtils.myRoundingMode;
 
 @Service
 public class WarehouseStockServiceImpl implements WarehouseStockService {
@@ -114,10 +119,13 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
      */
     @Transactional
     @Override
-    public void increaseStock(InboundProductO product) {
+    public void increaseStock(InboundProductO product, String date) {
         try {
             int stockID = product.getWarehouseStockID();
             WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByID(stockID);
+            stock.setStockQuantity(stock.getStockQuantity() + product.getQuantity());
+            warehouseStockMapper.updateStockQuantity(stock);
+
 
             List<ProductStatO> inboundProducts = inboundEntryService.getAllInboundProducts(stockID);
             List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(stockID);
@@ -125,17 +133,43 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             var inboundProductMap = inboundProducts.parallelStream()
                     .collect(Collectors.groupingBy(ProductStatO::getEntryDate, TreeMap::new, Collectors.toList()));
 
-            int stockQuantity;
-            for (var products : inboundProductMap.values()) {
-                for (var product : products) {
+            var entry = inboundProductMap.floorEntry(date);
+            if (entry == null) {
+                return;
+            }
+
+            // get last inbound record
+            ProductStatO lastEntry = entry.getValue().get(entry.getValue().size() - 1);
+            int prevStockQuantity = lastEntry.getStockQuantity();
+            int currStockQuantity = prevStockQuantity + lastEntry.getQuantity();
+            BigDecimal prevStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
+            BigDecimal productUnitPrice = new BigDecimal(lastEntry.getUnitPriceWithoutTax());
+            BigDecimal currStockPrice = prevStockPrice.multiply(BigDecimal.valueOf(prevStockQuantity))
+                    .add(productUnitPrice.multiply(BigDecimal.valueOf(lastEntry.getQuantity())))
+                    .divide(BigDecimal.valueOf(currStockQuantity), myScale, myRoundingMode);
+            product.setStockQuantity(currStockQuantity);
+            product.setStockUnitPrice(currStockPrice.toPlainString());
+
+            lastEntry = new ProductStatO();
+            BeanUtils.copyProperties(product, lastEntry);
+            // change all following records if curr record is not the last one
+            for (var e : inboundProductMap.subMap(date, false,
+                    MyUtils.todayDateString(), true).entrySet()) {
+                for (var p : e.getValue()) {
 
                 }
             }
 
             var outboundProductMap = outboundProducts.parallelStream()
-                    .collect(Collectors.groupingByConcurrent(ProductStatO::getShipmentDate));
+                    .collect(Collectors.groupingBy(ProductStatO::getShipmentDate, TreeMap::new, Collectors.toList()));
 
-            warehouseStockMapper.updateStockQuantity(stock);
+            for (var e : outboundProductMap.subMap(date, true,
+                    MyUtils.todayDateString(), true).entrySet()) {
+                for (var p : e.getValue()) {
+
+                }
+            }
+
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
