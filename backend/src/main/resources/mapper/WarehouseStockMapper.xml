@@ -13,12 +13,15 @@
         <result property="stockUnitPriceWithoutTax" column="stock_unit_price_without_tax"/>
         <result property="remark" column="remark"/>
         <result property="storagePlaceID" column="storage_place_id"/>
+        <result property="initialStockQuantity" column="initial_stock_quantity"/>
+        <result property="initialStockUnitPrice" column="initial_stock_unit_price"/>
     </resultMap>
 
 
     <select id="queryWarehouseStocksBySku" resultMap="WarehouseStockResultMap">
         select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouseName, stock_quantity,
-               stock_unit_price_without_tax, remark, storage_place_id
+               stock_unit_price_without_tax, remark, storage_place_id,
+               initial_stock_quantity, initial_stock_unit_price
         from w_warehouse_stock as ws join w_warehouse as w on ws.warehouse_id = w.warehouse_id
         where ws.sku_id = #{id}
     </select>
@@ -31,14 +34,16 @@
 
     <select id="queryWarehouseStockByWarehouseAndSku" resultMap="WarehouseStockResultMap">
         select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouseName, stock_quantity,
-               stock_unit_price_without_tax, remark, storage_place_id
+               stock_unit_price_without_tax, remark, storage_place_id,
+               initial_stock_quantity, initial_stock_unit_price
         from w_warehouse_stock as ws join w_warehouse as w on ws.warehouse_id = w.warehouse_id
         where ws.sku_id = #{sku} and ws.warehouse_id = #{warehouse}
     </select>
 
     <select id="queryWarehouseStockByID" resultMap="WarehouseStockResultMap">
         select warehouse_stock_id, sku_id, warehouse_id, stock_quantity,
-               stock_unit_price_without_tax, remark, storage_place_id
+               stock_unit_price_without_tax, remark, storage_place_id,
+               initial_stock_quantity, initial_stock_unit_price
         from w_warehouse_stock
         where warehouse_stock_id = #{warehouseStockID}
     </select>

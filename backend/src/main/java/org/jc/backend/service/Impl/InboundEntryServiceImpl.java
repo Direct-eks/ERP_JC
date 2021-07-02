@@ -109,8 +109,6 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 int id = product.getInboundProductID();
                 logger.info("Insert new inbound product id: {}", id);
             }
-            // change corresponding outbound entry products if presale exists
-            outboundEntryService.replenishPresaleProducts(newProducts);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -231,7 +229,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                             // change stock quantity for outbound product entry after the date of this inbound entry
                             String date = currentEntry.getEntryDate();
                             int warehouseStockID = originalProduct.getWarehouseStockID();
-                            outboundEntryService.modifyProductStockQuantity(date, warehouseStockID, quantityChange);
+                            // todo
                         }
                         found = true;
                         break;
@@ -591,7 +589,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     @Override
     public void updateInboundProduct(ProductStatO productO) {
         try {
-
+            inboundEntryMapper.updateProductStockInfo(productO);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

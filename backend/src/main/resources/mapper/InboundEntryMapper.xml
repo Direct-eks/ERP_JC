@@ -357,7 +357,13 @@
         from e_inbound_entry as e join e_inbound_product as p
             on e.inbound_entry_id = p.inbound_entry_id
         where warehouse_stock_id = #{id}
-        order by inbound_product_id
     </select>
+
+    <update id="updateProductStockInfo">
+        update e_inbound_product
+        set stock_quantity = #{stockQuantity},
+            stock_unit_price = #{stockUnitPrice}
+        where inbound_product_id = #{inboundProductID}
+    </update>
 
 </mapper>

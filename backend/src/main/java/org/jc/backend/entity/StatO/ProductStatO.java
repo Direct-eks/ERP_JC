@@ -25,4 +25,6 @@ public class ProductStatO {
     private int warehouseID;
     private String unitPriceWithoutTax;
     private String stockUnitPrice;
+    // from outbound_product
+    private int isPresale;
 }

@@ -29,11 +29,13 @@
             keyColumn="outbound_product_id">
         insert into e_outbound_product (
             outbound_entry_id, sku_id, quantity, stock_quantity, remark, warehouse_stock_id,
-            warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price
+            warehouse_id, tax_rate, unit_price_without_tax, unit_price_with_tax, stock_unit_price,
+            is_presale
         )
         values (
             #{outboundEntryID}, #{skuID}, #{quantity}, #{stockQuantity}, #{remark}, #{warehouseStockID},
-            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice}
+            #{warehouseID}, #{taxRate}, #{unitPriceWithoutTax}, #{unitPriceWithTax}, #{stockUnitPrice},
+            #{isPresale}
         )
     </insert>
 
@@ -365,16 +367,25 @@
         <result property="warehouseID" column="warehouse_id"/>
         <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
         <result property="stockUnitPrice" column="stock_unit_price"/>
+        <result property="isPresale" column="is_presale"/>
     </resultMap>
 
     <select id="queryAllOutboundProductsByWarehouseStockID" resultMap="productStatResultMap">
         select e.outbound_entry_id, e.shipment_date, p.outbound_product_id,
                p.sku_id, p.quantity, p.stock_quantity, p.warehouse_stock_id,
-               p.warehouse_id, p.unit_price_without_tax, p.stock_unit_price
+               p.warehouse_id, p.unit_price_without_tax, p.stock_unit_price,
+               p.is_presale
         from e_outbound_entry as e join e_outbound_product as p
                                        on e.outbound_entry_id = p.outbound_entry_id
         where warehouse_stock_id = #{id}
-        order by outbound_product_id
     </select>
+
+    <update id="updateProductStockInfo">
+        update e_outbound_product
+        set stock_quantity = #{stockQuantity},
+            stock_unit_price = #{stockUnitPrice},
+            is_presale = #{isPresale}
+        where outbound_product_id = #{outboundProductID}
+    </update>
 
 </mapper>

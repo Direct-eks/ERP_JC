@@ -75,60 +75,6 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         }
     }
 
-    /**
-     * do replenishment
-     * @param products inbound products as replenishment
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public void replenishPresaleProducts(List<InboundProductO> products) {
-        try {
-            for (var product : products) {
-                int inboundQuantity = product.getQuantity();
-                int id = product.getWarehouseStockID();
-                List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
-                for (var presale : presales) {
-                    int stockQuantity = presale.getStockQuantity() + inboundQuantity;
-                    presale.setStockQuantity(stockQuantity);
-                    if (stockQuantity - presale.getQuantity() >= 0) { // check if fully replenished
-                        presale.setIsPresale(0);
-                    }
-                    outboundEntryMapper.updateReplenishment(presale);
-                }
-            }
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
-            throw e;
-        }
-    }
-
-    @Transactional
-    @Override
-    public void modifyProductStockQuantity(String date, int warehouseStockID, int quantityChange) {
-        try {
-            List<OutboundProductO> affectedProducts =
-                    outboundEntryMapper.queryProductsAfterDateByWarehouseStockID(date, warehouseStockID);
-
-            for (var product : affectedProducts) {
-                int stockQuantity = product.getStockQuantity() + quantityChange;
-                product.setStockQuantity(stockQuantity);
-                if (stockQuantity - product.getQuantity() < 0) { // check if cause presale
-                    product.setIsPresale(1);
-                } else {
-                    product.setIsPresale(0);
-                }
-                outboundEntryMapper.updateReplenishment(product);
-            }
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("update failed");
-            throw e;
-        }
-    }
-
     @Transactional
     @Override
     public void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) {
@@ -638,6 +584,26 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateOutboundProduct(ProductStatO product) {
+        try {
+            // check if still presale
+            if (product.getStockQuantity() - product.getQuantity() < 0) {
+                product.setIsPresale(1);
+            }
+            else {
+                product.setIsPresale(0);
+            }
+            outboundEntryMapper.updateProductStockInfo(product);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
             throw e;
         }
     }

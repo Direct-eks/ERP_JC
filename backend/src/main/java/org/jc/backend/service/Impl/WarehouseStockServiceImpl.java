@@ -131,50 +131,113 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(stockID);
 
             var inboundProductMap = inboundProducts.parallelStream()
+                    .peek(p -> p.setInbound(true))
                     .collect(Collectors.groupingBy(ProductStatO::getEntryDate, TreeMap::new, Collectors.toList()));
-
-            var entry = inboundProductMap.floorEntry(date);
-            if (entry == null) {
-                return;
-            }
-
-            // get last inbound record
-            ProductStatO lastEntry = entry.getValue().get(entry.getValue().size() - 1);
-            int prevStockQuantity = lastEntry.getStockQuantity();
-            int currStockQuantity = prevStockQuantity + lastEntry.getQuantity();
-            BigDecimal prevStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
-            BigDecimal productUnitPrice = new BigDecimal(lastEntry.getUnitPriceWithoutTax());
-            BigDecimal currStockPrice = prevStockPrice.multiply(BigDecimal.valueOf(prevStockQuantity))
-                    .add(productUnitPrice.multiply(BigDecimal.valueOf(lastEntry.getQuantity())))
-                    .divide(BigDecimal.valueOf(currStockQuantity), myScale, myRoundingMode);
-            product.setStockQuantity(currStockQuantity);
-            product.setStockUnitPrice(currStockPrice.toPlainString());
-
-            lastEntry = new ProductStatO();
-            BeanUtils.copyProperties(product, lastEntry);
-            // change all following records if curr record is not the last one
-            for (var e : inboundProductMap.subMap(date, false,
-                    MyUtils.todayDateString(), true).entrySet()) {
-                for (var p : e.getValue()) {
-
-                }
-            }
+            inboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getInboundProductID)));
 
             var outboundProductMap = outboundProducts.parallelStream()
+                    .peek(p -> p.setInbound(false))
                     .collect(Collectors.groupingBy(ProductStatO::getShipmentDate, TreeMap::new, Collectors.toList()));
+            outboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getOutboundProductID)));
 
-            for (var e : outboundProductMap.subMap(date, true,
-                    MyUtils.todayDateString(), true).entrySet()) {
-                for (var p : e.getValue()) {
-
+            var productMap = new TreeMap<>(inboundProductMap);
+            for (var entry : outboundProductMap.entrySet()) { // merge map
+                String key = entry.getKey();
+                var value = entry.getValue();
+                if (productMap.containsKey(key)) {
+                    productMap.get(key).addAll(value);
+                }
+                else {
+                    productMap.put(key, value);
                 }
             }
 
+            ProductStatO lastEntry;
+            List<ProductStatO> affectedProducts = new ArrayList<>();
+
+            var entry = inboundProductMap.floorEntry(date);
+            if (entry == null) { // first inbound record, extract initial value from stock record
+                lastEntry = new ProductStatO();
+                lastEntry.setInbound(true);
+                lastEntry.setStockQuantity(stock.getInitialStockQuantity());
+                lastEntry.setStockUnitPrice(stock.getInitialStockUnitPrice());
+                product.setStockQuantity(stock.getInitialStockQuantity());
+                product.setStockUnitPrice(stock.getStockUnitPriceWithoutTax());
+                if (outboundProductMap.get(date) != null) { // add today's outbound record to affectedProducts
+                    affectedProducts.addAll(outboundProductMap.get(date));
+                }
+            }
+            else { // exist inbound record from same day or previous days
+                if (entry.getKey().compareTo(date) == 0) { // same day, find last inbound record
+                    lastEntry = entry.getValue().get(entry.getValue().size() - 1);
+                    if (outboundProductMap.get(date) != null) { // add today's outbound record to affectedProducts
+                        affectedProducts.addAll(outboundProductMap.get(date));
+                    }
+                }
+                else { // previous days
+                    var sameDayProducts = outboundProductMap.get(date);
+                    if (sameDayProducts == null) { // today has neither inbound/outbound records, get nearest record
+                        var previousDaysProducts = productMap.lowerEntry(date);
+                        lastEntry = previousDaysProducts.getValue().get(previousDaysProducts.getValue().size() - 1);
+                    }
+                    else { // get today's last inbound record
+                        lastEntry = sameDayProducts.get(sameDayProducts.size() - 1);
+                        affectedProducts.addAll(sameDayProducts); // add today's outbound record to affectedProducts
+                    }
+                }
+                this.doCalculation(lastEntry, product);
+            }
+            lastEntry = new ProductStatO();
+            BeanUtils.copyProperties(product, lastEntry);
+
+            // add all products (from the next day to the specified inbound date to today) to affected list
+            for (var e : productMap.subMap(date, false,
+                    MyUtils.todayDateString(), true).entrySet()) {
+                affectedProducts.addAll(e.getValue());
+            }
+
+            // change all following records if curr record is not the last one
+            for (var p : affectedProducts) {
+                this.doCalculation(lastEntry, p);
+                if (p.isInbound()) {
+                    inboundEntryService.updateInboundProduct(p);
+                }
+                else {
+                    outboundEntryService.updateOutboundProduct(p);
+                }
+                lastEntry = p;
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
+        }
+    }
+
+    private void doCalculation(ProductStatO lastEntry, Object product) {
+        int prevStockQuantity = lastEntry.getStockQuantity();
+        int currStockQuantity;
+        BigDecimal currStockPrice;
+        if (product instanceof InboundProductO || ((ProductStatO) product).isInbound()) {
+            currStockQuantity = prevStockQuantity + lastEntry.getQuantity();
+            BigDecimal prevStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
+            BigDecimal productUnitPrice = new BigDecimal(lastEntry.getUnitPriceWithoutTax());
+            currStockPrice = prevStockPrice.multiply(BigDecimal.valueOf(prevStockQuantity))
+                    .add(productUnitPrice.multiply(BigDecimal.valueOf(lastEntry.getQuantity())))
+                    .divide(BigDecimal.valueOf(currStockQuantity), myScale, myRoundingMode);
+        }
+        else {
+            currStockQuantity = prevStockQuantity - lastEntry.getQuantity();
+            currStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
+        }
+        if (product instanceof InboundProductO) {
+            ((InboundProductO) product).setStockQuantity(currStockQuantity);
+            ((InboundProductO) product).setStockUnitPrice(currStockPrice.toPlainString());
+        }
+        else {
+            ((ProductStatO) product).setStockQuantity(currStockQuantity);
+            ((ProductStatO) product).setStockUnitPrice(currStockPrice.toPlainString());
         }
     }
 

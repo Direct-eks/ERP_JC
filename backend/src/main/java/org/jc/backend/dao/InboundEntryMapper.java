@@ -60,4 +60,5 @@ public interface InboundEntryMapper {
 
     // for stock price calculation
     List<ProductStatO> queryAllInboundProductsByWarehouseStockID(int id);
+    void updateProductStockInfo(ProductStatO productStatO);
 }

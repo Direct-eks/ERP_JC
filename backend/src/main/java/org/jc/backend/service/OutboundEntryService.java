@@ -15,8 +15,6 @@ import java.util.List;
 public interface OutboundEntryService {
     // for inbound service usage
     boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate);
-    void replenishPresaleProducts(List<InboundProductO> products);
-    void modifyProductStockQuantity(String date, int warehouseStockID, int quantityChange);
 
     void createEntry(OutboundEntryWithProductsVO entryWithProductsVO);
 
@@ -51,4 +49,5 @@ public interface OutboundEntryService {
 
     // for stock price calculation
     List<ProductStatO> getAllOutboundProducts(int id);
+    void updateOutboundProduct(ProductStatO productStatO);
 }
