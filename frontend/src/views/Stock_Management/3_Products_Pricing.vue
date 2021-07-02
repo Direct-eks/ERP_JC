@@ -51,6 +51,7 @@
                 <ModelTree height="65vh" max-width=""
                            :show-select="true"
                            :select-for-search="false"
+                           :select-for-level="true"
                            @treeSelectionObject="treeSelect">
                 </ModelTree>
             </v-card>

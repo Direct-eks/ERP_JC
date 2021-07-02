@@ -32,6 +32,7 @@
         <v-card-text class="d-flex">
             <ModelTree height="65vh" max-width=""
                        :select-for-search="false"
+                       :select-for-level="true"
                        @treeSelectionObject="treeSelect">
             </ModelTree>
             <v-card outlined>

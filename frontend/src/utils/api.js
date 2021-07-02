@@ -73,7 +73,7 @@ const api = {
     modelsByName: '/model/getModelsByName', // GET name= method=
     exportModels: '/model/exportAllModels', // GET
     updateModelsWithCategory: '/model/updateModelsWithCategory', // POST category= brands=
-
+    updateCategoryOfModel: '/model/updateCategoryOfModel', // POST modelID, oldCategoryID, newCategoryID
     updateModelCategories: '/model/updateModelCategories',
 
     /* ------ /miscellaneousData ------*/

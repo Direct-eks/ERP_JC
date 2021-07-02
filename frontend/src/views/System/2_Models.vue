@@ -49,7 +49,9 @@
             <div class="d-flex">
                 <v-card outlined>
                     <ModelTree height="80vh" max-width=""
-                               @treeSelectionResult="treeSelect">
+                               :select-for-level="true"
+                               @treeSelectionResult="treeSelectionResult"
+                               @treeSelectionObject="treeSelectionObject">
                     </ModelTree>
                 </v-card>
                 <v-card outlined>
@@ -151,13 +153,15 @@
                             </v-btn>
                         </v-row>
                         <v-row class="ma-3">
-                            <v-dialog v-model="changeCategoryPanel"
+                            <v-dialog v-if="canUpdate"
+                                      v-model="changeCategoryPanel"
                                       persistent
                                       scrollable
                                       no-click-animation
                                       width="40vw">
                                 <template v-slot:activator="{on}">
-                                    <v-btn color="accent" v-on="on">
+                                    <v-btn color="accent" v-on="on"
+                                           :disabled="modelTableCurrentRow.length === 0">
                                         更改分类
                                     </v-btn>
                                 </template>
@@ -165,11 +169,15 @@
                                     <v-card-text>
                                         <ModelTree height="60vh" max-width=""
                                                    :select-for-search="false"
+                                                   :select-for-level="true"
                                                    @treeSelectionObject="changeCategorySelect">
                                         </ModelTree>
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
+                                        <v-btn color="warning" @click="changeCategoryPanel = false">
+                                            取消
+                                        </v-btn>
                                         <v-btn color="accent" @click="changeCategory">
                                             确认并保存
                                         </v-btn>
@@ -245,10 +253,10 @@ export default {
             newCode: '',
             newUnitID: -1,
             changeCategoryPanel: false,
-            changeCategorySelection: {},
+            changeCategorySelection: {label: '', categoryID: -1, children: []},
 
             treeData: [],
-            treeLevelID: -1,
+            treeLevelObject: {label: '', categoryID: -1, children: []},
 
             modelTableHeaders: [
                 { text: '序号', value: 'sequenceNumber', width: '95px' },
@@ -288,9 +296,12 @@ export default {
                 this.modelTableData = data
             }).catch(() => {})
         },
-        treeSelect(data) {
+        treeSelectionResult(data) {
             this.modelTableData = data
             this.modelTableCurrentRow = [] //reset model table
+        },
+        treeSelectionObject(data) {
+            this.treeLevelObject = data
         },
         modelTableChoose(row) {
             if (this.modelTableCurrentRow.indexOf(row) !== -1) {
@@ -325,13 +336,13 @@ export default {
             }
         },
         newRow() {
-            if (this.modelTableData.length === 0 || this.treeLevelID === -1) return
+            if (this.modelTableData.length === 0 || this.treeLevelObject.categoryID === -1) return
             this.addNewDialog = false
             this.modelTableData.push({
                 modelID: this.newItemIndex--,
                 sequenceNumber: this.modelTableData.length + 1,
                 code: this.newCode,
-                categoryID: this.treeLevelID,
+                categoryID: this.treeLevelObject.categoryID,
                 unitID: this.newUnitID
             })
             this.newCode = ''
@@ -369,15 +380,38 @@ export default {
             this.modelTableData.splice(index, 1)
         },
         changeCategory() {
-            if (this.changeCategorySelection.categoryID === -1) return
+            if (this.modelTableCurrentRow.length === 0) return
+            if (this.changeCategorySelection.categoryID === -1) {
+                this.$store.commit('setSnackbar', {
+                    message: '未选择分类', color: 'error'
+                })
+                return
+            }
+            if (this.changeCategorySelection.children.length !== 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '只能选择最末端分类', color: 'error'
+                })
+                return
+            }
             this.changeCategoryPanel = false
-            
+
+            this.$postRequest(this.$api.updateCategoryOfModel, {}, {
+                modelID: this.modelTableCurrentRow[0].modelID,
+                oldCategoryID: this.modelTableCurrentRow[0].categoryID,
+                newCategoryID: this.changeCategorySelection.categoryID
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '操作成功', color: 'success'
+                })
+                this.$store.commit('clearModelData')
+                this.modelTableData.splice(this.modelTableData.indexOf(this.modelTableCurrentRow[0]), 1)
+            }).catch(() => {})
         },
         changeCategorySelect(data) {
             this.changeCategorySelection = data
         },
         saveChanges() {
-            if (this.modelTableData.length === 0) return
+            if (this.modelTableData.length === 0 || this.treeLevelObject.categoryID === -1) return
 
             let brandsString = ''
             if (this.brandTableCurrentRow.length !== 0) {
@@ -391,7 +425,7 @@ export default {
             this.$postRequest(this.$api.updateModelsWithCategory, {
                 elements: this.modelTableData
             }, {
-                categoryID: this.treeLevelID,
+                categoryID: this.treeLevelObject.categoryID,
                 brands: brandsString
             }).then(() => {
                 this.$store.commit('setSnackbar', {
