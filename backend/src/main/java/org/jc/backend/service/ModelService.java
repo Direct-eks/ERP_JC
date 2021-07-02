@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.VO.ListUpdateVO;
@@ -17,5 +18,6 @@ public interface ModelService {
     List<ModelO> getModelsByName(String name, String method);
 
     void updateModelsWithCategory(int categoryID, int[] brands, ListUpdateVO<ModelO> updateVO);
+    void updateCategoryOfModel(int modelID, int oldCategoryID, int newCategoryID) throws GlobalParamException;
     void exportAllModels(HttpServletResponse response);
 }

@@ -78,6 +78,12 @@
         where model_id = #{modelID}
     </update>
 
+    <update id="updateCategoryOfModel">
+        update w_model
+        set category_id = #{categoryID}
+        where model_id = #{modelID}
+    </update>
+
     <select id="queryAllModels" resultMap="ModelResultMap">
         select model_id, m.sequence_number, m.code, category_id,
                c.code as category_code, unit_id, u.name as unit_name

@@ -112,6 +112,22 @@ public class ModelController {
     }
 
     @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateCategoryOfModel")
+    public void updateCategoryOfModel(
+            @RequestParam("modelID") int modelID,
+            @RequestParam("oldCategoryID") int oldCategoryID,
+            @RequestParam("newCategoryID") int newCategoryID
+    ) throws GlobalParamException {
+        logger.info("POST Request to /model/updateCategoryOfModel, modelID: {}, oldCategoryID: " +
+                        "{}, newCategoryID: {}", modelID, oldCategoryID, newCategoryID);
+
+        if (newCategoryID == -1) throw new GlobalParamException("new categoryID error");
+        if (oldCategoryID == newCategoryID) throw new GlobalParamException("移动前后目录未改变");
+
+        modelService.updateCategoryOfModel(modelID, oldCategoryID, newCategoryID);
+    }
+
+    @ApiOperation(value = "", response = void.class)
     @RequiresRoles("admin")
     @GetMapping("/exportAllModels")
     public void exportAllModels(HttpServletResponse response) {

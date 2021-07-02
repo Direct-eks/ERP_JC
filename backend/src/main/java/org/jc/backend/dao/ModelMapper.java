@@ -21,5 +21,6 @@ public interface ModelMapper {
 
     void insertModel(ModelO modelO);
     void updateModel(ModelO modelO);
+    void updateCategoryOfModel(int modelID, int categoryID);
     List<ModelO> queryAllModels();
 }

@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModelMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
@@ -149,6 +150,41 @@ public class ModelServiceImpl implements ModelService {
                 for (var model : oldModels) {
                     // todo remove
                 }
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update error");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateCategoryOfModel(int modelID, int oldCategoryID, int newCategoryID) throws GlobalParamException {
+        Subject subject = SecurityUtils.getSubject();
+
+        try {
+            if (subject.isPermitted("system:models:update")) {
+                var modelsFromOldCategory = modelMapper.queryModelsByCategory(oldCategoryID);
+                ModelO modelToBeUpdated = null;
+                for (var model : modelsFromOldCategory) {
+                    if (model.getModelID().equals(modelID)) {
+                        modelToBeUpdated = model;
+                        break;
+                    }
+                }
+                if (modelToBeUpdated == null) {
+                    throw new GlobalParamException("oldModelCategory does not contain modelID");
+                }
+                var modelsFromNewCategory = modelMapper.queryModelsByCategory(newCategoryID);
+                for (var model : modelsFromNewCategory) {
+                    if (model.getCode().equals(modelToBeUpdated.getCode())) {
+                        throw new GlobalParamException("代号存在重复!");
+                    }
+                }
+
+                modelMapper.updateCategoryOfModel(modelID, newCategoryID);
             }
 
         } catch (PersistenceException e) {
