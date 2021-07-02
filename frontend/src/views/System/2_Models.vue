@@ -48,19 +48,9 @@
         <v-card-text>
             <div class="d-flex">
                 <v-card outlined>
-                    <v-responsive height="80vh"
-                                  style="overflow: auto">
-                        <v-treeview :items="treeData"
-                                    item-text="label"
-                                    item-key="categoryID"
-                                    activatable
-                                    return-object
-                                    @update:active="treeSelect"
-                                    color="primary"
-                                    open-on-click
-                                    dense>
-                        </v-treeview>
-                    </v-responsive>
+                    <ModelTree height="80vh" max-width=""
+                               @treeSelectionResult="treeSelect">
+                    </ModelTree>
                 </v-card>
                 <v-card outlined>
                     <v-data-table v-model="modelTableCurrentRow"
@@ -160,6 +150,33 @@
                                 删除
                             </v-btn>
                         </v-row>
+                        <v-row class="ma-3">
+                            <v-dialog v-model="changeCategoryPanel"
+                                      persistent
+                                      scrollable
+                                      no-click-animation
+                                      width="40vw">
+                                <template v-slot:activator="{on}">
+                                    <v-btn color="accent" v-on="on">
+                                        更改分类
+                                    </v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-text>
+                                        <ModelTree height="60vh" max-width=""
+                                                   :select-for-search="false"
+                                                   @treeSelectionObject="changeCategorySelect">
+                                        </ModelTree>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="accent" @click="changeCategory">
+                                            确认并保存
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-row>
                         <v-card outlined>
                             <v-data-table v-model="brandTableCurrentRow"
                                           :headers="brandTableHeaders"
@@ -195,6 +212,9 @@ import { mdiArrowLeft, mdiChevronUp, mdiChevronDown } from "@mdi/js";
 
 export default {
     name: "Models",
+    components: {
+        ModelTree: () => import('~/components/ModelTree'),
+    },
     beforeMount() {
         this.canCreate = this.$store.getters.currentUserIsPermitted("system:models:create")
         this.canUpdate = this.$store.getters.currentUserIsPermitted("system:models:update")
@@ -210,16 +230,6 @@ export default {
 
         // clear cached model data
         this.$store.commit('clearModelData')
-
-        let result = this.$store.getters.productList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
-        }).catch(() => {})
     },
     data() {
         return {
@@ -234,6 +244,8 @@ export default {
             addNewDialog: false,
             newCode: '',
             newUnitID: -1,
+            changeCategoryPanel: false,
+            changeCategorySelection: {},
 
             treeData: [],
             treeLevelID: -1,
@@ -277,30 +289,16 @@ export default {
             }).catch(() => {})
         },
         treeSelect(data) {
-            this.modelTableData = []
+            this.modelTableData = data
             this.modelTableCurrentRow = [] //reset model table
-
-            if (data.length === 0) return;
-
-            let val = data[0]
-            if (val.children.length === 0) { // end node
-                this.treeLevelID = val.categoryID
-                let result = this.$store.getters.models(val.categoryID)
-                if (result) {
-                    this.modelTableData = result
-                    return
-                }
-                this.$getRequest(this.$api.modelsByCategory +
-                    encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
-                    this.modelTableData = data
-                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
-                }).catch(() => {})
-                this.enableModification = true
-            }
         },
         modelTableChoose(row) {
-            this.modelTableCurrentRow = [row]
+            if (this.modelTableCurrentRow.indexOf(row) !== -1) {
+                this.modelTableCurrentRow = []
+            }
+            else {
+                this.modelTableCurrentRow = [row]
+            }
         },
         modelTableChoose2(row) {
             if (!row.value) {
@@ -369,6 +367,14 @@ export default {
                 this.modelTableData[i].sequenceNumber--
             }
             this.modelTableData.splice(index, 1)
+        },
+        changeCategory() {
+            if (this.changeCategorySelection.categoryID === -1) return
+            this.changeCategoryPanel = false
+            
+        },
+        changeCategorySelect(data) {
+            this.changeCategorySelection = data
         },
         saveChanges() {
             if (this.modelTableData.length === 0) return
