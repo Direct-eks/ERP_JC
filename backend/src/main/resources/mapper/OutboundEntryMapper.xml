@@ -4,10 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.OutboundEntryMapper">
 
-    <select id="countNumberOfEntriesOfToday" resultType="int">
+    <select id="countNumberOfEntriesOfGivenDate" resultType="int">
         select count(outbound_entry_id)
         from e_outbound_entry
-        where shipment_date = date('now', 'localtime')
+        where shipment_date = #{date}
     </select>
 
     <insert id="insertNewEntry">

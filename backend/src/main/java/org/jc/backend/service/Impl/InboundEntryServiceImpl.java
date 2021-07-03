@@ -77,8 +77,9 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                     throw new GlobalParamException("入库单不能同时含有预销售和普通入库产品");
             }
 
-            int count = inboundEntryMapper.countNumberOfEntriesOfToday();
-            String newSerial = MyUtils.formNewSerial("购入", count, newEntry.getEntryDate());
+            String entryDate = newEntry.getEntryDate();
+            int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate);
+            String newSerial = MyUtils.formNewSerial("购入", count, entryDate);
 
             // set new inbound entry serial, and insert
             newEntry.setInboundEntryID(newSerial);
@@ -102,7 +103,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 }
 
                 // calculate stock unit price for product, and fill in stock quantity & unit price
-                warehouseStockService.increaseStock(product, newEntry.getEntryDate());
+                warehouseStockService.increaseStock(product, entryDate);
 
                 // insert
                 inboundEntryMapper.insertNewProduct(product);

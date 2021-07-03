@@ -89,8 +89,9 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         }
 
         try {
-            int count = outboundEntryMapper.countNumberOfEntriesOfToday();
-            String newSerial = MyUtils.formNewSerial("销出", count, newEntry.getShipmentDate());
+            String shipmentDate = newEntry.getShipmentDate();
+            int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate);
+            String newSerial = MyUtils.formNewSerial("销出", count, shipmentDate);
 
             newEntry.setOutboundEntryID(newSerial);
             outboundEntryMapper.insertNewEntry(newEntry);
