@@ -24,7 +24,6 @@ public interface OutboundEntryMapper {
 
     // for inbound replenishment service
     List<OutboundProductO> queryPresaleProductsByWarehouseStockID(int id);
-    void updateReplenishment(OutboundProductO productO);
 
     // for inbound modification service
     List<OutboundProductO> queryProductsAfterDateByWarehouseStockID(String date, int id);

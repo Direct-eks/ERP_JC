@@ -165,7 +165,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                         affectedProducts.addAll(sameDayProducts); // add today's outbound record to affectedProducts
                     }
                 }
-                var pair = this.doCalculation(lastEntry, true);
+                var pair = this.doCalculation(lastEntry, lastEntry.isInbound());
                 product.setStockQuantity(pair.getLeft());
                 product.setStockUnitPrice(pair.getRight());
             }
@@ -246,7 +246,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             List<ProductStatO> affectedProducts,
             String date,
             ProductStatO lastEntry) {
-        // add all products (from the next day to the specified inbound date to today) to affected list
+        // add all products (from the next day of the specified date to today) to affected list
         for (var e : productMap.subMap(date, false,
                 MyUtils.todayDateString(), true).entrySet()) {
             affectedProducts.addAll(e.getValue());
@@ -273,13 +273,12 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
      */
     @Transactional
     @Override
-    public void modifyStock(InboundProductO product, String date, int quantityChange) {
+    public void modifyStock(InboundProductO product, String date) {
         try {
             int stockID = product.getWarehouseStockID();
             WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(stockID);
 
-            var triple = this.generateProductMaps(stockID);
-            var productMap = triple.getRight();
+            var productMap = this.generateProductMaps(stockID).getRight();
 
             ProductStatO lastEntry = new ProductStatO();
             BeanUtils.copyProperties(product, lastEntry);
@@ -315,16 +314,36 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
      */
     @Transactional
     @Override
-    public void decreaseStock(OutboundProductO product) {
+    public void decreaseStock(OutboundProductO product, String date) {
         try {
-            int warehouseID = product.getWarehouseID();
-            int skuID = product.getSkuID();
-            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID);
+            int stockID = product.getWarehouseStockID();
+            WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByID(stockID);
 
-            int stockQuantity = stock.getStockQuantity();
-            int productQuantity = product.getQuantity();
-            stock.setStockQuantity(stockQuantity - productQuantity);
+            var triple = this.generateProductMaps(stockID);
+            var productMap = triple.getRight();
 
+            ProductStatO lastEntry;
+            List<ProductStatO> affectedProducts = new ArrayList<>();
+
+            // get nearest record
+            var entry = productMap.floorEntry(date);
+            if (entry == null) { // no other records, possibly presale
+                product.setStockQuantity(stock.getInitialStockQuantity());
+                product.setStockUnitPrice(stock.getInitialStockUnitPrice());
+            }
+            else { // extract last record
+                lastEntry = entry.getValue().get(entry.getValue().size() - 1);
+                var pair = this.doCalculation(lastEntry, lastEntry.isInbound());
+                product.setStockQuantity(pair.getLeft());
+                product.setStockUnitPrice(pair.getRight());
+            }
+            lastEntry = new ProductStatO();
+            BeanUtils.copyProperties(product, lastEntry);
+            lastEntry.setInbound(false);
+
+            var pair = this.addRestProductsAndCalculate(productMap, affectedProducts, date, lastEntry);
+            stock.setStockQuantity(pair.getLeft());
+            stock.setStockUnitPriceWithoutTax(pair.getRight());
             warehouseStockMapper.updateStockInfo(stock);
 
         } catch (PersistenceException e) {
@@ -339,13 +358,33 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
      */
     @Transactional
     @Override
-    public void modifyStock(OutboundProductO product, int quantityChange) {
+    public void modifyStock(OutboundProductO product, String date) {
         try {
-            WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(product.getWarehouseStockID());
+            int stockID = product.getWarehouseStockID();
+            WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(stockID);
 
-            // deduct changes
-            stock.setStockQuantity(stock.getStockQuantity() - quantityChange);
+            var productMap = this.generateProductMaps(stockID).getRight();
 
+            ProductStatO lastEntry = new ProductStatO();
+            BeanUtils.copyProperties(product, lastEntry);
+            lastEntry.setInbound(false);
+            List<ProductStatO> affectedProducts = new ArrayList<>();
+
+            int index = -1;
+            var sameDayProducts = productMap.get(date);
+            for (var p : sameDayProducts) {
+                if (p.getOutboundProductID() == product.getOutboundProductID()) {
+                    index = sameDayProducts.indexOf(p);
+                    break;
+                }
+            }
+            for (int i = index; i < sameDayProducts.size() - 1; i++) {
+                affectedProducts.add(sameDayProducts.get(i));
+            }
+
+            var pair = this.addRestProductsAndCalculate(productMap, affectedProducts, date, lastEntry);
+            stock.setStockQuantity(pair.getLeft());
+            stock.setStockUnitPriceWithoutTax(pair.getRight());
             warehouseStockMapper.updateStockInfo(stock);
 
         } catch (PersistenceException e) {

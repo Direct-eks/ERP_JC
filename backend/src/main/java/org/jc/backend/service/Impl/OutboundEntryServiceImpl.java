@@ -106,9 +106,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 int id = product.getOutboundProductID();
                 logger.info("Insert new outbound product id: " + id);
 
-                // todo support presale on product that does not have warehouseStock record
-
-                warehouseStockService.decreaseStock(product);
+                // does not support presale on product that does not have warehouseStock record
+                warehouseStockService.decreaseStock(product, shipmentDate);
             }
 
         } catch (PersistenceException e) {
@@ -215,27 +214,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                                 record, currentProduct, originalProduct)) {
                             productsChanged = true;
                             outboundEntryMapper.updateProduct(currentProduct);
-                            // calculate new stock quantity, quantityChange > 0 if more outbound is detected
-                            int quantityChange = currentProduct.getQuantity() - originalProduct.getQuantity();
-                            warehouseStockService.modifyStock(originalProduct, quantityChange);
-                            // change stock quantity for outbound product entry after the date of this entry
-                            String date = currentEntry.getShipmentDate();
-                            int warehouseStockID = originalProduct.getWarehouseStockID();
-
-                            List<OutboundProductO> affectedProducts =
-                                    outboundEntryMapper.queryProductsAfterDateByWarehouseStockID(date, warehouseStockID);
-                            for (var product : affectedProducts) {
-                                if (product.getOutboundProductID() <= currentProduct.getOutboundProductID())
-                                    continue; // skip entry products earlier than this
-                                int stockQuantity = product.getStockQuantity() - quantityChange;
-                                product.setStockQuantity(stockQuantity);
-                                if (stockQuantity - product.getQuantity() < 0) { // check if cause presale
-                                    product.setIsPresale(1);
-                                } else {
-                                    product.setIsPresale(0);
-                                }
-                                outboundEntryMapper.updateReplenishment(product);
-                            }
+                            warehouseStockService.modifyStock(currentProduct, currentEntry.getShipmentDate());
                         }
                         found = true;
                         break;

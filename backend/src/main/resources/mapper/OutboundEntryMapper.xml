@@ -134,13 +134,6 @@
         order by outbound_entry_id, outbound_product_id
     </select>
 
-    <update id="updateReplenishment">
-        update e_outbound_product
-        set stock_quantity = #{stockQuantity},
-            is_presale = #{isPresale}
-        where outbound_product_id = #{outboundProductID}
-    </update>
-
     <select id="queryProductsAfterDateByWarehouseStockID" resultMap="productResultMap">
         select outbound_product_id, p.outbound_entry_id, sku_id, quantity, stock_quantity,
                p.remark, warehouse_stock_id, p.warehouse_id, p.tax_rate, unit_price_without_tax,
