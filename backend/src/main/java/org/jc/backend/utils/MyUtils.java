@@ -64,14 +64,14 @@ public class MyUtils {
     }
 
     /**
-     * // 销出20210809-001 -> 20210809 -> 2021-08-09
+     * // 销出210809-001 -> 210809 -> 2021-08-09
      * @param base string such as 销出20210809-001
      * @return date string in format yyyy-MM-dd
      */
     public static String restoreDateFromString(String base) {
         String unformattedDate = base.substring(2, 8);
-        return unformattedDate.substring(0,4) + "-" + unformattedDate.substring(4, 6) +
-                "-" + unformattedDate.substring(6);
+        return "20" + unformattedDate.substring(0,2) + "-" + unformattedDate.substring(2, 4) +
+                "-" + unformattedDate.substring(4);
     }
 
     /**
