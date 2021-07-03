@@ -5,7 +5,7 @@
                 <v-toolbar color="primary" dark flat>
                     <v-toolbar-title>登录认证</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="refresh">
+                    <v-btn icon @click="refresh(true)">
                         <v-icon>{{ mdiRefresh }}</v-icon>
                     </v-btn>
                 </v-toolbar>
@@ -50,7 +50,7 @@ import {mdiAccount, mdiLock, mdiRefresh} from '@mdi/js'
 export default {
     name: 'Login',
     beforeMount() {
-        this.refresh()
+        this.refresh(false)
     },
     data() {
         return {
@@ -72,8 +72,13 @@ export default {
         }
     },
     methods: {
-        refresh() {
+        refresh(showMsg) {
             this.$getRequest(this.$api.userNameList).then(data => {
+                if (showMsg) {
+                    this.$store.commit('setSnackbar', {
+                        message: '刷新成功', color: 'success'
+                    })
+                }
                 this.userList = data
             }).catch(() => {})
         },
