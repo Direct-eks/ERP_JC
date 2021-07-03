@@ -59,9 +59,9 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 int id = product.getWarehouseStockID();
                 List<OutboundProductO> presales = outboundEntryMapper.queryPresaleProductsByWarehouseStockID(id);
                 for (var presale : presales) {
-                    // if entryDate is newer (larger) than selling date
+                    // if entryDate is newer (larger) than selling date, return false
                     String entryID = presale.getOutboundEntryID();
-                    if (MyUtils.restoreDateFromString(entryID).compareTo(entryDate) > 0) {
+                    if (entryDate.compareTo(MyUtils.restoreDateFromString(entryID)) > 0) {
                         return false;
                     }
                 }
