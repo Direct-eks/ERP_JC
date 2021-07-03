@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-card-title class="d-flex">
+        <v-card-title>
             型号助选
             <v-spacer></v-spacer>
             <v-col cols="auto">
@@ -27,7 +27,6 @@
                                dense>
                     <v-radio label="前匹配" value="prefix"></v-radio>
                     <v-radio label="模糊" value="infix"></v-radio>
-                    <v-radio label="后匹配" value="suffix"></v-radio>
                 </v-radio-group>
             </v-col>
             <v-col cols="auto">
@@ -38,7 +37,7 @@
             </v-col>
             <v-spacer></v-spacer>
             <div class="text-body-1">
-                折扣价基准
+                <p>折扣价基准</p>
             </div>
             <v-radio-group v-model="discountBase"
                            hide-details="auto"
@@ -54,29 +53,16 @@
                 选择
             </v-btn>
             <v-btn icon @click="close">
-                <v-icon>{{mdiClosePath}}</v-icon>
+                <v-icon>{{ mdiClose }}</v-icon>
             </v-btn>
         </v-card-title>
         <v-card-text>
             <div class="d-flex">
-
                 <v-card outlined>
-                    <v-responsive height="65vh" max-width="230px"
-                                  style="overflow: auto">
-                        <v-treeview :items="treeData"
-                                    item-text="label"
-                                    item-key="categoryID"
-                                    activatable
-                                    return-object
-                                    @update:active="treeSelect"
-                                    color="primary"
-                                    open-on-click
-                                    hoverable
-                                    dense>
-                        </v-treeview>
-                    </v-responsive>
+                    <ModelTree height="65vh" max-width="230px"
+                               @treeSelectionResult="treeSelectionResult">
+                    </ModelTree>
                 </v-card>
-
                 <v-card outlined>
                     <v-data-table class="flex-shrink-1"
                                   v-model="modelTableCurrentRow"
@@ -84,6 +70,7 @@
                                   :items="modelTableData"
                                   item-key="modelID"
                                   @click:row="modelTableChoose"
+                                  @item-selected="modelTableChoose2"
                                   :search="modelCode"
                                   height="65vh"
                                   hide-default-footer
@@ -91,12 +78,13 @@
                                   disable-sort
                                   disable-pagination
                                   single-select
+                                  show-select
+                                  checkbox-color="accent"
                                   fixed-header
                                   locale="zh-cn"
                                   dense>
                     </v-data-table>
                 </v-card>
-
                 <div class="d-flex flex-column">
                     <div class="d-flex">
                         <v-card outlined>
@@ -105,10 +93,13 @@
                                           :items="skuTableData"
                                           item-key="skuID"
                                           @click:row="skuTableChoose"
+                                          @item-selected="skuTableChoose2"
                                           height="30vh"
                                           calculate-widths
                                           disable-sort
                                           single-select
+                                          show-select
+                                          checkbox-color="accent"
                                           fixed-header
                                           hide-default-footer
                                           locale="zh-cn"
@@ -123,52 +114,43 @@
                                               :items="warehouseStockTableData"
                                               item-key="warehouseStockID"
                                               @click:row="warehouseStockTableChoose"
+                                              @item-selected="warehouseStockTableChoose2"
                                               height="20vh"
                                               calculate-widths
                                               disable-sort
                                               single-select
+                                              show-select
+                                              checkbox-color="accent"
                                               fixed-header
                                               hide-default-footer
                                               locale="zh-cn"
                                               dense>
                                     <template v-slot:item.wholesalePriceDiscount="{ item }">
                                         <v-edit-dialog :return-value.sync="item.wholesalePriceDiscount"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消"
-                                                       @save="handleDiscountChange(item)">
+                                                       @save="handleDiscountChange(item)"
+                                                       @cancel="handleDiscountChange(item)"
+                                                       @close="handleDiscountChange(item)">
                                             {{item.wholesalePriceDiscount}}
                                             <template v-slot:input>
-                                                <v-text-field v-model="item.wholesalePriceDiscount"
-                                                              single-line
-                                                              counter="8">
-                                                </v-text-field>
+                                                <v-text-field v-model="item.wholesalePriceDiscount" single-line
+                                                              @focus="$event.target.setSelectionRange(0, 100)"/>
                                             </template>
                                         </v-edit-dialog>
                                     </template>
                                     <template v-slot:item.retailPriceDiscount="{ item }">
                                         <v-edit-dialog :return-value.sync="item.retailPriceDiscount"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消"
-                                                       @save="handleDiscountChange(item)">
+                                                       @save="handleDiscountChange(item)"
+                                                       @cancel="handleDiscountChange(item)"
+                                                       @close="handleDiscountChange(item)">
                                             {{item.retailPriceDiscount}}
                                             <template v-slot:input>
-                                                <v-text-field v-model="item.retailPriceDiscount"
-                                                              single-line
-                                                              counter="8">
-                                                </v-text-field>
+                                                <v-text-field v-model="item.retailPriceDiscount" single-line
+                                                              @focus="$event.target.setSelectionRange(0, 100)"/>
                                             </template>
                                         </v-edit-dialog>
                                     </template>
                                     <template v-slot:item.unitPriceWithTax="{ item }">
                                         <v-edit-dialog :return-value.sync="item.unitPriceWithTax"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消"
                                                        @save="handlePriceChange(item)">
                                             {{item.unitPriceWithTax}}
                                             <template v-slot:input>
@@ -180,11 +162,7 @@
                                         </v-edit-dialog>
                                     </template>
                                     <template v-slot:item.quantity="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.quantity"
-                                                       persistent
-                                                       large
-                                                       save-text="确认"
-                                                       cancel-text="取消">
+                                        <v-edit-dialog :return-value.sync="item.quantity">
                                             {{item.quantity}}
                                             <template v-slot:input>
                                                 <v-text-field v-model="item.quantity"
@@ -200,11 +178,11 @@
                     </div>
 
                     <v-card outlined class="text-h6">
-                        {{flattenedTreePosition}}
+                        <p>{{flattenedTreePosition}}</p>
                     </v-card>
                     <v-card outlined>
-                        <v-data-table :headers="supplierTableHeaders"
-                                      :items="supplierTableData"
+                        <v-data-table :headers="resourceTableHeader"
+                                      :items="resourceTableData"
                                       item-key=""
                                       height="20vh"
                                       calculate-widths
@@ -222,13 +200,6 @@
                                    color="accent"
                                    @click="productDetail">
                                 商品明细
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-btn class="mr-8"
-                                   color="accent"
-                                   @click="addNewHandle">
-                                新增商品
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -257,34 +228,23 @@
 <script>
 import {mdiClose} from '@mdi/js'
 
-function validateFloat(value) {
-    let val = value.replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
-    val = val.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    val = val.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    val = val.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (val.indexOf(".") < 0 && val !== "") { // 如果没有小数点，首位不能为0
-        val = parseFloat(val)
-    }
-    console.log('float', val)
-    return val
-}
-
 export default {
     name: "ModelSearch",
+    components: {
+        ModelTree: () => import('~/components/ModelTree'),
+    },
     props: {
         warehouseID: {type: Number, required: true, default: -1}
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             modelCode: '',
             modelSearchName: '',
             modelSearchMethod: 'prefix',
             discountBase: '零售价',
             flattenedTreePosition: '',
-
-            treeData: [],
 
             modelTableHeaders: [
                 {text: '代号', value: 'code', width: '180px'},
@@ -312,13 +272,13 @@ export default {
             warehouseStockTableData: [],
             warehouseStockCurrentRow: [],
 
-            supplierTableHeaders: [
+            resourceTableHeader: [
                 { text: '摘要', value: '', width: '' },
                 { text: '入库数量', value: '', width: '' },
                 { text: '无税价', value: '', width: '' },
                 { text: '类型', value: '', width: '' },
             ],
-            supplierTableData: [],
+            resourceTableData: [],
 
             detailTableHeaders: [
                 { text: '出入库单号', value: '', width: '' },
@@ -330,18 +290,6 @@ export default {
             detailTableData: [],
         }
     },
-    beforeMount() {
-        let result = this.$store.getters.productList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            console.log('received', data)
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
-        }).catch(() => {})
-    },
     methods: {
         close() {
             this.$emit('modelSearchClose')
@@ -349,15 +297,11 @@ export default {
         productDetail() {
 
         },
-        addNewHandle() {
-
-        },
         modelSearch() {
             this.$getRequest(this.$api.modelsByName, {
                 name: this.modelSearchName,
                 method: this.modelSearchMethod
             }).then((data) => {
-                console.log('received', data)
                 this.modelTableData = data
             }).catch(() => {})
         },
@@ -394,62 +338,99 @@ export default {
             }
             return bool
         },
-        treeSelect(data) {
-            this.modelTableData = []
-            this.modelTableCurrentRow = [] //reset model table
+        treeSelectionResult(data) {
+            this.modelTableData = data
+            this.modelTableCurrentRow = [] // reset model table
             this.skuTableData = []
-            this.skuTableCurrentRow = [] //reset stock table
+            this.skuTableCurrentRow = [] // reset stock table
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
-            if (data.length === 0) return
-
-            let val = data[0]
-            if (val.children.length === 0) { // end node
-                console.log(val.categoryID)
-                let result = this.$store.getters.models(val.categoryID)
-                if (result) {
-                    this.modelTableData = result
-                    return
-                }
-                this.$getRequest(this.$api.modelsByCategory +
-                    encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
-                    this.modelTableData = data
-                    this.$store.commit('modifyModels', { key: val.categoryID, value: data })
-                }).catch(() => {})
-            }
-            this.refreshFlattenedTreePosition(val)
+            this.resourceTableData = []
         },
         modelTableChoose(val) {
-            this.modelTableCurrentRow = [val]
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
+            this.resourceTableData = []
 
-            this.$getRequest(this.$api.fullSkuByModel +
-                encodeURI(val.modelID)).then((data) => {
-                console.log('received', data)
-                this.skuTableData = data
-            }).catch(() => {})
+            if (this.modelTableCurrentRow.indexOf(val) !== -1) {
+                this.modelTableCurrentRow = []
+            }
+            else {
+                this.modelTableCurrentRow = [val]
+                this.$getRequest(this.$api.fullSkuByModel +
+                    encodeURI(val.modelID)).then((data) => {
+                    this.skuTableData = data
+                }).catch(() => {})
+            }
         },
-        skuTableChoose(val) {
-            this.skuTableCurrentRow = [val]
+        modelTableChoose2(row) {
+            this.skuTableData = []
+            this.skuTableCurrentRow = [] //reset stock table
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
+            this.resourceTableData = []
 
-            this.$getRequest(this.$api.warehouseStockBySKu +
-                encodeURI(val.skuID)).then((data) => {
-                console.log('received', data)
-                data.forEach(row => {
-                    row.unitPriceWithTax = ''
-                    row.quantity = ''
-                })
-                this.warehouseStockTableData = data
-            }).catch(() => {})
+            if (!row.value) {
+                this.modelTableCurrentRow = []
+            }
+            else {
+                this.modelTableChoose(row.item)
+            }
+        },
+        skuTableChoose(val) {
+            this.warehouseStockTableData = []
+            this.warehouseStockCurrentRow = []
+            this.resourceTableData = []
+
+            if (this.skuTableCurrentRow.indexOf(val) !== -1) {
+                this.skuTableCurrentRow = []
+            }
+            else {
+                this.skuTableCurrentRow = [val]
+
+                this.$getRequest(this.$api.warehouseStockBySKu +
+                    encodeURI(val.skuID)).then((data) => {
+                    data.forEach(row => {
+                        row.unitPriceWithTax = ''
+                        row.quantity = ''
+                    })
+                    this.warehouseStockTableData = data
+                }).catch(() => {})
+            }
+        },
+        skuTableChoose2(row) {
+            this.warehouseStockTableData = []
+            this.warehouseStockCurrentRow = []
+            this.resourceTableData = []
+
+            if (!row.value) {
+                this.skuTableCurrentRow = []
+            }
+            else {
+                this.skuTableChoose(row.item)
+            }
         },
         warehouseStockTableChoose(val) {
-            this.warehouseStockCurrentRow = [val]
+            this.resourceTableData = []
+
+            if (this.warehouseStockCurrentRow.indexOf(val) !== -1) {
+                this.warehouseStockCurrentRow = []
+            }
+            else {
+                this.warehouseStockCurrentRow = [val]
+            }
+        },
+        warehouseStockTableChoose2(row) {
+            this.resourceTableData = []
+
+            if (!row.value) {
+                this.warehouseStockCurrentRow = []
+            }
+            else {
+                this.warehouseStockCurrentRow = [row.item]
+            }
         },
         handleDiscountChange(item) {
             let discount = 0.0
@@ -463,63 +444,61 @@ export default {
                 item.unitPriceWithTax = (item.wholesalePrice * (1 - discount)).toFixed(2)
                 break
             }
-            console.log(item)
-            console.log(this.warehouseStockTableData)
         },
         handlePriceChange(item) {
-            item.unitPriceWithTax = validateFloat(item.unitPriceWithTax)
+            item.unitPriceWithTax = this.$validateFloat(item.unitPriceWithTax)
         },
         chooseHandle() {
             //check if sku is chosen
-            if (this.modelTableCurrentRow.length !== 0 &&
-                this.skuTableCurrentRow.length !== 0) {
-
-                if (this.warehouseStockCurrentRow.length === 0 ||
-                    this.warehouseStockCurrentRow[0].warehouseID !== this.warehouseID) {
-                    this.$store.commit('setSnackbar', {
-                        message: '选择的仓库与出库单仓库不符', color: 'warning'
-                    })
-                    return
-                }
-
-                let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = 0.0
-                for (let item of this.warehouseStockTableData) {
-                    if (item.warehouseID === this.warehouseID) {
-                        stockQuantity = item.stockQuantity
-                        warehouseStockID = item.warehouseStockID
-                        stockUnitPrice = item.stockUnitPriceWithTax
-                        break
-                    }
-                }
-
-                const quantity = Number(this.warehouseStockCurrentRow[0].quantity)
-                const unitPriceWithTax = Number(this.warehouseStockCurrentRow[0].unitPriceWithTax)
-                const unitPriceWithoutTax = Number(this.warehouseStockCurrentRow[0].unitPriceWithTax) / 1.16
-                const totalWithoutTax = unitPriceWithoutTax * quantity
-                const totalTax = (unitPriceWithTax - unitPriceWithoutTax) * quantity
-                this.$emit('modelSearchChoose', {
-                    skuID: this.skuTableCurrentRow[0].skuID,
-                    code: this.skuTableCurrentRow[0].code,
-                    oldCode: this.skuTableCurrentRow[0].oldCode,
-                    unitName: this.skuTableCurrentRow[0].unitName,
-                    factoryCode: this.skuTableCurrentRow[0].factoryCode,
-                    quantity: quantity,
-                    stockQuantity: stockQuantity,
-                    remark: '',
-                    warehouseStockID: warehouseStockID,
-                    warehouseID: this.warehouseID,
-                    taxRate: 0.16, //todo
-                    unitPriceWithoutTax: unitPriceWithoutTax.toFixed(2),
-                    unitPriceWithTax: unitPriceWithTax.toFixed(2),
-                    stockUnitPrice: stockUnitPrice,
-                    //statistic fields
-                    totalWithoutTax: totalWithoutTax.toFixed(2),
-                    totalTax: totalTax.toFixed(2),
+            if (this.modelTableCurrentRow.length === 0 ||
+                    this.skuTableCurrentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '请选择型号与厂牌', color: 'warning'
                 })
-                this.modelTableCurrentRow = []
-                this.skuTableCurrentRow = []
-                this.warehouseStockCurrentRow = []
+                return
             }
+
+            if (this.warehouseStockCurrentRow.length === 0 ||
+                    this.warehouseStockCurrentRow[0].warehouseID !== this.warehouseID) {
+                this.$store.commit('setSnackbar', {
+                    message: '选择的仓库与出库单仓库不符', color: 'warning'
+                })
+                return
+            }
+
+            let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = '0'
+            for (let item of this.warehouseStockTableData) {
+                if (item.warehouseID === this.warehouseID) {
+                    stockQuantity = item.stockQuantity
+                    warehouseStockID = item.warehouseStockID
+                    stockUnitPrice = item.stockUnitPriceWithTax
+                    break
+                }
+            }
+
+            const quantity = Number(this.warehouseStockCurrentRow[0].quantity)
+            const unitPriceWithoutTax = Number(this.warehouseStockCurrentRow[0].unitPriceWithTax) / 1.16
+            this.$emit('modelSearchChoose', {
+                skuID: this.skuTableCurrentRow[0].skuID,
+                code: this.skuTableCurrentRow[0].code,
+                unitName: this.skuTableCurrentRow[0].unitName,
+                factoryCode: this.skuTableCurrentRow[0].factoryCode,
+                quantity: quantity,
+                stockQuantity: stockQuantity,
+                remark: '',
+                warehouseStockID: warehouseStockID,
+                warehouseID: this.warehouseID,
+                taxRate: '',
+                unitPriceWithoutTax: unitPriceWithoutTax,
+                unitPriceWithTax: '0',
+                stockUnitPrice: stockUnitPrice,
+                //statistic fields
+                totalWithoutTax: '',
+                totalTax: '',
+            })
+            this.modelTableCurrentRow = []
+            this.skuTableCurrentRow = []
+            this.warehouseStockCurrentRow = []
         }
     }
 }

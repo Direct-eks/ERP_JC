@@ -483,18 +483,6 @@
 </template>
 
 <script>
-function validateFloat(value) {
-    let val = value.replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
-    val = val.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    val = val.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    val = val.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (val.indexOf(".") < 0 && val !== "") { // 如果没有小数点，首位不能为0
-        val = parseFloat(val)
-    }
-    console.log('float', val)
-    return val
-}
-
 export default {
     name: "EntryCreateComponent",
     components: {
@@ -523,10 +511,9 @@ export default {
         }
 
         this.$getRequest(this.$api.warehouseOptions).then((data) => {
-            console.log(data)
             this.warehouseOptions = data
             for (const item of this.warehouseOptions) {
-                if (item.isDefault === 1) {
+                if (item.isOutDefault === 1) {
                     this.form.warehouseID = item.warehouseID
                     break
                 }
@@ -534,7 +521,6 @@ export default {
         }).catch(() => {})
 
         this.$getRequest(this.$api.departmentOptions).then((data) => {
-            console.log(data)
             this.departmentOptions = data
             for (const item of this.departmentOptions) {
                 if (item.isDefault === 1) {

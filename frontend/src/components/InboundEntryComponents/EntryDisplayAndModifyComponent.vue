@@ -119,18 +119,19 @@
                                   dense
                                   style="width: 150px">
                     </v-text-field>
-                    <v-col v-if="form.invoiceType === '增值税票'">
-                        <v-select v-model="form.taxRate"
-                                  :rules="rules.taxRate"
-                                  :items="taxRateOptions"
-                                  @change="changeTaxRate"
-                                  label="税率"
-                                  hide-details="auto"
-                                  :append-icon="mdiPercentOutline"
-                                  outlined dense
-                                  style="width: 110px">
-                        </v-select>
-                    </v-col>
+                </v-col>
+                <v-col v-if="form.invoiceType === '增值税票'">
+                    <v-select v-model="form.taxRate"
+                              :rules="rules.taxRate"
+                              :items="taxRateOptions"
+                              @change="changeTaxRate"
+                              label="税率"
+                              hide-details="auto"
+                              :append-icon="mdiPercentOutline"
+                              :readonly="!inboundEntryModifyMode"
+                              outlined dense
+                              style="width: 110px">
+                    </v-select>
                 </v-col>
             </v-row>
 
@@ -476,7 +477,9 @@ export default {
         }
 
         this.$getRequest(this.$api.allTaxRates).then((data) => {
-            this.taxRateOptions = data
+            for (const option of data) {
+                this.taxRateOptions.push(Number(option))
+            }
         }).catch(() => {})
     },
     data() {
@@ -543,9 +546,9 @@ export default {
             submitPopup: false,
             submitPopup2: false,
 
-            tax: '0.0',
-            sumWithTax: '0.0',
-            sumWithoutTax: '0.0'
+            tax: '0',
+            sumWithTax: '0',
+            sumWithoutTax: '0'
         }
     },
     methods: {
