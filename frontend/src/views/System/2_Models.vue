@@ -207,11 +207,6 @@
                 </v-row>
             </div>
         </v-card-text>
-
-        <v-overlay :value="overlay">
-            <v-progress-circular indeterminate size="64" color="accent">
-            </v-progress-circular>
-        </v-overlay>
     </v-card>
 </template>
 
@@ -280,7 +275,6 @@ export default {
             brandTableCurrentRow: [],
 
             enableModification: true,
-            overlay: false,
         }
     },
     methods: {
@@ -435,10 +429,10 @@ export default {
             }).catch(() => {})
         },
         exportExcel() {
-            this.overlay = true
+            this.$store.commit('setOverlay', true)
             this.$getFileRequest(this.$api.exportModels).then(data => {
                 console.log("received!")
-                this.overlay = false
+                this.$store.commit('setOverlay', false)
                 let href = window.URL.createObjectURL(new Blob([data]));
                 let link = document.createElement('a');
                 link.style.display = 'none';

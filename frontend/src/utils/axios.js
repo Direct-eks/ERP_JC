@@ -21,6 +21,8 @@ axios.interceptors.response.use((response) => {
 }, (error) => {
     console.log("error status: " + error.response.status)
     console.log("error message: " + error.response.data.msg)
+    // cancel overlay in case of error
+    main.$store.commit('setOverlay', false)
     switch (error.response.status) {
     case 400: // Bad Request
         main.$store.commit('setSnackbar', {

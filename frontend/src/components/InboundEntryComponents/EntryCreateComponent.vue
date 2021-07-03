@@ -772,10 +772,12 @@ export default {
                 // products data for transfer
                 this.form.inboundProducts = this.tableData
 
+                this.$store.commit('setOverlay', true)
                 this.$putRequest(this.$api.createInboundEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
 
                     if (bool) { // continue to add without exit, reset fields
                         this.form.shippingCost = 0.0
@@ -805,11 +807,14 @@ export default {
             if (this.$refs.form.validate()) {
                 // products data for transfer
                 this.form.purchaseOrderProducts = this.tableData
+                this.$store.commit('setOverlay', true)
 
                 this.$putRequest(this.$api.createPurchaseOrder, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
+
                     this.$router.replace('/inbound_management')
                 }).catch(() => {})
             }

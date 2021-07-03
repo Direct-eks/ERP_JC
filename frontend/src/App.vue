@@ -91,6 +91,11 @@
             </v-container>
 
             <SnackMessage></SnackMessage>
+
+            <v-overlay :value="overlay">
+                <v-progress-circular indeterminate size="64" color="accent">
+                </v-progress-circular>
+            </v-overlay>
         </v-main>
 
         <v-bottom-navigation v-show="navBottomShow" color="primary">
@@ -154,6 +159,11 @@ export default {
     components: {
         SnackMessage
     },
+    created() {
+        this.$store.watch(state => state.overlay, () => {
+            this.overlay = this.$store.state.overlay
+        })
+    },
     data() {
         return {
             mdiHome,
@@ -170,6 +180,7 @@ export default {
             navBottomShow: true,
             helpSheet: false,
             helpContent: [],
+            overlay: false,
         }
     },
     watch: {

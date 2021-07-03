@@ -18,6 +18,9 @@ const store = new Vuex.Store({
             color: '',
         },
 
+        /* ------- global data for overlay -------*/
+        overlay: false,
+
         /* ------- company data -------*/
         companyCategoryList: null, // stores the tree structure of company category
         companies: new Map(), // key: categoryID, value: companies
@@ -117,7 +120,10 @@ const store = new Vuex.Store({
             state.snackbar.timeout = payload.hasOwnProperty('timeout') ?
                 payload.timeout : 1500
         },
-
+        /* ------- global data for overlay -------*/
+        setOverlay(state, payload) {
+            state.overlay = payload
+        },
         /*----------- company data ------------*/
         modifyCompanyList(state, list) {
             state.companyCategoryList = list

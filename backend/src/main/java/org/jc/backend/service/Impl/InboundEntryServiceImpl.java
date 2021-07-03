@@ -68,7 +68,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 case -1:
                     break;
                 case 0:
-                    // do entryDate check and do replenishment
+                    // do entryDate check
                     if (!outboundEntryService.passPresaleDateCheck(newProducts, entryWithProductsVO.getEntryDate())) {
                         throw new GlobalParamException("入库单日期必须大于所有预销售产品出库日期");
                     }
