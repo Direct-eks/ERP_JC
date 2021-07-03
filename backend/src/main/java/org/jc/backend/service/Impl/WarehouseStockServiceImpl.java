@@ -141,7 +141,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             if (entry == null) { // first inbound record, extract initial value from stock record
                 product.setStockQuantity(stock.getInitialStockQuantity());
                 product.setStockUnitPrice(stock.getStockUnitPriceWithoutTax());
-                if (outboundProductMap.get(date) != null) { // add today's outbound record to affectedProducts
+                // only need to add today's outbound record to affectedProducts, due to
+                // the restrict that inbound product entry date must be before presale date
+                if (outboundProductMap.get(date) != null) {
                     affectedProducts.addAll(outboundProductMap.get(date));
                 }
             }
@@ -222,9 +224,14 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             currStockQuantity = prevStockQuantity + lastEntry.getQuantity();
             BigDecimal prevStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
             BigDecimal productUnitPrice = new BigDecimal(lastEntry.getUnitPriceWithoutTax());
-            currStockPrice = prevStockPrice.multiply(BigDecimal.valueOf(prevStockQuantity))
-                    .add(productUnitPrice.multiply(BigDecimal.valueOf(lastEntry.getQuantity())))
-                    .divide(BigDecimal.valueOf(currStockQuantity), myScale, myRoundingMode);
+            if (currStockQuantity == 0) {
+                currStockPrice = new BigDecimal(0);
+            }
+            else {
+                currStockPrice = prevStockPrice.multiply(BigDecimal.valueOf(prevStockQuantity))
+                        .add(productUnitPrice.multiply(BigDecimal.valueOf(lastEntry.getQuantity())))
+                        .divide(BigDecimal.valueOf(currStockQuantity), myScale, myRoundingMode);
+            }
         }
         else {
             currStockQuantity = prevStockQuantity - lastEntry.getQuantity();
