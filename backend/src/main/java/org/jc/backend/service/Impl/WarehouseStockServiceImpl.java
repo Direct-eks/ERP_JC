@@ -1,5 +1,9 @@
 package org.jc.backend.service.Impl;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.InboundProductO;
@@ -25,8 +29,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import static org.jc.backend.utils.MyUtils.myScale;
 import static org.jc.backend.utils.MyUtils.myRoundingMode;
+import static org.jc.backend.utils.MyUtils.myScale;
 
 @Service
 public class WarehouseStockServiceImpl implements WarehouseStockService {
@@ -123,44 +127,18 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         try {
             int stockID = product.getWarehouseStockID();
             WarehouseStockO stock =  warehouseStockMapper.queryWarehouseStockByID(stockID);
-            stock.setStockQuantity(stock.getStockQuantity() + product.getQuantity());
-            warehouseStockMapper.updateStockQuantity(stock);
 
-
-            List<ProductStatO> inboundProducts = inboundEntryService.getAllInboundProducts(stockID);
-            List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(stockID);
-
-            var inboundProductMap = inboundProducts.parallelStream()
-                    .peek(p -> p.setInbound(true))
-                    .collect(Collectors.groupingBy(ProductStatO::getEntryDate, TreeMap::new, Collectors.toList()));
-            inboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getInboundProductID)));
-
-            var outboundProductMap = outboundProducts.parallelStream()
-                    .peek(p -> p.setInbound(false))
-                    .collect(Collectors.groupingBy(ProductStatO::getShipmentDate, TreeMap::new, Collectors.toList()));
-            outboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getOutboundProductID)));
-
-            var productMap = new TreeMap<>(inboundProductMap);
-            for (var entry : outboundProductMap.entrySet()) { // merge map
-                String key = entry.getKey();
-                var value = entry.getValue();
-                if (productMap.containsKey(key)) {
-                    productMap.get(key).addAll(value);
-                }
-                else {
-                    productMap.put(key, value);
-                }
-            }
+            var triple = this.generateProductMaps(stockID);
+            var inboundProductMap = triple.getLeft();
+            var outboundProductMap = triple.getMiddle();
+            var productMap = triple.getRight();
 
             ProductStatO lastEntry;
             List<ProductStatO> affectedProducts = new ArrayList<>();
 
+            // find nearest inbound record
             var entry = inboundProductMap.floorEntry(date);
             if (entry == null) { // first inbound record, extract initial value from stock record
-                lastEntry = new ProductStatO();
-                lastEntry.setInbound(true);
-                lastEntry.setStockQuantity(stock.getInitialStockQuantity());
-                lastEntry.setStockUnitPrice(stock.getInitialStockUnitPrice());
                 product.setStockQuantity(stock.getInitialStockQuantity());
                 product.setStockUnitPrice(stock.getStockUnitPriceWithoutTax());
                 if (outboundProductMap.get(date) != null) { // add today's outbound record to affectedProducts
@@ -185,28 +163,18 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                         affectedProducts.addAll(sameDayProducts); // add today's outbound record to affectedProducts
                     }
                 }
-                this.doCalculation(lastEntry, product);
+                var pair = this.doCalculation(lastEntry, true);
+                product.setStockQuantity(pair.getLeft());
+                product.setStockUnitPrice(pair.getRight());
             }
             lastEntry = new ProductStatO();
             BeanUtils.copyProperties(product, lastEntry);
+            lastEntry.setInbound(true);
 
-            // add all products (from the next day to the specified inbound date to today) to affected list
-            for (var e : productMap.subMap(date, false,
-                    MyUtils.todayDateString(), true).entrySet()) {
-                affectedProducts.addAll(e.getValue());
-            }
-
-            // change all following records if curr record is not the last one
-            for (var p : affectedProducts) {
-                this.doCalculation(lastEntry, p);
-                if (p.isInbound()) {
-                    inboundEntryService.updateInboundProduct(p);
-                }
-                else {
-                    outboundEntryService.updateOutboundProduct(p);
-                }
-                lastEntry = p;
-            }
+            var pair = this.addRestProductsAndCalculate(productMap, affectedProducts, date, lastEntry);
+            stock.setStockQuantity(pair.getLeft());
+            stock.setStockUnitPriceWithoutTax(pair.getRight());
+            warehouseStockMapper.updateStockInfo(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -215,11 +183,42 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
-    private void doCalculation(ProductStatO lastEntry, Object product) {
+    private Triple<TreeMap<String, List<ProductStatO>>,
+            TreeMap<String, List<ProductStatO>>,
+            TreeMap<String, List<ProductStatO>>> generateProductMaps(int stockID) {
+        List<ProductStatO> inboundProducts = inboundEntryService.getAllInboundProducts(stockID);
+        List<ProductStatO> outboundProducts = outboundEntryService.getAllOutboundProducts(stockID);
+
+        var inboundProductMap = inboundProducts.parallelStream()
+                .peek(p -> p.setInbound(true))
+                .collect(Collectors.groupingBy(ProductStatO::getEntryDate, TreeMap::new, Collectors.toList()));
+        inboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getInboundProductID)));
+
+        var outboundProductMap = outboundProducts.parallelStream()
+                .peek(p -> p.setInbound(false))
+                .collect(Collectors.groupingBy(ProductStatO::getShipmentDate, TreeMap::new, Collectors.toList()));
+        outboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getOutboundProductID)));
+
+        var productMap = new TreeMap<>(inboundProductMap);
+        for (var entry : outboundProductMap.entrySet()) { // merge map
+            String key = entry.getKey();
+            var value = entry.getValue();
+            if (productMap.containsKey(key)) {
+                productMap.get(key).addAll(value);
+            }
+            else {
+                productMap.put(key, value);
+            }
+        }
+
+        return ImmutableTriple.of(inboundProductMap, outboundProductMap, productMap);
+    }
+
+    private Pair<Integer, String> doCalculation(ProductStatO lastEntry, boolean isInbound) {
         int prevStockQuantity = lastEntry.getStockQuantity();
         int currStockQuantity;
         BigDecimal currStockPrice;
-        if (product instanceof InboundProductO || ((ProductStatO) product).isInbound()) {
+        if (isInbound) {
             currStockQuantity = prevStockQuantity + lastEntry.getQuantity();
             BigDecimal prevStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
             BigDecimal productUnitPrice = new BigDecimal(lastEntry.getUnitPriceWithoutTax());
@@ -231,14 +230,35 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             currStockQuantity = prevStockQuantity - lastEntry.getQuantity();
             currStockPrice = new BigDecimal(lastEntry.getStockUnitPrice());
         }
-        if (product instanceof InboundProductO) {
-            ((InboundProductO) product).setStockQuantity(currStockQuantity);
-            ((InboundProductO) product).setStockUnitPrice(currStockPrice.toPlainString());
+
+        return new ImmutablePair<>(currStockQuantity, currStockPrice.toPlainString());
+    }
+
+    private Pair<Integer, String> addRestProductsAndCalculate(
+            TreeMap<String, List<ProductStatO>> productMap,
+            List<ProductStatO> affectedProducts,
+            String date,
+            ProductStatO lastEntry) {
+        // add all products (from the next day to the specified inbound date to today) to affected list
+        for (var e : productMap.subMap(date, false,
+                MyUtils.todayDateString(), true).entrySet()) {
+            affectedProducts.addAll(e.getValue());
         }
-        else {
-            ((ProductStatO) product).setStockQuantity(currStockQuantity);
-            ((ProductStatO) product).setStockUnitPrice(currStockPrice.toPlainString());
+        // change all following records if curr record is not the last one
+        for (var p : affectedProducts) {
+            var pair = this.doCalculation(lastEntry, lastEntry.isInbound());
+            p.setStockQuantity(pair.getLeft());
+            p.setStockUnitPrice(pair.getRight());
+            if (p.isInbound()) {
+                inboundEntryService.updateInboundProduct(p);
+            }
+            else {
+                outboundEntryService.updateOutboundProduct(p);
+            }
+            lastEntry = p;
         }
+
+        return this.doCalculation(lastEntry, lastEntry.isInbound());
     }
 
     /**
@@ -246,14 +266,35 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
      */
     @Transactional
     @Override
-    public void modifyStock(InboundProductO product, int quantityChange) {
+    public void modifyStock(InboundProductO product, String date, int quantityChange) {
         try {
-            WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(product.getWarehouseStockID());
+            int stockID = product.getWarehouseStockID();
+            WarehouseStockO stock = warehouseStockMapper.queryWarehouseStockByID(stockID);
 
-            // add changes
-            stock.setStockQuantity(stock.getStockQuantity() + quantityChange);
+            var triple = this.generateProductMaps(stockID);
+            var productMap = triple.getRight();
 
-            warehouseStockMapper.updateStockQuantity(stock);
+            ProductStatO lastEntry = new ProductStatO();
+            BeanUtils.copyProperties(product, lastEntry);
+            lastEntry.setInbound(true);
+            List<ProductStatO> affectedProducts = new ArrayList<>();
+
+            int index = -1;
+            var sameDayProducts = productMap.get(date);
+            for (var p : sameDayProducts) {
+                if (p.getInboundProductID() == product.getInboundProductID()) {
+                    index = sameDayProducts.indexOf(p);
+                    break;
+                }
+            }
+            for (int i = index; i < sameDayProducts.size() - 1; i++) {
+                affectedProducts.add(sameDayProducts.get(i));
+            }
+
+            var pair = this.addRestProductsAndCalculate(productMap, affectedProducts, date, lastEntry);
+            stock.setStockQuantity(pair.getLeft());
+            stock.setStockUnitPriceWithoutTax(pair.getRight());
+            warehouseStockMapper.updateStockInfo(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -277,7 +318,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             int productQuantity = product.getQuantity();
             stock.setStockQuantity(stockQuantity - productQuantity);
 
-            warehouseStockMapper.updateStockQuantity(stock);
+            warehouseStockMapper.updateStockInfo(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -298,7 +339,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             // deduct changes
             stock.setStockQuantity(stock.getStockQuantity() - quantityChange);
 
-            warehouseStockMapper.updateStockQuantity(stock);
+            warehouseStockMapper.updateStockInfo(stock);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

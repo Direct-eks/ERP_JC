@@ -49,9 +49,10 @@
     </select>
 
 
-    <update id="updateStockQuantity">
+    <update id="updateStockInfo">
         update w_warehouse_stock
-        set stock_quantity = #{quantity}
+        set stock_quantity = #{quantity},
+            stock_unit_price_without_tax = #{stockUnitPriceWithoutTax}
         where warehouse_stock_id = #{warehouseStockID}
     </update>
 

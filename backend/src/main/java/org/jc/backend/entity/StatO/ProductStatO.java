@@ -1,10 +1,12 @@
 package org.jc.backend.entity.StatO;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class ProductStatO {
     // identifier
     private boolean isInbound;

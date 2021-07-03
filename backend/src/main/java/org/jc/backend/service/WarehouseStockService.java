@@ -16,7 +16,7 @@ public interface WarehouseStockService {
     int passPresaleCheck(List<InboundProductO> inboundProducts);
 
     void increaseStock(InboundProductO product, String date);
-    void modifyStock(InboundProductO product, int quantityChange);
+    void modifyStock(InboundProductO product, String date, int quantityChange);
     void decreaseStock(OutboundProductO product);
     void modifyStock(OutboundProductO product, int quantityChange);
 

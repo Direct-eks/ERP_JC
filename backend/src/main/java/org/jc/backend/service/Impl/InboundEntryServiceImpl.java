@@ -225,11 +225,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                             inboundEntryMapper.updateProduct(currentProduct);
                             // calculate new stock quantity, quantityChange > 0 if more inbound is detected
                             int quantityChange = currentProduct.getQuantity() - originalProduct.getQuantity();
-                            warehouseStockService.modifyStock(originalProduct, quantityChange);
-                            // change stock quantity for outbound product entry after the date of this inbound entry
-                            String date = currentEntry.getEntryDate();
-                            int warehouseStockID = originalProduct.getWarehouseStockID();
-                            // todo
+                            warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate(), quantityChange);
                         }
                         found = true;
                         break;

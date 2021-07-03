@@ -16,6 +16,6 @@ public interface WarehouseStockMapper {
 
     WarehouseStockO queryWarehouseStockByWarehouseAndSku(int warehouse, int sku);
     WarehouseStockO queryWarehouseStockByID(int warehouseStockID);
-    void updateStockQuantity(WarehouseStockO warehouseStockO);
+    void updateStockInfo(WarehouseStockO warehouseStockO);
 
 }
