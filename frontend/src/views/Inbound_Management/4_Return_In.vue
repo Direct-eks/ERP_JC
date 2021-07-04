@@ -65,7 +65,8 @@ export default {
                 totalCost: 0.0, invoiceType: '',
                 drawer: '',
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                companyAbbreviatedName: '', companyPhone: '',
+                companyFullName: '', companyRemark: '',
                 departmentID: -1, departmentName: '',
                 warehouseID: -1, warehouseName: '',
                 remark: '',
@@ -82,6 +83,7 @@ export default {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm)
             }
         },
         tableClickAction(val) {
