@@ -3,48 +3,30 @@
         <v-form ref="form">
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-if="purchaseOrderModifyMode"
-                              v-model="form.warehouseID"
+                    <v-select v-model="form.warehouseID"
                               :rules="rules.warehouseID"
                               :items="warehouseOptions"
                               item-value="warehouseID"
                               item-text="name"
                               label="仓库"
                               hide-details="auto"
+                              :readonly="!purchaseOrderModifyMode"
                               outlined dense
                               style="width: 150px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.warehouseName"
-                                  label="仓库"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="inboundEntryModifyMode || purchaseOrderModifyMode"
-                              v-model="form.departmentID"
+                    <v-select v-model="form.departmentID"
                               :rules="rules.departmentID"
                               :items="departmentOptions"
                               item-value="departmentID"
                               item-text="name"
                               label="部门"
                               hide-details="auto"
+                              :readonly="!inboundEntryModifyMode && !purchaseOrderModifyMode"
                               outlined dense
                               style="width: 180px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.departmentName"
-                                  label="部门"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 180px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.entryDate"
@@ -68,15 +50,6 @@
                                   dense
                                   style="width: 150px">
                     </v-text-field>
-                    <v-text-field v-else-if="purchaseOrderDisplayMode"
-                                  v-model="form.executionStatus"
-                                  label="状态"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                     <v-select v-else
                               v-model="form.executionStatus"
                               :items="executionStatusOptions"
@@ -84,6 +57,7 @@
                               item-text="label"
                               label="状态"
                               hide-details="auto"
+                              :readonly="purchaseOrderDisplayMode"
                               outlined dense
                               style="width: 180px">
                     </v-select>
@@ -99,26 +73,17 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="inboundEntryModifyMode || purchaseOrderModifyMode"
-                              v-model="form.invoiceType"
+                    <v-select v-model="form.invoiceType"
                               :rules="rules.invoiceType"
                               :items="invoiceTypeOptions"
                               item-value="value"
                               item-text="label"
                               label="预计单据类型"
                               hide-details="auto"
+                              :readonly="!inboundEntryModifyMode && !purchaseOrderModifyMode"
                               outlined dense
                               style="width: 150px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.invoiceType"
-                                  label="预计单据类型"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                 </v-col>
                 <v-col v-if="form.invoiceType === '增值税票'">
                     <v-select v-model="form.taxRate"
@@ -170,6 +135,21 @@
                 </v-col>
             </v-row>
 
+            <v-row v-if="form.companyRemark !== ''" dense>
+                <v-col>
+                    <v-textarea v-model.number="form.companyRemark"
+                                label="重要提示"
+                                hide-details="auto"
+                                background-color="red accent-2"
+                                outlined
+                                dense
+                                readonly
+                                auto-grow
+                                rows="1">
+                    </v-textarea>
+                </v-col>
+            </v-row>
+
             <v-row v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
                 <v-col cols="auto">
                     <v-text-field v-model="form.relevantCompanyName"
@@ -218,9 +198,10 @@
                 </v-col>
                 <v-col cols="auto" v-if="(inboundEntryDisplayMode || inboundEntryModifyMode)
                                             && form.shippingCostType !== '无'">
-                    <v-text-field v-model.number="form.shippingCost"
+                    <v-text-field v-model="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
+                                  type="number"
                                   outlined
                                   readonly
                                   dense
@@ -229,7 +210,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="form.totalCost"
+                    <v-text-field v-model="form.totalCost"
                                   label="总金额"
                                   hide-details="auto"
                                   filled
@@ -241,7 +222,7 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-textarea v-model.number="form.remark"
+                    <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
                                 outlined
@@ -278,14 +259,15 @@
                     </template>
                     <v-card>
                         <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                            <v-btn color="primary"
+                                   @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
+                                确认
+                            </v-btn>
+                        </v-card-actions>
                     </v-card>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
-                        <v-btn color="primary" @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
-                            确认
-                        </v-btn>
-                    </v-card-actions>
                 </v-dialog>
             </v-col>
         </v-row>
@@ -465,16 +447,14 @@ export default {
             this.inboundEntryDisplayMode = true
             break
         }
-        if (this.inboundEntryModifyMode || this.purchaseOrderModifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((data) => {
-                this.departmentOptions = data
-            }).catch(() => {})
-        }
-        if (this.purchaseOrderModifyMode) {
-            this.$getRequest(this.$api.warehouseOptions).then((data) => {
-                this.warehouseOptions = data
-            }).catch(() => {})
-        }
+
+        this.$getRequest(this.$api.departmentOptions).then((data) => {
+            this.departmentOptions = data
+        }).catch(() => {})
+
+        this.$getRequest(this.$api.warehouseOptions).then((data) => {
+            this.warehouseOptions = data
+        }).catch(() => {})
 
         this.$getRequest(this.$api.allTaxRates).then((data) => {
             for (const option of data) {
@@ -655,12 +635,17 @@ export default {
                         this.form.departmentName = item.name
                 })
 
+                this.$store.commit('setOverlay', true)
                 this.$patchRequest(this.$api.modifyInboundEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
+
                     this.$router.replace('/inbound_management')
                 }).catch(() => {})
+
+                this.submitPopup = false
             }
         },
         saveOrderModification() {
@@ -679,21 +664,31 @@ export default {
                         this.form.warehouseName = item.name
                 })
 
+                this.$store.commit('setOverlay', true)
                 this.$patchRequest(this.$api.modifyPurchaseOrder, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
+
                     this.$router.replace('/inbound_management')
                 }).catch(() => {})
+
+                this.submitPopup = false
             }
         },
         saveEntryReturn() {
+            this.$store.commit('setOverlay', true)
             this.$postRequest(this.$api.returnInboundEntry, this.form).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
+
                 this.$router.replace('/inbound_management')
             }).catch(() => {})
+
+            this.submitPopup2 = false
         }
     },
     watch: {
