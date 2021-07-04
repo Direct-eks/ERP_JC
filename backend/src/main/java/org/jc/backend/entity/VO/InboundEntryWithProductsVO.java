@@ -48,6 +48,7 @@ public class InboundEntryWithProductsVO {
     private String companyAbbreviatedName;
     private String companyPhone;
     private String companyFullName;
+    private String companyRemark;
 
     @NotNull(message = "departmentID null error")
     @Min(value = 0, message = "入库部门错误")

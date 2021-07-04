@@ -48,6 +48,7 @@
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyFullName" column="company_full_name"/>
         <result property="companyPhone" column="company_phone"/>
+        <result property="companyRemark" column="company_remark"/>
         <result property="departmentID" column="department_id"/>
         <result property="departmentName" column="department_name"/>
         <result property="warehouseID" column="warehouse_id"/>
@@ -77,8 +78,8 @@
     <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
         select s.sales_order_entry_id, s.shipment_date, s.creation_date, s.total_amount, s.invoice_type, s.tax_rate,
         s.execution_status, s.drawer, s.partner_company_id, c.abbreviated_name as company_abbreviated_name,
-        c.full_name as company_full_name, c.phone as company_phone, s.department_id, d.name as department_name,
-        s.warehouse_id, w.name as warehouse_name, s.remark, s.is_modified
+        c.full_name as company_full_name, c.phone as company_phone, c.remark as company_remark,
+        s.department_id, d.name as department_name, s.warehouse_id, w.name as warehouse_name, s.remark, s.is_modified
         from ((e_sales_order_entry as s join c_partner_company as c on s.partner_company_id = c.partner_company_id)
             join e_department as d on s.department_id = d.department_id)
             join w_warehouse as w on s.warehouse_id = w.warehouse_id
@@ -92,8 +93,8 @@
     <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
         select s.sales_order_entry_id, s.shipment_date, s.creation_date, s.total_amount, s.invoice_type, s.tax_rate,
         s.execution_status, s.drawer, s.partner_company_id, c.abbreviated_name as company_abbreviated_name,
-        c.full_name as company_full_name, c.phone as company_phone, s.department_id, d.name as department_name,
-        s.warehouse_id, w.name as warehouse_name, s.remark, s.is_modified
+        c.full_name as company_full_name, c.phone as company_phone, c.remark as company_remark,
+        s.department_id, d.name as department_name, s.warehouse_id, w.name as warehouse_name, s.remark, s.is_modified
         from ((e_sales_order_entry as s join c_partner_company as c on s.partner_company_id = c.partner_company_id)
             join e_department as d on s.department_id = d.department_id)
             join w_warehouse as w on s.warehouse_id = w.warehouse_id

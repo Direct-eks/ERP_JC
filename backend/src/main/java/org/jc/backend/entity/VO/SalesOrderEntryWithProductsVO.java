@@ -52,6 +52,7 @@ public class SalesOrderEntryWithProductsVO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     @NotNull(message = "departmentID null error")
     @Min(value = 0, message = "销售部门错误")

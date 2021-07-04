@@ -20,6 +20,7 @@ public class SalesOrderEntryDO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     private int departmentID;
     //from e_department

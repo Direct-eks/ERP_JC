@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 public class QuoteEntryWithProductsVO {
-    private String quotaEntryID;
+    private String quoteEntryID;
 
     @NotNull(message = "creationDate null error")
     @NotBlank(message = "creationDate blank error")
@@ -44,6 +44,7 @@ public class QuoteEntryWithProductsVO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     @NotNull(message = "remark null error")
     private String remark;
@@ -52,5 +53,5 @@ public class QuoteEntryWithProductsVO {
 
     @Valid
     @NotEmpty(message = "报价单商品不能为空")
-    private List<QuoteProductO> quotaProducts;
+    private List<QuoteProductO> quoteProducts;
 }

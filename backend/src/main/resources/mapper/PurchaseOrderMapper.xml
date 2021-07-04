@@ -47,6 +47,7 @@
         <result property="companyAbbreviatedName" column="abbreviated_name"/>
         <result property="companyPhone" column="phone"/>
         <result property="companyFullName" column="full_name"/>
+        <result property="companyRemark" column="company_remark"/>
         <result property="departmentID" column="department_id"/>
         <result property="departmentName" column="department_name"/>
         <result property="warehouseID" column="warehouse_id"/>
@@ -76,8 +77,8 @@
     <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
         select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
                p.tax_rate, p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name,
-               c.phone, c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
-               w.name as warehouse_name, p.remark, p.is_modified
+               c.phone, c.full_name, c.remark as company_remark, p.department_id,
+               d.name as department_name, p.warehouse_id, w.name as warehouse_name, p.remark, p.is_modified
         from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
             join e_department as d on p.department_id = d.department_id)
             join w_warehouse as w on p.warehouse_id = w.warehouse_id
@@ -91,8 +92,8 @@
     <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
         select p.purchase_order_entry_id, p.entry_date, p.creation_date, p.total_cost, p.invoice_type,
                p.tax_rate, p.execution_status, p.drawer, p.partner_company_id, c.abbreviated_name,
-               c.phone, c.full_name, p.department_id, d.name as department_name, p.warehouse_id,
-               w.name as warehouse_name, p.remark, p.is_modified
+               c.phone, c.full_name, c.remark as company_remark, p.department_id,
+               d.name as department_name, p.warehouse_id, w.name as warehouse_name, p.remark, p.is_modified
         from ((e_purchase_order_entry as p join c_partner_company as c on p.partner_company_id = c.partner_company_id)
             join e_department as d on p.department_id = d.department_id)
             join w_warehouse as w on p.warehouse_id = w.warehouse_id

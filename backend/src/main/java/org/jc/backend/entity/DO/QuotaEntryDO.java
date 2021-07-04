@@ -18,6 +18,7 @@ public class QuotaEntryDO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     private String remark;
     private int isModified;

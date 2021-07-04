@@ -19,6 +19,7 @@ public class InboundEntryDO {
     private String companyAbbreviatedName;
     private String companyPhone;
     private String companyFullName;
+    private String companyRemark;
 
     private int departmentID;
     // from e_department

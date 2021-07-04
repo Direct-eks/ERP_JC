@@ -52,6 +52,7 @@ public class PurchaseOrderEntryWithProductsVO {
     private String companyAbbreviatedName;
     private String companyPhone;
     private String companyFullName;
+    private String companyRemark;
 
     @NotNull(message = "departmentID null error")
     @Min(value = 0, message = "采购部门错误")

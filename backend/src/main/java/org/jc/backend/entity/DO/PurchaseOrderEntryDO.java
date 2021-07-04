@@ -20,6 +20,7 @@ public class PurchaseOrderEntryDO {
     private String companyAbbreviatedName;
     private String companyPhone;
     private String companyFullName;
+    private String companyRemark;
 
     private int departmentID;
     // from c_department

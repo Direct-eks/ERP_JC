@@ -50,6 +50,7 @@
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyPhone" column="phone"/>
         <result property="companyFullName" column="full_name"/>
+        <result property="companyRemark" column="company_remark"/>
         <result property="departmentID" column="department_id"/>
         <result property="departmentName" column="department_name"/>
         <result property="warehouseID" column="warehouse_id"/>
@@ -94,8 +95,8 @@
     <select id="queryEntriesInDateRangeByInvoiceTypeAndCompanyID" resultMap="entryResultMap">
         select i.inbound_entry_id, i.entry_date, i.creation_date, i.total_cost, i.invoice_type, i.tax_rate,
                i.drawer, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
-               c.phone, c.full_name, d.department_id, d.name as department_name, i.warehouse_id,
-               w.name as warehouse_name, i.remark, i.classification, i.shipping_cost,
+               c.phone, c.full_name, c.remark as company_remark, d.department_id, d.name as department_name,
+               i.warehouse_id, w.name as warehouse_name, i.remark, i.classification, i.shipping_cost,
                i.shipping_cost_type, i.shipping_quantity, i.shipping_number, i.shipping_method_id,
                r.abbreviated_name as relevant_company_name, i.shipping_cost_serial, i.return_date,
                i.return_serial, i.print_times, i.is_modified
