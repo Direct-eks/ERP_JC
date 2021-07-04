@@ -42,7 +42,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
         QuotaEntryDO newEntry = new QuotaEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, newEntry);
-        List<QuoteProductO> newProducts = quoteEntryWithProductsVO.getQuotaProducts();
+        List<QuoteProductO> newProducts = quoteEntryWithProductsVO.getQuoteProducts();
 
         try {
             // calculate the number of entries have been created for today's date, and generate new serial
@@ -79,8 +79,8 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
 
                 List<QuoteProductO> products = quoteEntryMapper.queryProductsByEntryID(
-                        tempEntry.getQuotaEntryID());
-                tempEntry.setQuotaProducts(products);
+                        tempEntry.getQuoteEntryID());
+                tempEntry.setQuoteProducts(products);
 
                 entries.add(tempEntry);
             }
@@ -105,8 +105,8 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
                 BeanUtils.copyProperties(entryFromDatabase, tempEntry);
 
                 List<QuoteProductO> products = quoteEntryMapper.queryProductsByEntryID(
-                        tempEntry.getQuotaEntryID());
-                tempEntry.setQuotaProducts(products);
+                        tempEntry.getQuoteEntryID());
+                tempEntry.setQuoteProducts(products);
 
                 entries.add(tempEntry);
             }
@@ -126,7 +126,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
         QuotaEntryDO currentEntry = new QuotaEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, currentEntry);
 
-        List<QuoteProductO> currentProducts = quoteEntryWithProductsVO.getQuotaProducts();
+        List<QuoteProductO> currentProducts = quoteEntryWithProductsVO.getQuoteProducts();
 
         try {
             //query database for compare
