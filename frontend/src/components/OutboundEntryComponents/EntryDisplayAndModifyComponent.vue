@@ -3,48 +3,30 @@
         <v-form ref="form">
             <v-row v-if="!quotaDisplayMode && !quotaModifyMode">
                 <v-col cols="auto">
-                    <v-select v-if="salesOrderModifyMode"
-                              v-model="form.warehouseID"
+                    <v-select v-model="form.warehouseID"
                               :rules="rules.warehouseID"
                               :items="warehouseOptions"
                               item-value="warehouseID"
                               item-text="name"
                               label="仓库"
                               hide-details="auto"
+                              :readonly="!salesOrderModifyMode"
                               outlined dense
                               style="width: 150px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.warehouseName"
-                                  label="仓库"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="outboundEntryModifyMode || salesOrderModifyMode"
-                              v-model="form.departmentID"
+                    <v-select v-model="form.departmentID"
                               :rules="rules.departmentID"
                               :items="departmentOptions"
                               item-value="departmentID"
                               item-text="name"
                               label="部门"
                               hide-details="auto"
+                              :readonly="!outboundEntryModifyMode && !salesOrderModifyMode"
                               outlined dense
                               style="width: 180px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.departmentName"
-                                  label="部门"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 180px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.shipmentDate"
@@ -66,16 +48,7 @@
                                   outlined
                                   readonly
                                   dense
-                                  style="width: 150px">
-                    </v-text-field>
-                    <v-text-field v-else-if="salesOrderDisplayMode"
-                                  v-model="form.executionStatus"
-                                  label="状态"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
+                                  style="width: 100px">
                     </v-text-field>
                     <v-select v-else
                               v-model="form.executionStatus"
@@ -84,8 +57,9 @@
                               item-text="label"
                               label="状态"
                               hide-details="auto"
+                              :readonly="salesOrderDisplayMode"
                               outlined dense
-                              style="width: 180px">
+                              style="width: 120px">
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
@@ -95,30 +69,33 @@
                                   outlined
                                   readonly
                                   dense
-                                  style="width: 150px">
+                                  style="width: 120px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-select v-if="outboundEntryModifyMode || salesOrderModifyMode"
-                              v-model="form.invoiceType"
+                    <v-select v-model="form.invoiceType"
                               :rules="rules.invoiceType"
                               :items="invoiceTypeOptions"
                               item-value="value"
                               item-text="label"
                               label="预计单据类型"
                               hide-details="auto"
+                              :readonly="!outboundEntryModifyMode && !salesOrderModifyMode"
                               outlined dense
-                              style="width: 180px">
+                              style="width: 150px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.invoiceType"
-                                  label="预计单据类型"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 180px">
-                    </v-text-field>
+                </v-col>
+                <v-col v-if="form.invoiceType === '增值税票'">
+                    <v-select v-model="form.taxRate"
+                              :rules="rules.taxRate"
+                              :items="taxRateOptions"
+                              @change="changeTaxRate"
+                              label="税率"
+                              hide-details="auto"
+                              :append-icon="mdiPercentOutline"
+                              outlined dense
+                              style="width: 110px">
+                    </v-select>
                 </v-col>
             </v-row>
 
@@ -129,8 +106,8 @@
                                   hide-details="auto"
                                   outlined
                                   dense
-                                  style="width: 200px"
-                                  @keydown.enter="triggerSimpleSearch = true">
+                                  readonly
+                                  style="width: 200px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
@@ -138,22 +115,37 @@
                                   label="购货单位简称"
                                   hide-details="auto"
                                   outlined
-                                  :rules="rules.company"
                                   dense
-                                  style="width: 200px"
-                                  @keydown.enter="triggerSimpleSearch = true">
+                                  readonly
+                                  style="width: 200px">
                     </v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row dense>
                 <v-col cols="auto">
                     <v-text-field v-model="form.companyFullName"
                                   label="购货单位全称"
                                   hide-details="auto"
                                   outlined
                                   dense
+                                  readonly
                                   style="width: 300px">
                     </v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row v-if="form.companyRemark !== ''" dense>
+                <v-col>
+                    <v-textarea v-model.number="form.companyRemark"
+                                label="重要提示"
+                                hide-details="auto"
+                                background-color="red accent-2"
+                                outlined
+                                dense
+                                readonly
+                                auto-grow
+                                rows="1">
+                    </v-textarea>
                 </v-col>
             </v-row>
 
@@ -204,9 +196,10 @@
                     </v-radio-group>
                 </v-col>
                 <v-col cols="auto" v-if="outboundEntryDisplayMode || outboundEntryModifyMode">
-                    <v-text-field v-model.number="form.shippingCost"
+                    <v-text-field v-model="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
+                                  type="number"
                                   outlined
                                   readonly
                                   dense
@@ -214,7 +207,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto" v-if="outboundEntryDisplayMode || outboundEntryModifyMode">
-                    <v-text-field v-model.number="form.deliveryMethod"
+                    <v-text-field v-model="form.deliveryMethod"
                                   label="提货方式"
                                   hide-details="auto"
                                   outlined
@@ -223,8 +216,9 @@
                                   style="width: 150px">
                     </v-text-field>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="form.totalAmount"
+                    <v-text-field v-model="form.totalAmount"
                                   label="总金额"
                                   hide-details="auto"
                                   outlined
@@ -236,7 +230,7 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-textarea v-model.number="form.remark"
+                    <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
                                 outlined
@@ -255,55 +249,33 @@
             <v-col v-if="outboundEntryModifyMode || salesOrderModifyMode || quotaModifyMode">
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="red lighten-1"
-                               v-on="on">
-                            删除
-                        </v-btn>
+                        <v-btn color="red lighten-1" v-on="on">删除</v-btn>
                     </template>
                     <v-card>
-                        <v-card-title>
-                            确认删除？
-                        </v-card-title>
-                        <v-card-text>
-                            {{rowDeletionConfirm}}
-                        </v-card-text>
+                        <v-card-title>确认删除选中行？</v-card-title>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="primary"
-                                   @click="deleteTableRowPopup = false">
-                                取消
-                            </v-btn>
-                            <v-btn color="success"
-                                   @click="handleDeleteRow">
-                                确认
-                            </v-btn>
+                            <v-btn color="primary" @click="deleteTableRowPopup = false">取消</v-btn>
+                            <v-btn color="success" @click="handleDeleteRow">确认</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col v-if="outboundEntryModifyMode">
-                <v-btn color="primary"
-                       @click="saveEntryModification()">
-                    保存修改
-                </v-btn>
-            </v-col>
-            <v-col v-if="salesOrderModifyMode">
-                <v-btn color="primary"
-                       @click="saveOrderModification()">
-                    保存修改
-                </v-btn>
-            </v-col>
-            <v-col v-if="quotaModifyMode">
-                <v-btn color="primary"
-                       @click="saveQuotaModification()">
-                    保存修改
-                </v-btn>
-            </v-col>
-            <v-col v-if="outboundEntryReturnMode">
-                <v-btn color="primary"
-                       @click="saveEntryReturn()">
-                    保存修改
-                </v-btn>
+            <v-col v-if="outboundEntryModifyMode || salesOrderModifyMode ||
+                            quotaModifyMode || outboundEntryReturnMode">
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                </v-dialog>
+                <v-card>
+                    <v-card-title>确认提交？</v-card-title>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                        <v-btn color="primary" @click="saveModification">确认</v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-col>
         </v-row>
 
@@ -321,71 +293,48 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{outboundEntryModifyMode ? form.outboundProducts.indexOf(item) + 1 :
-                salesOrderModifyMode ? form.salesOrderProducts.indexOf(item) + 1 :
-                    form.quotaProducts.indexOf(item) + 1 }}
-            </template>
             <template v-slot:item.quantity="{ item }">
                 <v-edit-dialog :return-value.sync="item.quantity"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handleQuantityChange(item)">
+                               @save="handleQuantityChange(item)"
+                               @cancel="handleQuantityChange(item)"
+                               @close="handleQuantityChange(item)">
                     {{item.quantity}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.quantity"
-                                      single-line
-                                      counter="8">
-                        </v-text-field>
+                        <v-text-field v-model="item.quantity" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
             <template v-slot:item.unitPriceWithTax="{ item }">
                 <v-edit-dialog :return-value.sync="item.unitPriceWithTax"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handlePriceWithTaxChange(item)">
+                               @save="handlePriceWithTaxChange(item)"
+                               @cancel="handlePriceWithTaxChange(item)"
+                               @close="handlePriceWithTaxChange(item)">
                     {{item.unitPriceWithTax}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.unitPriceWithTax"
-                                      single-line
-                                      counter="12">
-                        </v-text-field>
+                        <v-text-field v-model="item.unitPriceWithTax" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
             <template v-slot:item.unitPriceWithoutTax="{ item }">
                 <v-edit-dialog :return-value.sync="item.unitPriceWithoutTax"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handlePriceWithoutTaxChange(item)">
+                               @save="handlePriceWithoutTaxChange(item)"
+                               @cancel="handlePriceWithoutTaxChange(item)"
+                               @close="handlePriceWithoutTaxChange(item)">
                     {{item.unitPriceWithoutTax}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.unitPriceWithoutTax"
-                                      single-line
-                                      counter="12">
-                        </v-text-field>
+                        <v-text-field v-model="item.unitPriceWithoutTax" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
             <template v-slot:item.remark="{ item }">
-                <v-edit-dialog :return-value.sync="item.remark"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消">
+                <v-edit-dialog :return-value.sync="item.remark">
                     {{item.remark}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.remark"
-                                      single-line
-                                      counter="200">
-                        </v-text-field>
+                        <v-text-field v-model="item.remark" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
@@ -402,22 +351,15 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{ form.outboundProducts.indexOf(item) + 1 }}
-            </template>
             <template v-slot:item.returnQuantity="{ item }">
                 <v-edit-dialog :return-value="item.returnQuantity"
-                               persistent
-                               large
-                               save-text="确认"
-                               cancel-text="取消"
-                               @save="handleReturnQuantityChange(item)">
+                               @save="handleReturnQuantityChange(item)"
+                               @cancel="handleReturnQuantityChange(item)"
+                               @close="handleReturnQuantityChange(item)">
                     {{item.returnQuantity}}
                     <template v-slot:input>
-                        <v-text-field v-model="item.returnQuantity"
-                                      single-line
-                                      counter="8">
-                        </v-text-field>
+                        <v-text-field v-model="item.returnQuantity" single-line
+                                      @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
             </template>
@@ -435,48 +377,34 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{outboundEntryDisplayMode ? form.outboundProducts.indexOf(item) + 1 :
-                salesOrderDisplayMode ? form.salesOrderProducts.indexOf(item) + 1 :
-                    form.quotaProducts.indexOf(item) + 1 }}
-            </template>
         </v-data-table>
 
-        <v-row>
+        <div class="d-flex">
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <span>税额合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{tax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>不含税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithoutTax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>价税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithTax}}
-            </v-col>
-        </v-row>
+            <div class="my-2">
+                <strong>税额合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ tax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>不含税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithoutTax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>价税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithTax }}</strong>
+            </div>
+        </div>
     </v-container>
 </template>
 
 <script>
-function validateFloat(value) {
-    value = value.replace(/[^\d.]/g, "")  // 清除“数字”和“.”以外的字符
-    value = value.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    value = value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    value = value.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (value.indexOf(".") < 0 && value !== "") // 如果没有小数点，首位不能为0
-        value = parseFloat(value)
-    console.log('float', value)
-    return value
-}
+import {mdiPercentOutline} from "@mdi/js";
 
 export default {
     name: "OutboundEntryDisplayComponent",
@@ -488,41 +416,6 @@ export default {
         form: {
             type: Object,
             required: true
-        }
-    },
-    watch: {
-        form: {
-            handler(newVal) {
-                let tax = 0.0
-                let sumWithTax = 0.0
-                let sumWithoutTax = 0.0
-                if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
-                    for (let item of newVal.outboundProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
-                }
-                else if (this.salesOrderDisplayMode || this.salesOrderModifyMode) {
-                    for (let item of newVal.salesOrderProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
-                }
-                else if (this.quotaDisplayMode || this.quotaModifyMode) {
-                    for (let item of newVal.quotaProducts) {
-                        tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                        sumWithTax += item.unitPriceWithTax * item.quantity
-                        sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                    }
-                }
-                this.tax = tax.toFixed(2)
-                this.sumWithTax = sumWithTax.toFixed(2)
-                this.sumWithoutTax = sumWithoutTax.toFixed(2)
-            },
-            deep: true,
-            immediate: true
         }
     },
     beforeMount() {
@@ -551,27 +444,23 @@ export default {
             break
         }
 
-        if (this.outboundEntryModifyMode || this.salesOrderModifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((data) => {
-                console.log(data)
-                this.departmentOptions = data
-                for (let item of this.departmentOptions)
-                    if (item.isDefault === 1)
-                        this.form.departmentID = item.id
-            }).catch(() => {})
-        }
-        if (this.salesOrderModifyMode) {
-            this.$getRequest(this.$api.warehouseOptions).then((data) => {
-                console.log(data)
-                this.warehouseOptions = data
-                for (let item of this.warehouseOptions)
-                    if (item.isDefault === 1)
-                        this.form.warehouseID = item.id
-            }).catch(() => {})
-        }
+        this.$getRequest(this.$api.warehouseOptions).then((data) => {
+            this.warehouseOptions = data
+        }).catch(() => {})
+
+        this.$getRequest(this.$api.departmentOptions).then((data) => {
+            this.departmentOptions = data
+        }).catch(() => {})
+
+        this.$getRequest(this.$api.allTaxRates).then((data) => {
+            for (const option of data) {
+                this.taxRateOptions.push(Number(option))
+            }
+        }).catch(() => {})
     },
     data() {
         return {
+            mdiPercentOutline,
             outboundEntryDisplayMode: false,
             outboundEntryModifyMode: false,
             salesOrderDisplayMode: false,
@@ -588,6 +477,7 @@ export default {
 
             warehouseOptions: [],
             departmentOptions: [],
+            taxRateOptions: [],
             executionStatusOptions: [
                 {value: '执行', label: '执行'},
                 {value: '中止', label: '中止'}
@@ -599,17 +489,16 @@ export default {
             ],
 
             tableHeaders: [
-                {text: '序号', value: 'index', width: '60px'},
-                {text: '代号', value: 'code', width: '100px'},
+                {text: '代号', value: 'code', width: '180px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
-                {text: '出库数量', value: 'quantity', width: '80px'},
+                {text: '出库数量', value: 'quantity', width: '90px'},
                 {text: '单位', value: 'unitName', width: '60px'},
-                {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
-                {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
-                {text: '无税金额', value: 'totalWithoutTax', width: '80px'},
+                {text: '含税单价', value: 'unitPriceWithTax', width: '100px'},
+                {text: '无税单价', value: 'unitPriceWithoutTax', width: '100px'},
+                {text: '无税金额', value: 'totalWithoutTax', width: '100px'},
                 {text: '税率', value: 'taxRate', width: '65px'},
-                {text: '税额', value: 'totalTax', width: '80px'},
-                {text: '备注', value: 'remark', width: '120px'},
+                {text: '税额', value: 'totalTax', width: '90px'},
+                {text: '备注', value: 'remark', width: '180px'},
                 {text: '库存数量', value: 'stockQuantity', width: '120px'},
                 {text: '库存单价', value: 'stockUnitPrice', width: '120px'}
             ],
@@ -632,54 +521,101 @@ export default {
 
             deleteTableRowPopup: false,
             tableRowsSelectedForDeletion: [],
+            submitPopup: false,
 
-            tax: 0.0,
-            sumWithTax: 0.0,
-            sumWithoutTax: 0.0
+            tax: '0.0',
+            sumWithTax: '0.0',
+            sumWithoutTax: '0.0'
         }
     },
     methods: {
         /* ----- number calculation ----- */
+        handleTotalChange() {
+            let tempSumWithTax = this.$Big('0')
+            let tempSumWithoutTax = this.$Big('0')
+            if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
+                this.form.outboundProducts.forEach((item) => {
+                    const itemQuantity = this.$Big(item.quantity)
+                    tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                    tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
+                })
+            }
+            else if (this.salesOrderDisplayMode || this.salesOrderModifyMode) {
+                this.form.salesOrderProducts.forEach((item) => {
+                    const itemQuantity = this.$Big(item.quantity)
+                    tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                    tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
+                })
+            }
+            else if (this.quotaDisplayMode || this.quotaModifyMode) {
+                this.form.quotaProducts.forEach((item) => {
+                    const itemQuantity = this.$Big(item.quantity)
+                    tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                    tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
+                })
+            }
+            this.sumWithTax = tempSumWithTax.toString()
+            this.sumWithoutTax = tempSumWithoutTax.toString()
+            this.tax = tempSumWithTax.minus(tempSumWithoutTax).toString()
+
+            let sum = this.$Big(this.sumWithTax)
+            // plus shipping
+            if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
+                switch (this.form.shippingCostType) {
+                case "无":
+                case '自付':
+                    break
+                case '代垫':
+                    sum = sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
+                    break
+                }
+            }
+            this.form.totalAmount = sum.toString()
+        },
         handleQuantityChange(row) {
             //calculate for each row
-            row.quantity = row.quantity.toString().replace(/[^\d]/g, "")
-            row.totalWithoutTax = (row.quantity * row.unitPriceWithoutTax).toFixed(2)
-            row.totalTax = (row.quantity * row.unitPriceWithTax - row.totalWithoutTax).toFixed(2)
-
-            let tempSumWithTax = 0
-            if (this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
-                this.form.outboundProducts.forEach((item) => {
-                    tempSumWithTax += item.unitPriceWithTax * item.quantity
-                })
-            }
-            else if (this.salesOrderModifyMode) {
-                this.form.salesOrderProducts.forEach((item) => {
-                    tempSumWithTax += item.unitPriceWithTax * item.quantity
-                })
-            }
-            else {
-                this.form.quotaProducts.forEach((item) => {
-                    tempSumWithTax += item.unitPriceWithTax * item.quantity
-                })
-            }
-
-            this.form.totalAmount = (this.form.shippingCostType === '代垫' ?
-                tempSumWithTax + this.form.shippingCost : tempSumWithTax).toFixed(2)
+            row.quantity = this.$validateNumber(row.quantity)
+            const tempQuantity = this.$Big(row.quantity)
+            row.totalWithoutTax = tempQuantity.times(row.unitPriceWithoutTax)
+            row.totalTax = tempQuantity.times(row.unitPriceWithTax).minus(row.totalWithoutTax)
+            this.handleTotalChange()
         },
         handlePriceWithTaxChange(row) {
-            row.unitPriceWithTax = validateFloat(row.unitPriceWithTax.toString())
-            row.unitPriceWithoutTax = (row.unitPriceWithTax / 1.16).toFixed(2)
+            row.unitPriceWithTax = this.$validateFloat(row.unitPriceWithTax)
+            const tempValue = this.$Big(row.unitPriceWithTax)
+            row.unitPriceWithoutTax = tempValue.div(this.$Big(this.form.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         handlePriceWithoutTaxChange(row) {
-            row.unitPriceWithoutTax = validateFloat(row.unitPriceWithoutTax.toString())
-            row.unitPriceWithTax = (row.unitPriceWithoutTax * 1.16).toFixed(2)
+            row.unitPriceWithoutTax = this.$validateFloat(row.unitPriceWithoutTax)
+            const tempValue = this.$Big(row.unitPriceWithoutTax)
+            row.unitPriceWithTax = tempValue.times(this.$Big(this.form.taxRate).div('100').add('1'))
             this.handleQuantityChange(row)
         },
         handleReturnQuantityChange(row) {
-            row.originalQuantity = row.originalQuantity.toString().replace(/[^\d]/g, "")
+            row.originalQuantity = this.$validateNumber(row.originalQuantity)
             row.quantity = Number(row.originalQuantity) - Number(row.returnQuantity)
             this.handleQuantityChange(row)
+        },
+        changeTaxRate() {
+            if (this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
+                this.form.inboundProducts.forEach((row) => {
+                    row.taxRate = this.form.taxRate
+                    this.handlePriceWithoutTaxChange(row)
+                })
+            }
+            else if (this.salesOrderModifyMode) {
+                this.form.salesOrderProducts.forEach((row) => {
+                    row.taxRate = this.form.taxRate
+                    this.handlePriceWithoutTaxChange(row)
+                })
+            }
+            else if (this.quotaModifyMode) {
+                this.form.quotaProducts.forEach((row) => {
+                    row.taxRate = this.form.taxRate
+                    this.handlePriceWithoutTaxChange(row)
+                })
+            }
         },
         /*------- table & entry submission -------*/
         handleDeleteRow() {
@@ -703,6 +639,20 @@ export default {
                 })
             }
         },
+        saveModification() {
+            if (this.outboundEntryModifyMode) {
+                this.saveEntryModification()
+            }
+            else if (this.salesOrderModifyMode) {
+                this.saveOrderModification()
+            }
+            else if (this.quotaModifyMode) {
+                this.saveQuotaModification()
+            }
+            else if (this.outboundEntryReturnMode) {
+                this.saveEntryReturn()
+            }
+        },
         saveEntryModification() {
             if (this.$refs.form.validate()) {
                 //change drawer name for modification
@@ -714,10 +664,13 @@ export default {
                         this.form.departmentName = item.name
                 })
 
+                this.$store.commit('setOverlay', true)
                 this.$patchRequest(this.$api.modifyOutboundEntry, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
+
                     this.$router.replace('/outbound_management')
                 }).catch(() => {})
             }
@@ -738,10 +691,13 @@ export default {
                         this.form.warehouseName = item.name
                 })
 
+                this.$store.commit('setOverlay', true)
                 this.$patchRequest(this.$api.modifySalesOrder, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
+
                     this.$router.replace('/outbound_management')
                 }).catch(() => {})
             }
@@ -751,35 +707,58 @@ export default {
                 //change drawer name for modification
                 this.form.drawer = this.$store.getters.currentUser
 
+                this.$store.commit('setOverlay', true)
                 this.$patchRequest(this.$api.modifyQuote, this.form).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
+                    this.$store.commit('setOverlay', false)
+
                     this.$router.replace('/outbound_management')
                 }).catch(() => {})
             }
         },
         saveEntryReturn() {
+            this.$store.commit('setOverlay', true)
             this.$postRequest(this.$api.returnOutboundEntry, this.form).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
+
                 this.$router.replace('/outbound_management')
             }).catch(() => {})
         }
     },
-    computed: {
-        rowDeletionConfirm() {
-            let result = '确认删除以下序号的行: '
-            this.tableRowsSelectedForDeletion.forEach(item => {
-                result += (this.outboundEntryModifyMode ?
-                    this.form.outboundProducts.indexOf(item) + 1
-                    : this.salesOrderModifyMode ?
-                        this.form.salesOrderProducts.indexOf(item) + 1
-                        : this.form.quotaProducts.indexOf(item) + 1).toString() + ' '
-            })
-            return result
-        },
+    watch: {
+        form: {
+            handler() {
+                if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode) {
+                    this.form.outboundProducts.forEach(p => {
+                        this.handleQuantityChange(p)
+                    })
+                }
+                else if (this.outboundEntryReturnMode) {
+                    this.form.outboundProducts.forEach(p => {
+                        p['originalQuantity'] = p.quantity
+                        p['returnQuantity'] = ''
+                        this.handleQuantityChange(p)
+                    })
+                }
+                else if (this.salesOrderDisplayMode || this.salesOrderModifyMode) {
+                    this.form.salesOrderProducts.forEach(p => {
+                        this.handleQuantityChange(p)
+                    })
+                }
+                else if (this.quotaDisplayMode || this.quotaModifyMode) {
+                    this.form.quotaProducts.forEach(p => {
+                        this.handleQuantityChange(p)
+                    })
+                }
+            },
+            deep: true,
+            immediate: true
+        }
     },
 }
 </script>
