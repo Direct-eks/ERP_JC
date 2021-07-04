@@ -134,19 +134,19 @@ const routes = [
                 path: 'quota_entry',
                 name: '报价单录入',
                 component: () => import(/* webpackChunkName: "Outbound_Management6_Quota_Entry" */
-                    '../views/Outbound_Management/6_Quota_Entry')
+                    '../views/Outbound_Management/6_Quote_Entry')
             },
             {
                 path: 'quota_query',
                 name: '报价单查询',
                 component: () => import(/* webpackChunkName: "Outbound_Management7_Quota_Query" */
-                    '../views/Outbound_Management/7_Quota_Query')
+                    '../views/Outbound_Management/7_Quote_Query')
             },
             {
                 path: 'quota_modify',
                 name: '报价单修改',
                 component: () => import(/* webpackChunkName: "Outbound_Management8_Quota_Modify" */
-                    '../views/Outbound_Management/8_Quota_Modify')
+                    '../views/Outbound_Management/8_Quote_Modify')
             },
         ]
     },
