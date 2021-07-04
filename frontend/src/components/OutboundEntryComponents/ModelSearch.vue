@@ -253,6 +253,7 @@ export default {
         warehouseID: {type: Number, required: true, default: -1}
     },
     beforeMount() {
+        this.emptySku = Object.assign(this.emptySku, this.currSku)
         this.editPermitted = this.$store.getters.currentUserIsPermitted('inboundEntry:Creation:changePrice')
     },
     data() {
@@ -280,13 +281,9 @@ export default {
             currSku: {
                 wholesalePrice: '', wholesalePriceDiscount: '',
                 retailPrice: '', retailPriceDiscount: '',
-                unitPriceWithoutTax: '', quantity: '',
+                unitPriceWithoutTax: '', quantity: 0,
             },
-            emptySku: {
-                wholesalePrice: '', wholesalePriceDiscount: '',
-                retailPrice: '', retailPriceDiscount: '',
-                unitPriceWithoutTax: '', quantity: '',
-            },
+            emptySku: {},
 
             warehouseStockTableHeaders: [
                 {text: '仓库', value: 'warehouseName', width: '75px'},
@@ -507,13 +504,13 @@ export default {
                 code: this.skuTableCurrentRow[0].code,
                 unitName: this.skuTableCurrentRow[0].unitName,
                 factoryCode: this.skuTableCurrentRow[0].factoryCode,
-                quantity: this.currSku.quantity,
+                quantity: this.currSku.quantity === '' ? '0' : this.currSku.quantity,
                 stockQuantity: stockQuantity,
                 remark: '',
                 warehouseStockID: warehouseStockID,
                 warehouseID: this.warehouseID,
-                taxRate: '',
-                unitPriceWithoutTax: this.currSku.unitPriceWithoutTax,
+                taxRate: 0,
+                unitPriceWithoutTax: this.currSku.unitPriceWithoutTax === '' ? '0' : this.currSku.unitPriceWithoutTax,
                 unitPriceWithTax: '0',
                 stockUnitPrice: stockUnitPrice,
                 //statistic fields
