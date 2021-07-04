@@ -221,8 +221,6 @@
                                   label="件数"
                                   hide-details="auto"
                                   type="number"
-                                  @change="this.form.shippingQuantit =
-                                            this.$validateNumber(this.form.shippingQuantity)"
                                   outlined
                                   dense
                                   style="width: 80px">
@@ -246,8 +244,9 @@
                     <v-text-field v-model.number="form.shippingCost"
                                   :rules="rules.shippingCost"
                                   label="运费"
-                                  @change="handleShippingCostChange"
+                                  @change="handleTotalChange"
                                   hide-details="auto"
+                                  type="number"
                                   outlined
                                   dense
                                   style="width: 100px">
@@ -267,7 +266,7 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-textarea v-model.number="form.remark"
+                    <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
                                 outlined
@@ -380,7 +379,6 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-
             </v-col>
         </v-row>
 
@@ -574,8 +572,7 @@ export default {
                 invoiceType: [v => !!v || ' 请选择单据类型'], // no need to validate if is purchase order
                 company: [v => !!v || '请选择单位'],
                 shippingCostType: [v => !!v || '请选择运费类型'],
-                shippingCost: [v =>
-                    (this.form.shippingCostType !== '无' ? v !== '' : true) || '请填写运费' ]
+                shippingCost: [v => (this.form.shippingCostType !== '无' ? v !== '' : true) || '请填写运费' ]
             },
 
             warehouseOptions: [],
@@ -696,10 +693,6 @@ export default {
             }
         },
         /* ----- number calculation ----- */
-        handleShippingCostChange() {
-            this.form.shippingCost = this.$validateFloat(this.form.shippingCost)
-            this.handleTotalChange()
-        },
         handleTotalChange() {
             // for all products
             let tempSumWithTax = this.$Big('0')
@@ -780,20 +773,20 @@ export default {
                     this.$store.commit('setOverlay', false)
 
                     if (bool) { // continue to add without exit, reset fields
-                        this.form.shippingCost = 0.0
+                        this.form.shippingCost = '0.0'
                         this.form.shippingCostType = '无运费'
-                        this.form.shippingQuantity = 0
+                        this.form.shippingQuantity = '0'
                         this.form.shippingNumber = ''
                         this.form.shippingMethodID = -1
                         this.form.relevantCompanyName = ''
-                        this.form.totalCost = 0.0
+                        this.form.totalCost = '0.0'
                         this.form.remark = ''
                         this.form.inboundProducts = []
 
                         this.tableData = []
-                        this.tax = 0.0
-                        this.sumWithoutTax = 0.0
-                        this.sumWithTax = 0.0
+                        this.tax = '0.0'
+                        this.sumWithoutTax = '0.0'
+                        this.sumWithTax = '0.0'
                         this.tableCurrRows = []
                     } else {
                         this.$router.replace('/inbound_management')
