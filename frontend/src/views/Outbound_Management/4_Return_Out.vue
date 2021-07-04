@@ -88,6 +88,10 @@ export default {
         },
         tableClickAction(val) {
             this.currentTableRow = val
+            this.currentTableRow.outboundProducts.forEach(p => {
+                p['originalQuantity'] = p.quantity
+                p['returnQuantity'] = '0'
+            })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
     }

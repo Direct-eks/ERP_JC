@@ -41,7 +41,7 @@
 
             <v-row>
                 <v-col cols="auto" v-if="!quoteDisplayMode && !quoteModifyMode">
-                    <v-text-field v-if="outboundEntryModifyMode || outboundEntryDisplayMode"
+                    <v-text-field v-if="outboundEntryModifyMode || outboundEntryDisplayMode || outboundEntryReturnMode"
                                   v-model="form.classification"
                                   label="出库类别"
                                   hide-details="auto"
@@ -151,7 +151,7 @@
                 </v-col>
             </v-row>
 
-            <v-row v-if="outboundEntryDisplayMode || outboundEntryModifyMode">
+            <v-row v-if="outboundEntryDisplayMode || outboundEntryModifyMode || outboundEntryReturnMode">
                 <v-col cols="auto">
                     <v-text-field v-model="form.relevantCompanyName"
                                   label="运输方式"
@@ -186,7 +186,7 @@
             </v-row>
 
             <v-row>
-                <v-col cols="auto" v-if="outboundEntryDisplayMode || outboundEntryModifyMode">
+                <v-col cols="auto" v-if="outboundEntryDisplayMode || outboundEntryModifyMode || outboundEntryReturnMode">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
                                    class="mt-0"
@@ -197,7 +197,7 @@
                         <v-radio label="代垫运费" value="代垫"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="auto" v-if="outboundEntryDisplayMode || outboundEntryModifyMode">
+                <v-col cols="auto">
                     <v-text-field v-model="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
@@ -237,11 +237,9 @@
                                 hide-details="auto"
                                 outlined
                                 dense
+                                :readonly="outboundEntryDisplayMode || salesOrderDisplayMode || quoteDisplayMode"
                                 auto-grow
-                                :readonly="(!outboundEntryReturnMode && outboundEntryDisplayMode)
-                                            || salesOrderDisplayMode || quoteDisplayMode"
-                                rows="1"
-                                counter="200">
+                                rows="1">
                     </v-textarea>
                 </v-col>
             </v-row>
@@ -442,7 +440,6 @@ export default {
             break
         case 'outboundEntryReturn':
             this.outboundEntryReturnMode = true
-            this.outboundEntryDisplayMode = true
             break
         }
 
@@ -654,6 +651,7 @@ export default {
             else if (this.outboundEntryReturnMode) {
                 this.saveEntryReturn()
             }
+            this.submitPopup = false
         },
         saveEntryModification() {
             if (this.$refs.form.validate()) {
@@ -735,15 +733,8 @@ export default {
     watch: {
         form: {
             handler() {
-                if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode) {
+                if (this.outboundEntryDisplayMode || this.outboundEntryModifyMode || this.outboundEntryReturnMode) {
                     this.form.outboundProducts.forEach(p => {
-                        this.handleQuantityChange(p)
-                    })
-                }
-                else if (this.outboundEntryReturnMode) {
-                    this.form.outboundProducts.forEach(p => {
-                        p['originalQuantity'] = p.quantity
-                        p['returnQuantity'] = ''
                         this.handleQuantityChange(p)
                     })
                 }

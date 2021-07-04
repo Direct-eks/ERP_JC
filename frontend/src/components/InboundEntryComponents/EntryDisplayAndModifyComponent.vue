@@ -41,7 +41,7 @@
 
             <v-row>
                 <v-col cols="auto">
-                    <v-text-field v-if="inboundEntryDisplayMode || inboundEntryModifyMode"
+                    <v-text-field v-if="inboundEntryDisplayMode || inboundEntryModifyMode || inboundEntryReturnMode"
                                   v-model="form.classification"
                                   label="入库类别"
                                   hide-details="auto"
@@ -150,7 +150,7 @@
                 </v-col>
             </v-row>
 
-            <v-row v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
+            <v-row v-if="inboundEntryDisplayMode || inboundEntryModifyMode || inboundEntryReturnMode">
                 <v-col cols="auto">
                     <v-text-field v-model="form.relevantCompanyName"
                                   label="运输方式"
@@ -185,7 +185,7 @@
             </v-row>
 
             <v-row dense>
-                <v-col cols="auto" v-if="inboundEntryDisplayMode || inboundEntryModifyMode">
+                <v-col cols="auto" v-if="inboundEntryDisplayMode || inboundEntryModifyMode || inboundEntryReturnMode">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
                                    class="mt-0"
@@ -196,8 +196,7 @@
                         <v-radio label="代垫运费" value="代垫"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="auto" v-if="(inboundEntryDisplayMode || inboundEntryModifyMode)
-                                            && form.shippingCostType !== '无'">
+                <v-col cols="auto">
                     <v-text-field v-model="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
@@ -227,8 +226,7 @@
                                 hide-details="auto"
                                 outlined
                                 dense
-                                :readonly="(!inboundEntryReturnMode && inboundEntryDisplayMode)
-                                            || purchaseOrderDisplayMode"
+                                :readonly="inboundEntryDisplayMode || purchaseOrderDisplayMode"
                                 auto-grow
                                 rows="1">
                     </v-textarea>
@@ -236,8 +234,8 @@
             </v-row>
         </v-form>
 
-        <v-row v-if="inboundEntryModifyMode || purchaseOrderModifyMode" class="my-2" dense>
-            <v-col>
+        <v-row class="my-2" dense>
+            <v-col v-if="inboundEntryModifyMode || purchaseOrderModifyMode">
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="red lighten-1" v-on="on">删除</v-btn>
@@ -252,7 +250,7 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col>
+            <v-col v-if="inboundEntryModifyMode || purchaseOrderModifyMode || inboundEntryReturnMode">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存修改</v-btn>
@@ -262,37 +260,14 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
-                            <v-btn color="primary"
-                                   @click="inboundEntryModifyMode ? saveEntryModification() : saveOrderModification()">
-                                确认
-                            </v-btn>
+                            <v-btn color="primary" @click="saveModification">确认</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
             </v-col>
         </v-row>
 
-        <v-row v-if="inboundEntryReturnMode" class="my-2" dense>
-            <v-spacer></v-spacer>
-            <v-col>
-                <v-dialog v-model="submitPopup2" max-width="300px">
-                    <template v-slot:activator="{ on }">
-                        <v-btn color="primary" v-on="on">保存修改</v-btn>
-                    </template>
-                    <v-card>
-                        <v-card-title>确认提交？</v-card-title>
-                    </v-card>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" @click="submitPopup2 = false">取消</v-btn>
-                        <v-btn color="primary" @click="saveEntryReturn">确认</v-btn>
-                    </v-card-actions>
-                </v-dialog>
-            </v-col>
-        </v-row>
-
-        <v-data-table v-if="(!inboundEntryReturnMode && inboundEntryDisplayMode)
-                            || purchaseOrderDisplayMode"
+        <v-data-table v-if="inboundEntryDisplayMode || purchaseOrderDisplayMode"
                       :headers="tableHeaders"
                       :items="inboundEntryDisplayMode ? form.inboundProducts : form.purchaseOrderProducts"
                       item-key="skuID"
@@ -444,7 +419,6 @@ export default {
             break
         case 'inboundEntryReturn':
             this.inboundEntryReturnMode = true
-            this.inboundEntryDisplayMode = true
             break
         }
 
@@ -524,7 +498,6 @@ export default {
             deleteTableRowPopup: false,
             tableRowsSelectedForDeletion: [],
             submitPopup: false,
-            submitPopup2: false,
 
             tax: '0',
             sumWithTax: '0',
@@ -587,7 +560,7 @@ export default {
             this.handleQuantityChange(row)
         },
         handleReturnQuantityChange(row) {
-            row.originalQuantity = this.$validateNumber(row.originalQuantity)
+            row.returnQuantity = this.$validateNumber(row.returnQuantity)
             row.quantity = Number(row.originalQuantity) - Number(row.returnQuantity)
             this.handleQuantityChange(row)
         },
@@ -624,6 +597,18 @@ export default {
                 })
             }
         },
+        saveModification() {
+            if (this.inboundEntryModifyMode) {
+                this.saveEntryModification()
+            }
+            else if (this.inboundEntryReturnMode) {
+                this.saveEntryReturn()
+            }
+            else if (this.purchaseOrderModifyMode) {
+                this.saveOrderModification()
+            }
+            this.submitPopup = false
+        },
         saveEntryModification() {
             if (this.$refs.form.validate()) {
                 //change drawer name for modification
@@ -644,8 +629,6 @@ export default {
 
                     this.$router.replace('/inbound_management')
                 }).catch(() => {})
-
-                this.submitPopup = false
             }
         },
         saveOrderModification() {
@@ -673,8 +656,6 @@ export default {
 
                     this.$router.replace('/inbound_management')
                 }).catch(() => {})
-
-                this.submitPopup = false
             }
         },
         saveEntryReturn() {
@@ -687,22 +668,13 @@ export default {
 
                 this.$router.replace('/inbound_management')
             }).catch(() => {})
-
-            this.submitPopup2 = false
         }
     },
     watch: {
         form: {
             handler() {
-                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode) {
+                if (this.inboundEntryDisplayMode || this.inboundEntryModifyMode || this.inboundEntryReturnMode) {
                     this.form.inboundProducts.forEach(p => {
-                        this.handleQuantityChange(p)
-                    })
-                }
-                else if (this.inboundEntryReturnMode) {
-                    this.form.inboundProducts.forEach(p => {
-                        p['originalQuantity'] = p.quantity
-                        p['returnQuantity'] = ''
                         this.handleQuantityChange(p)
                     })
                 }
