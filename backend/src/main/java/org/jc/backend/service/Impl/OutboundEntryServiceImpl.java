@@ -272,7 +272,6 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             String id = modifiedEntry.getOutboundEntryID();
             OutboundEntryDO originEntry = outboundEntryMapper.selectEntryForCompare(id);
 
-            // todo not done
             StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
             boolean bool = false;
             if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
@@ -302,6 +301,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
                             outboundEntryMapper.returnProductByID(modifiedProduct);
+                            warehouseStockService.modifyStock(modifiedProduct, originEntry.getShipmentDate());
                         }
                         break;
                     }

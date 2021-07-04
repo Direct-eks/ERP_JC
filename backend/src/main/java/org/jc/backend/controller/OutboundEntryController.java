@@ -36,8 +36,14 @@ public class OutboundEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("outboundEntry:Creation")
     @PutMapping("/createEntry")
-    public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO entryVO) {
+    public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO entryVO) throws GlobalParamException {
         logger.info("PUT Request to /outboundEntry/createEntry, data: {}", entryVO.toString());
+
+        for (var p : entryVO.getOutboundProducts()) {
+            if (p.getQuantity() < 1) {
+                throw new GlobalParamException("商品出库数量必须大于0");
+            }
+        }
 
         outboundEntryService.createEntry(entryVO);
     }

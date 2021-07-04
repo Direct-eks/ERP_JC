@@ -23,7 +23,7 @@ public class InboundProductO {
     private String factoryCode;
 
     @NotNull(message = "quantity null error")
-    @Min(value = 1, message = "商品入库数量必须大于0")
+    @Min(value = 0, message = "商品入库数量必须大于0")
     private Integer quantity;
     private int stockQuantity;
 

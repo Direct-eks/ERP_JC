@@ -282,7 +282,6 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             String id = modifiedEntry.getInboundEntryID();
             InboundEntryDO originEntry = inboundEntryMapper.selectEntryForCompare(id);
 
-            // todo not done
             StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
             boolean bool = false;
             if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
@@ -312,6 +311,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
                             inboundEntryMapper.returnProductByID(modifiedProduct);
+                            warehouseStockService.modifyStock(modifiedProduct, originEntry.getEntryDate());
                         }
                         break;
                     }

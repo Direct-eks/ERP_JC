@@ -593,6 +593,12 @@ export default {
         },
         handleReturnQuantityChange(row) {
             row.originalQuantity = this.$validateNumber(row.originalQuantity)
+            if (Number(row.returnQuantity) > Number(row.originalQuantity)) {
+                this.$store.commit('setSnackbar', {
+                    message: '退货数量错误', color: 'warn'
+                })
+                return
+            }
             row.quantity = Number(row.originalQuantity) - Number(row.returnQuantity)
             this.handleQuantityChange(row)
         },

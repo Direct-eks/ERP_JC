@@ -41,6 +41,12 @@ public class InboundEntryController {
     public void createEntry(@RequestBody @Validated InboundEntryWithProductsVO inboundEntryVO) throws GlobalParamException {
         logger.info("PUT Request to /inboundEntry/createEntry, data: {}", inboundEntryVO.toString());
 
+        for (var p : inboundEntryVO.getInboundProducts()) {
+            if (p.getQuantity() < 1) {
+                throw new GlobalParamException("商品入库数量必须大于0");
+            }
+        }
+
         inboundEntryService.createEntry(inboundEntryVO);
     }
 
