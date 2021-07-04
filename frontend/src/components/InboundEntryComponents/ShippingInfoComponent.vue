@@ -101,6 +101,21 @@
                 </v-col>
             </v-row>
 
+            <v-row v-if="form.companyRemark !== ''" dense>
+                <v-col>
+                    <v-textarea v-model.number="form.companyRemark"
+                                label="重要提示"
+                                hide-details="auto"
+                                background-color="red accent-2"
+                                outlined
+                                dense
+                                readonly
+                                auto-grow
+                                rows="1">
+                    </v-textarea>
+                </v-col>
+            </v-row>
+
             <v-row>
                 <v-col cols="auto">
                     <v-text-field v-model="form.relevantCompanyName"
@@ -118,11 +133,7 @@
                               no-click-animation
                               width="75vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="accent"
-                                   v-on="on"
-                                   :disabled="relativeCompanySearchPanelOpen">
-                                选择
-                            </v-btn>
+                            <v-btn color="accent" v-on="on">选择</v-btn>
                         </template>
                         <RelativeCompanySearch
                             @relativeCompanyChoose="relativeCompanyChooseAction">
@@ -143,8 +154,6 @@
                                   label="件数"
                                   hide-details="auto"
                                   type="number"
-                                  @change="this.form.shippingQuantit =
-                                            this.$validateNumber(this.form.shippingQuantity)"
                                   outlined
                                   dense
                                   style="width: 80px">
@@ -165,10 +174,11 @@
                     </v-radio-group>
                 </v-col>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="form.shippingCost"
+                    <v-text-field v-model="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
                                   @change="handleShippingCostChange"
+                                  type="number"
                                   outlined
                                   dense
                                   style="width: 100px">
@@ -204,9 +214,19 @@
         <v-row>
             <v-spacer></v-spacer>
             <v-col>
-                <v-btn color="primary" @click="saveShippingInfoChange">
-                    保存修改
-                </v-btn>
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                            <v-btn color="primary" @click="saveShippingInfoChange">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
         </v-row>
 
@@ -261,6 +281,7 @@ export default {
     data() {
         return {
             relativeCompanySearchPanelOpen: false,
+            submitPopup: false,
 
             tableHeaders: [
                 {text: '代号', value: 'code', width: '100px'},

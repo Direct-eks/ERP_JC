@@ -88,7 +88,7 @@
                     </v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row dense>
                 <v-col cols="auto">
                     <v-text-field v-model="form.companyFullName"
                                   label="购货单位全称"
@@ -98,6 +98,21 @@
                                   readonly
                                   style="width: 300px">
                     </v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row v-if="form.companyRemark !== ''" dense>
+                <v-col>
+                    <v-textarea v-model.number="form.companyRemark"
+                                label="重要提示"
+                                hide-details="auto"
+                                background-color="red accent-2"
+                                outlined
+                                dense
+                                readonly
+                                auto-grow
+                                rows="1">
+                    </v-textarea>
                 </v-col>
             </v-row>
 
@@ -118,11 +133,7 @@
                               no-click-animation
                               width="75vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="accent"
-                                   v-on="on"
-                                   :disabled="relativeCompanySearchPanelOpen">
-                                选择
-                            </v-btn>
+                            <v-btn color="accent" v-on="on">选择</v-btn>
                         </template>
                         <RelativeCompanySearch
                             @relativeCompanyChoose="relativeCompanyChooseAction">
@@ -150,7 +161,7 @@
                 </v-col>
             </v-row>
 
-            <v-row>
+            <v-row dense>
                 <v-col cols="auto">
                     <v-radio-group v-model="form.shippingCostType"
                                    hide-details="auto"
@@ -165,6 +176,8 @@
                     <v-text-field v-model.number="form.shippingCost"
                                   label="运费"
                                   hide-details="auto"
+                                  @change="handleShippingCostChange"
+                                  type="number"
                                   outlined
                                   dense
                                   style="width: 100px">
@@ -181,21 +194,22 @@
                               style="width: 150px">
                     </v-select>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="totalAmount"
+                    <v-text-field v-model="form.totalAmount"
                                   label="总金额"
                                   hide-details="auto"
-                                  outlined
+                                  filled
                                   dense
                                   readonly
-                                  style="width: 100px">
+                                  style="width: 120px">
                     </v-text-field>
                 </v-col>
             </v-row>
 
             <v-row>
                 <v-col>
-                    <v-textarea v-model.number="form.remark"
+                    <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
                                 outlined
@@ -208,13 +222,22 @@
             </v-row>
         </v-form>
 
-        <v-row>
+        <v-row class="my-2" dense>
             <v-spacer></v-spacer>
             <v-col>
-                <v-btn color="primary"
-                       @click="saveShippingInfoChange">
-                    保存修改
-                </v-btn>
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                            <v-btn color="primary" @click="saveShippingInfoChange">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
         </v-row>
 
@@ -228,32 +251,29 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{form.outboundProducts.indexOf(item) + 1}}
-            </template>
         </v-data-table>
 
-        <v-row>
+        <div class="d-flex">
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <span>税额合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{tax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>不含税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithoutTax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>价税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithTax}}
-            </v-col>
-        </v-row>
+            <div class="my-2">
+                <strong>税额合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ tax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>不含税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithoutTax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>价税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithTax }}</strong>
+            </div>
+        </div>
     </v-container>
 </template>
 
@@ -269,37 +289,15 @@ export default {
             required: true
         }
     },
-    watch: {
-        form: {
-            handler(newVal) {
-                let tax = 0.0
-                let sumWithTax = 0.0
-                let sumWithoutTax = 0.0
-                for (let item of newVal.outboundProducts) {
-                    tax += (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                    sumWithTax += item.unitPriceWithTax * item.quantity
-                    sumWithoutTax += item.unitPriceWithoutTax * item.quantity
-                }
-                this.tax = tax.toFixed(2)
-                this.sumWithTax = sumWithTax.toFixed(2)
-                this.sumWithoutTax = sumWithoutTax.toFixed(2)
-
-                this.totalAmount = Number(this.sumWithTax)
-                this.totalAmount += this.form.shippingCostType === '代垫' ? this.form.shippingCost : 0.0
-            },
-            deep: true,
-            immediate: true
-        }
-    },
     data() {
         return {
             relativeCompanySearchPanelOpen: false,
+            submitPopup: false,
 
             tableHeaders: [
-                {text: '序号', value: 'index', width: '60px'},
                 {text: '代号', value: 'code', width: '100px'},
                 {text: '厂牌', value: 'factoryCode', width: '65px'},
-                {text: '入库数量', value: 'quantity', width: '80px'},
+                {text: '出库数量', value: 'quantity', width: '80px'},
                 {text: '单位', value: 'unitName', width: '60px'},
                 {text: '含税单价', value: 'unitPriceWithTax', width: '80px'},
                 {text: '无税单价', value: 'unitPriceWithoutTax', width: '80px'},
@@ -310,8 +308,6 @@ export default {
                 {text: '库存数量', value: 'stockQuantity', width: '120px'},
                 {text: '库存单价', value: 'stockUnitPrice', width: '120px'}
             ],
-            //extract to prevent infinite update on form watcher
-            totalAmount: 0.0,
 
             deliveryMethodOptions: [
                 {value: '自提', label: '自提'},
@@ -320,9 +316,9 @@ export default {
                 {value: '发货代收款', label: '发货代收款'}
             ],
 
-            tax: 0.0,
-            sumWithTax: 0.0,
-            sumWithoutTax: 0.0
+            tax: '0.0',
+            sumWithTax: '0.0',
+            sumWithoutTax: '0.0'
         }
     },
     methods: {
@@ -334,14 +330,57 @@ export default {
             }
             this.relativeCompanySearchPanelOpen = false
         },
+        handleShippingCostChange() {
+            this.form.shippingCost = this.$validateFloat(this.form.shippingCost)
+            this.handleTotalChange()
+        },
+        handleTotalChange() {
+            // for all products
+            let tempSumWithTax = this.$Big('0')
+            let tempSumWithoutTax = this.$Big('0')
+            this.form.inboundProducts.forEach((item) => {
+                // calculate for total
+                const itemQuantity = this.$Big(item.quantity)
+                tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
+                tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
+            })
+            this.sumWithTax = tempSumWithTax.toString()
+            this.sumWithoutTax = tempSumWithoutTax.toString()
+            this.tax = tempSumWithTax.minus(tempSumWithoutTax).toString()
+
+            // plus shipping
+            let sum = this.$Big(this.sumWithTax)
+            switch (this.form.shippingCostType) {
+            case "无":
+            case '自付':
+                break
+            case '代垫':
+                sum = sum.plus(this.form.shippingCost === '' ? '0' : this.form.shippingCost)
+                break
+            }
+            this.form.totalCost = sum.toString()
+        },
         saveShippingInfoChange() {
             this.form.totalAmount = this.totalAmount
+
+            this.$store.commit('setOverlay', true)
             this.$patchRequest(this.$api.completeOutboundEntry, this.form).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
+
                 this.$router.replace('/outbound_management')
             }).catch(() => {})
+        }
+    },
+    watch: {
+        form: {
+            handler() {
+                this.handleTotalChange()
+            },
+            deep: true,
+            immediate: true
         }
     },
 }
