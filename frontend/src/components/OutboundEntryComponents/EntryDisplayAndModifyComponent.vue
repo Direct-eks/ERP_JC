@@ -245,7 +245,7 @@
             </v-row>
         </v-form>
 
-        <v-row dense>
+        <v-row class="my-2" dense>
             <v-col v-if="outboundEntryModifyMode || salesOrderModifyMode || quoteModifyMode">
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
@@ -267,15 +267,15 @@
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存修改</v-btn>
                     </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                            <v-btn color="primary" @click="saveModification">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
                 </v-dialog>
-                <v-card>
-                    <v-card-title>确认提交？</v-card-title>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
-                        <v-btn color="primary" @click="saveModification">确认</v-btn>
-                    </v-card-actions>
-                </v-card>
             </v-col>
         </v-row>
 
