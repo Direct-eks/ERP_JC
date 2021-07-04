@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-form ref="form">
-            <v-row v-if="!quotaDisplayMode && !quotaModifyMode">
+            <v-row v-if="!quoteDisplayMode && !quoteModifyMode">
                 <v-col cols="auto">
                     <v-select v-model="form.warehouseID"
                               :rules="rules.warehouseID"
@@ -40,7 +40,7 @@
             </v-row>
 
             <v-row>
-                <v-col cols="auto" v-if="!quotaDisplayMode && !quotaModifyMode">
+                <v-col cols="auto" v-if="!quoteDisplayMode && !quoteModifyMode">
                     <v-text-field v-if="outboundEntryModifyMode || outboundEntryDisplayMode"
                                   v-model="form.classification"
                                   label="出库类别"
@@ -237,7 +237,7 @@
                                 dense
                                 auto-grow
                                 :readonly="(!outboundEntryReturnMode && outboundEntryDisplayMode)
-                                            || salesOrderDisplayMode || quotaDisplayMode"
+                                            || salesOrderDisplayMode || quoteDisplayMode"
                                 rows="1"
                                 counter="200">
                     </v-textarea>
@@ -246,7 +246,7 @@
         </v-form>
 
         <v-row dense>
-            <v-col v-if="outboundEntryModifyMode || salesOrderModifyMode || quotaModifyMode">
+            <v-col v-if="outboundEntryModifyMode || salesOrderModifyMode || quoteModifyMode">
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="red lighten-1" v-on="on">删除</v-btn>
@@ -262,7 +262,7 @@
                 </v-dialog>
             </v-col>
             <v-col v-if="outboundEntryModifyMode || salesOrderModifyMode ||
-                            quotaModifyMode || outboundEntryReturnMode">
+                            quoteModifyMode || outboundEntryReturnMode">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存修改</v-btn>
@@ -279,11 +279,11 @@
             </v-col>
         </v-row>
 
-        <v-data-table v-if="outboundEntryModifyMode || salesOrderModifyMode || quotaModifyMode"
+        <v-data-table v-if="outboundEntryModifyMode || salesOrderModifyMode || quoteModifyMode"
                       v-model="tableRowsSelectedForDeletion"
                       :headers="tableHeaders"
                       :items="outboundEntryModifyMode ? form.outboundProducts :
-                        salesOrderModifyMode ? form.salesOrderProducts : form.quotaProducts"
+                        salesOrderModifyMode ? form.salesOrderProducts : form.quoteProducts"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -368,7 +368,7 @@
         <v-data-table v-else
                       :headers="tableHeaders"
                       :items="outboundEntryDisplayMode ? form.outboundProducts :
-                        salesOrderDisplayMode ? form.salesOrderProducts : form.quotaProducts"
+                        salesOrderDisplayMode ? form.salesOrderProducts : form.quoteProducts"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -426,11 +426,11 @@ export default {
         case 'outboundEntryDisplay':
             this.outboundEntryDisplayMode = true
             break
-        case 'quotaModify':
-            this.quotaModifyMode = true
+        case 'quoteModify':
+            this.quoteModifyMode = true
             break
-        case 'quotaDisplay':
-            this.quotaDisplayMode = true
+        case 'quoteDisplay':
+            this.quoteDisplayMode = true
             break
         case 'salesOrderModify':
             this.salesOrderModifyMode = true
@@ -465,8 +465,8 @@ export default {
             outboundEntryModifyMode: false,
             salesOrderDisplayMode: false,
             salesOrderModifyMode: false,
-            quotaDisplayMode: false,
-            quotaModifyMode: false,
+            quoteDisplayMode: false,
+            quoteModifyMode: false,
             outboundEntryReturnMode: false,
 
             rules: {
@@ -547,8 +547,8 @@ export default {
                     tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
                 })
             }
-            else if (this.quotaDisplayMode || this.quotaModifyMode) {
-                this.form.quotaProducts.forEach((item) => {
+            else if (this.quoteDisplayMode || this.quoteModifyMode) {
+                this.form.quoteProducts.forEach((item) => {
                     const itemQuantity = this.$Big(item.quantity)
                     tempSumWithTax = tempSumWithTax.add(itemQuantity.times(item.unitPriceWithTax))
                     tempSumWithoutTax = tempSumWithoutTax.add(itemQuantity.times(item.unitPriceWithoutTax))
@@ -610,8 +610,8 @@ export default {
                     this.handlePriceWithoutTaxChange(row)
                 })
             }
-            else if (this.quotaModifyMode) {
-                this.form.quotaProducts.forEach((row) => {
+            else if (this.quoteModifyMode) {
+                this.form.quoteProducts.forEach((row) => {
                     row.taxRate = this.form.taxRate
                     this.handlePriceWithoutTaxChange(row)
                 })
@@ -628,8 +628,8 @@ export default {
                     else if (this.salesOrderModifyMode) {
                         this.form.salesOrderProducts.splice(this.form.salesOrderProducts.indexOf(item), 1)
                     }
-                    else if (this.quotaModifyMode) {
-                        this.form.quotaProducts.splice(this.form.quotaProducts.indexOf(item), 1)
+                    else if (this.quoteModifyMode) {
+                        this.form.quoteProducts.splice(this.form.quoteProducts.indexOf(item), 1)
                     }
                 }
                 this.tableRowsSelectedForDeletion = []
@@ -646,8 +646,8 @@ export default {
             else if (this.salesOrderModifyMode) {
                 this.saveOrderModification()
             }
-            else if (this.quotaModifyMode) {
-                this.saveQuotaModification()
+            else if (this.quoteModifyMode) {
+                this.saveQuoteModification()
             }
             else if (this.outboundEntryReturnMode) {
                 this.saveEntryReturn()
@@ -702,7 +702,7 @@ export default {
                 }).catch(() => {})
             }
         },
-        saveQuotaModification() {
+        saveQuoteModification() {
             if (this.$refs.form.validate()) {
                 //change drawer name for modification
                 this.form.drawer = this.$store.getters.currentUser
@@ -750,8 +750,8 @@ export default {
                         this.handleQuantityChange(p)
                     })
                 }
-                else if (this.quotaDisplayMode || this.quotaModifyMode) {
-                    this.form.quotaProducts.forEach(p => {
+                else if (this.quoteDisplayMode || this.quoteModifyMode) {
+                    this.form.quoteProducts.forEach(p => {
                         this.handleQuantityChange(p)
                     })
                 }

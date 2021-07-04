@@ -166,22 +166,22 @@ export default {
         },
         {
             name: '报价单',
-            url: '/outbound_management/quota',
+            url: '/outbound_management/quote',
             children: [
                 {
                     name: '录入',
-                    url: '/outbound_management/quota_entry',
-                    requiredPermission: 'quota:Creation',
+                    url: '/outbound_management/quote_entry',
+                    requiredPermission: 'quote:Creation',
                 },
                 {
                     name: '查询',
-                    url: '/outbound_management/quota_query',
-                    requiredPermission: 'quota:Query',
+                    url: '/outbound_management/quote_query',
+                    requiredPermission: 'quote:Query',
                 },
                 {
                     name: '修改',
-                    url: '/outbound_management/quota_modify',
-                    requiredPermission: 'quota:Modification',
+                    url: '/outbound_management/quote_modify',
+                    requiredPermission: 'quote:Modification',
                 },
             ]
         },

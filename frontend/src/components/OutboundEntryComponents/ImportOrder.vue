@@ -12,9 +12,9 @@
         <v-card-text>
             <v-data-table v-if="isSalesOrderMode"
                           v-model="queryTableCurrentRow"
-                          :headers="isSalesOrderMode ? salesQueryTableHeaders : quotaQueryTableHeaders"
+                          :headers="isSalesOrderMode ? salesQueryTableHeaders : quoteQueryTableHeaders"
                           :items="queryTableData"
-                          :item-key="isSalesOrderMode ? 'salesOrderEntryID' : 'quotaEntryID'"
+                          :item-key="isSalesOrderMode ? 'salesOrderEntryID' : 'quoteEntryID'"
                           @click:row="tableClick"
                           height="25vh"
                           calculate-widths
@@ -78,7 +78,7 @@ export default {
                         this.queryTableData = data
                     }).catch(() => {})
                 }
-                else if (this.isQuotaMode) {
+                else if (this.isQuoteMode) {
                     this.$getRequest(this.$api.quotesByCompanyID +
                         encodeURI(String(this.companyID))
                     ).then((data) => {
@@ -96,9 +96,9 @@ export default {
             this.title = '销售订单查询'
             this.isSalesOrderMode = true
             break
-        case 'quota':
+        case 'quote':
             this.title = '报价单查询'
-            this.isQuotaMode = true
+            this.isQuoteMode = true
             break
         }
     },
@@ -108,7 +108,7 @@ export default {
             mdiClosePath: mdiClose,
 
             isSalesOrderMode: false,
-            isQuotaMode: false,
+            isQuoteMode: false,
 
             salesQueryTableHeaders: [
                 {text: '销售订单', value: 'salesOrderEntryID', width: '80px'},
@@ -123,7 +123,7 @@ export default {
                 {text: '开单日期', value: 'entryDate', width: '80px'},
                 {text: '创建日期', value: 'creationDate', width: '80px'}
             ],
-            quotaQueryTableHeaders: [
+            quoteQueryTableHeaders: [
                 {text: '销售订单', value: 'salesOrderEntryID', width: '80px'},
                 {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
                 {text: '预计单据类型', value: 'invoiceType', width: '60px'},
@@ -158,7 +158,7 @@ export default {
     methods: {
         close() {
             if (this.isSalesOrderMode) this.$emit('salesOrderChoose', null)
-            else if (this.isQuotaMode) this.$emit('quotaOrder', null)
+            else if (this.isQuoteMode) this.$emit('quoteOrder', null)
         },
         tableClick(val) {
             this.queryTableCurrentRow = [val]
@@ -172,13 +172,13 @@ export default {
         },
         choose() {
             if (this.isSalesOrderMode) this.salesOrderChoose()
-            else if (this.isQuotaMode) this.quotaChoose()
+            else if (this.isQuoteMode) this.quoteChoose()
         },
         salesOrderChoose() {
             this.$emit('salesOrderChoose', this.entryProductsData)
         },
-        quotaChoose() {
-            this.$emit('quotaChoose', this.entryProductsData)
+        quoteChoose() {
+            this.$emit('quoteChoose', this.entryProductsData)
         }
     }
 }

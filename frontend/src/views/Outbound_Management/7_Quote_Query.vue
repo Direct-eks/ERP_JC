@@ -24,7 +24,7 @@
 
             <v-tab-item key="browse">
                 <OutboundQueryDisplayComponent
-                    displayMode="quota"
+                    displayMode="quote"
                     @tableClick="tableClickAction">
                 </OutboundQueryDisplayComponent>
             </v-tab-item>
@@ -32,7 +32,7 @@
             <v-tab-item key="detail" :eager="true">
                 <OutboundEntryDisplayAndModifyComponent
                     :form="form"
-                    displayMode="quotaDisplay">
+                    displayMode="quoteDisplay">
                 </OutboundEntryDisplayAndModifyComponent>
             </v-tab-item>
 

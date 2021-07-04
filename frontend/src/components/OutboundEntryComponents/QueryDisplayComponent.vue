@@ -35,7 +35,7 @@
                         </CompanySearch>
                     </v-dialog>
                 </v-col>
-                <v-col cols="auto" v-if="!isSalesOrder && !isQuota">
+                <v-col cols="auto" v-if="!isSalesOrder && !isQuote">
                     <v-select v-model="category"
                               :items="categoryOptions"
                               item-value="value"
@@ -63,7 +63,7 @@
             </v-row>
         </v-form>
 
-        <v-data-table v-if="!isSalesOrder && !isQuota"
+        <v-data-table v-if="!isSalesOrder && !isQuote"
                       v-model="queryTableCurrentRow"
                       :headers="queryTableHeaders"
                       :items="queryTableData"
@@ -107,9 +107,9 @@
 
         <v-data-table v-else
                       v-model="queryTableCurrentRow"
-                      :headers="quotaQueryTableHeaders"
+                      :headers="quoteQueryTableHeaders"
                       :items="queryTableData"
-                      item-key="quotaEntryID"
+                      item-key="quoteEntryID"
                       @click:row="tableClick"
                       height="45vh"
                       calculate-widths
@@ -119,9 +119,9 @@
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.quotaEntryID="{ item }">
+            <template v-slot:item.quoteEntryID="{ item }">
                 <v-chip :color="item.isModified === 1 ? 'red' : null">
-                    {{ item.quotaEntryID }}
+                    {{ item.quoteEntryID }}
                 </v-chip>
             </template>
         </v-data-table>
@@ -166,8 +166,8 @@ export default {
         case 'salesOrder':
             this.isSalesOrder = true
             break
-        case 'quota':
-            this.isQuota = true
+        case 'quote':
+            this.isQuote = true
             break
         }
     },
@@ -175,7 +175,7 @@ export default {
         return {
             isModify: false,
             isSalesOrder : false,
-            isQuota: false,
+            isQuote: false,
 
             dateRange: [
                 new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0, 10),
@@ -222,8 +222,8 @@ export default {
                 {text: '开单日期', value: 'shipmentDate', width: '80px'},
                 {text: '创建日期', value: 'creationDate', width: '80px'},
             ],
-            quotaQueryTableHeaders: [
-                {text: '报价单号', value: 'quotaEntryID', width: '80px'},
+            quoteQueryTableHeaders: [
+                {text: '报价单号', value: 'quoteEntryID', width: '80px'},
                 {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
                 {text: '预计单据类型', value: 'invoiceType', width: '60px'},
                 {text: '总金额', value: 'totalAmount', width: '85px'},
@@ -273,7 +273,7 @@ export default {
                     this.queryTableData = data
                 }).catch(() => {})
             }
-            else if (this.isQuota) {
+            else if (this.isQuote) {
                 console.log(this.dateRange)
                 this.$getRequest(this.$api.quotesInDateRangeByCompanyID, {
                     startDate: this.dateRange[0],
@@ -303,8 +303,8 @@ export default {
             if (this.isSalesOrder) {
                 url = encodeURI(this.queryTableCurrentRow[0].salesOrderEntryID)
             }
-            else if (this.isQuota) {
-                url = encodeURI(this.queryTableCurrentRow[0].quotaEntryID)
+            else if (this.isQuote) {
+                url = encodeURI(this.queryTableCurrentRow[0].quoteEntryID)
             }
             else {
                 url = encodeURI(this.queryTableCurrentRow[0].outboundEntryID)

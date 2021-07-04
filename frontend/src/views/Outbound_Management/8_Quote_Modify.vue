@@ -24,7 +24,7 @@
 
             <v-tab-item key="browse">
                 <OutboundQueryDisplayComponent
-                    displayMode="quota"
+                    displayMode="quote"
                     @tableClick="tableClickAction">
                 </OutboundQueryDisplayComponent>
             </v-tab-item>
@@ -32,7 +32,7 @@
             <v-tab-item key="detail" :eager="true">
                 <OutboundEntryDisplayAndModifyComponent
                     :form="form"
-                    displayMode="quotaModify">
+                    displayMode="quoteModify">
                 </OutboundEntryDisplayAndModifyComponent>
             </v-tab-item>
 
@@ -45,7 +45,7 @@
 import { mdiArrowLeft } from '@mdi/js'
 
 export default {
-    name: "Quota_Modify",
+    name: "Quote_Modify",
     components: {
         OutboundQueryDisplayComponent: () => import('~/components/OutboundEntryComponents/QueryDisplayComponent'),
         OutboundEntryDisplayAndModifyComponent: () => import('~/components/OutboundEntryComponents/EntryDisplayAndModifyComponent'),

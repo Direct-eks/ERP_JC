@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-form ref="form">
-            <v-row v-if="!quotaEntryMode">
+            <v-row v-if="!quoteEntryMode">
                 <v-col cols="auto">
                     <!--does not allow changes to be made after products are imported-->
                     <v-select v-model="form.warehouseID"
@@ -312,7 +312,7 @@
                 </v-dialog>
             </v-col>
             <v-col v-if="outboundEntryMode">
-                <v-dialog v-model="quotaPanelOpen"
+                <v-dialog v-model="quotePanelOpen"
                           :eager="true"
                           persistent
                           scrollable
@@ -321,13 +321,13 @@
                     <template v-slot:activator="{on}">
                         <v-btn color="accent"
                                v-on="on"
-                               :disabled="quotaPanelOpen || form.partnerCompanyID === -1">
+                               :disabled="quotePanelOpen || form.partnerCompanyID === -1">
                             查询该单位报价单
                         </v-btn>
                     </template>
-                    <OutboundImportSalesOrder mode="quota"
+                    <OutboundImportSalesOrder mode="quote"
                                               :companyID="form.partnerCompanyID"
-                                              @quotaChoose="quotaChooseAction">
+                                              @quoteChoose="quoteChooseAction">
                     </OutboundImportSalesOrder>
                 </v-dialog>
             </v-col>
@@ -411,7 +411,7 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col v-if="quotaEntryMode">
+            <v-col v-if="quoteEntryMode">
                 <v-dialog v-model="submitPopup4" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">存为报价单</v-btn>
@@ -421,7 +421,7 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="primary" @click="submitPopup4 = false">取消</v-btn>
-                            <v-btn color="success" @click="saveAsQuota()">确认</v-btn>
+                            <v-btn color="success" @click="saveAsQuote()">确认</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -541,8 +541,8 @@ export default {
         case 'salesOrder':
             this.salesOrderMode = true
             break
-        case 'quotaEntry':
-            this.quotaEntryMode = true
+        case 'quoteEntry':
+            this.quoteEntryMode = true
         }
 
         this.editPermitted = this.$store.getters.currentUserIsPermitted('outboundEntry:Creation:changePrice')
@@ -581,14 +581,14 @@ export default {
         return {
             outboundEntryMode: false,
             salesOrderMode: false,
-            quotaEntryMode: false,
+            quoteEntryMode: false,
 
             triggerSimpleSearch: false,
             fullSearchPanelOpen: false,
             relativeCompanySearchPanelOpen: false,
             modelSearchPanelOpen: false,
             salesOrderPanelOpen: false,
-            quotaPanelOpen: false,
+            quotePanelOpen: false,
 
             mdiPercentOutline,
             allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
@@ -611,7 +611,7 @@ export default {
                 shippingMethodID: -1, relevantCompanyName: '',
                 outboundProducts: [],
                 salesOrderProducts: [],
-                quotaProducts: []
+                quoteProducts: []
             },
             rules: {
                 warehouseID: [v => !!v || '请选择仓库'],
@@ -701,7 +701,7 @@ export default {
             }
             this.relativeCompanySearchPanelOpen = false
         },
-        /* ------- sales order / quota import -------*/
+        /* ------- sales order / quote import -------*/
         salesOrderChooseAction(val) {
             // todo
             if (val) {
@@ -710,13 +710,13 @@ export default {
             }
             this.salesOrderPanelOpen = false
         },
-        quotaChooseAction(val) {
+        quoteChooseAction(val) {
             // todo
             if (val) {
                 this.tableData = JSON.parse(JSON.stringify(val))
                 this.handleQuantityChange()
             }
-            this.quotaPanelOpen = false
+            this.quotePanelOpen = false
         },
         /* ------- model search -------*/
         modelSearchCloseAction() {
@@ -873,9 +873,9 @@ export default {
                 this.submitPopup3 = false
             }
         },
-        saveAsQuota() {
+        saveAsQuote() {
             if (this.$refs.form.validate()) {
-                this.form.quotaProducts = this.tableData
+                this.form.quoteProducts = this.tableData
 
                 this.$store.commit('setOverlay', true)
                 this.$putRequest(this.$api.createQuote, this.form).then(() => {

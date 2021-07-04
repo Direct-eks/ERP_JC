@@ -12,7 +12,7 @@
             </v-btn>
         </v-card-title>
 
-        <OutboundEntryCreateComponent editMode="quotaEntry">
+        <OutboundEntryCreateComponent editMode="quoteEntry">
         </OutboundEntryCreateComponent>
 
     </v-card>

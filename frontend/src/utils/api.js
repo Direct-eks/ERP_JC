@@ -111,7 +111,7 @@ const api = {
     purchaseOrdersByCompanyID: '/purchaseOrder/getOrdersByCompanyID/', // GET companyID
     modifyPurchaseOrder: '/purchaseOrder/modifyOrder', // PATCH
 
-    /* ------ /quotaEntry ------*/
+    /* ------ /quoteEntry ------*/
     createQuote: '/quoteEntry/createQuote', // PUT
     // GET startDate= endDate= companyID=int
     quotesInDateRangeByCompanyID: '/quoteEntry/getQuotesInDateRangeByCompanyID', // GET
