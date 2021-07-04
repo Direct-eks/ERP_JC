@@ -5,35 +5,35 @@
 <mapper namespace="org.jc.backend.dao.QuoteEntryMapper">
 
     <select id="countNumberOfEntriesOfToday" resultType="int">
-        select count(quota_entry_id)
-        from e_quota_entry
+        select count(quote_entry_id)
+        from e_quote_entry
         where creation_date = date('now', 'localtime')
     </select>
 
     <insert id="insertNewOrderEntry">
-        insert into e_quota_entry(
-            quota_entry_id, creation_date, total_amount, invoice_type, tax_rate, drawer, partner_company_id, remark
+        insert into e_quote_entry(
+            quote_entry_id, creation_date, total_amount, invoice_type, tax_rate, drawer, partner_company_id, remark
         )
         values (
-            #{quotaEntryID}, date('now', 'localtime'), #{totalAmount}, #{invoiceType}, #{taxRate}, #{drawer},
+            #{quoteEntryID}, date('now', 'localtime'), #{totalAmount}, #{invoiceType}, #{taxRate}, #{drawer},
             #{partnerCompanyID}, #{remark}
         )
     </insert>
 
-    <insert id="insertNewOrderProduct" useGeneratedKeys="true" keyProperty="quotaProductID"
-            keyColumn="quota_product_id">
-        insert into e_quota_product(
-            quota_entry_id, sku_id, quantity, remark, tax_rate, unit_price_without_tax, unit_price_with_tax
+    <insert id="insertNewOrderProduct" useGeneratedKeys="true" keyProperty="quoteProductID"
+            keyColumn="quote_product_id">
+        insert into e_quote_product(
+            quote_entry_id, sku_id, quantity, remark, tax_rate, unit_price_without_tax, unit_price_with_tax
         )
         values (
-            #{quotaEntryID}, #{skuID}, #{quantity}, #{remark}, #{taxRate}, #{unitPriceWithoutTax},
+            #{quoteEntryID}, #{skuID}, #{quantity}, #{remark}, #{taxRate}, #{unitPriceWithoutTax},
             #{unitPriceWithTax}
         )
     </insert>
 
 
-    <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.QuotaEntryDO">
-        <result property="quotaEntryID" column="quota_entry_id"/>
+    <resultMap id="entryResultMap" type="org.jc.backend.entity.DO.QuoteEntryDO">
+        <result property="quoteEntryID" column="quote_entry_id"/>
         <result property="creationDate" column="creation_date"/>
         <result property="totalAmount" column="total_amount"/>
         <result property="invoiceType" column="invoice_type"/>
@@ -49,8 +49,8 @@
     </resultMap>
 
     <resultMap id="productResultMap" type="org.jc.backend.entity.QuoteProductO">
-        <result property="quotaProductID" column="quota_product_id"/>
-        <result property="quotaEntryID" column="quota_entry_id"/>
+        <result property="quoteProductID" column="quote_product_id"/>
+        <result property="quoteEntryID" column="quote_entry_id"/>
         <result property="skuID" column="sku_id"/>
         <result property="code" column="code"/>
         <result property="unitName" column="unit_name"/>
@@ -64,85 +64,85 @@
 
 
     <select id="queryEntriesInDateRangeByCompanyID" resultMap="entryResultMap">
-        select q.quota_entry_id, q.creation_date, q.total_amount, q.invoice_type, q.tax_rate,
+        select q.quote_entry_id, q.creation_date, q.total_amount, q.invoice_type, q.tax_rate,
         q.drawer, q.partner_company_id, c.abbreviated_name as company_abbreviated_name,
         c.full_name as company_full_name, c.phone as company_phone, c.remark as company_remark,
         q.remark, q.is_modified
-        from e_quota_entry as q join c_partner_company as c on q.partner_company_id = c.partner_company_id
+        from e_quote_entry as q join c_partner_company as c on q.partner_company_id = c.partner_company_id
         where q.creation_date between #{startDate} and #{endDate}
         <if test="id != -1">
             and q.partner_company_id = #{id}
         </if>
-        order by q.quota_entry_id desc
+        order by q.quote_entry_id desc
     </select>
 
     <select id="queryEntriesByCompanyID" resultMap="entryResultMap">
-        select q.quota_entry_id, q.creation_date, q.total_amount, q.invoice_type, q.tax_rate,
+        select q.quote_entry_id, q.creation_date, q.total_amount, q.invoice_type, q.tax_rate,
         q.drawer, q.partner_company_id, c.abbreviated_name as company_abbreviated_name,
         c.full_name as company_full_name, c.phone as company_phone, c.remark as company_remark,
         q.remark, q.is_modified
-        from e_quota_entry as q join c_partner_company as c on q.partner_company_id = c.partner_company_id
+        from e_quote_entry as q join c_partner_company as c on q.partner_company_id = c.partner_company_id
         where q.partner_company_id = #{id}
-        order by q.quota_entry_id desc
+        order by q.quote_entry_id desc
     </select>
 
     <select id="queryProductsByEntryID" resultMap="productResultMap">
-        select quota_product_id, quota_entry_id, p.sku_id,
+        select quote_product_id, quote_entry_id, p.sku_id,
                sku_full.code, sku_full.unit_name, sku_full.factory_code,
                quantity, p.remark, tax_rate,
                unit_price_without_tax, unit_price_with_tax
-        from e_quota_product as p join sku_full on p.sku_id = sku_full.sku_id
-        where quota_entry_id = #{id}
-        order by quota_product_id
+        from e_quote_product as p join sku_full on p.sku_id = sku_full.sku_id
+        where quote_entry_id = #{id}
+        order by quote_product_id
     </select>
 
 
     <select id="selectEntryForCompare" resultMap="entryResultMap">
-        select quota_entry_id, total_amount, invoice_type, drawer, remark
-        from e_quota_entry
-        where quota_entry_id = #{id}
+        select quote_entry_id, total_amount, invoice_type, drawer, remark
+        from e_quote_entry
+        where quote_entry_id = #{id}
     </select>
 
     <select id="selectProductsForCompare" resultMap="productResultMap">
-        select quota_product_id, quota_entry_id, quantity, q.remark, tax_rate,
+        select quote_product_id, quote_entry_id, quantity, q.remark, tax_rate,
                unit_price_without_tax, unit_price_with_tax, m.code
-        from e_quota_product as q join (w_sku as s join w_model as m on s.model_id = m.model_id)
+        from e_quote_product as q join (w_sku as s join w_model as m on s.model_id = m.model_id)
             on q.sku_id = s.sku_id
-        where quota_entry_id = #{id}
+        where quote_entry_id = #{id}
     </select>
 
     <update id="updateOrderEntry">
-        update e_quota_entry
+        update e_quote_entry
         set total_amount = #{totalAmount},
             invoice_type = #{invoiceType},
             remark = #{remark},
             is_modified = 1
-        where quota_entry_id = #{quotaEntryID}
+        where quote_entry_id = #{quoteEntryID}
     </update>
 
     <update id="updateOrderProduct">
-        update e_quota_product
+        update e_quote_product
         set quantity = #{quantity},
             remark = #{remark},
             tax_rate = #{taxRate},
             unit_price_without_tax = #{unitPriceWithoutTax},
             unit_price_with_tax = #{unitPriceWithTax}
-        where quota_product_id = #{quotaProductID}
+        where quote_product_id = #{quoteProductID}
     </update>
 
     <delete id="deleteOrderProductByID">
-        delete from e_quota_product
-        where quota_product_id = #{id}
+        delete from e_quote_product
+        where quote_product_id = #{id}
     </delete>
 
     <delete id="deleteOrderEntry">
-        delete from e_quota_entry
-        where quota_entry_id = #{id}
+        delete from e_quote_entry
+        where quote_entry_id = #{id}
     </delete>
 
     <delete id="deleteOrderProductsByEntryID">
-        delete from e_quota_product
-        where quota_entry_id = #{id}
+        delete from e_quote_product
+        where quote_entry_id = #{id}
     </delete>
 
 </mapper>

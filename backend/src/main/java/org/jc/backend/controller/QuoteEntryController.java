@@ -69,10 +69,10 @@ public class QuoteEntryController {
     @ApiOperation(value = "", response = void.class)
     @RequiresPermissions("quote:Modification")
     @PatchMapping("/modifyQuote")
-    public void modifyQuote(@RequestBody @Validated QuoteEntryWithProductsVO modifyQuotaVO) {
-        logger.info("PATCH Request to /quoteEntry/modifyQuote, data: {}", modifyQuotaVO.toString());
+    public void modifyQuote(@RequestBody @Validated QuoteEntryWithProductsVO modifyQuoteVO) {
+        logger.info("PATCH Request to /quoteEntry/modifyQuote, data: {}", modifyQuoteVO.toString());
 
-        quoteEntryService.modifyQuote(modifyQuotaVO);
+        quoteEntryService.modifyQuote(modifyQuoteVO);
     }
 
     @ApiOperation(value = "", response = void.class)

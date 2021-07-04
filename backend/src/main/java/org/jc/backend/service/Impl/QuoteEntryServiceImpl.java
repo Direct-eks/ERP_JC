@@ -3,7 +3,7 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.QuoteEntryMapper;
-import org.jc.backend.entity.DO.QuotaEntryDO;
+import org.jc.backend.entity.DO.QuoteEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.QuoteProductO;
 import org.jc.backend.entity.VO.QuoteEntryWithProductsVO;
@@ -40,7 +40,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
     @Override
     public void createQuote(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
 
-        QuotaEntryDO newEntry = new QuotaEntryDO();
+        QuoteEntryDO newEntry = new QuoteEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, newEntry);
         List<QuoteProductO> newProducts = quoteEntryWithProductsVO.getQuoteProducts();
 
@@ -49,13 +49,13 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
             int count = quoteEntryMapper.countNumberOfEntriesOfToday();
             String newSerial = MyUtils.formNewSerial("报价", count, newEntry.getCreationDate());
 
-            newEntry.setQuotaEntryID(newSerial);
+            newEntry.setQuoteEntryID(newSerial);
             quoteEntryMapper.insertNewOrderEntry(newEntry);
 
             for (var product : newProducts) {
-                product.setQuotaEntryID(newSerial);
+                product.setQuoteEntryID(newSerial);
                 quoteEntryMapper.insertNewOrderProduct(product);
-                int id = product.getQuotaProductID();
+                int id = product.getQuoteProductID();
                 logger.info("Insert new purchase product id: " + id);
             }
 
@@ -70,7 +70,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
     @Override
     public List<QuoteEntryWithProductsVO> getQuotesInDateRangeByCompanyID(Date startDate, Date endDate, int id) {
         try {
-            List<QuotaEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesInDateRangeByCompanyID(
+            List<QuoteEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesInDateRangeByCompanyID(
                     MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), id);
 
             List<QuoteEntryWithProductsVO> entries = new ArrayList<>();
@@ -97,7 +97,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
     @Override
     public List<QuoteEntryWithProductsVO> getQuotesByCompanyID(int id) {
         try {
-            List<QuotaEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesByCompanyID(id);
+            List<QuoteEntryDO> entriesFromDatabase = quoteEntryMapper.queryEntriesByCompanyID(id);
 
             List<QuoteEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
@@ -123,17 +123,17 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
     @Override
     public void modifyQuote(QuoteEntryWithProductsVO quoteEntryWithProductsVO) {
 
-        QuotaEntryDO currentEntry = new QuotaEntryDO();
+        QuoteEntryDO currentEntry = new QuoteEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, currentEntry);
 
         List<QuoteProductO> currentProducts = quoteEntryWithProductsVO.getQuoteProducts();
 
         try {
             //query database for compare
-            String id = currentEntry.getQuotaEntryID();
+            String id = currentEntry.getQuoteEntryID();
             logger.info("Serial to be changed: " + id);
 
-            QuotaEntryDO originEntry = quoteEntryMapper.selectEntryForCompare(id);
+            QuoteEntryDO originEntry = quoteEntryMapper.selectEntryForCompare(id);
             List<QuoteProductO> originProducts = quoteEntryMapper.selectProductsForCompare(id);
 
             //compare entry
@@ -148,7 +148,7 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
             for (var originProduct : originProducts) {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
-                    if (currentProduct.getQuotaProductID() == originProduct.getQuotaProductID()) {
+                    if (currentProduct.getQuoteProductID() == originProduct.getQuoteProductID()) {
                         boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
@@ -161,14 +161,14 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
                     }
                 }
                 if (!found) { //entry is removed
-                    quoteEntryMapper.deleteOrderProductByID(originProduct.getQuotaProductID());
+                    quoteEntryMapper.deleteOrderProductByID(originProduct.getQuoteProductID());
                 }
             }
 
             if (bool1 || bool2) {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getQuotaEntryID(), record.toString()));
+                        originEntry.getQuoteEntryID(), record.toString()));
             }
             else {
                 logger.warn("Nothing changed, begin rolling back");

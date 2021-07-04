@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class QuoteProductO {
-    private int quotaProductID;
-    private String quotaEntryID;
+    private int quoteProductID;
+    private String quoteEntryID;
 
     @NotNull(message = "skuID null error")
     private Integer skuID;

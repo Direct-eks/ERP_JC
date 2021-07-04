@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class QuotaEntryDO {
-    private String quotaEntryID;
+public class QuoteEntryDO {
+    private String quoteEntryID;
     private String creationDate;
     private String totalAmount;
     private String invoiceType;

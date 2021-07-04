@@ -3,7 +3,7 @@ package org.jc.backend.utils;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
-import org.jc.backend.entity.DO.QuotaEntryDO;
+import org.jc.backend.entity.DO.QuoteEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.SupplierResourceO;
 import org.springframework.beans.BeanUtils;
@@ -164,7 +164,7 @@ public class IOModificationUtils {
         BeanUtils.copyProperties(modifiedEntry, modifyDO);
         BeanUtils.copyProperties(originEntry, originDO);
 
-        if (!(modifiedEntry instanceof QuotaEntryDO)) {
+        if (!(modifiedEntry instanceof QuoteEntryDO)) {
             if (originDO.getDepartmentID() != modifyDO.getDepartmentID()) {
                 bool = true;
                 record.append(String.format("部门: %s -> %s; ", originDO.getDepartmentName(), modifyDO.getDepartmentName()));
@@ -185,7 +185,7 @@ public class IOModificationUtils {
     /**
      * compare product fields and form modification record,
      * all purchaseProduct, inboundProduct, salesOrderProducts, outboundProduct
-     * and quotaProduct are compared by transforming into InboundProductO
+     * and quoteProduct are compared by transforming into InboundProductO
      * @param record the StringBuilder where the modification record is appended
      * @param modifiedO the modified product object to be compared with @originO
      * @param originO the origin product queried from database for compare
