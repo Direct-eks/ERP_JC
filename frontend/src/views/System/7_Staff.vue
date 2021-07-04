@@ -112,6 +112,7 @@
                             <v-row class="ml-10">
                                 <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="出库单录入" value="outboundEntry:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="出库单录入：改价" value="outboundEntry:Creation:changePrice"/>
                                     <v-checkbox v-model="form.permissions" label="出库单完善" value="outboundEntry:Completion"/>
                                     <v-checkbox v-model="form.permissions" label="出库单修改" value="outboundEntry:Modification"/>
                                     <v-checkbox v-model="form.permissions" label="出库单退货" value="outboundEntry:Return"/>

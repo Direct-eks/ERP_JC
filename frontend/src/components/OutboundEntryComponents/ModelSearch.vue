@@ -36,17 +36,6 @@
                 </v-btn>
             </v-col>
             <v-spacer></v-spacer>
-            <div class="text-body-1">
-                <p>折扣价基准</p>
-            </div>
-            <v-radio-group v-model="discountBase"
-                           hide-details="auto"
-                           class="mt-0 ml-2"
-                           dense>
-                <v-radio label="批发价" value="批发价"></v-radio>
-                <v-radio label="零售价" value="零售价"></v-radio>
-            </v-radio-group>
-            <v-spacer></v-spacer>
             <v-btn class="mr-8"
                    color="primary"
                    @click="chooseHandle">
@@ -125,55 +114,82 @@
                                               hide-default-footer
                                               locale="zh-cn"
                                               dense>
-                                    <template v-slot:item.wholesalePriceDiscount="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.wholesalePriceDiscount"
-                                                       @save="handleDiscountChange(item)"
-                                                       @cancel="handleDiscountChange(item)"
-                                                       @close="handleDiscountChange(item)">
-                                            {{item.wholesalePriceDiscount}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.wholesalePriceDiscount" single-line
-                                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
-                                    <template v-slot:item.retailPriceDiscount="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.retailPriceDiscount"
-                                                       @save="handleDiscountChange(item)"
-                                                       @cancel="handleDiscountChange(item)"
-                                                       @close="handleDiscountChange(item)">
-                                            {{item.retailPriceDiscount}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.retailPriceDiscount" single-line
-                                                              @focus="$event.target.setSelectionRange(0, 100)"/>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
-                                    <template v-slot:item.unitPriceWithTax="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.unitPriceWithTax"
-                                                       @save="handlePriceChange(item)">
-                                            {{item.unitPriceWithTax}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.unitPriceWithTax"
-                                                              single-line
-                                                              counter="20">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
-                                    <template v-slot:item.quantity="{ item }">
-                                        <v-edit-dialog :return-value.sync="item.quantity">
-                                            {{item.quantity}}
-                                            <template v-slot:input>
-                                                <v-text-field v-model="item.quantity"
-                                                              single-line
-                                                              counter="8">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </template>
                                 </v-data-table>
                             </v-responsive>
+                        </v-card>
+                        <v-card outlined>
+                            <v-row dense class="mt-1">
+                                <v-col cols="auto">
+                                    <v-text-field v-model="currSku.wholesalePrice"
+                                                  label="批发价"
+                                                  hide-details="auto"
+                                                  outlined
+                                                  readonly
+                                                  dense
+                                                  style="width: 150px">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="currSku.wholesalePriceDiscount"
+                                                  label="批发折扣"
+                                                  @change="handleWholesaleDiscountChange"
+                                                  type="Number"
+                                                  hide-details="auto"
+                                                  outlined
+                                                  :readonly="!editPermitted"
+                                                  dense
+                                                  style="width: 100px">
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="currSku.retailPrice"
+                                                  label="零售价"
+                                                  hide-details="auto"
+                                                  outlined
+                                                  readonly
+                                                  dense
+                                                  style="width: 150px">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="currSku.retailPriceDiscount"
+                                                  label="零售折扣"
+                                                  @change="handleRetailDiscountChange"
+                                                  type="Number"
+                                                  hide-details="auto"
+                                                  outlined
+                                                  :readonly="!editPermitted"
+                                                  dense
+                                                  style="width: 100px">
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="currSku.unitPriceWithoutTax"
+                                                  label="销售价格"
+                                                  @focus="$event.target.setSelectionRange(0, 100)"
+                                                  @change="handlePriceChange"
+                                                  hide-details="auto"
+                                                  outlined
+                                                  :readonly="!editPermitted"
+                                                  dense
+                                                  style="width: 150px">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="currSku.quantity"
+                                                  label="销售数量"
+                                                  type="Number"
+                                                  hide-details="auto"
+                                                  outlined
+                                                  dense
+                                                  style="width: 100px">
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
                         </v-card>
                     </div>
 
@@ -236,6 +252,9 @@ export default {
     props: {
         warehouseID: {type: Number, required: true, default: -1}
     },
+    beforeMount() {
+        this.editPermitted = this.$store.getters.currentUserIsPermitted('inboundEntry:Creation:changePrice')
+    },
     data() {
         return {
             mdiClose,
@@ -243,8 +262,9 @@ export default {
             modelCode: '',
             modelSearchName: '',
             modelSearchMethod: 'prefix',
-            discountBase: '零售价',
             flattenedTreePosition: '',
+
+            editPermitted: false,
 
             modelTableHeaders: [
                 {text: '代号', value: 'code', width: '180px'},
@@ -257,17 +277,21 @@ export default {
             ],
             skuTableData: [],
             skuTableCurrentRow: [],
+            currSku: {
+                wholesalePrice: '', wholesalePriceDiscount: '',
+                retailPrice: '', retailPriceDiscount: '',
+                unitPriceWithoutTax: '', quantity: '',
+            },
+            emptySku: {
+                wholesalePrice: '', wholesalePriceDiscount: '',
+                retailPrice: '', retailPriceDiscount: '',
+                unitPriceWithoutTax: '', quantity: '',
+            },
 
             warehouseStockTableHeaders: [
                 {text: '仓库', value: 'warehouseName', width: '75px'},
                 // {text: '架位', value: 'storagePlaceID', width: '80px'},
                 {text: '库存数', value: 'stockQuantity', width: '80px'},
-                {text: '批发价', value: 'wholesalePrice', width: '80px'},
-                {text: '折扣', value: 'wholesalePriceDiscount', width: '65px'},
-                {text: '零售价', value: 'retailPrice', width: '80px'},
-                {text: '折扣', value: 'retailPriceDiscount', width: '65px'},
-                {text: '销售价', value: 'unitPriceWithTax', width: '80px'},
-                {text: '销售数量', value: 'quantity', width: '85px'},
             ],
             warehouseStockTableData: [],
             warehouseStockCurrentRow: [],
@@ -343,6 +367,7 @@ export default {
             this.modelTableCurrentRow = [] // reset model table
             this.skuTableData = []
             this.skuTableCurrentRow = [] // reset stock table
+            this.currSku = Object.assign(this.currSku, this.emptySku)
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
             this.resourceTableData = []
@@ -350,6 +375,7 @@ export default {
         modelTableChoose(val) {
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
+            this.currSku = Object.assign(this.currSku, this.emptySku)
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
             this.resourceTableData = []
@@ -368,6 +394,7 @@ export default {
         modelTableChoose2(row) {
             this.skuTableData = []
             this.skuTableCurrentRow = [] //reset stock table
+            this.currSku = Object.assign(this.currSku, this.emptySku)
             this.warehouseStockTableData = []
             this.warehouseStockCurrentRow = []
             this.resourceTableData = []
@@ -386,16 +413,14 @@ export default {
 
             if (this.skuTableCurrentRow.indexOf(val) !== -1) {
                 this.skuTableCurrentRow = []
+                this.currSku = Object.assign(this.currSku, this.emptySku)
             }
             else {
                 this.skuTableCurrentRow = [val]
+                this.currSku = Object.assign(this.currSku, val)
 
                 this.$getRequest(this.$api.warehouseStockBySKu +
                     encodeURI(val.skuID)).then((data) => {
-                    data.forEach(row => {
-                        row.unitPriceWithTax = ''
-                        row.quantity = ''
-                    })
                     this.warehouseStockTableData = data
                 }).catch(() => {})
             }
@@ -407,6 +432,7 @@ export default {
 
             if (!row.value) {
                 this.skuTableCurrentRow = []
+                this.currSku = Object.assign(this.currSku, this.emptySku)
             }
             else {
                 this.skuTableChoose(row.item)
@@ -432,21 +458,21 @@ export default {
                 this.warehouseStockCurrentRow = [row.item]
             }
         },
-        handleDiscountChange(item) {
-            let discount = 0.0
-            switch (this.discountBase) {
-            case '零售价':
-                discount = Number(item.retailPriceDiscount) / 100
-                item.unitPriceWithTax = (item.retailPrice * (1 - discount)).toFixed(2)
-                break
-            case '批发价':
-                discount = Number(item.wholesalePriceDiscount) / 100
-                item.unitPriceWithTax = (item.wholesalePrice * (1 - discount)).toFixed(2)
-                break
-            }
+        handleWholesaleDiscountChange(value) {
+            if (value === '') return
+            const discount = 100 - value
+            const wholesalePrice = this.$Big(this.currSku.wholesalePrice)
+            this.currSku.unitPriceWithoutTax = wholesalePrice.times(this.$Big(discount).div(100))
         },
-        handlePriceChange(item) {
-            item.unitPriceWithTax = this.$validateFloat(item.unitPriceWithTax)
+        handleRetailDiscountChange(value) {
+            if (value === '') return
+            const discount = 100 - value
+            const retailPrice = this.$Big(this.currSku.retailPrice)
+            this.currSku.unitPriceWithoutTax = retailPrice.times(this.$Big(discount).div(100))
+        },
+        handlePriceChange(value) {
+            if (value === '') return
+            this.currSku.unitPriceWithoutTax = this.$validateFloat(value)
         },
         chooseHandle() {
             //check if sku is chosen
@@ -476,29 +502,24 @@ export default {
                 }
             }
 
-            const quantity = Number(this.warehouseStockCurrentRow[0].quantity)
-            const unitPriceWithoutTax = Number(this.warehouseStockCurrentRow[0].unitPriceWithTax) / 1.16
             this.$emit('modelSearchChoose', {
                 skuID: this.skuTableCurrentRow[0].skuID,
                 code: this.skuTableCurrentRow[0].code,
                 unitName: this.skuTableCurrentRow[0].unitName,
                 factoryCode: this.skuTableCurrentRow[0].factoryCode,
-                quantity: quantity,
+                quantity: this.currSku.quantity,
                 stockQuantity: stockQuantity,
                 remark: '',
                 warehouseStockID: warehouseStockID,
                 warehouseID: this.warehouseID,
                 taxRate: '',
-                unitPriceWithoutTax: unitPriceWithoutTax,
+                unitPriceWithoutTax: this.currSku.unitPriceWithoutTax,
                 unitPriceWithTax: '0',
                 stockUnitPrice: stockUnitPrice,
                 //statistic fields
                 totalWithoutTax: '',
                 totalTax: '',
             })
-            this.modelTableCurrentRow = []
-            this.skuTableCurrentRow = []
-            this.warehouseStockCurrentRow = []
         }
     }
 }
