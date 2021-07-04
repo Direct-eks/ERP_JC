@@ -648,7 +648,16 @@ export default {
         /* ------- purchase order import -------*/
         purchaseOrderChooseAction(val) {
             if (val) {
-                this.tableData = JSON.parse(JSON.stringify(val))
+                const purchaseOrder = JSON.parse(JSON.stringify(val))
+                // todo entryDate
+                this.form.invoiceType = purchaseOrder.entry.invoiceType
+                this.form.taxRate = purchaseOrder.entry.taxRate
+                this.form.departmentID = purchaseOrder.entry.departmentID
+                this.form.warehouseID = purchaseOrder.entry.warehouseID
+                this.tableData = purchaseOrder.products
+                this.tableData.forEach(p => {
+                    this.handleQuantityChange(p)
+                })
             }
             this.purchaseOrderPanelOpen = false
         },

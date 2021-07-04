@@ -5,17 +5,17 @@
                 <v-toolbar-title>{{ title }}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="close">
-                    <v-icon>{{ mdiClosePath }}</v-icon>
+                    <v-icon>{{ mdiClose }}</v-icon>
                 </v-btn>
             </v-toolbar>
         </v-card-title>
         <v-card-text>
-            <v-data-table v-if="isSalesOrderMode"
-                          v-model="queryTableCurrentRow"
+            <v-data-table v-model="queryTableCurrentRow"
                           :headers="isSalesOrderMode ? salesQueryTableHeaders : quoteQueryTableHeaders"
                           :items="queryTableData"
                           :item-key="isSalesOrderMode ? 'salesOrderEntryID' : 'quoteEntryID'"
                           @click:row="tableClick"
+                          @item-selected="tableClick2"
                           height="25vh"
                           calculate-widths
                           disable-sort
@@ -23,19 +23,25 @@
                           single-select
                           fixed-header
                           hide-default-footer
-                          locale="zh-cn">
+                          locale="zh-cn"
+                          dense>
             </v-data-table>
 
-            <v-data-table :headers="entryProductsTableHeaders"
+            <v-data-table v-model="entryProductsCurrRow"
+                          :headers="entryProductsTableHeaders"
                           :items="entryProductsData"
-                          item-key="id"
+                          :item-key="isSalesOrderMode ? 'salesOrderProductID' : 'quoteProductID'"
                           height="35vh"
                           calculate-widths
                           disable-sort
                           fixed-header
+                          show-select
+                          @click:row="table2Click"
+                          @item-selected="table2Click2"
                           disable-pagination
                           hide-default-footer
-                          locale="zh-cn">
+                          locale="zh-cn"
+                          dense>
                 <template v-slot:item.index="{ item }">
                     {{ entryProductsData.indexOf(item) + 1 }}
                 </template>
@@ -54,7 +60,7 @@
 import {mdiClose} from "@mdi/js";
 
 export default {
-    name: "ImportSalesOrder",
+    name: "ImportOrder",
     props: {
         mode: {
             type: String,
@@ -63,7 +69,6 @@ export default {
         companyID: {
             type: Number,
             required: true,
-            default: -1,
         }
     },
     watch: {
@@ -74,7 +79,6 @@ export default {
                     this.$getRequest(this.$api.salesOrdersByCompanyID +
                         encodeURI(String(this.companyID))
                     ).then((data) => {
-                        console.log('received', data)
                         this.queryTableData = data
                     }).catch(() => {})
                 }
@@ -82,7 +86,6 @@ export default {
                     this.$getRequest(this.$api.quotesByCompanyID +
                         encodeURI(String(this.companyID))
                     ).then((data) => {
-                        console.log('received', data)
                         this.queryTableData = data
                     }).catch(() => {})
                 }
@@ -105,7 +108,7 @@ export default {
     data() {
         return {
             title: '',
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             isSalesOrderMode: false,
             isQuoteMode: false,
@@ -152,33 +155,84 @@ export default {
                 {text: '库存数量', value: 'stockQuantity', width: '70px'},
                 {text: '库存单价', value: 'stockUnitPrice', width: '70px'}
             ],
-            entryProductsData: []
+            entryProductsData: [],
+            entryProductsCurrRow: [],
         }
     },
     methods: {
         close() {
             if (this.isSalesOrderMode) this.$emit('salesOrderChoose', null)
-            else if (this.isQuoteMode) this.$emit('quoteOrder', null)
+            else if (this.isQuoteMode) this.$emit('quoteOrderChoose', null)
         },
-        tableClick(val) {
-            this.queryTableCurrentRow = [val]
+        calculateTax(row) {
+            let tempProducts;
+            if (this.isSalesOrderMode) {
+                tempProducts = row.salesOrderProducts
+            }
+            else if (this.isQuoteMode) {
+                tempProducts = row.quoteProducts
+            }
 
-            let tempProducts = val.purchaseOrderProducts
-            for (let item of tempProducts) {
-                item.totalWithoutTax = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item.totalTax = (item.quantity * (item.unitPriceWithTax - item.totalWithoutTax)).toFixed(2)
+            for (const item of tempProducts) {
+                item['totalWithoutTax'] = this.$Big(item.unitPriceWithoutTax).times(item.quantity).toString()
+                item['totalTax'] = this.$Big(item.unitPriceWithTax).times(item.quantity).sub(item.totalWithoutTax).toString()
             }
             this.entryProductsData = tempProducts
         },
+        tableClick(row) {
+            this.entryProductsData = []
+            this.entryProductsCurrRow = []
+
+            if (this.queryTableCurrentRow.indexOf(row) !== -1) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row]
+                this.calculateTax(row)
+            }
+        },
+        tableClick2(row) {
+            this.entryProductsData = []
+            this.entryProductsCurrRow = []
+
+            if (!row.value) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.tableClick(row.item)
+            }
+        },
+        table2Click(row) {
+            if (this.entryProductsCurrRow.indexOf(row) !== -1) {
+                this.entryProductsCurrRow.splice(this.entryProductsCurrRow.indexOf(row), 1)
+            }
+            else {
+                this.entryProductsCurrRow.push(row)
+            }
+        },
+        table2Click2(row) {
+            if (!row.value) {
+                this.entryProductsCurrRow.splice(this.entryProductsCurrRow.indexOf(row.item), 1)
+            }
+            else {
+                this.table2Click(row.item)
+            }
+        },
         choose() {
-            if (this.isSalesOrderMode) this.salesOrderChoose()
-            else if (this.isQuoteMode) this.quoteChoose()
-        },
-        salesOrderChoose() {
-            this.$emit('salesOrderChoose', this.entryProductsData)
-        },
-        quoteChoose() {
-            this.$emit('quoteChoose', this.entryProductsData)
+            if (this.queryTableCurrentRow.length === 0) return
+            if (this.entryProductsCurrRow.length === 0) return
+            if (this.isSalesOrderMode) {
+                this.$emit('salesOrderChoose', {
+                    entry: this.queryTableCurrentRow[0],
+                    products: this.entryProductsCurrRow
+                })
+            }
+            else if (this.isQuoteMode) {
+                this.$emit('quoteChoose', {
+                    entry: this.queryTableCurrentRow[0],
+                    products: this.entryProductsCurrRow
+                })
+            }
         }
     }
 }

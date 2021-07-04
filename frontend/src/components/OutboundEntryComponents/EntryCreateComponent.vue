@@ -703,18 +703,29 @@ export default {
         },
         /* ------- sales order / quote import -------*/
         salesOrderChooseAction(val) {
-            // todo
             if (val) {
-                this.tableData = JSON.parse(JSON.stringify(val))
-                this.handleQuantityChange()
+                const salesOrder = JSON.parse(JSON.stringify(val))
+                // todo entryDate
+                this.form.invoiceType = salesOrder.entry.invoiceType
+                this.form.taxRate = salesOrder.entry.taxRate
+                this.form.departmentID = salesOrder.entry.departmentID
+                this.form.warehouseID = salesOrder.entry.warehouseID
+                this.tableData = salesOrder.products
+                this.tableData.forEach(p => {
+                    this.handleQuantityChange(p)
+                })
             }
             this.salesOrderPanelOpen = false
         },
         quoteChooseAction(val) {
-            // todo
             if (val) {
-                this.tableData = JSON.parse(JSON.stringify(val))
-                this.handleQuantityChange()
+                const quote = JSON.parse(JSON.stringify(val))
+                this.form.invoiceType = quote.entry.invoiceType
+                this.form.taxRate = quote.entry.taxRate
+                this.tableData = quote.products
+                this.tableData.forEach(p => {
+                    this.handleQuantityChange(p)
+                })
             }
             this.quotePanelOpen = false
         },

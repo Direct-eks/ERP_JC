@@ -133,27 +133,26 @@ export default {
             this.entryProductsData = tempProducts
         },
         tableClick(row) {
+            this.entryProductsData = []
+            this.entryProductsCurrRow = []
+
             if (this.queryTableCurrentRow.indexOf(row) !== -1) {
                 this.queryTableCurrentRow = []
-                this.entryProductsData = []
-                this.entryProductsCurrRow = []
             }
             else {
                 this.queryTableCurrentRow = [row]
                 this.calculateTax(row)
-                this.entryProductsCurrRow = []
             }
         },
         tableClick2(row) {
+            this.entryProductsData = []
+            this.entryProductsCurrRow = []
+
             if (!row.value) {
                 this.queryTableCurrentRow = []
-                this.entryProductsData = []
-                this.entryProductsCurrRow = []
             }
             else {
-                this.queryTableCurrentRow = [row.item]
-                this.calculateTax(row)
-                this.entryProductsCurrRow = []
+                this.tableClick(row.item)
             }
         },
         table2Click(row) {
@@ -173,8 +172,12 @@ export default {
             }
         },
         choose() {
+            if (this.queryTableCurrentRow.length === 0) return
             if (this.entryProductsCurrRow.length === 0) return
-            this.$emit('purchaseOrderChoose', this.entryProductsCurrRow)
+            this.$emit('purchaseOrderChoose', {
+                entry: this.queryTableCurrentRow[0],
+                products: this.entryProductsCurrRow
+            })
         }
     }
 }
