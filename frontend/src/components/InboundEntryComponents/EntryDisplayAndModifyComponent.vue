@@ -93,7 +93,7 @@
                               label="税率"
                               hide-details="auto"
                               :append-icon="mdiPercentOutline"
-                              :readonly="!inboundEntryModifyMode"
+                              :readonly="!inboundEntryModifyMode && !purchaseOrderModifyMode"
                               outlined dense
                               style="width: 110px">
                     </v-select>

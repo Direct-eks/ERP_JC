@@ -92,6 +92,8 @@
                               @change="changeTaxRate"
                               label="税率"
                               hide-details="auto"
+                              :readonly="outboundEntryDisplayMode || outboundEntryReturnMode ||
+                                            salesOrderDisplayMode || quoteDisplayMode"
                               :append-icon="mdiPercentOutline"
                               outlined dense
                               style="width: 110px">
@@ -221,7 +223,7 @@
                     <v-text-field v-model="form.totalAmount"
                                   label="总金额"
                                   hide-details="auto"
-                                  outlined
+                                  filled
                                   dense
                                   readonly
                                   style="width: 100px">
