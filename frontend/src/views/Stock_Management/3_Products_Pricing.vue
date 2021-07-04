@@ -329,40 +329,40 @@ export default {
             if (this.treeSelection.label === '') return
             this.isQuerying = true
             this.$getRequest(this.$api.skuByCategoryAndFactoryBrand, {
-                modelCategoryID: this.treeSelection[0].categoryID,
+                modelCategoryID: this.treeSelection.categoryID,
                 factoryBrandID: this.factoryBrandCurrentRow.length === 0 ? -1 :
                     this.factoryBrandCurrentRow[0].factoryBrandID
             }).then((data) => {
-                console.log('received', data)
                 this.tableData = data
                 this.isQuerying = false
             }).catch(() => {})
         },
         tableSelect(row) {
-            this.tableCurrentRow = [row]
             this.supplierTableData = []
             this.supplierTableCurrentRow = []
 
-            this.$getRequest(this.$api.supplierResourcesBySku +
-                encodeURI(row.skuID)).then(data => {
-                console.log('received', data)
-                this.supplierTableData = data
-            })
+            if (this.tableCurrentRow.indexOf(row) !== -1) {
+                this.tableCurrentRow = []
+            }
+            else {
+                this.tableCurrentRow = [row]
+
+                this.$getRequest(this.$api.supplierResourcesBySku +
+                    encodeURI(row.skuID)).then(data => {
+                    this.supplierTableData = data
+                })
+            }
         },
         tableSelect2(row) {
+            this.supplierTableData = []
+            this.supplierTableCurrentRow = []
+
             if (!row.value) {
                 this.tableCurrentRow = []
             }
             else {
-                this.tableCurrentRow = [row.item]
-                this.$getRequest(this.$api.supplierResourcesBySku +
-                    encodeURI(row.item.skuID)).then(data => {
-                    console.log('received', data)
-                    this.supplierTableData = data
-                })
+                this.tableSelect(row.item)
             }
-            this.supplierTableData = []
-            this.supplierTableCurrentRow = []
         },
         hideTop() {
             if (this.isHiding) {
