@@ -23,7 +23,8 @@
                           single-select
                           fixed-header
                           hide-default-footer
-                          locale="zh-cn">
+                          locale="zh-cn"
+                          dense>
             </v-data-table>
 
             <v-data-table v-model="entryProductsCurrRow"
@@ -39,7 +40,8 @@
                           @item-selected="table2Click2"
                           disable-pagination
                           hide-default-footer
-                          locale="zh-cn">
+                          locale="zh-cn"
+                          dense>
                 <template v-slot:item.index="{ item }">
                     {{entryProductsData.indexOf(item) + 1}}
                 </template>
