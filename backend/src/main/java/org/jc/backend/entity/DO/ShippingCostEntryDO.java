@@ -13,6 +13,7 @@ public class ShippingCostEntryDO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     private int isTaxDeduction;
     private String invoiceNumber;

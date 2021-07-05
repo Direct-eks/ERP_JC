@@ -13,6 +13,7 @@ public class CheckoutEntryDO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     private String invoiceType;
     private String paymentMethod;

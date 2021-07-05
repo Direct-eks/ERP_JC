@@ -24,6 +24,7 @@ public class CheckoutEntryWithProductsVO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     @NotNull(message = "invoiceType null error")
     @Pattern(regexp = "^(增值税票|普票)$", message = "invoiceType value error")

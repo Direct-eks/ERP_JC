@@ -28,6 +28,7 @@
         <result property="invoiceEntrySerial" column="invoice_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyFullName" column="company_full_name"/>
+        <result property="companyRemark" column="company_remark"/>
         <result property="invoiceType" column="invoice_type"/>
         <result property="invoiceNumber" column="invoice_number"/>
         <result property="totalAmount" column="total_amount"/>
@@ -45,9 +46,10 @@
     </resultMap>
 
     <select id="getEntriesInDateRangeAndParams" resultMap="InvoiceEntryResultMap">
-        select invoice_entry_serial, i.partner_company_id, c.full_name as company_full_name, invoice_type,
-               invoice_number, total_amount, invoice_amount, invoice_indication, is_follow_up_indication, i.remark,
-               drawer, creation_date, checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified
+        select invoice_entry_serial, i.partner_company_id, c.full_name as company_full_name,
+               c.remark as company_remark, invoice_type, invoice_number, total_amount, invoice_amount,
+               invoice_indication, is_follow_up_indication, i.remark, drawer, creation_date,
+               checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified
         from m_invoice_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id
         where (invoice_entry_serial like #{prefix1}||'%' or invoice_entry_serial like #{prefix2}||'%')
             and (creation_date between #{startDate} and #{endDate})

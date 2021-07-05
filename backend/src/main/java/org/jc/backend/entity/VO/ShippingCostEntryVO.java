@@ -22,6 +22,7 @@ public class ShippingCostEntryVO {
     private String companyAbbreviatedName;
     private String companyFullName;
     private String companyPhone;
+    private String companyRemark;
 
     @Min(value = 0, message = "isTaxDeduction value error")
     @Max(value = 1, message = "isTaxDeduction value error")

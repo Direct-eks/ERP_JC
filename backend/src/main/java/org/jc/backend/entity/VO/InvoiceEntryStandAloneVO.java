@@ -20,6 +20,7 @@ public class InvoiceEntryStandAloneVO {
     private Integer partnerCompanyID;
     // from c_partner_company
     private String companyFullName;
+    private String companyRemark;
 
     @NotNull(message = "invoiceType null error")
     @Pattern(regexp = "^(增值税票|普票)$", message = "invoiceType value error")

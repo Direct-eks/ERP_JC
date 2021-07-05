@@ -29,6 +29,7 @@
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyFullName" column="company_full_name"/>
         <result property="companyPhone" column="company_phone"/>
+        <result property="companyRemark" column="company_remark"/>
         <result property="isTaxDeduction" column="is_tax_deduction"/>
         <result property="invoiceNumber" column="invoice_number"/>
         <result property="totalAmount" column="total_amount"/>
@@ -46,8 +47,8 @@
     <select id="getEntriesInDateRangeAndParams" resultMap="entryResultMap">
         select shipping_cost_entry_serial, s.partner_company_id,
                c.abbreviated_name as company_abbreviated_name, c.full_name as company_full_name,
-               c.phone as company_phone, is_tax_deduction, invoice_number, total_amount,
-               invoice_amount, shipping_cost_type, s.remark, drawer, creation_date,
+               c.phone as company_phone, c.remark as company_remark, is_tax_deduction, invoice_number,
+               total_amount, invoice_amount, shipping_cost_type, s.remark, drawer, creation_date,
                checkout_date, in_or_out, invoice_date, is_modified
         from m_shipping_cost_entry as s join c_partner_company as c
             on s.partner_company_id = c.partner_company_id
