@@ -17,7 +17,7 @@ public class InboundEntryWithProductsVO {
     private String inboundEntryID;
 
     @NotNull(message = "entryDate null error")
-    @NotBlank(message = "入库日期错误")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库日期错误")
     private String entryDate;
 
     @NotNull(message = "creationDate null error")

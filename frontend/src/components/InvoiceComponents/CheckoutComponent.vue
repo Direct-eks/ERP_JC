@@ -3,51 +3,23 @@
         <v-form ref="form">
             <v-row>
                 <v-col cols="auto">
-                    <v-text-field v-if="displayMode"
-                                  v-model="form.departmentName"
-                                  label="部门"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
-                    <v-select v-else
-                              v-model="form.departmentID"
+                    <v-select v-model="form.departmentID"
                               :rules="rules.departmentID"
                               :items="departmentOptions"
                               item-value="departmentID"
                               item-text="name"
                               label="部门"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 180px">
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu close-on-content-click
-                            :disabled="!creationMode"
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y>
-                        <template v-slot:activator="{on}">
-                            <v-text-field v-model="form.checkoutDate"
-                                          :rules="rules.checkoutDate"
-                                          v-on="on"
-                                          :label="checkoutDateTitle"
-                                          hide-details="auto"
-                                          outlined
-                                          readonly
-                                          dense>
-                            </v-text-field>
-                        </template>
-                        <v-date-picker v-model="form.checkoutDate"
-                                       no-title
-                                       :max="allowedMaxDate"
-                                       :first-day-of-week="0"
-                                       locale="zh-cn">
-                        </v-date-picker>
-                    </v-menu>
+                    <DatePicker :label="checkoutDateTitle"
+                                :entryDate.sync="form.checkoutDate"
+                                :disabled="!creationMode">
+                    </DatePicker>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.drawer"
@@ -385,6 +357,7 @@ function validateFloat(value) {
 export default {
     name: "CheckoutComponent",
     components: {
+        DatePicker: () => import("~/components/DatePicker"),
         CompanySearch: () => import("~/components/CompanySearch"),
         InvoiceComponent: () => import("~/components/InvoiceComponents/InvoiceComponent"),
         CheckoutProductsChoose: () => import("~/components/InvoiceComponents/CheckoutProductsChoose")
@@ -457,8 +430,6 @@ export default {
             fullSearchPanelOpen: false,
             productsChoosePanelOpen: false,
             invoicePanelOpen: false,
-
-            allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
 
             form: {
                 checkoutEntrySerial: '',

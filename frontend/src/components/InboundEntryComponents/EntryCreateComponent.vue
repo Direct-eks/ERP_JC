@@ -29,28 +29,9 @@
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu close-on-content-click
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y>
-                        <template v-slot:activator="{on}">
-                            <v-text-field v-model="form.entryDate"
-                                          :rules="rules.entryDate"
-                                          v-on="on"
-                                          label="入库日期"
-                                          hide-details="auto"
-                                          outlined dense
-                                          readonly
-                                          style="width: 140px">
-                            </v-text-field>
-                        </template>
-                        <v-date-picker v-model="form.entryDate"
-                                       no-title
-                                       :max="allowedMaxDate"
-                                       :first-day-of-week="0"
-                                       locale="zh-cn">
-                        </v-date-picker>
-                    </v-menu>
+                    <DatePicker label="入库日期"
+                                :entryDate.sync="form.entryDate">
+                    </DatePicker>
                 </v-col>
             </v-row>
 
@@ -473,6 +454,8 @@ import { mdiPercentOutline } from '@mdi/js'
 export default {
     name: "InboundEntryAndPurchaseOrderComponent",
     components: {
+        DatePicker: () => import(/* webpackChunkName: "CompanySearchSimpleComponent" */
+            "~/components/DatePicker"),
         CompanySearchSimple: () => import(/* webpackChunkName: "CompanySearchSimpleComponent" */
             "~/components/CompanySearchSimple"),
         CompanySearch: () => import(/* webpackChunkName: "CompanySearchComponent" */
@@ -544,7 +527,6 @@ export default {
             purchaseOrderPanelOpen: false,
 
             mdiPercentOutline,
-            allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
 
             form: {
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),

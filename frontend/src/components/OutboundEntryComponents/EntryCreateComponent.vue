@@ -29,28 +29,9 @@
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu close-on-content-click
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y>
-                        <template v-slot:activator="{on}">
-                            <v-text-field v-model="form.shipmentDate"
-                                          :rules="rules.shipmentDate"
-                                          v-on="on"
-                                          label="出库日期"
-                                          hide-details="auto"
-                                          outlined
-                                          readonly
-                                          dense>
-                            </v-text-field>
-                        </template>
-                        <v-date-picker v-model="form.shipmentDate"
-                                       no-title
-                                       :max="allowedMaxDate"
-                                       :first-day-of-week="0"
-                                       locale="zh-cn">
-                        </v-date-picker>
-                    </v-menu>
+                    <DatePicker label="出库日期"
+                                :entryDate.sync="form.shipmentDate">
+                    </DatePicker>
                 </v-col>
             </v-row>
 
@@ -519,6 +500,7 @@ import { mdiPercentOutline } from '@mdi/js'
 export default {
     name: "EntryCreateComponent",
     components: {
+        DatePicker: () => import("~/components/DatePicker"),
         CompanySearchSimple: () => import("~/components/CompanySearchSimple"),
         CompanySearch: () => import("~/components/CompanySearch"),
         ModelSearch: () => import(/* webpackChunkName: "OutboundModelSearchComponent" */
@@ -591,7 +573,6 @@ export default {
             quotePanelOpen: false,
 
             mdiPercentOutline,
-            allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
 
             form: {
                 shipmentDate: new Date().format("yyyy-MM-dd").substr(0, 10),

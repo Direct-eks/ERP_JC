@@ -17,7 +17,7 @@ public class SalesOrderEntryWithProductsVO {
     private String salesOrderEntryID;
 
     @NotNull(message = "shipmentDate null error")
-    @NotBlank(message = "销售日期错误")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "销售日期错误")
     private String shipmentDate;
 
     @NotNull(message = "creationDate null error")
