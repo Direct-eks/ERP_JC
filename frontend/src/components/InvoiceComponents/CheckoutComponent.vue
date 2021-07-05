@@ -28,7 +28,7 @@
                                   outlined
                                   readonly
                                   dense
-                                  style="width: 150px">
+                                  style="width: 120px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto" v-if="creationMode">
@@ -38,11 +38,9 @@
                               no-click-animation
                               width="80vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="accent"
-                                   v-on="on"
-                                   :disabled="fullSearchPanelOpen ||
-                                       isInbound ? form.inboundCheckoutProducts.length !== 0 :
-                                                    form.outboundCheckoutProducts.length !== 0">
+                            <v-btn color="accent" v-on="on"
+                                   :disabled="isInbound ? form.inboundCheckoutProducts.length !== 0 :
+                                                   form.outboundCheckoutProducts.length !== 0">
                                 单位助选
                             </v-btn>
                         </template>
@@ -87,25 +85,31 @@
                 </v-col>
             </v-row>
 
+            <v-row v-if="form.partnerCompanyID !== -1 && form.companyRemark !== ''" dense>
+                <v-col>
+                    <v-textarea v-model.number="form.companyRemark"
+                                label="重要提示"
+                                hide-details="auto"
+                                background-color="red accent-2"
+                                outlined
+                                dense
+                                readonly
+                                auto-grow
+                                rows="1">
+                    </v-textarea>
+                </v-col>
+            </v-row>
+
             <v-row>
                 <v-col cols="auto">
-                    <v-text-field v-if="displayMode"
-                                  v-model="form.paymentMethod"
-                                  label="单位全称"
-                                  hide-details="auto"
-                                  outlined
-                                  dense
-                                  readonly
-                                  style="width: 120px">
-                    </v-text-field>
-                    <v-select v-else
-                              v-model="form.paymentMethod"
+                    <v-select v-model="form.paymentMethod"
                               :rules="rules.paymentMethod"
                               :items="paymentMethodOptions"
                               item-value="value"
                               item-text="label"
                               :label="paymentMethodTitle"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 120px">
                     </v-select>
@@ -116,8 +120,8 @@
                                   hide-details="auto"
                                   outlined
                                   dense
-                                  :readonly="form.paymentMethod === '现金'
-                                  || form.paymentMethod === '' || displayMode"
+                                  :readonly="form.paymentMethod === '现金' ||
+                                                form.paymentMethod === '' || displayMode"
                                   style="width: 160px">
                     </v-text-field>
                 </v-col>
@@ -147,25 +151,14 @@
                 </v-col>
             </v-row>
 
-            <v-row>
+            <v-row dense>
                 <v-col cols="auto">
-                    <v-text-field v-if="displayMode"
-                                  v-model="form.invoiceType"
-                                  label="结账类型"
-                                  hide-details="auto"
-                                  @change="handlePaymentAmountChange"
-                                  readonly
-                                  outlined
-                                  dense
-                                  style="width: 180px">
-                    </v-text-field>
-                    <v-select v-else
-                              v-model="form.invoiceType"
+                    <v-select v-model="form.invoiceType"
                               :items="invoiceTypeOptions"
                               item-value="value"
                               item-text="label"
                               label="结账类型"
-                              :readonly="isInbound ? form.inboundCheckoutProducts.length !== 0 :
+                              :readonly="displayMode || isInbound ? form.inboundCheckoutProducts.length !== 0 :
                                                     form.outboundCheckoutProducts.length !== 0"
                               hide-details="auto"
                               outlined dense
@@ -176,7 +169,7 @@
                     <v-radio-group v-model="form.isRounded"
                                    hide-details="auto"
                                    class="mt-0"
-                                   @change="isRoundedChange"
+                                   @change="handlePaymentAmountChange"
                                    :readonly="displayMode"
                                    row dense>
                         <v-radio label="不抹零" :value=0></v-radio>
@@ -189,7 +182,7 @@
                                   label="抹零金额"
                                   hide-details="auto"
                                   outlined
-                                  @change="roundedAmountChange"
+                                  @change="handlePaymentAmountChange"
                                   :readonly="displayMode"
                                   dense
                                   style="width: 100px">
@@ -206,7 +199,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-text-field v-model.number="form.debt"
+                    <v-text-field v-model="form.debt"
                                   label="余额"
                                   hide-details="auto"
                                   outlined
@@ -219,15 +212,14 @@
 
             <v-row>
                 <v-col>
-                    <v-textarea v-model.number="form.remark"
+                    <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
                                 :readonly="displayMode"
                                 outlined
                                 dense
                                 auto-grow
-                                rows="1"
-                                counter="200">
+                                rows="1">
                     </v-textarea>
                 </v-col>
             </v-row>
@@ -236,7 +228,7 @@
         <v-expand-transition>
             <v-card v-if="creationMode"
                     v-show="invoicePanelOpen"
-                    outlined>
+                    class="my-2" outlined>
                 <InvoiceComponent mode="checkoutEntry"
                                   :isInbound="true"
                                   :params="{
@@ -251,7 +243,7 @@
             </v-card>
         </v-expand-transition>
 
-        <v-row>
+        <v-row class="my-2" dense>
             <v-col v-if="creationMode">
                 <v-dialog v-model="productsChoosePanelOpen"
                           :eager="true"
@@ -303,7 +295,7 @@
         <v-data-table :headers="tableHeaders"
                       :items="isInbound ? form.inboundCheckoutProducts :
                                                 form.outboundCheckoutProducts"
-                      item-key="skuID"
+                      :item-key="isInbound ? 'inboundProductID' : 'outboundProductID'"
                       height="45vh"
                       calculate-widths
                       disable-sort
@@ -317,43 +309,31 @@
             </template>
         </v-data-table>
 
-        <v-row>
+        <div class="d-flex">
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <span>税额合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{tax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>不含税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithoutTax}}
-            </v-col>
-            <v-col cols="auto">
-                <span>价税合计</span>
-            </v-col>
-            <v-col cols="auto">
-                {{sumWithTax}}
-            </v-col>
-        </v-row>
+            <div class="my-2">
+                <strong>税额合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ tax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>不含税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithoutTax }}</strong>
+            </div>
+            <div class="my-2">
+                <strong>价税合计：</strong>
+            </div>
+            <div class="my-2 mr-5">
+                <strong>{{ sumWithTax }}</strong>
+            </div>
+        </div>
     </v-container>
 </template>
 
 <script>
-function validateFloat(value) {
-    let val = value.replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
-    val = val.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    val = val.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    val = val.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (val.indexOf(".") < 0 && val !== "") { // 如果没有小数点，首位不能为0
-        val = parseFloat(val)
-    }
-    console.log('float', val)
-    return val
-}
-
 export default {
     name: "CheckoutComponent",
     components: {
@@ -399,23 +379,19 @@ export default {
             break
         }
 
-        if (this.creationMode || this.modifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((data) => {
-                console.log(data)
-                this.departmentOptions = data
-                for (const item of this.departmentOptions) {
-                    if (item.isDefault === 1) {
-                        this.form.departmentID = item.departmentID
-                        break
-                    }
+        this.$getRequest(this.$api.departmentOptions).then((data) => {
+            this.departmentOptions = data
+            for (const item of this.departmentOptions) {
+                if (item.isDefault === 1) {
+                    this.form.departmentID = item.departmentID
+                    break
                 }
-            }).catch(() => {})
+            }
+        }).catch(() => {})
 
-            this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
-                console.log(data)
-                this.bankAccountOptions = data
-            }).catch(() => {})
-        }
+        this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
+            this.bankAccountOptions = data
+        }).catch(() => {})
     },
     data() {
         return {
@@ -434,7 +410,8 @@ export default {
             form: {
                 checkoutEntrySerial: '',
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                companyAbbreviatedName: '', companyPhone: '',
+                companyFullName: '', companyRemark: '',
                 invoiceType: '增值税票',
                 paymentMethod: '', paymentNumber: '', paymentAmount: '',
                 bankAccountID: -1, bankAccountName: '',
@@ -455,7 +432,6 @@ export default {
 
             rules: {
                 departmentID: [v => !!v || '请选择部门'],
-                checkoutDate: [v => !!v || '请选择结账日期'],
                 companyID: [v => !!v || this.form.partnerCompanyID !== -1 || '请选择单位'],
                 paymentMethod: [v => !!v || '请选择付款方式'],
                 bankAccountID: [v => !!v &&
@@ -516,6 +492,7 @@ export default {
                 this.form.companyFullName = val.fullName
                 this.form.companyPhone = val.phone
                 this.form.partnerCompanyID = val.companyID
+                this.form.companyRemark = val.remark
             }
             this.fullSearchPanelOpen = false
         },
@@ -529,56 +506,43 @@ export default {
                 }
 
                 this.calculateSums()
-
                 this.form.totalAmount = this.sumWithTax
-                this.form.debt = (Number(this.sumWithoutTax) -
-                    Number(this.form.paymentAmount)).toFixed(2)
             }
             this.productsChoosePanelOpen = false
         },
         /* ----- number calculation ----- */
         calculateSums() {
-            let tempTax = 0.0
-            let tempSumWithTax = 0.0
-            let tempSumWithoutTax = 0.0
+            let tempSumWithoutTax = this.$Big('0')
+            let tempSumWithTax = this.$Big('0')
+            let tempTax = this.$Big('0')
+
             let products = this.isInbound ? this.form.inboundCheckoutProducts : this.form.outboundCheckoutProducts
             products.forEach((item) => {
-                const itemTotalTax = (item.unitPriceWithTax - item.unitPriceWithoutTax) * item.quantity
-                const itemTotalWithoutTax = item.unitPriceWithoutTax * item.quantity
-                tempSumWithTax += item.unitPriceWithTax * item.quantity
-                tempTax += itemTotalTax
-                tempSumWithoutTax += itemTotalWithoutTax
-                item.totalTax = itemTotalTax.toFixed(2)
-                item.totalWithoutTax = itemTotalWithoutTax.toFixed(2)
+                const itemTotalWithoutTax = this.$Big(item.unitPriceWithoutTax).times(item.quantity)
+                const itemTotalWithTax = this.$Big(item.unitPriceWithTax).times(item.quantity)
+                item.totalTax = itemTotalWithTax.minus(itemTotalWithoutTax).toString()
+                item.totalWithoutTax = itemTotalWithoutTax.toString()
+                tempSumWithoutTax = tempSumWithoutTax.add(itemTotalWithoutTax)
+                tempSumWithTax = tempSumWithTax.add(itemTotalWithoutTax)
+                tempTax = tempTax.add(tempSumWithTax.minus(tempSumWithoutTax))
             })
-            this.tax = tempTax.toFixed(2)
-            this.sumWithTax = tempSumWithTax.toFixed(2)
-            this.sumWithoutTax = tempSumWithoutTax.toFixed(2)
+
+            this.sumWithoutTax = tempSumWithoutTax.toString()
+            this.sumWithTax = tempSumWithTax.toString()
+            this.tax = tempTax.toString()
         },
         handlePaymentAmountChange() {
-            this.form.paymentAmount = validateFloat(this.form.paymentAmount.toString())
+            this.form.paymentAmount = this.form.paymentAmount === '' ? '0' :
+                this.$validateFloat(this.form.paymentAmount)
+            this.form.roundedAmount = this.form.roundedAmount === '' ? '0' :
+                this.$validateFloat(this.form.roundedAmount)
+
             if (this.form.isRounded === 1) {
-                this.form.debt = (Number(this.form.totalAmount) - Number(this.form.paymentAmount)
-                    - Number(this.form.roundedAmount)).toFixed(2)
+                this.form.debt = this.$Big(this.form.totalAmount).minus(this.form.paymentAmount)
+                    .minus(this.form.roundedAmount).toString()
             }
             else {
-                this.form.debt = (Number(this.form.totalAmount) - Number(this.form.paymentAmount)).toFixed(2)
-            }
-        },
-        isRoundedChange() {
-            if (this.form.isRounded === 1) {
-                this.form.debt = (Number(this.form.totalAmount) - Number(this.form.paymentAmount)
-                    - Number(this.form.roundedAmount)).toFixed(2)
-            }
-            else {
-                this.form.debt = (Number(this.form.totalAmount) - Number(this.form.paymentAmount)).toFixed(2)
-            }
-        },
-        roundedAmountChange() {
-            this.form.roundedAmount = validateFloat(this.form.roundedAmount.toString())
-            if (this.form.isRounded === 1) {
-                this.form.debt = (Number(this.form.totalAmount) - Number(this.form.paymentAmount)
-                    - Number(this.form.roundedAmount)).toFixed(2)
+                this.form.debt = this.$Big(this.form.totalAmount).minus(this.form.paymentAmount).toString()
             }
         },
         /* ----- invoice entry ----- */
@@ -610,12 +574,14 @@ export default {
                 return
             }
 
+            this.$store.commit('setOverlay', true)
             this.$putRequest(this.$api.createCheckoutEntry, this.form, {
                 isInbound: this.isInbound
             }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
 
                 this.$router.replace('/inbound_invoicing')
             }).catch(() => {})
@@ -637,11 +603,15 @@ export default {
                     this.form.bankAccountName = item.name
             })
 
+            this.$store.commit('setOverlay', true)
             this.$patchRequest(this.$api.modifyCheckoutEntry, this.form,
                 {isInbound: true}).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
+
+                this.$router.replace('/inbound_invoicing')
             }).catch(() => {})
         },
     }
