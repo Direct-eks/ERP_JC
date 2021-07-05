@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-form @keyup.enter.native="query">
+        <v-form @keyup.enter="query">
             <v-row>
                 <v-col>
                     <DateRangePicker @chooseDate="chooseDateAction">
@@ -10,7 +10,7 @@
             <v-row>
                 <v-col cols="auto">
                     <v-text-field v-model="companyName"
-                                  label="单位全称"
+                                  label="单位简称"
                                   hide-details="auto"
                                   outlined
                                   dense
@@ -25,9 +25,7 @@
                               no-click-animation
                               width="80vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="primary"
-                                   v-on="on"
-                                   :disabled="companySearchPanelOpen">
+                            <v-btn color="primary" v-on="on">
                                 单位助选
                             </v-btn>
                         </template>
@@ -36,20 +34,9 @@
                     </v-dialog>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn class="mr-4"
-                           color="warning"
-                           @click="companyName = '';companyID = -1">
-                        清空
-                    </v-btn>
-                    <v-btn class="mr-4"
-                           color="primary"
-                           @click="query">
-                        查询
-                    </v-btn>
-                    <v-btn color="accent"
-                           @click="queryModificationRecord">
-                        查询修改记录
-                    </v-btn>
+                    <v-btn class="mr-2" color="warning" @click="clearSearchFields">清空</v-btn>
+                    <v-btn class="mr-2" color="primary" @click="query">查询</v-btn>
+                    <v-btn color="accent" @click="queryModificationRecord">查询修改记录</v-btn>
                 </v-col>
             </v-row>
         </v-form>
@@ -58,12 +45,14 @@
                       :headers="queryTableHeaders"
                       :items="queryTableData"
                       item-key="shippingCostEntrySerial"
+                      show-select
+                      single-select
+                      checkbox-color="accent"
                       @click:row="tableClick"
+                      @item-selected="tableClick2"
                       height="45vh"
                       calculate-widths
                       disable-sort
-                      show-select
-                      single-select
                       fixed-header
                       hide-default-footer
                       locale="zh-cn">
@@ -155,12 +144,14 @@ export default {
         },
         companySearchChooseAction(val) {
             if (val) {
-                this.companyName = val.hasOwnProperty('fullName') ?
-                    val.fullName : ''
-                this.companyID = val.hasOwnProperty('companyID') ?
-                    val.companyID : ''
+                this.companyName = val.fullName
+                this.companyID = val.companyID
             }
             this.companySearchPanelOpen = false
+        },
+        clearSearchFields() {
+            this.companyName = ''
+            this.companyID = -1
         },
         query() {
             this.$getRequest(this.$api.shippingCostEntryInDateRange, {
@@ -170,7 +161,6 @@ export default {
                 companyID: this.companyID,
                 forModify: this.isModify,
             }).then((data) => {
-                console.log(data)
                 this.queryTableData = data
             }).catch(() => {})
         },
@@ -178,15 +168,29 @@ export default {
             this.$getRequest(this.$api.modificationRecordsBySerial
                 + encodeURI(this.queryTableCurrentRow[0].shippingCostEntrySerial)
             ).then((data) => {
-                console.log('received', data)
                 this.modificationRecords = data
             }).catch(() => {})
         },
         tableClick(val) {
             this.modificationRecords = []
-            this.queryTableCurrentRow = [val]
-            this.$emit('tableClick', val)
+            if (this.queryTableCurrentRow.includes(val)) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [val]
+                this.$emit('tableClick', val)
+            }
         },
+        tableClick2(row) {
+            this.modificationRecords = []
+            if (!row.value) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row.item]
+                this.$emit('tableClick', row.item)
+            }
+        }
     }
 }
 </script>
