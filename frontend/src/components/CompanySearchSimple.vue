@@ -30,6 +30,7 @@
                               item-key="companyID"
                               @click:row="tableClick"
                               @item-selected="tableClick2"
+                              @dblclick:row="directChoose"
                               disable-sort
                               height="50vh"
                               disable-pagination
@@ -119,7 +120,11 @@ export default {
             }
             this.$emit('simpleSearchChoose', this.simpleSearchCurrentRow[0])
             this.simpleSearchPanelOpen = false
-        }
+        },
+        directChoose(_, row) {
+            this.$emit('simpleSearchChoose', row.item)
+            this.simpleSearchPanelOpen = false
+        },
     }
 }
 </script>

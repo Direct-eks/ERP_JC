@@ -52,6 +52,7 @@
                               single-select
                               @click:row="tableClick"
                               @item-selected="tableClick2"
+                              @dblclick:row="directChoose"
                               checkbox-color="accent"
                               fixed-header
                               locale="zh-cn"
@@ -125,6 +126,9 @@ export default {
             else {
                 this.currentRow = [row.item]
             }
+        },
+        directChoose(_, row) {
+            this.$emit('fullSearchChoose', row.item)
         },
         chooseHandle() {
             if (this.currentRow.length === 0) {
