@@ -17,7 +17,7 @@
                 选择
             </v-btn>
             <v-btn icon @click="close">
-                <v-icon>{{mdiClosePath}}</v-icon>
+                <v-icon>{{ mdiClose }}</v-icon>
             </v-btn>
         </v-card-title>
         <v-card-text>
@@ -94,12 +94,12 @@ export default {
             this.panelTitle = this.checkoutMode ? '入库商品助选' : '入库未结账商品助选'
         }
         else {
-            this.panelTitle = this.isInbound ? '出库商品助选' : '出库未结账商品助选'
+            this.panelTitle = this.checkoutMode ? '出库商品助选' : '出库未结账商品助选'
         }
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             checkoutMode: false,
             invoiceMode: false,
@@ -108,24 +108,23 @@ export default {
             modelCode: '',
 
             tableHeaders: [
-                { text: '序号', value: 'index', width: '60px', filterable: false },
                 {
                     text: this.isInbound ? '入库单序号' : '出库单序号',
                     value: this.isInbound ? 'inboundEntryID' : 'outboundEntryID',
-                    width: '120px',
+                    width: '140px',
                     filterable: false
                 },
-                { text: '代号', value: 'code', width: '100px' },
+                { text: '代号', value: 'code', width: '180px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px', filterable: false },
                 {
                     text: this.isInbound ? '入库数量' : '出库数量',
-                    value: 'quantity', width: '80px',
+                    value: 'quantity', width: '90px',
                     filterable: false
                 },
                 { text: '单位', value: 'unitName', width: '60px', filterable: false },
-                { text: '含税单价', value: 'unitPriceWithTax', width: '80px', filterable: false },
-                { text: '不含税单价', value: 'unitPriceWithoutTax', width: '80px', filterable: false },
-                { text: '备注', value: 'remark', width: '120px', filterable: false },
+                { text: '含税单价', value: 'unitPriceWithTax', width: '100px', filterable: false },
+                { text: '不含税单价', value: 'unitPriceWithoutTax', width: '100px', filterable: false },
+                { text: '备注', value: 'remark', width: '180px', filterable: false },
             ],
             queryTableData: [],
             queryTableCurrentRows: [],
@@ -138,7 +137,6 @@ export default {
                     this.$getRequest(this.$api.inboundProductsNotCheckedOut, {
                         companyID: this.companyID, invoiceType: this.invoiceType
                     }).then((data) => {
-                        console.log(data)
                         this.queryTableData = data
                     }).catch(() => {})
                 }
@@ -146,7 +144,6 @@ export default {
                     this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoiced, {
                         companyID: this.companyID, invoiceType: this.invoiceType
                     }).then((data) => {
-                        console.log(data)
                         this.queryTableData = data
                     }).catch(() => {})
                 }
@@ -156,7 +153,6 @@ export default {
                     this.$getRequest(this.$api.outboundProductsNotCheckedOut, {
                         companyID: this.companyID, invoiceType: this.invoiceType
                     }).then((data) => {
-                        console.log(data)
                         this.queryTableData = data
                     }).catch(() => {})
                 }
@@ -164,7 +160,6 @@ export default {
                     this.$getRequest(this.$api.outboundProductsCheckoutAndNotInvoiced, {
                         companyID: this.companyID, invoiceType: this.invoiceType
                     }).then((data) => {
-                        console.log(data)
                         this.queryTableData = data
                     }).catch(() => {})
                 }

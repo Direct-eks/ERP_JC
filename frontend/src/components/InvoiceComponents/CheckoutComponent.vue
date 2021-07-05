@@ -129,6 +129,7 @@
                     <v-text-field v-model="form.paymentAmount"
                                   label="金额"
                                   hide-details="auto"
+                                  type="number"
                                   @change="handlePaymentAmountChange"
                                   :readonly="displayMode"
                                   outlined
@@ -178,9 +179,10 @@
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-show="form.isRounded === 1"
-                                  v-model.number="form.roundedAmount"
+                                  v-model="form.roundedAmount"
                                   label="抹零金额"
                                   hide-details="auto"
+                                  type="number"
                                   outlined
                                   @change="handlePaymentAmountChange"
                                   :readonly="displayMode"
@@ -188,11 +190,12 @@
                                   style="width: 100px">
                     </v-text-field>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-text-field v-model.number="form.totalAmount"
                                   label="应付总金额"
                                   hide-details="auto"
-                                  outlined
+                                  filled
                                   readonly
                                   dense
                                   style="width: 100px">
@@ -202,7 +205,7 @@
                     <v-text-field v-model="form.debt"
                                   label="余额"
                                   hide-details="auto"
-                                  outlined
+                                  filled
                                   dense
                                   readonly
                                   style="width: 100px">
@@ -252,8 +255,7 @@
                           no-click-animation
                           max-width="85vw">
                     <template v-slot:activator="{on}">
-                        <v-btn color="accent"
-                               v-on="on"
+                        <v-btn color="accent" v-on="on"
                                :disabled="productsChoosePanelOpen || form.partnerCompanyID === -1">
                             {{ productChooseButtonTitle }}
                         </v-btn>
@@ -279,37 +281,56 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col v-if="creationMode">
-                <v-btn color="primary"
-                       @click="createCheckoutEntry">
-                    保存
-                </v-btn>
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                            <v-btn color="success" @click="createCheckoutEntry">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
             <v-col v-if="modifyMode">
-            <v-btn color="primary"
-                   @click="modifyCheckoutEntry">
-                保存修改
-            </v-btn>
-        </v-col>
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup2 = false">取消</v-btn>
+                            <v-btn color="success" @click="modifyCheckoutEntry">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-col>
         </v-row>
 
-        <v-data-table :headers="tableHeaders"
+        <v-data-table v-model="tableCurrentRow"
+                      :headers="tableHeaders"
                       :items="isInbound ? form.inboundCheckoutProducts :
                                                 form.outboundCheckoutProducts"
                       :item-key="isInbound ? 'inboundProductID' : 'outboundProductID'"
                       height="45vh"
                       calculate-widths
                       disable-sort
+                      show-select
+                      @click:row="tableClick"
+                      @item-selected="tableClick2"
                       fixed-header
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-slot:item.index="{ item }">
-                {{ isInbound ? form.inboundCheckoutProducts.indexOf(item) + 1 :
-                                    form.outboundCheckoutProducts.indexOf(item) + 1 }}
-            </template>
         </v-data-table>
 
         <div class="d-flex">
+            <v-btn color="error" @click="handleDeleteRow">删除</v-btn>
             <v-spacer></v-spacer>
             <div class="my-2">
                 <strong>税额合计：</strong>
@@ -406,6 +427,9 @@ export default {
             fullSearchPanelOpen: false,
             productsChoosePanelOpen: false,
             invoicePanelOpen: false,
+            deleteTableRowPopup: false,
+            submitPopup: false,
+            submitPopup2: false,
 
             form: {
                 checkoutEntrySerial: '',
@@ -455,33 +479,33 @@ export default {
             departmentOptions: [],
 
             tableHeaders: [
-                { text: '序号', value: 'index', width: '60px' },
                 {
                     text: this.isInbound ? '入库单号' : '出库单号',
                     value: this.isInbound ? 'inboundEntryID' : 'outboundEntryID',
-                    width: '120px'
+                    width: '140px'
                 },
-                { text: '代号', value: 'code', width: '100px' },
+                { text: '代号', value: 'code', width: '180px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px' },
                 {
                     text: this.isInbound ? '入库数量' : '出库数量',
                     value: 'quantity',
-                    width: '80px'
+                    width: '90px'
                 },
                 { text: '单位', value: 'unitName', width: '60px' },
-                { text: '含税单价', value: 'unitPriceWithTax', width: '80px' },
-                { text: '无税单价', value: 'unitPriceWithoutTax', width: '80px' },
-                { text: '无税金额', value: 'totalWithoutTax', width: '80px' },
+                { text: '含税单价', value: 'unitPriceWithTax', width: '100px' },
+                { text: '无税单价', value: 'unitPriceWithoutTax', width: '100px' },
+                { text: '无税金额', value: 'totalWithoutTax', width: '100px' },
                 { text: '税率', value: 'taxRate', width: '65px' },
-                { text: '税额', value: 'totalTax', width: '80px' },
-                { text: '备注', value: 'remark', width: '120px' },
+                { text: '税额', value: 'totalTax', width: '90px' },
+                { text: '备注', value: 'remark', width: '180px' },
                 { text: '库存数量', value: 'stockQuantity', width: '120px' },
                 { text: '库存单价', value: 'stockUnitPrice', width: '120px' }
             ],
+            tableCurrentRow: [],
 
-            tax: 0,
-            sumWithTax: 0,
-            sumWithoutTax: 0,
+            tax: '0',
+            sumWithTax: '0',
+            sumWithoutTax: '0',
         }
     },
     methods: {
@@ -507,6 +531,7 @@ export default {
 
                 this.calculateSums()
                 this.form.totalAmount = this.sumWithTax
+                this.handlePaymentAmountChange()
             }
             this.productsChoosePanelOpen = false
         },
@@ -558,61 +583,102 @@ export default {
         passiveUpdateInvoiceEntryAction(val) {
             this.form.invoiceEntry = val
         },
-
+        tableClick(row) {
+            if (this.tableCurrentRow.includes(row)) {
+                this.tableCurrentRow.splice(this.tableCurrentRow.indexOf(row), 1)
+            }
+            else {
+                this.tableCurrentRow.push(row)
+            }
+        },
+        tableClick2(row) {
+            if (!row.value) {
+                this.tableCurrentRow.splice(this.tableCurrentRow.indexOf(row.item), 1)
+            }
+            else {
+                this.tableCurrentRow.push(row.item)
+            }
+        },
+        handleDeleteRow() {
+            this.deleteTableRowPopup = false
+            if (this.tableCurrentRow.length !== 0) {
+                for (const item of this.tableCurrentRow) {
+                    if (this.isInbound) {
+                        this.form.inboundCheckoutProducts.splice(this.form.inboundCheckoutProducts.indexOf(item), 1)
+                    }
+                    else {
+                        this.form.outboundCheckoutProducts.splice(this.form.outboundCheckoutProducts.indexOf(item), 1)
+                    }
+                }
+            }
+            else {
+                this.$store.commit('setSnackbar', {
+                    message: '未选中任何行', color: 'error'
+                })
+            }
+        },
         createCheckoutEntry() {
-            if (!this.$refs.form.validate()) return
+            if (this.$refs.form.validate()) {
+                if (!this.invoicePanelOpen) {
+                    this.form.invoiceEntry = null
+                }
 
-            if (!this.invoicePanelOpen) {
-                this.form.invoiceEntry = null
+                if (this.isInbound ? this.form.inboundCheckoutProducts.length === 0
+                    : this.form.outboundCheckoutProducts.length === 0) {
+                    this.$store.commit('setSnackbar', {
+                        message: '请录入结账商品', color: 'warning'
+                    })
+                    return
+                }
+
+                this.$store.commit('setOverlay', true)
+                this.$putRequest(this.$api.createCheckoutEntry, this.form, {
+                    isInbound: this.isInbound
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$store.commit('setOverlay', false)
+
+                    this.$router.replace('/inbound_invoicing')
+                }).catch(() => {})
             }
-
-            if (this.isInbound ? this.form.inboundCheckoutProducts.length === 0
-                : this.form.outboundCheckoutProducts.length === 0) {
-                this.$store.commit('setSnackbar', {
-                    message: '请录入结账商品', color: 'warning'
-                })
-                return
-            }
-
-            this.$store.commit('setOverlay', true)
-            this.$putRequest(this.$api.createCheckoutEntry, this.form, {
-                isInbound: this.isInbound
-            }).then(() => {
-                this.$store.commit('setSnackbar', {
-                    message: '提交成功', color: 'success'
-                })
-                this.$store.commit('setOverlay', false)
-
-                this.$router.replace('/inbound_invoicing')
-            }).catch(() => {})
+            this.submitPopup = false
         },
         modifyCheckoutEntry() {
-            if (!this.$refs.form.validate()) return
-            //change drawer name for modification
-            this.form.drawer = this.$store.getters.currentUser
+            if (this.$refs.form.validate()) {
+                //change drawer name for modification
+                this.form.drawer = this.$store.getters.currentUser
 
-            //fill in department name
-            this.departmentOptions.forEach(item => {
-                if (item.departmentID === this.form.departmentID)
-                    this.form.departmentName = item.name
-            })
+                //fill in department name
+                for (const item of this.departmentOptions) {
+                    if (item.departmentID === this.form.departmentID) {
+                        this.form.departmentName = item.name
+                        break
+                    }
+                }
 
-            //fill in bankAccountName
-            this.bankAccountOptions.forEach(item => {
-                if (item.bankAccountID === this.form.bankAccountID)
-                    this.form.bankAccountName = item.name
-            })
+                //fill in bankAccountName
+                for (const item of this.bankAccountOptions) {
+                    if (item.bankAccountID === this.form.bankAccountID) {
+                        this.form.bankAccountName = item.name
+                        break
+                    }
+                }
 
-            this.$store.commit('setOverlay', true)
-            this.$patchRequest(this.$api.modifyCheckoutEntry, this.form,
-                {isInbound: true}).then(() => {
-                this.$store.commit('setSnackbar', {
-                    message: '提交成功', color: 'success'
-                })
-                this.$store.commit('setOverlay', false)
+                this.$store.commit('setOverlay', true)
+                this.$patchRequest(this.$api.modifyCheckoutEntry, this.form, {
+                    isInbound: true
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$store.commit('setOverlay', false)
 
-                this.$router.replace('/inbound_invoicing')
-            }).catch(() => {})
+                    this.$router.replace('/inbound_invoicing')
+                }).catch(() => {})
+            }
+            this.submitPopup2 = false
         },
     }
 }
