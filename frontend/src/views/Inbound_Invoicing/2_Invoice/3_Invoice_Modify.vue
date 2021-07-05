@@ -7,7 +7,7 @@
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/inbound_invoicing">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
 
@@ -54,7 +54,7 @@ export default {
     },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 

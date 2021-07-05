@@ -9,7 +9,7 @@
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    :to="returnPath">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
 
@@ -88,7 +88,7 @@ export default {
             title: this.isInbound ? '入库未结账明细' : '出库未结账明细',
             returnPath: this.isInbound ? '/inbound_invoicing' : '/outbound_invoicing',
 
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
             tab: null,
             totalSum: 0.0,
 
