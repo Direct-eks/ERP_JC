@@ -52,6 +52,9 @@ export default {
         QueryDisplayComponent: () => import('~/components/InvoiceComponents/CheckoutQueryDisplayComponent'),
         CheckoutComponent: () => import('~/components/InvoiceComponents/CheckoutComponent'),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
             mdiArrowLeft,
@@ -61,7 +64,8 @@ export default {
             form: {
                 checkoutEntrySerial: '',
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                companyAbbreviatedName: '', companyPhone: '',
+                companyFullName: '', companyRemark: '',
                 invoiceType: '',
                 paymentMethod: '', paymentNumber: '', paymentAmount: '',
                 bankAccountID: -1, bankAccountName: '',
@@ -76,23 +80,21 @@ export default {
                 isVerified: 0,
                 isModified: 0,
                 inboundCheckoutProducts: [],
+                outboundCheckoutProducts: [],
                 invoiceEntry: null
             },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm)
             }
         },
         tableClickAction(val) {
             this.currentTableRow = val
-            //create missing fields and calculate values
-            this.currentTableRow.inboundCheckoutProducts.forEach(item => {
-                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
-            })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
     }

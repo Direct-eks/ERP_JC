@@ -1,21 +1,21 @@
 <template>
     <v-container>
-        <v-form @keyup.enter.native="query">
+        <v-form @keyup.enter="query">
             <v-row>
                 <v-col>
                     <DateRangePicker @chooseDate="chooseDateAction">
                     </DateRangePicker>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row class="my-2">
                 <v-col cols="auto">
                     <v-text-field v-model="companyName"
-                                  label="单位全称"
+                                  label="单位简称"
                                   hide-details="auto"
                                   outlined
                                   dense
                                   readonly
-                                  style="width: 300px">
+                                  style="width: 200px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
@@ -25,9 +25,7 @@
                               no-click-animation
                               width="80vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="primary"
-                                   v-on="on"
-                                   :disabled="companySearchPanelOpen">
+                            <v-btn color="primary" v-on="on">
                                 单位助选
                             </v-btn>
                         </template>
@@ -46,21 +44,10 @@
                               style="width: 150px">
                     </v-select>
                 </v-col>
-                <v-col cols="auto">
-                    <v-btn class="mr-4"
-                           color="warning"
-                           @click="clearSearchFields">
-                        清空
-                    </v-btn>
-                    <v-btn class="mr-4"
-                           color="primary"
-                           @click="query">
-                        查询
-                    </v-btn>
-                    <v-btn color="accent"
-                           @click="queryModificationRecord">
-                        查询修改记录
-                    </v-btn>
+                <v-col cols="auto" class="d-flex">
+                    <v-btn class="mr-2" color="warning" @click="clearSearchFields">清空</v-btn>
+                    <v-btn class="mr-2" color="primary" @click="query">查询</v-btn>
+                    <v-btn color="accent" @click="queryModificationRecord">查询修改记录</v-btn>
                 </v-col>
             </v-row>
         </v-form>
@@ -69,22 +56,29 @@
                       :headers="queryTableHeaders"
                       :items="queryTableData"
                       item-key="checkoutEntrySerial"
+                      show-select
+                      single-select
+                      checkbox-color="accent"
                       @click:row="tableClick"
+                      @item-selected="tableClick2"
                       height="45vh"
                       calculate-widths
                       disable-sort
-                      show-select
-                      single-select
                       fixed-header
                       hide-default-footer
-                      locale="zh-cn">
+                      locale="zh-cn"
+                      dense>
             <template v-slot:item.checkoutEntrySerial="{ item }">
                 <v-chip :color="item.isModified === 1 ? 'red' : null">
                     {{ item.checkoutEntrySerial }}
                 </v-chip>
             </template>
         </v-data-table>
-
+        <div>
+            <strong class="red--text">红色：</strong>修改，
+            <strong class="blue--text">蓝色：</strong>退货，
+            <strong class="orange--text">橘色：</strong>退货并且修改
+        </div>
         <v-divider></v-divider>
 
         <v-data-table :headers="modificationRecordTableHeader"
@@ -176,10 +170,8 @@ export default {
         },
         companySearchChooseAction(val) {
             if (val) {
-                this.companyName = val.hasOwnProperty('fullName') ?
-                    val.fullName : ''
-                this.companyID = val.hasOwnProperty('companyID') ?
-                    val.companyID : ''
+                this.companyName = val.abbreviatedName
+                this.companyID = val.companyID
             }
             this.companySearchPanelOpen = false
         },
@@ -188,6 +180,7 @@ export default {
             this.companyName = ''
         },
         query() {
+            if (this.category === '') return
             this.$getRequest(this.$api.checkoutEntriesInDateRange, {
                 isInbound: this.isInbound,
                 startDate: this.dateRange[0],
@@ -196,23 +189,37 @@ export default {
                 companyID: this.companyID,
                 forModify: this.isModify,
             }).then((data) => {
-                console.log(data)
                 this.queryTableData = data
             }).catch(() => {})
         },
         queryModificationRecord() {
+            if (this.queryTableCurrentRow.length === 0) return
             this.$getRequest(this.$api.modificationRecordsBySerial
                 + encodeURI(this.queryTableCurrentRow[0].checkoutEntrySerial)
             ).then((data) => {
-                console.log('received', data)
                 this.modificationRecords = data
             }).catch(() => {})
         },
-        tableClick(val) {
+        tableClick(row) {
             this.modificationRecords = []
-            this.queryTableCurrentRow = [val]
-            this.$emit('tableClick', val)
+            if (this.queryTableCurrentRow.includes(row)) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row]
+                this.$emit('tableClick', row)
+            }
         },
+        tableClick2(row) {
+            this.modificationRecords = []
+            if (!row.value) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row.item]
+                this.$emit('tableClick', row.item)
+            }
+        }
     }
 }
 </script>
