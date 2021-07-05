@@ -1,21 +1,21 @@
 <template>
     <v-container>
-        <v-form @keyup.enter.native="query">
+        <v-form @keyup.enter="query">
             <v-row>
                 <v-col>
                     <DateRangePicker @chooseDate="chooseDateAction">
                     </DateRangePicker>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row class="my-2">
                 <v-col cols="auto">
                     <v-text-field v-model="companyName"
-                                  label="单位全称"
+                                  label="单位简称"
                                   hide-details="auto"
                                   outlined
                                   dense
                                   readonly
-                                  style="width: 300px">
+                                  style="width: 200px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
@@ -25,9 +25,7 @@
                               no-click-animation
                               width="80vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="primary"
-                                   v-on="on"
-                                   :disabled="companySearchPanelOpen">
+                            <v-btn color="primary" v-on="on">
                                 单位助选
                             </v-btn>
                         </template>
@@ -46,86 +44,53 @@
                               style="width: 150px">
                     </v-select>
                 </v-col>
-                <v-col cols="auto">
-                    <v-btn color="warning"
-                           @click="clearSearchFields">
-                        清空
-                    </v-btn>
-                    <v-btn color="primary"
-                           @click="query">
-                        查询
-                    </v-btn>
-                    <v-btn color="accent"
-                           @click="queryModificationRecord">
-                        查询修改记录
-                    </v-btn>
+                <v-col cols="auto" class="d-flex">
+                    <v-btn class="mr-2" color="warning" @click="clearSearchFields">清空</v-btn>
+                    <v-btn class="mr-2" color="primary" @click="query">查询</v-btn>
+                    <v-btn color="accent" @click="queryModificationRecord">查询修改记录</v-btn>
                 </v-col>
             </v-row>
         </v-form>
 
-        <v-data-table v-if="!isSalesOrder && !isQuote"
-                      v-model="queryTableCurrentRow"
-                      :headers="queryTableHeaders"
+        <v-data-table v-model="queryTableCurrentRow"
+                      :headers="isSalesOrder ? salesQueryTableHeaders :
+                                    isQuote ? quoteQueryTableHeaders : queryTableHeaders"
                       :items="queryTableData"
-                      item-key="outboundEntryID"
+                      :item-key="isSalesOrder ? 'salesOrderEntryID' :
+                                    isQuote ? 'quoteEntryID' : 'outboundEntryID'"
+                      show-select
+                      single-select
+                      checkbox-color="accent"
                       @click:row="tableClick"
+                      @item-selected="tableClick2"
                       height="45vh"
                       calculate-widths
                       disable-sort
-                      show-select
-                      single-select
                       fixed-header
                       hide-default-footer
-                      locale="zh-cn">
-            <template v-slot:item.outboundEntryID="{ item }">
-                <v-chip :color="item.isModified === 1 ? 'red' : null">
+                      locale="zh-cn"
+                      dense>
+            <template v-if="!isSalesOrder && !isQuote" v-slot:item.outboundEntryID="{ item }">
+                <v-chip :color="chipColor(item)">
                     {{ item.outboundEntryID }}
                 </v-chip>
             </template>
-        </v-data-table>
-
-        <v-data-table v-else-if="isSalesOrder"
-                      v-model="queryTableCurrentRow"
-                      :headers="salesQueryTableHeaders"
-                      :items="queryTableData"
-                      item-key="salesOrderEntryID"
-                      @click:row="tableClick"
-                      height="45vh"
-                      calculate-widths
-                      disable-sort
-                      show-select
-                      single-select
-                      fixed-header
-                      hide-default-footer
-                      locale="zh-cn">
-            <template v-slot:item.salesOrderEntryID="{ item }">
-                <v-chip :color="item.isModified === 1 ? 'red' : null">
+            <template v-else-if="isSalesOrder" v-slot:item.salesOrderEntryID="{ item }">
+                <v-chip :color="chipColor(item)">
                     {{ item.salesOrderEntryID }}
                 </v-chip>
             </template>
-        </v-data-table>
-
-        <v-data-table v-else
-                      v-model="queryTableCurrentRow"
-                      :headers="quoteQueryTableHeaders"
-                      :items="queryTableData"
-                      item-key="quoteEntryID"
-                      @click:row="tableClick"
-                      height="45vh"
-                      calculate-widths
-                      disable-sort
-                      show-select
-                      single-select
-                      fixed-header
-                      hide-default-footer
-                      locale="zh-cn">
-            <template v-slot:item.quoteEntryID="{ item }">
-                <v-chip :color="item.isModified === 1 ? 'red' : null">
+            <template v-else-if="isQuote" v-slot:item.quoteEntryID="{ item }">
+                <v-chip :color="chipColor(item)">
                     {{ item.quoteEntryID }}
                 </v-chip>
             </template>
         </v-data-table>
-
+        <div>
+            <strong class="red--text">红色：</strong>修改，
+            <strong class="blue--text">蓝色：</strong>退货，
+            <strong class="orange--text">橘色：</strong>退货并且修改
+        </div>
         <v-divider></v-divider>
 
         <v-data-table :headers="modificationRecordTableHeader"
@@ -193,9 +158,9 @@ export default {
             ],
 
             queryTableHeaders: [
-                {text: '出库单号', value: 'outboundEntryID', width: '80px'},
+                {text: '出库单号', value: 'outboundEntryID', width: '120px'},
                 {text: '单位简称', value: 'companyAbbreviatedName', width: '120px'},
-                {text: '仓库', value: 'warehouseName', width: '65'},
+                {text: '仓库', value: 'warehouseName', width: '65px'},
                 {text: '部门', value: 'departmentName', width: '80px'},
                 {text: '出库类别', value: 'classification', width: '60px'},
                 {text: '预计单据类型', value: 'invoiceType', width: '60px'},
@@ -249,10 +214,8 @@ export default {
         },
         companySearchChooseAction(val) {
             if (val) {
-                this.companyName = val.hasOwnProperty('fullName') ?
-                    val.fullName : ''
-                this.companyID = val.hasOwnProperty('companyID') ?
-                    val.companyID : ''
+                this.companyName = val.abbreviatedName
+                this.companyID = val.companyID
             }
             this.companySearchPanelOpen = false
         },
@@ -262,30 +225,26 @@ export default {
             this.companyName = ''
         },
         query() {
+            if (this.category === '') return
             if (this.isSalesOrder) {
-                console.log(this.dateRange)
                 this.$getRequest(this.$api.salesOrdersInDateRangeByCompanyID, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     companyID: this.companyID,
                 }).then((data) => {
-                    console.log('received', data)
                     this.queryTableData = data
                 }).catch(() => {})
             }
             else if (this.isQuote) {
-                console.log(this.dateRange)
                 this.$getRequest(this.$api.quotesInDateRangeByCompanyID, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     companyID: this.companyID,
                 }).then((data) => {
-                    console.log('received', data)
                     this.queryTableData = data
                 }).catch(() => {})
             }
             else {
-                console.log(this.dateRange)
                 this.$getRequest(this.$api.outboundEntriesInDateRange, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
@@ -293,7 +252,6 @@ export default {
                     type: this.category,
                     forModify: false,
                 }).then((data) => {
-                    console.log('received', data)
                     this.queryTableData = data
                 }).catch(() => {})
             }
@@ -311,15 +269,40 @@ export default {
             }
 
             this.$getRequest(this.$api.modificationRecordsBySerial + url).then((data) => {
-                console.log('received', data)
                 this.modificationRecords = data
             }).catch(() => {})
         },
+        chipColor(item) {
+            let color = null
+            if (item.isModified === 1) {
+                color = 'red'
+                if (item.returnDate !== '') color = 'orange'
+            }
+            else if (item.returnDate !== '') {
+                color = 'blue'
+            }
+            return color
+        },
         tableClick(val) {
             this.modificationRecords = []
-            this.queryTableCurrentRow = [val]
-            this.$emit('tableClick', val)
+            if (this.queryTableCurrentRow.indexOf(val) !== -1) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [val]
+                this.$emit('tableClick', val)
+            }
         },
+        tableClick2(row) {
+            this.modificationRecords = []
+            if (!row.value) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row.item]
+                this.$emit('tableClick', row.item)
+            }
+        }
     }
 }
 </script>
