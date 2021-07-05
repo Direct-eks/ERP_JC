@@ -3,6 +3,7 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.InvoiceEntryO;
 import org.jc.backend.entity.OutboundProductO;
@@ -36,8 +37,8 @@ public class CheckoutEntryWithProductsVO {
     private String paymentNumber;
 
     @NotNull(message = "paymentAmount null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "paymentAmount value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "付款错误")
     private String paymentAmount;
 
     @NotNull(message = "bankAccountID null error")
@@ -46,13 +47,13 @@ public class CheckoutEntryWithProductsVO {
     private String bankAccountName;
 
     @NotNull(message = "totalAmount null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "totalAmount value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "总金额错误")
     private String totalAmount;
 
     @NotNull(message = "debt null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "debt value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "余额错误")
     private String debt;
 
     @Min(value = 0, message = "isFollowUpIndication value error")
@@ -60,13 +61,13 @@ public class CheckoutEntryWithProductsVO {
     private int isRounded;
 
     @NotNull(message = "roundedAmount null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "roundedAmount value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "抹零值错误")
     private String roundedAmount;
 
     @NotNull(message = "serviceFee null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "serviceFee value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "服务费错误")
     private String serviceFee;
 
     @NotNull(message = "remark null error")
@@ -81,7 +82,7 @@ public class CheckoutEntryWithProductsVO {
     private String creationDate;
 
     @NotNull(message = "checkoutDate null error")
-    @NotBlank(message = "checkoutDate blank error")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库结账日期错误")
     private String checkoutDate;
 
     private String moneyEntrySerial;

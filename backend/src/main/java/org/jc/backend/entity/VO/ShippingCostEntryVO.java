@@ -3,6 +3,7 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 
@@ -30,13 +31,13 @@ public class ShippingCostEntryVO {
     private String invoiceNumber;
 
     @NotNull(message = "totalAmount null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "totalAmount value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "总金额错误")
     private String totalAmount;
 
     @NotNull(message = "invoiceAmount null error")
-    @Pattern(regexp = "^(([1-9][\\d]*?\\.\\d+)|([1-9][\\d]*)|(0\\.[\\d]+)|(0))$",
-            message = "invoiceAmount value error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "开票金额错误")
     private String invoiceAmount;
 
     @NotNull(message = "shippingPaymentType null error")
@@ -55,7 +56,7 @@ public class ShippingCostEntryVO {
     private String creationDate;
 
     @NotNull(message = "checkoutDate null error")
-    @NotBlank(message = "checkoutDate blank error")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库结账日期错误")
     private String checkoutDate;
 
     @Min(value = 0, message = "inOrOut value error")
@@ -63,7 +64,7 @@ public class ShippingCostEntryVO {
     private int inOrOut;
 
     @NotNull(message = "invoiceDate null error")
-    @NotBlank(message = "invoiceDate blank error")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库开票日期错误")
     private String invoiceDate;
 
     private int isModified;
