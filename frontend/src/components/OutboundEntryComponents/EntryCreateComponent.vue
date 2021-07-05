@@ -597,7 +597,6 @@ export default {
             rules: {
                 warehouseID: [v => !!v || '请选择仓库'],
                 departmentID: [v => !!v || '请选择部门'],
-                shipmentDate: [v => !!v || '请选择日期'],
                 invoiceType: [v => !!v || ' 请选择单据类型'], // no need to validate if is purchase order
                 company: [v => !!v || '请选择单位'],
                 shippingCostType: [v => !!v || '请选择运费类型'],
