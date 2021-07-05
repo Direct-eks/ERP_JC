@@ -59,7 +59,7 @@ public class InvoiceEntryStandAloneVO {
     private String creationDate;
 
     @NotNull(message = "checkoutDate null error")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库结账日期错误")
+//    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库结账日期错误")
     private String checkoutDate;
 
     @Min(value = 0, message = "inOrOut value error")
@@ -67,7 +67,7 @@ public class InvoiceEntryStandAloneVO {
     private int inOrOut;
 
     @NotNull(message = "invoiceDate null error")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库结账日期错误")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "入库结账开票日期错误")
     private String invoiceDate;
 
     @NotNull(message = "invoiceNumberDate null error")
