@@ -28,6 +28,7 @@ public interface OutboundEntryService {
 
     List<OutboundProductO> getNotCheckedOutProductsByEntryID(String entryID, String invoiceType) throws GlobalParamException;
     List<OutboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType);
+    List<OutboundProductO> getCheckoutButNotInvoicedProductsByEntryID(String entryID, String invoiceType) throws GlobalParamException;
     List<OutboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType);
 
     void updateProductsWithCheckoutSerial(List<OutboundProductO> products, String checkoutSerial);

@@ -246,8 +246,8 @@
             </v-card>
         </v-expand-transition>
 
-        <v-row class="my-2" dense>
-            <v-col v-if="creationMode">
+        <v-row v-if="creationMode" class="my-2" dense>
+            <v-col>
                 <v-dialog v-model="productsChoosePanelOpen"
                           :eager="true"
                           persistent
@@ -293,7 +293,7 @@
                 </v-btn>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col v-if="creationMode">
+            <v-col>
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存</v-btn>
@@ -308,7 +308,9 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col v-if="modifyMode">
+        </v-row>
+        <v-row v-if="modifyMode">
+            <v-col cols="auto">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存修改</v-btn>

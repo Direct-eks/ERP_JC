@@ -388,6 +388,34 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
+    public List<InboundProductO> getCheckoutButNotInvoicedProductsByEntryID(
+            String entryID, String invoiceType) throws GlobalParamException {
+        try {
+            var entry = inboundEntryMapper.selectEntryForCompare(entryID);
+            if (entry == null) {
+                throw new GlobalParamException("单号错误");
+            }
+            if (!entry.getInvoiceType().equals(invoiceType)) {
+                throw new GlobalParamException("票据类型不符");
+            }
+
+            List<InboundProductO> products = new ArrayList<>();
+            for (var p : inboundEntryMapper.queryProductsByEntryID(entryID)) {
+                if (!p.getCheckoutSerial().equals("") && p.getInvoiceSerial().equals("")) {
+                    products.add(p);
+                }
+            }
+            return products;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType) {
         try {
             List<String> entryIDs = inboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);

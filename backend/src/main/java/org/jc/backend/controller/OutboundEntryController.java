@@ -157,6 +157,22 @@ public class OutboundEntryController {
 
     @ApiOperation(value = "", response = OutboundProductO.class)
     @RequiresPermissions("outboundInvoice:Creation")
+    @GetMapping("/getCheckoutAndNotInvoicedProductsByEntryID")
+    public List<OutboundProductO> getCheckoutAndNotInvoicedProductsByEntryID(
+            @RequestParam("entryID") String entryID,
+            @RequestParam("invoiceType") String invoiceType) throws GlobalParamException {
+        logger.info("GET Request to /outboundEntry/getCheckoutAndNotInvoicedProductsByEntryID, " +
+                "entryID: {}, invoiceType: {}", entryID, invoiceType);
+
+        if (!MyUtils.validateSerial(entryID)) {
+            throw new GlobalParamException("单号格式错误");
+        }
+
+        return outboundEntryService.getCheckoutButNotInvoicedProductsByEntryID(entryID, invoiceType);
+    }
+
+    @ApiOperation(value = "", response = OutboundProductO.class)
+    @RequiresPermissions("outboundInvoice:Creation")
     @GetMapping("/getCheckoutAndNotInvoicedProducts")
     public List<OutboundProductO> getCheckoutAndNotInvoicedProducts(
             @RequestParam("companyID") int companyID,

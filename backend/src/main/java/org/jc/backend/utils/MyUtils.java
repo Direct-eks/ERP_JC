@@ -62,7 +62,7 @@ public class MyUtils {
     }
 
     public static boolean validateSerial(String entryID) {
-        Pattern pattern = Pattern.compile("^(购入|销出)\\d{6}-\\d{3}$");
+        Pattern pattern = Pattern.compile("^(购入|销出|入结|出退|出结|入退)\\d{6}-\\d{3}$");
         Matcher matcher = pattern.matcher(entryID);
         return matcher.matches();
     }

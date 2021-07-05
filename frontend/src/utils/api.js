@@ -52,6 +52,8 @@ const api = {
     modifyInboundEntry: '/inboundEntry/modifyEntry', // PATCH
     inboundProductsNotCheckedOutByEntryID: '/inboundEntry/getNotCheckedOutProductsByEntryID', // GET entryID= invoiceType=
     inboundProductsNotCheckedOut: '/inboundEntry/getNotCheckedOutProducts', // GET companyID= invoiceType=
+    inboundProductsCheckoutAndNotInvoicedByEntryID: '/inboundEntry/getCheckoutAndNotInvoicedProductsByEntryID',
+    // GET companyID= invoiceType=
     inboundProductsCheckoutAndNotInvoiced: '/inboundEntry/getCheckoutAndNotInvoicedProducts', // GET companyID= invoiceType=
     returnInboundEntry: '/inboundEntry/returnEntryProducts', // POST
     // GET companyID= shippingCostType=
@@ -96,6 +98,8 @@ const api = {
     outboundEntriesInDateRange: '/outboundEntry/getEntriesInDateRange',
     outboundProductsNotCheckedOutByEntryID: '/outboundEntry/getNotCheckedOutProductsByEntryID', // GET entryID= invoiceType=
     outboundProductsNotCheckedOut: '/outboundEntry/getNotCheckedOutProducts',
+    outboundProductsCheckoutAndNotInvoicedByEntryID: '/outboundEntry/getCheckoutAndNotInvoicedProductsByEntryID',
+    // GET entryID invoiceType=
     outboundProductsCheckoutAndNotInvoiced: '/outboundEntry/getCheckoutAndNotInvoicedProducts',
     modifyOutboundEntry: '/outboundEntry/modifyEntry',
     returnOutboundEntry: '/outboundEntry/returnEntryProducts', // POST

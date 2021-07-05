@@ -192,6 +192,17 @@
                 </v-dialog>
             </v-col>
             <v-spacer></v-spacer>
+            <v-col cols="auto" class="d-flex">
+                <v-text-field v-model="entryIDSearchField"
+                              label="根据单据导入"
+                              hide-details="auto"
+                              @keydown.enter="importProductsByEntry"
+                              dense
+                              style="width: 110px">
+                </v-text-field>
+                <v-btn color="info" @click="importProductsByEntry">导入</v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
             <v-col cols="auto">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
@@ -353,6 +364,8 @@ export default {
             submitPopup: false,
             submitPopup2: false,
 
+            entryIDSearchField: '',
+
             form: {
                 invoiceEntrySerial: '',
                 partnerCompanyID: -1, companyFullName: '', companyRemark: '',
@@ -426,6 +439,29 @@ export default {
                 this.form.companyRemark = val.remark
             }
             this.fullSearchPanelOpen = false
+        },
+        importProductsByEntry() {
+            this.$store.commit('setOverlay', true)
+            if (this.isInbound) {
+                this.$getRequest(this.$api.inboundProductsCheckoutAndNotInvoicedByEntryID, {
+                    entryID: '入结' + this.entryIDSearchField,
+                    invoiceType: this.form.invoiceType
+                }).then(data => {
+                    this.$store.commit('setOverlay', false)
+
+                    this.form.inboundCheckoutProducts = data
+                }).catch(() => {})
+            }
+            else {
+                this.$getRequest(this.$api.outboundProductsCheckoutAndNotInvoicedByEntryID, {
+                    entryID: '出结' + this.entryIDSearchField,
+                    invoiceType: this.form.invoiceType
+                }).then(data => {
+                    this.$store.commit('setOverlay', false)
+
+                    this.form.inboundCheckoutProducts = data
+                }).catch(() => {})
+            }
         },
         productsChooseAction(val) {
             if (val) {
