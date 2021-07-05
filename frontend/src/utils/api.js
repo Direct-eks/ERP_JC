@@ -50,6 +50,7 @@ const api = {
     // GET startDate= endDate= type= forModify=bool companyID=int
     inboundEntriesInDateRange: '/inboundEntry/getEntriesInDateRange',
     modifyInboundEntry: '/inboundEntry/modifyEntry', // PATCH
+    inboundProductsNotCheckedOutByEntryID: '/inboundEntry/getNotCheckedOutProductsByEntryID', // GET entryID= invoiceType=
     inboundProductsNotCheckedOut: '/inboundEntry/getNotCheckedOutProducts', // GET companyID= invoiceType=
     inboundProductsCheckoutAndNotInvoiced: '/inboundEntry/getCheckoutAndNotInvoicedProducts', // GET companyID= invoiceType=
     returnInboundEntry: '/inboundEntry/returnEntryProducts', // POST
@@ -93,6 +94,7 @@ const api = {
     completeOutboundEntry: '/outboundEntry/completeEntry',
     createOutboundEntry: '/outboundEntry/createEntry',
     outboundEntriesInDateRange: '/outboundEntry/getEntriesInDateRange',
+    outboundProductsNotCheckedOutByEntryID: '/outboundEntry/getNotCheckedOutProductsByEntryID', // GET entryID= invoiceType=
     outboundProductsNotCheckedOut: '/outboundEntry/getNotCheckedOutProducts',
     outboundProductsCheckoutAndNotInvoiced: '/outboundEntry/getCheckoutAndNotInvoicedProducts',
     modifyOutboundEntry: '/outboundEntry/modifyEntry',

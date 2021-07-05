@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Indexed
@@ -57,6 +59,12 @@ public class MyUtils {
         logger.info("New serial: " + newSerial);
 
         return newSerial;
+    }
+
+    public static boolean validateSerial(String entryID) {
+        Pattern pattern = Pattern.compile("^(购入|销出)\\d{6}-\\d{3}$");
+        Matcher matcher = pattern.matcher(entryID);
+        return matcher.matches();
     }
 
     public static String todayDateString() {

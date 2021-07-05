@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
@@ -25,6 +26,7 @@ public interface OutboundEntryService {
     void deleteEntry(String id);
     void returnEntry(OutboundEntryWithProductsVO returnVO);
 
+    List<OutboundProductO> getNotCheckedOutProductsByEntryID(String entryID, String invoiceType) throws GlobalParamException;
     List<OutboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType);
     List<OutboundProductO> getCheckoutButNotInvoicedProducts(int companyID, String invoiceType);
 

@@ -1,6 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
@@ -325,14 +326,41 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
+    public List<OutboundProductO> getNotCheckedOutProductsByEntryID(
+            String entryID, String invoiceType) throws GlobalParamException {
+        try {
+            var entry = outboundEntryMapper.selectEntryForCompare(entryID);
+            if (entry == null) {
+                throw new GlobalParamException("单号错误");
+            }
+            if (!entry.getInvoiceType().equals(invoiceType)) {
+                throw new GlobalParamException("票据类型不符");
+            }
+
+            List<OutboundProductO> products = new ArrayList<>();
+            for (var p : outboundEntryMapper.queryProductsByEntryID(entryID)) {
+                if (p.getCheckoutSerial().equals("")) {
+                    products.add(p);
+                }
+            }
+            return products;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<OutboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType) {
         try {
             List<String> entryIDs = outboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
 
             List<OutboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
-                List<OutboundProductO> tempProducts = outboundEntryMapper.queryProductsByEntryID(entryID);
-                for (var tempProduct : tempProducts) {
+                for (var tempProduct : outboundEntryMapper.queryProductsByEntryID(entryID)) {
                     if (tempProduct.getCheckoutSerial().equals("")) {
                         products.add(tempProduct);
                     }
@@ -355,8 +383,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
             List<OutboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
-                List<OutboundProductO> tempProducts = outboundEntryMapper.queryProductsByEntryID(entryID);
-                for (var tempProduct : tempProducts) {
+                for (var tempProduct : outboundEntryMapper.queryProductsByEntryID(entryID)) {
                     if (!tempProduct.getCheckoutSerial().equals("") && tempProduct.getInvoiceSerial().equals("")) {
                         products.add(tempProduct);
                     }

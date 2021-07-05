@@ -1,5 +1,6 @@
 package org.jc.backend.service.Impl;
 
+import org.apache.batik.dom.svg12.Global;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InboundEntryMapper;
@@ -335,14 +336,41 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
+    public List<InboundProductO> getNotCheckedOutProductsByEntryID(
+            String entryID, String invoiceType) throws GlobalParamException {
+        try {
+            var entry = inboundEntryMapper.selectEntryForCompare(entryID);
+            if (entry == null) {
+                throw new GlobalParamException("单号错误");
+            }
+            if (!entry.getInvoiceType().equals(invoiceType)) {
+                throw new GlobalParamException("票据类型不符");
+            }
+
+            List<InboundProductO> products = new ArrayList<>();
+            for (var p : inboundEntryMapper.queryProductsByEntryID(entryID)) {
+                if (p.getCheckoutSerial().equals("")) {
+                    products.add(p);
+                }
+            }
+            return products;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType) {
         try {
             List<String> entryIDs = inboundEntryMapper.queryEntriesByCompanyIDAndInvoiceType(companyID, invoiceType);
 
             List<InboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
-                List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
-                for (var tempProduct : tempProducts) {
+                for (var tempProduct : inboundEntryMapper.queryProductsByEntryID(entryID)) {
                     //filter out checked-out products
                     if (tempProduct.getCheckoutSerial().equals("")) {
                         products.add(tempProduct);
@@ -366,8 +394,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
             List<InboundProductO> products = new ArrayList<>();
             for (var entryID : entryIDs) {
-                List<InboundProductO> tempProducts = inboundEntryMapper.queryProductsByEntryID(entryID);
-                for (var tempProduct : tempProducts) {
+                for (var tempProduct : inboundEntryMapper.queryProductsByEntryID(entryID)) {
                     //filter checked-out but not invoiced products
                     if (!tempProduct.getCheckoutSerial().equals("") && tempProduct.getInvoiceSerial().equals("")) {
                         products.add(tempProduct);
