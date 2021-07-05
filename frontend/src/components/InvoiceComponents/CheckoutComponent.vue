@@ -269,11 +269,24 @@
                 </v-dialog>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col v-if="creationMode">
+            <v-col cols="auto" class="d-flex">
+                <v-text-field v-model="entryIDSearchField"
+                              label="根据单据导入"
+                              hide-details="auto"
+                              @keydown.enter="importProductsByEntry"
+                              dense
+                              style="width: 110px">
+                </v-text-field>
+                <v-btn color="info" @click="importProductsByEntry">导入</v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col v-if="creationMode" cols="auto">
                 <v-btn color="accent"
                        @click="triggerInvoice(true)">
                     开票
                 </v-btn>
+            </v-col>
+            <v-col v-if="creationMode" cols="auto">
                 <v-btn color="accent"
                        @click="triggerInvoice(false)">
                     不开票
@@ -431,6 +444,8 @@ export default {
             submitPopup: false,
             submitPopup2: false,
 
+            entryIDSearchField: '',
+
             form: {
                 checkoutEntrySerial: '',
                 partnerCompanyID: -1,
@@ -519,6 +534,29 @@ export default {
                 this.form.companyRemark = val.remark
             }
             this.fullSearchPanelOpen = false
+        },
+        importProductsByEntry() {
+            this.$store.commit('setOverlay', true)
+            if (this.isInbound) {
+                this.$getRequest(this.$api.inboundProductsNotCheckedOutByEntryID, {
+                    entryID: '购入' + this.entryIDSearchField,
+                    invoiceType: this.form.invoiceType
+                }).then(data => {
+                    this.$store.commit('setOverlay', false)
+
+                    this.form.inboundCheckoutProducts = data
+                }).catch(() => {})
+            }
+            else {
+                this.$getRequest(this.$api.outboundProductsNotCheckedOutByEntryID, {
+                    entryID: '销出' + this.entryIDSearchField,
+                    invoiceType: this.form.invoiceType
+                }).then(data => {
+                    this.$store.commit('setOverlay', false)
+
+                    this.form.outboundCheckoutProducts = data
+                }).catch(() => {})
+            }
         },
         productsChooseAction(val) {
             if (val) {
