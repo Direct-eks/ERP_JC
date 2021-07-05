@@ -193,6 +193,15 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="auto" class="d-flex">
+                <v-radio-group v-model="entryIDType"
+                               hide-details="auto"
+                               class="mt-0"
+                               row dense>
+                    <v-radio v-if="isInbound" label="入结" value="入结"></v-radio>
+                    <v-radio v-if="isInbound" label="出退" value="出退"></v-radio>
+                    <v-radio v-if="!isInbound" label="出结" value="出结"></v-radio>
+                    <v-radio v-if="!isInbound" label="入退" value="入退"></v-radio>
+                </v-radio-group>
                 <v-text-field v-model="entryIDSearchField"
                               label="根据单据导入"
                               hide-details="auto"
@@ -364,6 +373,7 @@ export default {
             submitPopup: false,
             submitPopup2: false,
 
+            entryIDType: this.isInbound ? '入结' : '出结',
             entryIDSearchField: '',
 
             form: {
