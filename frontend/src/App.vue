@@ -185,8 +185,15 @@ export default {
     },
     watch: {
         $route(to, _) {
-            if (to.path === '/home') this.navDrawer = true
-            if (to.path === '/login') this.navDrawer = false
+            if (to.path === '/home') {
+                this.navDrawer = true
+            }
+            else if (to.path === 'login') {
+                this.navDrawer = false
+            }
+            else {
+                this.navDrawer = false
+            }
             this.navBottomShow = to.path === '/home'
             this.helpContent = []
             for (const item of helpContent.items) {
