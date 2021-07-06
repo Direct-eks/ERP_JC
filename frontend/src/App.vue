@@ -8,7 +8,7 @@
                 <v-list-item v-for="(item, i) in nav"
                              :key="i"
                              :to="item.url"
-                             @click.stop="navDrawer = !navDrawer">
+                             @click.stop="navDrawer = false">
                     <v-list-item-content>
                         <v-list-item-title>
                             {{ item.name }}
