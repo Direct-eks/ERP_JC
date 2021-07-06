@@ -30,25 +30,28 @@
                                   :headers="summaryTableHeaders"
                                   :items="summaryTableData"
                                   item-key="companyID"
+                                  show-select
+                                  single-select
+                                  checkbox-color="accent"
                                   @click:row="summaryTableClick"
+                                  @item-selected="summaryTableClick2"
                                   height="75vh"
                                   calculate-widths
                                   disable-sort
-                                  show-select
-                                  single-select
                                   fixed-header
                                   hide-default-footer
-                                  locale="zh-cn">
+                                  locale="zh-cn"
+                                  dense>
                     </v-data-table>
-                    <v-row>
+                    <div class="d-flex">
                         <v-spacer></v-spacer>
-                        <v-col cols="auto">
-                            <span>总计</span>
-                        </v-col>
-                        <v-col cols="auto">
-                            {{totalSum}}
-                        </v-col>
-                    </v-row>
+                        <div class="my-2 mr-5">
+                            <strong>总计：</strong>
+                        </div>
+                        <div class="my-2 mr-5">
+                            <strong>{{ totalSum }}</strong>
+                        </div>
+                    </div>
                 </v-container>
             </v-tab-item>
 
@@ -62,7 +65,8 @@
                                   disable-sort
                                   fixed-header
                                   hide-default-footer
-                                  locale="zh-cn">
+                                  locale="zh-cn"
+                                  dense>
                     </v-data-table>
                 </v-container>
             </v-tab-item>
@@ -90,7 +94,7 @@ export default {
 
             mdiArrowLeft,
             tab: null,
-            totalSum: 0.0,
+            totalSum: '0.0',
 
             summaryTableHeaders: [
                 { text: '单位简称', value: 'companyAbbreviatedName', width: '150px' },
@@ -130,52 +134,56 @@ export default {
         querySummary() {
             if (this.isInbound) {
                 this.$getRequest(this.$api.inboundNotYetCheckoutSummary).then((data) => {
-                    console.log('received', data)
-
                     this.summaryTableData = data
 
-                    this.totalSum = 0.0
+                    let sum = this.$Big('0')
                     this.summaryTableData.forEach((item) => {
-                        this.totalSum += Number(item.totalAmount)
+                        sum = sum.add(item.totalAmount)
                     })
-
+                    this.totalSum = sum.toString()
                 }).catch(() => {})
             }
             else {
                 this.$getRequest(this.$api.outboundNotYetCheckoutSummary).then((data) => {
-                    console.log('received', data)
-
                     this.summaryTableData = data
 
-                    this.totalSum = 0.0
+                    let sum = this.$Big('0')
                     this.summaryTableData.forEach((item) => {
-                        this.totalSum += Number(item.totalAmount)
+                        sum = sum.add(item.totalAmount)
                     })
-
+                    this.totalSum = sum.toString()
                 }).catch(() => {})
             }
         },
         summaryTableClick(val) {
-            this.summaryTableCurrentRow = [val]
             this.detailTableData = []
 
-            if (this.isInbound) {
-                this.$getRequest(this.$api.inboundNotYetCheckoutDetail +
-                    encodeURI(val.companyID)).then((data) => {
-                    console.log('received', data)
-
-                    this.detailTableData = data
-                }).catch(() => {})
+            if (this.summaryTableCurrentRow.includes(val)) {
+                this.summaryTableCurrentRow = []
             }
             else {
-                this.$getRequest(this.$api.outboundNotYetCheckoutDetail +
-                    encodeURI(val.companyID)).then((data) => {
-                    console.log('received', data)
-
-                    this.detailTableData = data
-                }).catch(() => {})
+                this.summaryTableCurrentRow = [val]
+                if (this.isInbound) {
+                    this.$getRequest(this.$api.inboundNotYetCheckoutDetail +
+                        encodeURI(val.companyID)).then((data) => {
+                        this.detailTableData = data
+                    }).catch(() => {})
+                } else {
+                    this.$getRequest(this.$api.outboundNotYetCheckoutDetail +
+                        encodeURI(val.companyID)).then((data) => {
+                        this.detailTableData = data
+                    }).catch(() => {})
+                }
             }
-
+        },
+        summaryTableClick2(row) {
+            this.detailTableData = []
+            if (!row.value) {
+                this.summaryTableCurrentRow = []
+            }
+            else {
+                this.summaryTableClick(row.item)
+            }
         }
     }
 }
