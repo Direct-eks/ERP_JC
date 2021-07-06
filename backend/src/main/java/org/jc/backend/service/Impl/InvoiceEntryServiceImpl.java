@@ -183,8 +183,8 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         if (new BigDecimal(originEntry.getPartnerCompanyID())
                 .compareTo(new BigDecimal(modifiedEntry.getPartnerCompanyID())) != 0) {
             bool = true;
-            record.append(String.format("单位: %s -> %s; ", originEntry.getCompanyFullName(),
-                    modifiedEntry.getCompanyFullName()));
+            record.append(String.format("单位: %s -> %s; ", originEntry.getCompanyAbbreviatedName(),
+                    modifiedEntry.getCompanyAbbreviatedName()));
         }
         if (!originEntry.getInvoiceNumberDate().equals(modifiedEntry.getInvoiceNumberDate())) {
             bool = true;
