@@ -213,6 +213,7 @@ export default {
             }).catch(() => {})
         },
         queryModificationRecord() {
+            if (this.queryTableCurrentRow.length === 0) return
             this.$getRequest(this.$api.modificationRecordsBySerial
                 + encodeURI(this.queryTableCurrentRow[0].moneyEntrySerial)
             ).then((data) => {

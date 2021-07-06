@@ -127,6 +127,7 @@
                     <v-text-field v-model="form.paymentAmount"
                                   label="金额"
                                   hide-details="auto"
+                                  type="number"
                                   @change="handlePaymentAmountChange"
                                   outlined
                                   :readonly="displayMode"
@@ -190,44 +191,59 @@
                 </v-radio-group>
             </v-col>
             <v-col cols="auto">
-                <v-btn color="primary"
-                       @click="createEntry(false)">
-                    保存后新增
-                </v-btn>
+                <v-dialog v-model="submitPopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存后新增</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                            <v-btn color="success" @click="createEntry(false)">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="auto">
-                <v-btn color="primary"
-                       @click="createEntry(true)">
-                    保存
-                </v-btn>
+                <v-dialog v-model="submitPopup2" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup2 = false">取消</v-btn>
+                            <v-btn color="success" @click="createEntry(true)">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
         </v-row>
         <v-row v-if="modifyMode">
             <v-spacer></v-spacer>
             <v-col cols="auto">
-                <v-btn color="primary"
-                       @click="modifyEntry()">
-                    保存修改
-                </v-btn>
+                <v-dialog v-model="submitPopup3" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" v-on="on">保存修改</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认提交？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="submitPopup3 = false">取消</v-btn>
+                            <v-btn color="success" @click="modifyEntry">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
-function validateFloat(value) {
-    let val = value.replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
-    val = val.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-    val = val.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    val = val.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
-    if (val.indexOf(".") < 0 && val !== "") { // 如果没有小数点，首位不能为0
-        val = parseFloat(val)
-    }
-    console.log('float', val)
-    return val
-}
-
 export default {
     name: "PaymentComponent",
     components: {
@@ -314,9 +330,11 @@ export default {
             modifyMode: false,
 
             fullSearchPanelOpen: false,
+            submitPopup: false,
+            submitPopup2: false,
+            submitPopup3: false,
 
             companyResetIndicator: 0,
-            allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
 
             form: {
                 moneyEntrySerial: '',
@@ -336,7 +354,6 @@ export default {
 
             rules: {
                 departmentID: [v => !!v || '请选择部门'],
-                paymentDate: [v => !!v || '请选择付款日期'],
                 companyID: [v => !!v || this.form.partnerCompanyID !== -1 || '请选择单位'],
                 paymentMethod: [v => !!v || '请选择付款方式'],
                 bankAccountID: [v => !!v &&
@@ -372,16 +389,21 @@ export default {
             this.fullSearchPanelOpen = false
         },
         handlePaymentAmountChange() {
-            this.form.paymentAmount = validateFloat(this.form.paymentAmount.toString())
+            this.form.paymentAmount = this.$validateFloat(this.form.paymentAmount.toString())
         },
         createEntry(exitBool) {
+            this.submitPopup = false
+            this.submitPopup2 = false
             if (!this.$refs.form.validate()) return
+
+            this.$store.commit('setOverlay', true)
             this.$putRequest(this.$api.createMoneyEntry, this.form, {
                 isInbound: this.isInbound,
             }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
 
                 if (!exitBool) {
                     if (this.companyResetIndicator === 1) {
@@ -412,11 +434,15 @@ export default {
             }).catch(() => {})
         },
         modifyEntry() {
+            this.submitPopup3 = false
             if (!this.$refs.form.validate()) return
+
+            this.$store.commit('setOverlay', true)
             this.$patchRequest(this.$api.modifyMoneyEntry, this.form).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
                 })
+                this.$store.commit('setOverlay', false)
 
                 this.$router.replace('/inbound_invoicing')
             }).catch(() => {})
