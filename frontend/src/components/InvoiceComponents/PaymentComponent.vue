@@ -3,51 +3,23 @@
         <v-form ref="form">
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-if="createMode || modifyMode"
-                              v-model="form.departmentID"
+                    <v-select v-model="form.departmentID"
                               :rules="rules.departmentID"
                               :items="departmentOptions"
                               item-value="departmentID"
                               item-text="name"
                               label="部门"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 180px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.departmentName"
-                                  label="部门"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 150px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                    <v-menu close-on-content-click
-                            :disabled="displayMode || modifyMode"
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y>
-                        <template v-slot:activator="{on}">
-                            <v-text-field v-model="form.paymentDate"
-                                          :rules="rules.paymentDate"
-                                          v-on="on"
-                                          label="结账日期"
-                                          hide-details="auto"
-                                          outlined
-                                          readonly
-                                          dense>
-                            </v-text-field>
-                        </template>
-                        <v-date-picker v-model="form.paymentDate"
-                                       no-title
-                                       :max="allowedMaxDate"
-                                       :first-day-of-week="0"
-                                       locale="zh-cn">
-                        </v-date-picker>
-                    </v-menu>
+                    <DatePicker label="结账日期"
+                                :entryDate.sync="form.paymentDate"
+                                :disabled="displayMode || modifyMode">
+                    </DatePicker>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.drawer"
@@ -66,9 +38,7 @@
                               no-click-animation
                               width="80vw">
                         <template v-slot:activator="{on}">
-                            <v-btn color="accent"
-                                   v-on="on"
-                                   :disabled="fullSearchPanelOpen">
+                            <v-btn color="accent" v-on="on">
                                 单位助选
                             </v-btn>
                         </template>
@@ -113,28 +83,34 @@
                 </v-col>
             </v-row>
 
+            <v-row v-if="form.partnerCompanyID !== -1 && form.companyRemark !== ''" dense>
+                <v-col>
+                    <v-textarea v-model.number="form.companyRemark"
+                                label="重要提示"
+                                hide-details="auto"
+                                background-color="red accent-2"
+                                outlined
+                                dense
+                                readonly
+                                auto-grow
+                                rows="1">
+                    </v-textarea>
+                </v-col>
+            </v-row>
+
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-if="createMode || modifyMode"
-                              v-model="form.paymentMethod"
+                    <v-select v-model="form.paymentMethod"
                               :rules="rules.paymentMethod"
                               :items="paymentMethodOptions"
                               item-value="value"
                               item-text="label"
                               label="付款方式"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 120px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.paymentMethod"
-                                  label="付款方式"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 120px">
-                    </v-text-field>
                 </v-col>
                 <v-col cols="auto">
                     <v-text-field v-model="form.paymentNumber"
@@ -142,8 +118,8 @@
                                   hide-details="auto"
                                   outlined
                                   dense
-                                  :readonly="form.paymentMethod === '现金'
-                                      || form.paymentMethod === '' || displayMode"
+                                  :readonly="form.paymentMethod === '现金' ||
+                                                form.paymentMethod === '' || displayMode"
                                   style="width: 160px">
                     </v-text-field>
                 </v-col>
@@ -159,64 +135,45 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto" v-if="form.paymentMethod !== '现金' && form.paymentMethod !== ''">
-                    <v-select v-if="createMode || modifyMode"
-                              v-model="form.bankAccountID"
+                    <v-select v-model="form.bankAccountID"
                               :rules="rules.bankAccountID"
                               :items="bankAccountOptions"
                               item-value="bankAccountID"
                               item-text="name"
                               label="银行"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 250px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.bankAccountName"
-                                  label="银行"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 250px">
-                    </v-text-field>
                 </v-col>
             </v-row>
 
             <v-row>
                 <v-col cols="auto">
-                    <v-select v-if="createMode || modifyMode"
-                              v-model="form.paymentIndication"
+                    <v-select v-model="form.paymentIndication"
                               :items="paymentIndicationOptions"
                               item-value="value"
                               item-text="label"
                               label="付款类型"
                               hide-details="auto"
+                              :readonly="displayMode"
                               outlined dense
                               style="width: 120px">
                     </v-select>
-                    <v-text-field v-else
-                                  v-model="form.paymentIndication"
-                                  label="付款类型"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="width: 120px">
-                    </v-text-field>
                 </v-col>
             </v-row>
 
             <v-row>
                 <v-col>
-                    <v-textarea v-model.number="form.remark"
+                    <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
                                 :readonly="displayMode"
                                 outlined
                                 dense
                                 auto-grow
-                                rows="1"
-                                counter="200">
+                                rows="1">
                     </v-textarea>
                 </v-col>
             </v-row>
@@ -274,6 +231,7 @@ function validateFloat(value) {
 export default {
     name: "PaymentComponent",
     components: {
+        DatePicker: () => import("~/components/DatePicker"),
         CompanySearch: () => import("~/components/CompanySearch"),
     },
     props: {
@@ -335,23 +293,19 @@ export default {
             break
         }
 
-        if (this.createMode || this.modifyMode) {
-            this.$getRequest(this.$api.departmentOptions).then((data) => {
-                console.log(data)
-                this.departmentOptions = data
-                for (const item of this.departmentOptions) {
-                    if (item.isDefault === 1) {
-                        this.form.departmentID = item.departmentID
-                        break
-                    }
+        this.$getRequest(this.$api.departmentOptions).then((data) => {
+            this.departmentOptions = data
+            for (const item of this.departmentOptions) {
+                if (item.isDefault === 1) {
+                    this.form.departmentID = item.departmentID
+                    break
                 }
-            }).catch(() => {})
+            }
+        }).catch(() => {})
 
-            this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
-                console.log(data)
-                this.bankAccountOptions = data
-            }).catch(() => {})
-        }
+        this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
+            this.bankAccountOptions = data
+        }).catch(() => {})
     },
     data() {
         return {
@@ -367,7 +321,8 @@ export default {
             form: {
                 moneyEntrySerial: '',
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                companyAbbreviatedName: '', companyPhone: '',
+                companyFullName: '', companyRemark: '',
                 paymentIndication: '正常',
                 paymentMethod: '', paymentNumber: '', paymentAmount: '',
                 bankAccountID: -1, bankAccountName: '',
@@ -412,6 +367,7 @@ export default {
                 this.form.companyFullName = val.fullName
                 this.form.companyPhone = val.phone
                 this.form.partnerCompanyID = val.companyID
+                this.form.companyRemark = val.remark
             }
             this.fullSearchPanelOpen = false
         },
