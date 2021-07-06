@@ -27,7 +27,7 @@
     <resultMap id="InvoiceEntryResultMap" type="org.jc.backend.entity.InvoiceEntryO">
         <result property="invoiceEntrySerial" column="invoice_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
-        <result property="companyFullName" column="company_full_name"/>
+        <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyRemark" column="company_remark"/>
         <result property="invoiceType" column="invoice_type"/>
         <result property="invoiceNumber" column="invoice_number"/>
@@ -46,7 +46,7 @@
     </resultMap>
 
     <select id="getEntriesInDateRangeAndParams" resultMap="InvoiceEntryResultMap">
-        select invoice_entry_serial, i.partner_company_id, c.full_name as company_full_name,
+        select invoice_entry_serial, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
                c.remark as company_remark, invoice_type, invoice_number, total_amount, invoice_amount,
                invoice_indication, is_follow_up_indication, i.remark, drawer, creation_date,
                checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified

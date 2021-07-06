@@ -67,13 +67,13 @@
                     </v-select>
                 </v-col>
                 <v-col cols="auto">
-                    <v-text-field v-model="form.companyFullName"
-                                  label="供货单位全称"
+                    <v-text-field v-model="form.companyAbbreviatedName"
+                                  label="供货单位简称"
                                   hide-details="auto"
                                   readonly
                                   outlined
                                   dense
-                                  style="width: 300px">
+                                  style="width: 200px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto" v-if="!displayMode">
@@ -378,7 +378,7 @@ export default {
 
             form: {
                 invoiceEntrySerial: '',
-                partnerCompanyID: -1, companyFullName: '', companyRemark: '',
+                partnerCompanyID: -1, companyAbbreviatedName: '', companyRemark: '',
                 invoiceType: '增值税票', invoiceNumber: '',
                 totalAmount: '0.0', invoiceAmount: '',
                 invoiceIndication: '', isFollowUpIndication: 0,
@@ -444,7 +444,7 @@ export default {
         /* ------- full name company search -------*/
         fullSearchChooseAction(val) {
             if (val) {
-                this.form.companyFullName = val.fullName
+                this.form.companyAbbreviatedName = val.abbreviatedName
                 this.form.partnerCompanyID = val.companyID
                 this.form.companyRemark = val.remark
             }

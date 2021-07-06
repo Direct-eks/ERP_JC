@@ -15,7 +15,7 @@ public class InvoiceEntryO {
     @NotNull(message = "partnerCompanyID null error")
     private Integer partnerCompanyID;
     // from c_partner_company
-    private String companyFullName;
+    private String companyAbbreviatedName;
     private String companyRemark;
 
     @NotNull(message = "invoiceType null error")
