@@ -295,11 +295,12 @@
         order by i.outbound_entry_id desc
     </select>
 
-    <resultMap id="invoiceStatResultMap" type="org.jc.backend.entity.StatO.InvoiceStatVO">
+    <resultMap id="invoiceStatResultMap" type="org.jc.backend.entity.StatO.InvoiceStatDO">
         <result property="companyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="abbreviated_name"/>
         <result property="companyFullName" column="full_name"/>
-        <result property="totalAmount" column="total_sum"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
     </resultMap>
 
     <select id="queryNotYetCheckoutSummary" resultMap="invoiceStatResultMap">
