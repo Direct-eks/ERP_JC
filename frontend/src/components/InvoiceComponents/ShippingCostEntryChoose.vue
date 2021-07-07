@@ -9,7 +9,7 @@
                 选择
             </v-btn>
             <v-btn icon @click="close">
-                <v-icon>{{ mdiClosePath }}</v-icon>
+                <v-icon>{{ mdiClose }}</v-icon>
             </v-btn>
         </v-card-title>
         <v-card-text>
@@ -17,10 +17,10 @@
                           :headers="tableHeaders"
                           :items="tableData"
                           :item-key="isInbound ? 'inboundEntryID' : 'outboundEntryID'"
+                          show-select
                           @click:row="tableChoose"
                           height="45vh"
                           calculate-widths
-                          show-select
                           disable-sort
                           fixed-header
                           disable-pagination
@@ -68,7 +68,7 @@ export default {
     },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
             panelTitle: this.isInbound ? '入库单运费选择' : '出库单运费选择',
 
@@ -77,10 +77,10 @@ export default {
                 {
                     text: this.isInbound ? '入库单号' : '出库单号',
                     value: this.isInbound ? 'inboundEntryID' : 'outboundEntryID',
-                    width: '100px'
+                    width: '140px'
                 },
-                { text: '单位', value: 'companyAbbreviatedName', width: '100px' },
-                { text: '运费', value: 'shippingCost', width: '80px' },
+                { text: '单位', value: 'companyAbbreviatedName', width: '160px' },
+                { text: '运费', value: 'shippingCost', width: '90px' },
             ],
             tableSelection: [],
             tableData: [],
@@ -93,7 +93,6 @@ export default {
                     companyID: this.companyID,
                     shippingCostType: this.shippingCostType,
                 }).then((data) => {
-                    console.log('received', data)
                     this.tableData = data
                 }).catch(() => {})
             }
@@ -102,11 +101,9 @@ export default {
                     companyID: this.companyID,
                     shippingCostType: this.shippingCostType
                 }).then((data) => {
-                    console.log('received', data)
                     this.tableData = data
                 }).catch(() => {})
             }
-
         },
         tableChoose(val) {
             if (this.tableSelection.includes(val))

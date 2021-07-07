@@ -57,6 +57,9 @@ export default {
         ),
         ShippingCostComponent: () => import("~/components/InvoiceComponents/ShippingCostComponent"),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
             mdiArrowLeft,
@@ -66,26 +69,29 @@ export default {
             form: {
                 shippingCostEntrySerial: null,
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyFullName: '', companyPhone: '',
+                companyAbbreviatedName: '', companyFullName: '',
+                companyPhone: '', companyRemark: '',
                 isTaxDeduction: -1, invoiceNumber: '',
                 totalAmount: 0.0, invoiceAmount: '',
                 shippingCostType: '',
                 remark: '', drawer: '',
                 creationDate: '',
                 checkoutDate: '',
-                inOrOut: '',
+                inOrOut: -1,
                 invoiceDate: '',
                 isModified: 0,
 
                 inboundEntries: [],
                 outboundEntries: [],
             },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm)
             }
         },
         tableClickAction(val) {
