@@ -1,6 +1,9 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
@@ -10,6 +13,7 @@ import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.PresaleO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
@@ -22,7 +26,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -640,6 +648,74 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<PresaleO> getPresaleProducts() {
+        try {
+            return outboundEntryMapper.queryPresaleProducts();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void exportPresaleProducts(HttpServletResponse response) {
+        try {
+            List<PresaleO> presales = outboundEntryMapper.queryPresaleProducts();
+
+            SXSSFWorkbook workbook = new SXSSFWorkbook();
+            Sheet sheet = workbook.createSheet("预销售");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("出库单序号");
+            header.createCell(1).setCellValue("代号");
+            header.createCell(2).setCellValue("厂牌");
+            header.createCell(3).setCellValue("出库数量");
+            header.createCell(4).setCellValue("库存数量");
+            header.createCell(5).setCellValue("单位");
+            header.createCell(6).setCellValue("无税单价");
+            header.createCell(7).setCellValue("含税单价");
+            header.createCell(8).setCellValue("购货单位");
+
+            int rowIndex = 1;
+            for (var p : presales) {
+                Row row = sheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(p.getOutboundEntryID());
+                row.createCell(1).setCellValue(p.getCode());
+                row.createCell(2).setCellValue(p.getFactoryCode());
+                row.createCell(3).setCellValue(p.getQuantity());
+                row.createCell(4).setCellValue(p.getStockQuantity());
+                row.createCell(5).setCellValue(p.getUnitName());
+                row.createCell(6).setCellValue(p.getUnitPriceWithoutTax());
+                row.createCell(7).setCellValue(p.getUnitPriceWithTax());
+                row.createCell(8).setCellValue(p.getCompanyAbbreviatedName());
+            }
+
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setCharacterEncoding("utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" +
+                    URLEncoder.encode("预销售型号表.xlsx", StandardCharsets.UTF_8));
+
+            workbook.write(response.getOutputStream());
+            workbook.dispose();
+            workbook.close();
+            response.flushBuffer();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        } catch (IOException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("io failed");
         }
     }
 }

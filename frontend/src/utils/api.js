@@ -109,6 +109,8 @@ const api = {
     outboundNotYetCheckoutDetail: '/outboundEntry/getNotYetCheckoutDetailByCompanyID/', // GET companyID
     outboundNotYetInvoiceSummary: '/outboundEntry/getNotYetInvoiceSummary', // GET
     outboundNotYetInvoiceDetail: '/outboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
+    presaleProducts: '/outboundEntry/getPresaleProducts', // GET
+    exportPresaleProducts: '/outboundEntry/exportPresaleProducts', // GET
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT

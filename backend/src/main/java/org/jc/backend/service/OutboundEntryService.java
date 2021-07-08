@@ -5,10 +5,12 @@ import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.PresaleO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -53,4 +55,7 @@ public interface OutboundEntryService {
     // for stock price calculation
     List<ProductStatO> getAllOutboundProducts(int id);
     void updateOutboundProduct(ProductStatO productStatO);
+
+    List<PresaleO> getPresaleProducts();
+    void exportPresaleProducts(HttpServletResponse response);
 }

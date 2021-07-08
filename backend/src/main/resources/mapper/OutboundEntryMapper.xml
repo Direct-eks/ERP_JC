@@ -383,4 +383,43 @@
         where outbound_product_id = #{outboundProductID}
     </update>
 
+    <resultMap id="presaleResultMap" type="org.jc.backend.entity.StatO.PresaleO">
+        <result property="outboundEntryID" column="outbound_entry_id"/>
+        <result property="outboundProductID" column="outbound_product_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="code" column="code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="remark" column="remark"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+        <result property="stockUnitPrice" column="stock_unit_price"/>
+        <result property="returnStatus" column="return_status"/>
+        <result property="checkoutSerial" column="checkout_serial"/>
+        <result property="invoiceSerial" column="invoice_serial"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="abbreviated_name"/>
+        <result property="companyPhone" column="phone"/>
+        <result property="companyFullName" column="full_name"/>
+        <result property="companyRemark" column="company_remark"/>
+    </resultMap>
+
+    <select id="queryPresaleProducts" resultMap="presaleResultMap">
+        select e.outbound_entry_id, p.outbound_product_id, p.sku_id, s.code, s.unit_name,
+               s.factory_code, p.quantity, p.stock_quantity, p.remark, p.warehouse_stock_id,
+               p.warehouse_id, p.tax_rate, p.unit_price_without_tax, p.unit_price_with_tax,
+               p.stock_unit_price, p.return_status, p.checkout_serial, p.invoice_serial,
+               e.partner_company_id, cpc.abbreviated_name, cpc.phone, cpc.full_name, cpc.remark
+        from e_outbound_entry as e join e_outbound_product as p
+            on e.outbound_entry_id = p.outbound_entry_id
+            join sku_full as s on p.sku_id = s.sku_id
+            join c_partner_company cpc on e.partner_company_id = cpc.partner_company_id
+        where p.is_presale = 1
+    </select>
+
 </mapper>

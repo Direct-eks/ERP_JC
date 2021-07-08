@@ -6,6 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.PresaleO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Indexed;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -239,5 +241,23 @@ public class OutboundEntryController {
         logger.info("GET Request to /outboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: {}", companyID);
 
         return outboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
+    }
+
+    @ApiOperation(value = "", response = PresaleO.class)
+    @RequiresPermissions("management:PresalesQuery")
+    @GetMapping("/getPresaleProducts")
+    public List<PresaleO> getPresaleProducts() {
+        logger.info("GET Request to /outboundEntry/getPresaleProducts");
+
+        return outboundEntryService.getPresaleProducts();
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @RequiresPermissions("management:PresalesQuery")
+    @GetMapping("/exportPresaleProducts")
+    public void exportPresaleProducts(HttpServletResponse response) {
+        logger.info("GET Request to /outboundEntry/exportPresaleProducts");
+
+        outboundEntryService.exportPresaleProducts(response);
     }
 }
