@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,8 +220,11 @@ public class ModelServiceImpl implements ModelService {
                 row.createCell(3).setCellValue(model.getUnitName());
             }
 
+            response.reset();
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment;filename=型号表.xlsx");
+            response.setCharacterEncoding("utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" +
+                            URLEncoder.encode("型号表.xlsx", StandardCharsets.UTF_8));
 
             workbook.write(response.getOutputStream());
             workbook.dispose();
