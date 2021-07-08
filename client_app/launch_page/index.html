@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body style="background-color: #b8b8b8">
+<div class="container position-absolute top-50 start-50 translate-middle" id="app">
+    <div v-if="!showLoading">
+        <div class="d-flex">
+            <div>
+                <label for="ipTextField">IP</label>
+                <input v-model="ipAddress" type="text" id="ipTextField"
+                       :style="ipAddressStyle" @keyup.enter="formSubmit" @input="resetStatus">
+            </div>
+            <button class="btn btn-outline-primary" @click="formSubmit" style="margin-left: 10px">
+                确认
+            </button>
+        </div>
+        <div class="row">
+        <span v-if="showWarning">
+                请输入正确的ip
+        </span>
+        </div>
+    </div>
+
+    <div v-if="showLoading">
+        <div class="row">
+            <p style="font-size: 24px">启动后台服务器中...</p>
+        </div>
+        <div class="row justify-content-center align-items-center">
+            <div class="col">
+                <div class="progress" style="height: 30px">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         aria-valuenow="75"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         :style="data.pWidth">
+                        {{ data.progress }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="./vue.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    const ipcRenderer = require('electron').ipcRenderer
+    const data = {
+        pWidth: 'width: 0%',
+        progress: 0,
+    }
+    ipcRenderer.on('async-msg', (val) => {
+        data.progress = Number(data.progress)
+        data.progress = data.progress <= 98.8 ? data.progress + 0.2 : 99
+        data.progress = data.progress.toFixed(1)
+        data.pWidth = 'width: ' + data.progress + '%'
+    })
+    const regex = /^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/g
+    const app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                data,
+                ipAddress: '0.0.0.0',
+                ipAddressStyle: '',
+                showWarning: false,
+                showLoading: false
+            }
+        },
+        methods: {
+            resetStatus() {
+                this.showWarning = false
+                this.ipAddressStyle = ''
+            },
+            formSubmit() {
+                if (regex.test(this.ipAddress)) {
+                    this.showLoading = true
+                    ipcRenderer.send('ip', this.ipAddress)
+                }
+                else {
+                    this.showWarning = true
+                    this.ipAddressStyle = 'background-color: red'
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>

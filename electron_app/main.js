@@ -11,7 +11,6 @@ let databaseFilesExist = false
 
 const files = fs.readdirSync(path.resolve('C:\\ERP_JC'))
 for (const file of files) {
-    // console.log(file)
     if (file === 'db') databaseFilesExist = true
     if (file === 'fulljre11') jreFilesExist = true
     if (file === 'backend-0.0.1-SNAPSHOT.jar') backendFilesExist = true
@@ -31,8 +30,34 @@ const springBootLauncher = child.fork(__dirname + '/launcher.js')
 
 springBootLauncher.on('message', (message) => {
     if (message.msg === 'launched') {
-        launchWin.webContents.send('async-msg', "launched")
-        launchWin.setClosable(true)
+        mainWin = new BrowserWindow({
+            width: 600,
+            height: 400,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+            },
+            useContentSize: true
+        })
+        mainWin.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
+            .then(() => {
+                mainWin.maximize()
+                launchWin.destroy()
+                launchWin = null
+            })
+        mainWin.on('close', (e) => {
+            let result = dialog.showMessageBoxSync({
+                type: "warning",
+                title: '退出确认',
+                message: '确认退出？',
+                buttons: ['取消', '确认']
+            })
+            if (result === 0) {
+                e.preventDefault()
+            } else {
+                return null
+            }
+        })
     } else if (message.msg === 'exited') {
         app.quit()
     } else {
@@ -40,10 +65,11 @@ springBootLauncher.on('message', (message) => {
     }
 })
 
-let launchWin
+let launchWin, mainWin
 Menu.setApplicationMenu(null)
 
 app.whenReady().then(() => {
+    springBootLauncher.send({ msg: 'ip', ipAddress: 'localhost' })
     launchWin = new BrowserWindow({
         width: 500,
         height: 300,
@@ -59,22 +85,6 @@ app.whenReady().then(() => {
     })
     launchWin.loadFile(__dirname + '/launch_page/index.html')
         .then(() => launchWin.show())
-    launchWin.on('close', (e) => {
-        let result = dialog.showMessageBoxSync({
-            type: "warning",
-            title: '退出确认',
-            message: '确认退出？',
-            buttons: ['取消', '确认']
-        })
-        if (result === 0) {
-            e.preventDefault()
-        } else {
-            return null
-        }
-    })
-    ipcMain.once('ip', (ipAddress) => {
-        springBootLauncher.send({ msg: 'ip', ipAddress: `${ipAddress}` })
-    })
 })
 
 app.on('window-all-closed', () => {

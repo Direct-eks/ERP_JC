@@ -14,8 +14,8 @@ process.on('message', (message) => {
                 '-noverify',
                 '-Dspring.jmx.enabled=false',
                 '-jar',
-                path.resolve('C:\\ERP_JC\\backend-0.0.1-SNAPSHOT.jar'),
-                '--server.port=' + message.ipAddress
+                path.resolve('C:\\ERP_JC\\backend\\backend-0.0.1-SNAPSHOT.jar'),
+                '--server.address=' + message.ipAddress
             ]);
 
         let applicationStarted = false
@@ -39,7 +39,7 @@ process.on('message', (message) => {
     else if (message.msg === 'shutdown') {
         const options = {
             hostname: 'localhost',
-            port: 58080,
+            port: 80,
             path: '/actuator/shutdown',
             method: 'POST',
             headers: {}
