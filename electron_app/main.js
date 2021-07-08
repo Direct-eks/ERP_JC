@@ -13,7 +13,7 @@ const files = fs.readdirSync(path.resolve('C:\\ERP_JC'))
 for (const file of files) {
     if (file === 'db') databaseFilesExist = true
     if (file === 'fulljre11') jreFilesExist = true
-    if (file === 'backend-0.0.1-SNAPSHOT.jar') backendFilesExist = true
+    if (file === 'backend') backendFilesExist = true
 }
 
 if (!backendFilesExist || !jreFilesExist || !databaseFilesExist) {

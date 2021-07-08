@@ -1,5 +1,5 @@
 server:
-  port: 58080
+  port: 80
   shutdown: graceful
   address: localhost
   undertow:
