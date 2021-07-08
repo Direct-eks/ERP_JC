@@ -12,7 +12,7 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <PaymentLedger mode="in"></PaymentLedger>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +22,9 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Pay_Ledger",
+    components: {
+        PaymentLedger: () => import('~/components/QueryComponents/PaymentLedgerComponent')
+    },
     data() {
         return {
             mdiArrowLeft,

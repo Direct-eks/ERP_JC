@@ -12,7 +12,7 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <PaymentDetail mode="out"></PaymentDetail>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +22,9 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Rec_Detail",
+    components: {
+        PaymentDetail: () => import('~/components/QueryComponents/PaymentDetailComponent')
+    },
     data() {
         return {
             mdiArrowLeft,
