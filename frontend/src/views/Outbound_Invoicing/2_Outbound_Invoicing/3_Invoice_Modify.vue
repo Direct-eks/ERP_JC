@@ -7,7 +7,7 @@
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/outbound_invoicing">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
 
@@ -52,19 +52,22 @@ export default {
         QueryDisplayComponent: () => import('~/components/InvoiceComponents/InvoiceQueryDisplayComponent'),
         InvoiceComponent: () => import('~/components/InvoiceComponents/InvoiceComponent'),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 
             form: {
-                invoiceEntrySerial: null,
-                partnerCompanyID: -1, companyFullName: '',
+                invoiceEntrySerial: '',
+                partnerCompanyID: -1, companyAbbreviatedName: '',
                 invoiceType: '', invoiceNumber: '',
                 totalAmount: '', invoiceAmount: '',
                 invoiceIndication: '', isFollowUpIndication: 0,
-                remark: '', drawer: this.$store.getters.currentUser,
+                remark: '', drawer: '',
                 creationDate: '',
                 checkoutDate: '',
                 inOrOut: '',
@@ -72,23 +75,21 @@ export default {
                 invoiceNumberDate: '',
                 isModified: 0,
 
+                inboundInvoiceProducts: [],
                 outboundInvoiceProducts: [],
             },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm)
             }
         },
         tableClickAction(val) {
             this.currentTableRow = val
-            //create missing fields and calculate values
-            this.currentTableRow.outboundInvoiceProducts.forEach(item => {
-                item['totalWithoutTax'] = (item.quantity * item.unitPriceWithoutTax).toFixed(2)
-                item['totalTax'] = (item.quantity * item.unitPriceWithTax - item.totalWithoutTax).toFixed(2)
-            })
             this.form = Object.assign(this.form, this.currentTableRow)
         }
     }

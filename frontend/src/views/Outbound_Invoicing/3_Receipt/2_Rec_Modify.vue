@@ -7,7 +7,7 @@
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/outbound_invoicing">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
 
@@ -52,16 +52,20 @@ export default {
         QueryDisplayComponent: () => import('~/components/InvoiceComponents/PaymentQueryDisplayComponent'),
         PaymentComponent: () => import('~/components/InvoiceComponents/PaymentComponent'),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
             tab: null,
             currentTableRow: null,
 
             form: {
                 moneyEntrySerial: '',
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                companyAbbreviatedName: '', companyPhone: '',
+                companyFullName: '', companyRemark: '',
                 paymentIndication: '',
                 paymentMethod: '', paymentNumber: '', paymentAmount: '',
                 bankAccountID: -1, bankAccountName: '',
@@ -72,12 +76,14 @@ export default {
                 departmentID: -1, departmentName: '',
                 isModified: 0,
             },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm)
             }
         },
         tableClickAction(val) {

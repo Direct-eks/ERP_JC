@@ -55,6 +55,9 @@ export default {
         ),
         PaymentComponent: () => import('~/components/InvoiceComponents/PaymentComponent'),
     },
+    beforeMount() {
+        this.originalForm = JSON.parse(JSON.stringify(this.form))
+    },
     data() {
         return {
             mdiArrowLeft,
@@ -64,7 +67,8 @@ export default {
             form: {
                 moneyEntrySerial: '',
                 partnerCompanyID: -1,
-                companyAbbreviatedName: '', companyPhone: '', companyFullName: '',
+                companyAbbreviatedName: '', companyPhone: '',
+                companyFullName: '', companyRemark: '',
                 paymentIndication: '',
                 paymentMethod: '', paymentNumber: '', paymentAmount: '',
                 bankAccountID: -1, bankAccountName: '',
@@ -75,12 +79,14 @@ export default {
                 departmentID: -1, departmentName: '',
                 isModified: 0,
             },
+            originalForm: {}
         }
     },
     methods: {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
+                this.form = Object.assign(this.form, this.originalForm)
             }
         },
         tableClickAction(val) {
