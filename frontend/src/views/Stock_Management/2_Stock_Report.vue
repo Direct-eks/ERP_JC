@@ -169,7 +169,19 @@ export default {
 
         },
         exportExcel() {
-
+            this.$store.commit('setOverlay', true)
+            this.$getFileRequest(this.$api.exportStockReport).then(data => {
+                this.$store.commit('setOverlay', false)
+                let href = window.URL.createObjectURL(new Blob([data]));
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = href;
+                link.setAttribute('download',  '库存报表.xlsx')
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(href)
+            }).catch(()=>{})
         }
     }
 }

@@ -67,5 +67,6 @@ public class WarehouseStockController {
     public void exportStockReport(HttpServletResponse response) {
         logger.info("GET Reqeust to /warehouseStock/exportStockReport");
 
+        warehouseStockService.exportStockReport(response);
     }
 }

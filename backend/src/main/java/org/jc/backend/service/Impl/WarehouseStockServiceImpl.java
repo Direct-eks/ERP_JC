@@ -5,6 +5,9 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.dom4j.rule.Mode;
 import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.InboundProductO;
@@ -25,7 +28,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -464,6 +471,57 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
             throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void exportStockReport(HttpServletResponse response) {
+        try {
+            var list = warehouseStockMapper.queryWarehouseStocks("");
+
+            SXSSFWorkbook workbook = new SXSSFWorkbook();
+            Sheet sheet = workbook.createSheet("库存报表");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("所在分类");
+            header.createCell(1).setCellValue("代号");
+            header.createCell(2).setCellValue("厂牌");
+            header.createCell(3).setCellValue("单位");
+            header.createCell(4).setCellValue("库存数量");
+            header.createCell(5).setCellValue("库存单价");
+            header.createCell(6).setCellValue("库房名称");
+
+            int rowIndex = 1;
+            for (var item : list) {
+                Row row = sheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(item.getCategoryCode());
+                row.createCell(1).setCellValue(item.getCode());
+                row.createCell(2).setCellValue(item.getFactoryCode());
+                row.createCell(3).setCellValue(item.getUnitName());
+                row.createCell(4).setCellValue(item.getStockQuantity());
+                row.createCell(5).setCellValue(item.getStockUnitPrice());
+                row.createCell(6).setCellValue(item.getWarehouseName());
+            }
+
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setCharacterEncoding("utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" +
+                    URLEncoder.encode("库存报表.xlsx", StandardCharsets.UTF_8));
+
+            workbook.write(response.getOutputStream());
+            workbook.dispose();
+            workbook.close();
+            response.flushBuffer();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        } catch (IOException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("io failed");
         }
     }
 }

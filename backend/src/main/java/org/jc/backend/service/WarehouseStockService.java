@@ -7,6 +7,7 @@ import org.jc.backend.entity.StatO.StockStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.springframework.stereotype.Indexed;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Indexed
@@ -25,4 +26,5 @@ public interface WarehouseStockService {
 
     List<StockStatO> getWarehouseStockReport(int categoryID, int warehouseID,
                                              String factoryBrand, String code);
+    void exportStockReport(HttpServletResponse response);
 }
