@@ -8,7 +8,7 @@
         <result property="warehouseStockID" column="warehouse_stock_id"/>
         <result property="skuID" column="sku_id"/>
         <result property="warehouseID" column="warehouse_id"/>
-        <result property="warehouseName" column="warehouseName"/>
+        <result property="warehouseName" column="warehouse_name"/>
         <result property="stockQuantity" column="stock_quantity"/>
         <result property="stockUnitPriceWithoutTax" column="stock_unit_price_without_tax"/>
         <result property="remark" column="remark"/>
@@ -19,7 +19,7 @@
 
 
     <select id="queryWarehouseStocksBySku" resultMap="WarehouseStockResultMap">
-        select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouseName, stock_quantity,
+        select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouse_name, stock_quantity,
                stock_unit_price_without_tax, remark, storage_place_id,
                initial_stock_quantity, initial_stock_unit_price
         from w_warehouse_stock as ws join w_warehouse as w on ws.warehouse_id = w.warehouse_id
@@ -33,7 +33,7 @@
     </insert>
 
     <select id="queryWarehouseStockByWarehouseAndSku" resultMap="WarehouseStockResultMap">
-        select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouseName, stock_quantity,
+        select warehouse_stock_id, sku_id, ws.warehouse_id, w.name as warehouse_name, stock_quantity,
                stock_unit_price_without_tax, remark, storage_place_id,
                initial_stock_quantity, initial_stock_unit_price
         from w_warehouse_stock as ws join w_warehouse as w on ws.warehouse_id = w.warehouse_id
@@ -55,5 +55,27 @@
             stock_unit_price_without_tax = #{stockUnitPriceWithoutTax}
         where warehouse_stock_id = #{warehouseStockID}
     </update>
+
+    <resultMap id="statResultMap" type="org.jc.backend.entity.StatO.StockStatO">
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="code" column="code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="warehouseName" column="warehouse_name"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="stockUnitPrice" column="stock_unit_price_without_tax"/>
+    </resultMap>
+
+    <select id="queryWarehouseStocks" resultMap="statResultMap">
+        select warehouse_stock_id, ws.sku_id, s.category_code, s.factory_code, s.code,
+               s.unit_name, ws.warehouse_id, w.name as warehouse_name, ws.stock_quantity,
+               ws.stock_unit_price_without_tax, ws.remark, storage_place_id
+        from w_warehouse_stock as ws join sku_full as s on ws.sku_id = s.sku_id
+            join w_warehouse as w on ws.warehouse_id = w.warehouse_id
+        where s.tree_level like #{treeLevel}||'%'
+    </select>
 
 </mapper>

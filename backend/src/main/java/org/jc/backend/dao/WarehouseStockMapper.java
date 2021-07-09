@@ -1,6 +1,7 @@
 package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.jc.backend.entity.StatO.StockStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,5 @@ public interface WarehouseStockMapper {
     WarehouseStockO queryWarehouseStockByID(int warehouseStockID);
     void updateStockInfo(WarehouseStockO warehouseStockO);
 
+    List<StockStatO> queryWarehouseStocks(String treeLevel);
 }

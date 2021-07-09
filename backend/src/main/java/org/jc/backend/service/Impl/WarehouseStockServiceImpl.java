@@ -5,13 +5,16 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.dom4j.rule.Mode;
 import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.StockStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
+import org.jc.backend.service.ModelService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.MyUtils;
@@ -40,13 +43,16 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     private final WarehouseStockMapper warehouseStockMapper;
     private final InboundEntryService inboundEntryService;
     private final OutboundEntryService outboundEntryService;
+    private final ModelService modelService;
 
     public WarehouseStockServiceImpl(WarehouseStockMapper warehouseStockMapper,
                                      @Lazy InboundEntryService inboundEntryService,
-                                     @Lazy OutboundEntryService outboundEntryService) {
+                                     @Lazy OutboundEntryService outboundEntryService,
+                                     ModelService modelService) {
         this.warehouseStockMapper = warehouseStockMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -425,4 +431,39 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<StockStatO> getWarehouseStockReport(int categoryID, int warehouseID, String factoryBrand, String code) {
+        try {
+            var categories = modelService.getModelCategories();
+            String treeLevel = null;
+            for (var c : categories) {
+                if (c.getModelCategoryID() == categoryID) {
+                    treeLevel = c.getTreeLevel();
+                    break;
+                }
+            }
+            treeLevel = treeLevel == null ? "" : treeLevel;
+
+            var list = warehouseStockMapper.queryWarehouseStocks(treeLevel);
+            list.removeIf(item -> {
+                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
+                    return true;
+                }
+                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
+                    return true;
+                }
+                if (!code.isBlank() && !item.getCode().equals(code)) {
+                    return true;
+                }
+                return false;
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

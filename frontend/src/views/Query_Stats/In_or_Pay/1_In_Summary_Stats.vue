@@ -249,7 +249,7 @@ export default {
                 }).then(data => {
                     this.loading = false
                     this.tableData = data
-                })
+                }).catch(() => {})
             }
             else {
 

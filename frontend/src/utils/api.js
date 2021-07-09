@@ -167,7 +167,8 @@ const api = {
     /* ------ /warehouseStock ------*/
     warehouseStockBySKu: '/warehouseStock/getWarehouseStocksBySku/', // GET {id}
     productsByWarehouseStock: '/warehouseStock/getProductsByWarehouseStockID/', // GET {id}
-
+    warehouseStockReport: '/warehouseStock/getWarehouseStockReport', // GET
+    exportStockReport: '/warehouseStock/exportStockReport', // GET
 }
 
 export default api

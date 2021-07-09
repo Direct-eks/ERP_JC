@@ -3,6 +3,7 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.entity.StatO.EntryProductVO;
+import org.jc.backend.entity.StatO.StockStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Indexed
@@ -37,10 +39,33 @@ public class WarehouseStockController {
     }
 
     @ApiOperation(value = "", response = WarehouseStockO.class)
-    @GetMapping("getProductsByWarehouseStockID/{id}")
+    @GetMapping("/getProductsByWarehouseStockID/{id}")
     public List<EntryProductVO> getProductsByWarehouseStockID(@PathVariable("id") int id) {
         logger.info("GET Request to /warehouseStock/getProductsByWarehouseStockID, id: " + id);
 
         return warehouseStockService.getProductsByWarehouseStockID(id);
+    }
+
+    @ApiOperation(value = "", response = StockStatO.class)
+    @GetMapping("/getWarehouseStockReport")
+    public List<StockStatO> getWarehouseStockReport(
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("warehouseID") int warehouseID,
+            @RequestParam("factoryBrand") String factoryBrand,
+            @RequestParam("code") String code
+    ) {
+        logger.info("GET Request to /warehouseStock/getWarehouseStockReport, " +
+                "categoryID: {}, warehouseID: {}, factoryBrand: {}, code {}",
+                categoryID, warehouseID, factoryBrand, code);
+
+        return warehouseStockService.getWarehouseStockReport(categoryID, warehouseID,
+                factoryBrand, code);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @GetMapping("/exportStockReport")
+    public void exportStockReport(HttpServletResponse response) {
+        logger.info("GET Reqeust to /warehouseStock/exportStockReport");
+
     }
 }

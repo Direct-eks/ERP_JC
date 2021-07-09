@@ -3,6 +3,7 @@ package org.jc.backend.service;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
+import org.jc.backend.entity.StatO.StockStatO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.springframework.stereotype.Indexed;
 
@@ -22,4 +23,6 @@ public interface WarehouseStockService {
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
 
+    List<StockStatO> getWarehouseStockReport(int categoryID, int warehouseID,
+                                             String factoryBrand, String code);
 }

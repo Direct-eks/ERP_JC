@@ -5,6 +5,12 @@
         <v-card-title class="d-flex">
             库存报表
             <v-spacer></v-spacer>
+            <v-btn class="mr-3" color="accent" @click="searchByCategory">
+                分类统计
+            </v-btn>
+            <v-btn class="mr-3" color="primary" @click="exportExcel">
+                导出Excel
+            </v-btn>
             <v-btn color="accent"
                    to="/stock_management">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
@@ -79,12 +85,23 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
+                    <v-btn color="accent" @click="search">查询</v-btn>
+                </v-col>
+                <v-col cols="auto">
                     <v-btn color="warning" @click="clear">清空</v-btn>
                 </v-col>
             </v-row>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
-                <v-data-table></v-data-table>
+                <v-data-table :headers="headers"
+                              :items="tableData"
+                              item-key="warehouseStockID"
+                              :loading="loading"
+                              calculate-widths
+                              fixed-header
+                              locale="zh-cn"
+                              dense>
+                </v-data-table>
             </v-card>
         </v-card-text>
     </v-card>
@@ -106,6 +123,7 @@ export default {
     data() {
         return {
             mdiArrowLeft,
+            loading: false,
 
             treeSelection: {label: '', categoryID: -1, children: []},
             modelPanel: false,
@@ -114,6 +132,17 @@ export default {
             warehouseID: -1,
             warehouseOptions: [],
             factoryBrand: '',
+
+            headers: [
+                { text: '所在分类', value: 'categoryCode', width: '100px' },
+                { text: '代号', value: 'code', width: '180px' },
+                { text: '厂牌', value: 'factoryCode', width: '65px' },
+                { text: '单位', value: 'unitName', width: '60px' },
+                { text: '库存数量', value: 'stockQuantity', width: '90px' },
+                { text: '库存单价', value: 'stockUnitPrice', width: '100px' },
+                { text: '库房名称', value: 'warehouseName', width: '100px' },
+            ],
+            tableData: [],
         }
     },
     methods: {
@@ -126,6 +155,22 @@ export default {
         treeSelectionAction(val) {
             this.treeSelection = val
         },
+        search() {
+            this.$getRequest(this.$api.warehouseStockReport, {
+                categoryID: this.treeSelection.categoryID,
+                warehouseID: this.warehouseID,
+                factoryBrand: this.factoryBrand,
+                code: this.code
+            }).then(data => {
+                this.tableData = data
+            }).catch(() => {})
+        },
+        searchByCategory() {
+
+        },
+        exportExcel() {
+
+        }
     }
 }
 </script>
