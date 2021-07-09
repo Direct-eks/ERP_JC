@@ -29,7 +29,10 @@ module.exports = {
                         options: {
                             'babelrc': false,
                             presets: ["@babel/preset-env"],
-                            plugins: ["@babel/plugin-syntax-dynamic-import"],
+                            plugins: [
+                                "@babel/plugin-syntax-dynamic-import",
+                                "@babel/plugin-transform-runtime"
+                            ],
                         }
                     }
                 ]
