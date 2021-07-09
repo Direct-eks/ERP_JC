@@ -405,16 +405,10 @@
                p.unit_price_with_tax, p.unit_price_without_tax
         from e_inbound_entry as e join e_inbound_product as p
             on e.inbound_entry_id = p.inbound_entry_id
-            inner join (
-                sku_full as s join (
-                    select m.model_id
-                    from w_model as m join w_model_category as c
-                                       on m.category_id = c.model_category_id
-                    where c.tree_level like #{treeLevel}||'%'
-                ) as model on s.model_id = model.model_id
-            ) on p.sku_id = s.sku_id
+            join sku_full as s
             join c_partner_company as c on e.partner_company_id = c.partner_company_id
             left join c_relevant_company as r on e.shipping_method_id = r.relevant_company_id
+        where s.tree_level like #{treeLevel}||'%'
     </select>
 
 </mapper>
