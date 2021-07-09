@@ -1,6 +1,6 @@
 # ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF
 Configuration:
-  status: DEBUG
+  status: INFO
   monitorInterval: 30
 
   Properties:
