@@ -7,6 +7,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
@@ -246,5 +247,32 @@ public class InboundEntryController {
         logger.info("GET Request to /inboundEntry/getNotYetInvoiceDetailByCompanyID, companyID: {}", companyID);
 
         return inboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
+    }
+
+    @ApiOperation(value = "", response = InboundSummaryO.class)
+    @GetMapping("/getInboundSummary")
+    public List<InboundSummaryO> getInboundSummary(
+            @RequestParam("type") String type,
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("factoryBrand") String factoryBrand,
+            @RequestParam("warehouseID") int warehouseID,
+            @RequestParam("departmentID") int departmentID
+    ) throws GlobalParamException {
+        logger.info("GET Request to /inboundEntry/getInboundSummary");
+
+        switch (type) {
+            case "购入":
+            case "出退":
+                break;
+            default: throw new GlobalParamException("invalid category");
+        }
+
+        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
+        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+
+        return inboundEntryService.getInboundSummary(type, startDate, endDate, categoryID,
+                factoryBrand, warehouseID, departmentID);
     }
 }

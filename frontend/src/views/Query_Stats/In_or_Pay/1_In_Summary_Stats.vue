@@ -55,7 +55,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn color="primary" @click="search">查询一</v-btn>
+                    <v-btn color="primary" @click="search" :loading="loading">查询一</v-btn>
                 </v-col>
                 <v-col cols="auto">
                     <v-btn color="primary" @click="search2">查询二</v-btn>
@@ -136,7 +136,14 @@
             </v-row>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
-                <v-data-table></v-data-table>
+                <v-data-table :headers="headers"
+                              :items="tableData"
+                              :loading="loading"
+                              calculate-widths
+                              fixed-header
+                              locale="zh-cn"
+                              dense>
+                </v-data-table>
             </v-card>
         </v-card-text>
     </v-card>
@@ -164,6 +171,7 @@ export default {
     data() {
         return {
             mdiArrowLeft,
+            loading: false,
 
             dateRange: [
                 new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
@@ -189,6 +197,19 @@ export default {
             warehouseOptions: [],
             departmentID: -1,
             departmentOptions: [],
+
+            headers: [
+                { text: '单据序号', value: 'entryID', width: '140px' },
+                { text: '购入单位', value: 'companyAbbreviatedName', width: '200px' },
+                { text: '代号', value: 'code', width: '180px' },
+                { text: '厂牌', value: 'factoryCode', width: '65px' },
+                { text: '入库数量', value: 'quantity', width: '90px' },
+                { text: '单位', value: 'unitName', width: '60px' },
+                { text: '无税单价', value: 'unitPriceWithoutTax', width: '100px' },
+                { text: '含税单价', value: 'unitPriceWithTax', width: '100px' },
+                { text: '含税金额', value: 'totalPrice', width: '100px' },
+            ],
+            tableData: [],
         }
     },
     methods: {
@@ -215,7 +236,24 @@ export default {
             this.treeSelection = val
         },
         search() {
+            this.loading = true
+            if (this.category === '购入' || this.category === '出退') {
+                this.$getRequest(this.$api.inboundSummary, {
+                    type: this.category,
+                    startDate: this.dateRange[0],
+                    endDate: this.dateRange[1],
+                    categoryID: this.treeSelection.categoryID,
+                    factoryBrand: this.factoryBrand,
+                    warehouseID: this.warehouseID,
+                    departmentID: this.departmentID
+                }).then(data => {
+                    this.loading = false
+                    this.tableData = data
+                })
+            }
+            else {
 
+            }
         },
         search2() {
 

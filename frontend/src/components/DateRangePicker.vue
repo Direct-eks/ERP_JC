@@ -79,6 +79,13 @@ export default {
                     ],
                     name: '最近90天'
                 },
+                {
+                    range: [
+                        new Date(new Date().setFullYear(new Date().getFullYear() - 1)).format("yyyy-MM-dd").substr(0,10),
+                        new Date().format("yyyy-MM-dd").substr(0,10)
+                    ],
+                    name: '最近1年'
+                },
             ],
         }
     },

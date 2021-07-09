@@ -62,6 +62,7 @@ const api = {
     inboundNotYetCheckoutDetail: '/inboundEntry/getNotYetCheckoutDetailByCompanyID/', // GET companyID
     inboundNotYetInvoiceSummary: '/inboundEntry/getNotYetInvoiceSummary', // GET
     inboundNotYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
+    inboundSummary: '/inboundEntry/getInboundSummary', // GET
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT

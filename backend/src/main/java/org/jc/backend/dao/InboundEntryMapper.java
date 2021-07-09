@@ -3,6 +3,7 @@ package org.jc.backend.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.springframework.stereotype.Indexed;
@@ -61,4 +62,6 @@ public interface InboundEntryMapper {
     // for stock price calculation
     List<ProductStatO> queryAllInboundProductsByWarehouseStockID(int id);
     void updateProductStockInfo(ProductStatO productStatO);
+
+    List<InboundSummaryO> queryInboundSummary(String treeLevel);
 }

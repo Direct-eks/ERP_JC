@@ -1,6 +1,5 @@
 package org.jc.backend.service.Impl;
 
-import org.apache.batik.dom.svg12.Global;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InboundEntryMapper;
@@ -8,12 +7,14 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.InboundEntryService;
+import org.jc.backend.service.ModelService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -37,15 +38,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     private final ModificationMapper modificationMapper;
     private final WarehouseStockService warehouseStockService;
     private final OutboundEntryService outboundEntryService;
+    private final ModelService modelService;
 
     public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper,
                                    ModificationMapper modificationMapper,
                                    WarehouseStockService warehouseStockService,
-                                   OutboundEntryService outboundEntryService) {
+                                   OutboundEntryService outboundEntryService,
+                                   ModelService modelService) {
         this.inboundEntryMapper = inboundEntryMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockService = warehouseStockService;
         this.outboundEntryService = outboundEntryService;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -644,6 +648,55 @@ public class InboundEntryServiceImpl implements InboundEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<InboundSummaryO> getInboundSummary(String type, Date startDate, Date endDate, int categoryID,
+                                                   String factoryBrand, int warehouseID, int departmentID) {
+        try {
+            var categories = modelService.getModelCategories();
+            String treeLevel = null;
+            for (var c : categories) {
+                if (c.getModelCategoryID() == categoryID) {
+                    treeLevel = c.getTreeLevel();
+                    break;
+                }
+            }
+            treeLevel = treeLevel == null ? "" : treeLevel;
+
+            var list = inboundEntryMapper.queryInboundSummary(treeLevel);
+            list.removeIf(item -> {
+                if (!item.getEntryID().startsWith(type)) {
+                    return true;
+                }
+                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
+                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                    return true;
+                }
+                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
+                    return true;
+                }
+                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
+                    return true;
+                }
+                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
+                    return true;
+                }
+                return false;
+            });
+            list.forEach(item -> {
+                BigDecimal unitPriceWithTax = new BigDecimal(item.getUnitPriceWithTax());
+                BigDecimal totalPrice = unitPriceWithTax.multiply(new BigDecimal(item.getQuantity()));
+                item.setTotalPrice(totalPrice.toPlainString());
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

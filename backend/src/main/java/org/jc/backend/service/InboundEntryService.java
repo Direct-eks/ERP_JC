@@ -3,6 +3,7 @@ package org.jc.backend.service;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
@@ -47,4 +48,7 @@ public interface InboundEntryService {
     // for stock price calculation
     List<ProductStatO> getAllInboundProducts(int id);
     void updateInboundProduct(ProductStatO productO);
+
+    List<InboundSummaryO> getInboundSummary(String type, Date startDate, Date endDate, int categoryID,
+                                            String factoryBrand, int warehouseID, int departmentID);
 }
