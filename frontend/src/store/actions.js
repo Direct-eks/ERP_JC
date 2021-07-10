@@ -30,7 +30,16 @@ const actions = {
                 rates.push(Number(option))
             }
             context.commit('modifyTaxRateOptions', rates)
-        })
+        }).catch(() => {})
+    },
+    /* ------ /bankAccount ------*/
+    getBankAccounts(context) {
+        if (context.state.allBankAccounts.length !== 0) {
+            return
+        }
+        VueMain.$getRequest(VueMain.$api.allBankAccounts).then(data => {
+            context.commit('modifyBankAccounts', data)
+        }).catch(() => {})
     },
     /* ------- company data -------*/
     getCompanyList(context) {
@@ -39,7 +48,7 @@ const actions = {
         }
         VueMain.$getRequest(VueMain.$api.companyAreas).then(data => {
             context.commit('modifyCompanyList', data)
-        })
+        }).catch(() => {})
     },
     /* ------- relative company data -------*/
     getRelevantCompanyCategoryList(context) {
@@ -48,7 +57,7 @@ const actions = {
         }
         VueMain.$getRequest(VueMain.$api.relevantCompanyCategories).then(data => {
             context.commit('modifyRelevantCompanyList', data)
-        })
+        }).catch(() => {})
     },
     /* ------- all supplier data -------*/
     getAllSuppliers(context) {
@@ -57,7 +66,7 @@ const actions = {
         }
         VueMain.$getRequest(VueMain.$api.allSuppliers).then(data => {
             context.commit('modifySupplierData', data)
-        })
+        }).catch(() => {})
     },
     /* ------- model data -------*/
     getModelCategoryList(context) {
@@ -66,7 +75,27 @@ const actions = {
         }
         VueMain.$getRequest(VueMain.$api.modelCategories).then(data => {
             context.commit('modifyModelList', data)
-        })
+        }).catch(() => {})
+    },
+
+    /* ------- factory brand data -------*/
+    getFactoryBrands(context) {
+        if (context.state.factoryBrands.length !== 0) {
+            return
+        }
+        VueMain.$getRequest(VueMain.$api.allFactoryBrands).then(data => {
+            context.commit('modifyFactoryBrands', data)
+
+        }).catch(() => {})
+    },
+    /* ------- measurement unit data -------*/
+    getMeasurementUnits(context) {
+        if (context.state.measurementUnits.length !== 0) {
+            return
+        }
+        VueMain.$getRequest(VueMain.$api.allUnits).then(data => {
+            context.commit('modifyMeasurementUnits', data)
+        }).catch(() => {})
     }
 }
 

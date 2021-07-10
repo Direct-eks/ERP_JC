@@ -38,6 +38,17 @@ const mutations = {
     modifyTaxRateOptions(state, payload) {
         state.taxRateOptions = payload
     },
+    /* ------ /bankAccount ------*/
+    modifyBankAccounts(state, payload) {
+        state.allBankAccounts = payload
+        const arr = []
+        for (const item of payload) {
+            if (item.isVisible === 1) {
+                arr.push(item)
+            }
+        }
+        state.visibleBankAccounts = arr
+    },
     /*----------- company data ------------*/
     modifyCompanyList(state, list) {
         state.companyCategoryList = list
@@ -76,6 +87,17 @@ const mutations = {
         state.modelCategoryList = null
         state.models.clear()
     },
+    /* ------- sku data -------*/
+
+    /* ------- factory brand data -------*/
+    modifyFactoryBrands(state, payload) {
+        state.factoryBrands = payload
+    },
+    /* ------- measurement unit data -------*/
+    modifyMeasurementUnits(state, payload) {
+        state.measurementUnits = payload
+    }
+
 }
 
 export default mutations

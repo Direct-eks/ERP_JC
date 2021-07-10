@@ -14,6 +14,7 @@ const api = {
     deleteUser: '/user/deleteUser', // DELETE
 
     /* ------ /bankAccount ------*/
+    allBankAccounts: '/bankAccount/getAllAccounts', // GET
     visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET
 
     /* ------ /checkoutEntry ------*/

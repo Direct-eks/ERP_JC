@@ -23,6 +23,9 @@ const state = {
         { value: '普票', label: '普票' },
         { value: '收据', label: '收据' }
     ],
+    /* ------ /bankAccount ------*/
+    allBankAccounts: [],
+    visibleBankAccounts: [],
     /* ------- company data -------*/
     companyCategoryList: [], // stores the tree structure of company category
     companies: new Map(), // key: categoryID, value: companies
@@ -35,11 +38,11 @@ const state = {
     modelCategoryList: [],
     models: new Map(), // key: categoryID, value: companies
     /* ------- sku data -------*/
-
+    skus: new Map(), // key modelID, value: skus
     /* ------- factory brand data -------*/
-
+    factoryBrands: [],
     /* ------- measurement unit data -------*/
-
+    measurementUnits: []
 }
 
 export default state
