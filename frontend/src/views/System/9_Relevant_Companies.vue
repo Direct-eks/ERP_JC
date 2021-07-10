@@ -79,30 +79,12 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "RelevantCompanies",
     beforeMount() {
-        const creatTree = (data => {
-            const tree = [];
-            data.forEach(item => {
-                tree.push({label: item.name, children: [], categoryID: item.categoryID})
-            })
-            return tree
-        })
-
-        let result = this.$store.getters.relevantCompanyCategoryList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.relevantCompanyCategories).then((data) => {
-            console.log('received', data)
-            this.treeData = creatTree(data)
-            this.$store.commit('modifyRelevantCompanyList', this.treeData)
-        }).catch(() => {})
+        this.$store.dispatch('getRelevantCompanyCategoryList')
     },
     data() {
         return {
             mdiArrowLeft,
 
-            treeData: [],
             treeSelection: [],
             tableHeaders: [
                 { text: '单位简称', value: 'abbreviatedName', width: '120px' },
@@ -119,6 +101,12 @@ export default {
             name: '',
             tableData: [],
             currentRow: []
+        }
+    },
+    computed: {
+        treeData() {
+            const data = this.$store.state.relevantCompanyCategoryList
+            return this.$createOneLevelTree(data)
         }
     },
     methods: {

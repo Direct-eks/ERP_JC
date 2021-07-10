@@ -149,11 +149,7 @@ export default {
         this.canUpdate = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:update")
         this.canRemove = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:remove")
 
-        this.$getRequest(this.$api.companyAreas).then((data) => {
-            this.tableData = data
-            this.treeData = this.$createTree(data, false)
-            this.$store.commit('modifyCompanyList', this.treeData)
-        }).catch(() => {})
+        this.$store.dispatch('getCompanyList')
     },
     data() {
         return {
@@ -166,9 +162,7 @@ export default {
             newName: '',
             newRemark: '',
 
-            treeData: [],
             treeSelection: [],
-
             headers: [
                 { text: '区划名称', value: 'name', width: '160px' },
                 { text: '所在层次', value: 'treeLevel', width: '100px' },
@@ -177,6 +171,12 @@ export default {
             tableData: [],
             currRow: [],
             newItemIndex: -1
+        }
+    },
+    computed: {
+        treeData() {
+            this.tableData = this.$store.state.companyCategoryList
+            return this.$createTree(this.tableData, false)
         }
     },
     methods: {

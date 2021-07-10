@@ -23,6 +23,9 @@
 <script>
 export default {
     name: "ModelTree",
+    beforeMount() {
+        this.$store.dispatch('getModelCategoryList')
+    },
     props: {
         showSelect: {
             type: Boolean,
@@ -50,21 +53,15 @@ export default {
             default: '230px'
         },
     },
-    beforeMount() {
-        let result = this.$store.getters.productList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
-        }).catch(() => {})
-    },
     data() {
         return {
-            treeData: [],
             treeSelection: [],
+        }
+    },
+    computed: {
+        treeData() {
+            const data = this.$store.state.modelCategoryList
+            return this.$createTree(data, true)
         }
     },
     methods: {

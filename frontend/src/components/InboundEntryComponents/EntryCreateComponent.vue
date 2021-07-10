@@ -485,35 +485,10 @@ export default {
 
         this.editPermitted = this.$store.getters.currentUserIsPermitted('inboundEntry:Creation:changePrice')
 
-        this.$getRequest(this.$api.warehouseOptions).then((data) => {
-            this.warehouseOptions = data
-            for (const item of this.warehouseOptions) {
-                if (item.isInDefault === 1) {
-                    this.form.warehouseID = item.warehouseID
-                    break
-                }
-            }
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.departmentOptions).then((data) => {
-            this.departmentOptions = data
-            for (const item of this.departmentOptions) {
-                if (item.isDefault === 1) {
-                    this.form.departmentID = item.departmentID
-                    break
-                }
-            }
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.allTaxRates).then((data) => {
-            for (const option of data) {
-                this.taxRateOptions.push(Number(option))
-            }
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.allSuppliers).then(data => {
-            this.suppliers = data
-        })
+        this.$store.dispatch('getWarehouseOptions')
+        this.$store.dispatch('getDepartmentOptions')
+        this.$store.dispatch('getTaxRateOptions')
+        this.$store.dispatch('getAllSuppliers')
     },
     data() {
         return {
@@ -556,15 +531,6 @@ export default {
                 shippingCost: [v => (this.form.shippingCostType !== '无' ? v !== '' : true) || '请填写运费' ]
             },
 
-            warehouseOptions: [],
-            departmentOptions: [],
-            taxRateOptions: [],
-            invoiceTypeOptions: [
-                { value: '增值税票', label: '增值税票' },
-                { value: '普票', label: '普票' },
-                { value: '收据', label: '收据' }
-            ],
-
             tableHeaders: [
                 { text: '代号', value: 'code', width: '180px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px' },
@@ -594,6 +560,44 @@ export default {
             sumWithTax: '0',
             sumWithoutTax: '0',
         }
+    },
+    computed: {
+        enableEditing() {
+            // 如果是资源单位，则只有拥有改价权限才能修改价格
+            for (const supplier of this.suppliers) {
+                if (supplier.supplierID === this.form.partnerCompanyID) {
+                    return this.editPermitted
+                }
+            }
+            // 如果不是资源单位，所有人都可改价
+            return true
+        },
+        warehouseOptions() {
+            const options = this.$store.state.warehouseOptions
+            for (const item of options) {
+                if (item.isInDefault === 1) {
+                    this.form.warehouseID = item.warehouseID
+                    break
+                }
+            }
+            return options
+        },
+        departmentOptions() {
+            const options = this.$store.state.departmentOptions
+            for (const item of options) {
+                if (item.isDefault === 1) {
+                    this.form.departmentID = item.departmentID
+                    break
+                }
+            }
+            return options
+        },
+        taxRateOptions() {
+            return this.$store.state.taxRateOptions
+        },
+        invoiceTypeOptions() {
+            return this.$store.state.invoiceTypeOptions
+        },
     },
     methods: {
         /* ------- simple name/phone company search -------*/
@@ -804,18 +808,6 @@ export default {
             this.submitPopup3 = false
         }
     },
-    computed: {
-        enableEditing() {
-            // 如果是资源单位，则只有拥有改价权限才能修改价格
-            for (const supplier of this.suppliers) {
-                if (supplier.supplierID === this.form.partnerCompanyID) {
-                    return this.editPermitted
-                }
-            }
-            // 如果不是资源单位，所有人都可改价
-            return true
-        }
-    }
 }
 </script>
 

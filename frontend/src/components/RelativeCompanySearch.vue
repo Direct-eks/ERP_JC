@@ -14,7 +14,7 @@
                 选择
             </v-btn>
             <v-btn icon @click="close">
-                <v-icon>{{mdiClosePath}}</v-icon>
+                <v-icon>{{ mdiClose }}</v-icon>
             </v-btn>
         </v-card-title>
 
@@ -61,11 +61,13 @@ import {mdiClose} from '@mdi/js'
 
 export default {
     name: "RelativeCompanySearch",
+    beforeMount() {
+        this.$store.dispatch('getRelevantCompanyCategoryList')
+    },
     data() {
         return {
-            mdiClosePath: mdiClose,
+            mdiClose,
 
-            treeData: [],
             tableHeaders: [
                 {text: '单位简称', value: 'abbreviatedName', width: '120px'},
                 {text: '电话', value: 'phone', width: '120px'},
@@ -79,17 +81,11 @@ export default {
             currentRow: []
         }
     },
-    beforeMount() {
-        let result = this.$store.getters.relevantCompanyCategoryList
-        if (result) {
-            this.treeData = result
-            return
+    computed: {
+        treeData() {
+            const data = this.$store.state.relevantCompanyCategoryList
+            return this.$createOneLevelTree(data)
         }
-        this.$getRequest(this.$api.relevantCompanyCategories).then((data) => {
-            console.log('received', data)
-            this.treeData = this.$createOneLevelTree(data)
-            this.$store.commit('modifyRelevantCompanyList', this.treeData)
-        }).catch(() => {})
     },
     methods: {
         close() {
@@ -112,7 +108,6 @@ export default {
                 }
                 this.$getRequest(this.$api.relevantCompaniesByCategory +
                     encodeURI(val.categoryID)).then((data) => {
-                    console.log('received', data)
                     this.tableData = data
                     this.$store.commit('modifyRelevantCompanies', {key: val.categoryID, value: data})
                 }).catch(() => {})

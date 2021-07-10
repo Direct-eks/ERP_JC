@@ -24,15 +24,7 @@
 export default {
     name: "CompanyTree",
     beforeMount() {
-        const result = this.$store.getters.companyCategoryList
-        if (result) {
-            this.treeData = result
-            return
-        }
-        this.$getRequest(this.$api.companyAreas).then((data) => {
-            this.treeData = this.$createTree(data, false)
-            this.$store.commit('modifyCompanyList', this.treeData)
-        }).catch(() => {})
+        this.$store.dispatch('getCompanyList')
     },
     props: {
         showSelect: {
@@ -58,9 +50,14 @@ export default {
     },
     data() {
         return {
-            treeData: [],
             treeSelection: [],
             treeSelectedLevel: '',
+        }
+    },
+    computed: {
+        treeData() {
+            const data = this.$store.state.companyCategoryList
+            return this.$createTree(data, false)
         }
     },
     methods: {
