@@ -415,19 +415,8 @@ export default {
             break
         }
 
-        this.$getRequest(this.$api.departmentOptions).then((data) => {
-            this.departmentOptions = data
-            for (const item of this.departmentOptions) {
-                if (item.isDefault === 1) {
-                    this.form.departmentID = item.departmentID
-                    break
-                }
-            }
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
-            this.bankAccountOptions = data
-        }).catch(() => {})
+        this.$store.dispatch('getDepartmentOptions')
+        this.$store.dispatch('getBankAccounts')
     },
     data() {
         return {
@@ -487,13 +476,6 @@ export default {
                 { value: '汇票', label: '汇票' },
                 { value: '其他', label: '其他' },
             ],
-            invoiceTypeOptions: [
-                { value: '增值税票', label: '增值税票' },
-                { value: '普票', label: '普票' },
-                { value: '收据', label: '收据' }
-            ],
-            bankAccountOptions: [],
-            departmentOptions: [],
 
             tableHeaders: [
                 {
@@ -523,6 +505,24 @@ export default {
             tax: '0',
             sumWithTax: '0',
             sumWithoutTax: '0',
+        }
+    },
+    computed: {
+        invoiceTypeOptions() {
+            return this.$store.state.invoiceTypeOptions
+        },
+        bankAccountOptions() {
+            return this.$store.state.visibleBankAccounts
+        },
+        departmentOptions() {
+            const options = this.$store.state.departmentOptions
+            for (const item of options) {
+                if (item.isDefault === 1) {
+                    this.form.departmentID = item.departmentID
+                    break
+                }
+            }
+            return options
         }
     },
     methods: {

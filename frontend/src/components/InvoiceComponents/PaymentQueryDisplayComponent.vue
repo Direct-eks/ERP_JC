@@ -128,9 +128,7 @@ export default {
             break
         }
 
-        this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
-            this.bankAccountOptions = data
-        }).catch(() => {})
+        this.$store.dispatch('getBankAccounts')
     },
     data() {
         return {
@@ -147,7 +145,6 @@ export default {
 
             bankAccountID: 0, //because default is -1
             bankAccountName: '',
-            bankAccountOptions: [],
 
             paymentMethod: '',
             paymentMethodOptions: [
@@ -180,6 +177,11 @@ export default {
                 { text: '修改明细', value: 'recordContent', width: '' }
             ],
             modificationRecords: []
+        }
+    },
+    computed: {
+        bankAccountOptions() {
+            return this.$store.state.visibleBankAccounts
         }
     },
     methods: {

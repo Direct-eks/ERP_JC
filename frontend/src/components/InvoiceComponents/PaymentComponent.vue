@@ -309,19 +309,8 @@ export default {
             break
         }
 
-        this.$getRequest(this.$api.departmentOptions).then((data) => {
-            this.departmentOptions = data
-            for (const item of this.departmentOptions) {
-                if (item.isDefault === 1) {
-                    this.form.departmentID = item.departmentID
-                    break
-                }
-            }
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.visibleBankAccounts).then((data) => {
-            this.bankAccountOptions = data
-        }).catch(() => {})
+        this.$store.dispatch('getDepartmentOptions')
+        this.$store.dispatch('getBankAccounts')
     },
     data() {
         return {
@@ -372,8 +361,21 @@ export default {
                 { value: '正常', label: '正常' },
                 { value: '退款', label: '退款' }
             ],
-            bankAccountOptions: [],
-            departmentOptions: [],
+        }
+    },
+    computed: {
+        bankAccountOptions() {
+            return this.$store.state.visibleBankAccounts
+        },
+        departmentOptions() {
+            const options = this.$store.state.departmentOptions
+            for (const item of options) {
+                if (item.isDefault === 1) {
+                    this.form.departmentID = item.departmentID
+                    break
+                }
+            }
+            return options
         }
     },
     methods: {
