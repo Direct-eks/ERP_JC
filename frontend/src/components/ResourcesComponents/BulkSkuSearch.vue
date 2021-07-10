@@ -68,9 +68,7 @@ export default {
         ModelTree: () => import('~/components/ModelTree'),
     },
     beforeMount() {
-        this.$getRequest(this.$api.allFactoryBrands).then(data => {
-            this.brandTableData = data
-        }).catch(() => {})
+        this.$store.dispatch('getFactoryBrands')
     },
     props: {
         supplierID: { type: Number, required: true, default: -1 }
@@ -87,9 +85,13 @@ export default {
                 { text: '厂牌代号', value: 'code', width: '90px' },
                 { text: '描述', value: 'remark', width: '180px' },
             ],
-            brandTableData: [],
             brandTableCurrentRow: [],
             brandSelected: '',
+        }
+    },
+    computed: {
+        brandTableData() {
+            return this.$store.state.factoryBrands
         }
     },
     methods: {

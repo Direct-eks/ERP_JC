@@ -162,13 +162,14 @@ import { mdiArrowLeft } from "@mdi/js";
 
 export default {
     name: "ProductCategories",
+    created() {
+        this.$store.watch(state => state.modelCategoryList, () => {
+            this.tableData = JSON.parse(JSON.stringify(this.$store.state.modelCategoryList))
+            this.treeData = this.$createTree(this.tableData, true)
+        })
+    },
     beforeMount() {
-
-        this.$getRequest(this.$api.modelCategories).then((data) => {
-            this.tableData = data
-            this.treeData = this.$createTree(data, true)
-            this.$store.commit('modifyModelList', this.treeData)
-        }).catch(() => {})
+        this.$store.dispatch('getModelCategoryList')
     },
     data() {
         return {
@@ -179,7 +180,7 @@ export default {
             newName: '',
             newRemark: '',
 
-            treeData: [],
+            treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.modelCategoryList)), true),
             treeSelection: [],
 
             headers: [
@@ -189,7 +190,7 @@ export default {
                 { text: '备注', value: 'remark', width: '120px' },
                 { text: '所在层次', value: 'treeLevel', width: '110px' },
             ],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.modelCategoryList)),
             currRow: [],
             newItemIndex: -1
         }

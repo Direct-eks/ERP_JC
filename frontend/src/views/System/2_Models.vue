@@ -223,16 +223,8 @@ export default {
         this.canUpdate = this.$store.getters.currentUserIsPermitted("system:models:update")
         this.canRemove = this.$store.getters.currentUserIsPermitted("system:models:remove")
 
-        this.$getRequest(this.$api.allUnits).then(data => {
-            this.units = data
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.allFactoryBrands).then(data => {
-            this.brandTableData = data
-        }).catch(() => {})
-
-        // clear cached model data
-        this.$store.commit('clearModelData')
+        this.$store.dispatch('getMeasurementUnits')
+        this.$store.dispatch('getFactoryBrands')
     },
     data() {
         return {
@@ -250,7 +242,6 @@ export default {
             changeCategoryPanel: false,
             changeCategorySelection: {label: '', categoryID: -1, children: []},
 
-            treeData: [],
             treeLevelObject: {label: '', categoryID: -1, children: []},
 
             modelTableHeaders: [
@@ -266,15 +257,20 @@ export default {
             modelSearchName: '',
             modelSearchMethod: 'prefix',
 
-            units: [],
-
             brandTableHeaders: [
                 { text: '厂牌代号', value: 'code', width: '90px' },
             ],
-            brandTableData: [],
             brandTableCurrentRow: [],
 
             enableModification: true,
+        }
+    },
+    computed: {
+        units() {
+            return this.$store.state.measurementUnits
+        },
+        brandTableData() {
+            return this.$store.state.factoryBrands
         }
     },
     methods: {

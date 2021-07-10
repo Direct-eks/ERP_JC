@@ -85,7 +85,6 @@ const actions = {
         }
         VueMain.$getRequest(VueMain.$api.allFactoryBrands).then(data => {
             context.commit('modifyFactoryBrands', data)
-
         }).catch(() => {})
     },
     /* ------- measurement unit data -------*/

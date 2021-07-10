@@ -234,10 +234,7 @@ export default {
         SupplierResourceQuery: () => import("~/components/SupplierResourceQuery")
     },
     beforeMount() {
-        this.$getRequest(this.$api.allFactoryBrands).then((data) => {
-            console.log('received', data)
-            this.factoryBrandTableData = data
-        }).catch(() => {})
+        this.$store.dispatch('getFactoryBrands')
     },
     data() {
         return {
@@ -251,7 +248,6 @@ export default {
                 { text: '厂牌代号', value: 'code', width: '80px' },
                 { text: '厂牌描述', value: 'remark', width: '100px' },
             ],
-            factoryBrandTableData: [],
             factoryBrandCurrentRow: [],
             factoryBrandSelected: '',
 
@@ -295,6 +291,11 @@ export default {
                 '含税厂价',
                 '无税结算价'
             ]
+        }
+    },
+    computed: {
+        factoryBrandTableData() {
+            return this.$store.state.factoryBrands
         }
     },
     methods: {

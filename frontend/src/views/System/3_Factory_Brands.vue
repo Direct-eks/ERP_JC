@@ -81,11 +81,14 @@ import { mdiArrowLeft, mdiChevronUp, mdiChevronDown } from "@mdi/js";
 
 export default {
     name: "FactoryBrands",
+    created() {
+        this.$store.watch(state => state.factoryBrands, () => {
+            const data = this.$store.state.factoryBrands
+            this.tableData = JSON.parse(JSON.stringify(data))
+        })
+    },
     beforeMount() {
-        this.$getRequest(this.$api.allFactoryBrands).then(data => {
-            console.log('received', data)
-            this.tableData = data
-        }).catch(() => {})
+        this.$store.dispatch('getFactoryBrands')
     },
     data() {
         return {
@@ -99,7 +102,7 @@ export default {
                 { text: '描述', value: 'remark', width: '180px' },
             ],
             currentRow: [],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.factoryBrands)),
             newRowIndex: -1,
 
             isDefaultOptions: [
@@ -153,10 +156,12 @@ export default {
         saveChanges() {
             this.$postRequest(this.$api.updateFactoryBrands, {
                 elements: this.tableData
-            }).then(data => {
+            }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('modifyFactoryBrands', this.tableData)
                 this.$router.replace('/system')
             }).catch(() => {})
         }

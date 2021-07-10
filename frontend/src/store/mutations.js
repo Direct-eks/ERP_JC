@@ -57,7 +57,7 @@ const mutations = {
         state.companies.set(pair.key, pair.value)
     },
     clearCompanyData(state) {
-        state.companyCategoryList = null
+        state.companyCategoryList = []
         state.companies.clear()
     },
 
@@ -69,7 +69,7 @@ const mutations = {
         state.relevantCompanies.set(pair.key, pair.value)
     },
     clearRelevantCompanyData(state) {
-        state.relevantCompanyCategoryList = null
+        state.relevantCompanyCategoryList = []
         state.relevantCompanies.clear()
     },
     /* ------- all supplier data -------*/
@@ -84,7 +84,7 @@ const mutations = {
         state.models.set(pair.key, pair.value)
     },
     clearModelData(state) {
-        state.modelCategoryList = null
+        state.modelCategoryList = []
         state.models.clear()
     },
     /* ------- sku data -------*/
