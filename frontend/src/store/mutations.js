@@ -93,6 +93,9 @@ const mutations = {
     modifyFactoryBrands(state, payload) {
         state.factoryBrands = payload
     },
+    clearFactoryBrands(state) {
+        state.factoryBrands = []
+    },
     /* ------- measurement unit data -------*/
     modifyMeasurementUnits(state, payload) {
         state.measurementUnits = payload

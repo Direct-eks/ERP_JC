@@ -262,6 +262,7 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+                this.$store.commit('clearModelData')
                 this.$router.replace('/system')
             }).catch(() => {})
         }

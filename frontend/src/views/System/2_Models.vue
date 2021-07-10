@@ -394,7 +394,9 @@ export default {
                     message: '操作成功', color: 'success'
                 })
                 this.$store.commit('clearModelData')
-                this.modelTableData.splice(this.modelTableData.indexOf(this.modelTableCurrentRow[0]), 1)
+                this.$store.dispatch('getModelCategoryList')
+                this.modelTableData = []
+                this.modelTableCurrentRow = []
             }).catch(() => {})
         },
         changeCategorySelect(data) {
@@ -421,13 +423,14 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('clearModelData')
                 this.$router.replace('/system')
             }).catch(() => {})
         },
         exportExcel() {
             this.$store.commit('setOverlay', true)
             this.$getFileRequest(this.$api.exportModels).then(data => {
-                console.log("received!")
                 this.$store.commit('setOverlay', false)
                 let href = window.URL.createObjectURL(new Blob([data]));
                 let link = document.createElement('a');

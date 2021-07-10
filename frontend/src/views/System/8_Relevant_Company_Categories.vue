@@ -27,7 +27,6 @@
                                 @update:active="treeSelect"
                                 @update:open="treeSelect"
                                 color="primary"
-                                open-on-click
                                 dense>
                     </v-treeview>
                 </v-responsive>
@@ -142,12 +141,15 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "RelevantCompanyCategories",
-    beforeMount() {
-        this.$getRequest(this.$api.relevantCompanyCategories).then((data) => {
-            this.tableData = data
+    created() {
+        this.$store.watch(state => state.relevantCompanyCategoryList, () => {
+            const data = this.$store.state.relevantCompanyCategoryList
+            this.tableData = JSON.parse(JSON.stringify(data))
             this.treeData = this.$createOneLevelTree(data)
-            this.$store.commit('modifyRelevantCompanyList', this.treeData)
-        }).catch(() => {})
+        })
+    },
+    beforeMount() {
+        this.$store.dispatch('getRelevantCompanyCategoryList')
     },
     data() {
         return {
@@ -157,14 +159,14 @@ export default {
             newName: '',
             newRemark: '',
 
-            treeData: [],
+            treeData: this.$createOneLevelTree(JSON.parse(JSON.stringify(this.$store.state.relevantCompanyCategoryList))),
             treeSelection: [],
 
             headers: [
                 { text: '区划名称', value: 'name', width: '160px' },
                 { text: '区划描述', value: 'remark', width: '200px' },
             ],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.relevantCompanyCategoryList)),
             currRow: [],
             newItemIndex: -1
         }
@@ -208,6 +210,8 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('clearRelevantCompanyData')
                 this.$router.replace("/system")
             }).catch(() => {})
         }

@@ -161,7 +161,7 @@ export default {
                     message: '保存成功', color: 'success'
                 })
 
-                this.$store.commit('modifyFactoryBrands', this.tableData)
+                this.$store.commit('clearFactoryBrands')
                 this.$router.replace('/system')
             }).catch(() => {})
         }

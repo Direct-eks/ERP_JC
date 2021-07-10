@@ -27,7 +27,6 @@
                                 @update:active="treeSelect"
                                 @update:open="treeSelect"
                                 color="primary"
-                                open-on-click
                                 dense>
                     </v-treeview>
                 </v-responsive>
@@ -144,6 +143,13 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "PartnerCompanyCategories",
+    created() {
+        this.$store.watch(state => state.companyCategoryList, () => {
+            const data = this.$store.state.companyCategoryList
+            this.tableData = JSON.parse(JSON.stringify(data))
+            this.treeData = this.$createTree(this.tableData, false)
+        })
+    },
     beforeMount() {
         this.canCreate = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:create")
         this.canUpdate = this.$store.getters.currentUserIsPermitted("system:partnerCompanyCategories:update")
@@ -162,21 +168,16 @@ export default {
             newName: '',
             newRemark: '',
 
+            treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.companyCategoryList)), false),
             treeSelection: [],
             headers: [
                 { text: '区划名称', value: 'name', width: '160px' },
                 { text: '所在层次', value: 'treeLevel', width: '100px' },
                 { text: '区划描述', value: 'remark', width: '200px' },
             ],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.companyCategoryList)),
             currRow: [],
             newItemIndex: -1
-        }
-    },
-    computed: {
-        treeData() {
-            this.tableData = this.$store.state.companyCategoryList
-            return this.$createTree(this.tableData, false)
         }
     },
     methods: {
@@ -209,7 +210,7 @@ export default {
             else {
                 const endLevel = String.fromCharCode(String('a').charCodeAt(0) + nextLevelNumber - 10)
                 newLevel = treeLevel + "-" + endLevel
-                console.log('new level: ', newLevel)
+                // console.log('new level: ', newLevel)
             }
 
             this.tableData.push({
@@ -245,6 +246,8 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('clearCompanyData')
                 this.$router.replace('/system')
             }).catch(() => {})
         }

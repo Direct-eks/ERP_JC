@@ -151,8 +151,12 @@ export default {
             brandTableHeaders: [
                 { text: '厂牌代号', value: 'code', width: '85px' },
             ],
-            brandTableData: [],
             brandTableCurrentRow: [],
+        }
+    },
+    computed: {
+        brandTableData() {
+            return this.$store.state.factoryBrands
         }
     },
     methods: {
