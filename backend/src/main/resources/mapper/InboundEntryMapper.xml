@@ -405,7 +405,7 @@
                p.unit_price_with_tax, p.unit_price_without_tax
         from e_inbound_entry as e join e_inbound_product as p
             on e.inbound_entry_id = p.inbound_entry_id
-            join sku_full as s
+            join sku_full as s on p.sku_id = s.sku_id
             join c_partner_company as c on e.partner_company_id = c.partner_company_id
             left join c_relevant_company as r on e.shipping_method_id = r.relevant_company_id
         where s.tree_level like #{treeLevel}||'%'
