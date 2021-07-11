@@ -287,7 +287,7 @@ export default {
             }).catch(() => {})
         },
         treeSelectionResult(data) {
-            this.modelTableData = data
+            this.modelTableData = JSON.parse(JSON.stringify(data))
             this.modelTableCurrentRow = [] //reset model table
         },
         treeSelectionObject(data) {
