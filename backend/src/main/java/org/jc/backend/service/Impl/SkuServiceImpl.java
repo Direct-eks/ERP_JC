@@ -198,9 +198,20 @@ public class SkuServiceImpl implements SkuService {
     @Override
     public List<StockLimitO> getStockAlert() {
         try {
-            var newList = new ArrayList<>();
-            return skuMapper.queryStockAlert();
-            // todo
+            var list = skuMapper.queryStockAlert();
+            list.removeIf(s -> {
+                if (s.getLowerLimit() != -1 && s.getStockQuantity() < s.getLowerLimit()) {
+                    s.setDiff(s.getLowerLimit() - s.getStockQuantity());
+                    return false;
+                }
+                if (s.getUpperLimit() != -1 && s.getStockQuantity() > s.getUpperLimit()) {
+                    s.setDiff(s.getStockQuantity() - s.getUpperLimit());
+                    return false;
+                }
+                s.setDiff(0);
+                return true;
+            });
+            return list;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
