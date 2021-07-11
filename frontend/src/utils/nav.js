@@ -687,22 +687,8 @@ export default {
             ]
         },
         {
-            name: '应付款',
-            url: '/query_stats/pay',
-            children: [
-                {
-                    name: '汇总查询',
-                    url: '/query_stats/pay_summary_query'
-                },
-                {
-                    name: '明细',
-                    url: '/query_stats/pay_detail'
-                },
-                {
-                    name: '总账',
-                    url: '/query_stats/pay_ledger'
-                }
-            ]
+            name: '应付款查询',
+            url: '/query_stats/pay_query',
         },
         {
             name: '出库单汇总统计',
@@ -723,22 +709,8 @@ export default {
             ]
         },
         {
-            name: '应收款',
-            url: '/query_stats/receipt',
-            children: [
-                {
-                    name: '汇总查询',
-                    url: '/query_stats/rec_summary_query'
-                },
-                {
-                    name: '明细',
-                    url: '/query_stats/rec_detail'
-                },
-                {
-                    name: '总账',
-                    url: '/query_stats/rec_ledger'
-                }
-            ]
+            name: '应收款查询',
+            url: '/query_stats/rec_query',
         },
         {
             name: '销售价差统计',

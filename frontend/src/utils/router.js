@@ -570,22 +570,10 @@ const routes = [
                     '../views/Query_Stats/In_or_Pay/3_In_Check_Audit')
             },
             {
-                path: 'pay_summary_query',
-                name: '应付款汇总查询',
-                component: () => import(/* webpackChunkName: "Query_Stats_Pay_Summary_Query" */
-                    '../views/Query_Stats/In_or_Pay/4_Pay_Summary_Query')
-            },
-            {
-                path: 'pay_detail',
-                name: '应付款明细',
-                component: () => import(/* webpackChunkName: "Query_Stats_Pay_Detail" */
-                    '../views/Query_Stats/In_or_Pay/5_Pay_Detail')
-            },
-            {
-                path: 'pay_ledger',
-                name: '应付款总账',
-                component: () => import(/* webpackChunkName: "Query_Stats_Pay_Ledger" */
-                    '../views/Query_Stats/In_or_Pay/6_Pay_Ledger')
+                path: 'pay_query',
+                name: '应付款查询',
+                component: () => import(/* webpackChunkName: "Query_Stats_Pay_Query" */
+                    '../views/Query_Stats/In_or_Pay/4_Pay_Query')
             },
             {
                 path: 'out_summary_stats',
@@ -606,22 +594,10 @@ const routes = [
                     '../views/Query_Stats/Out_or_Receive/3_Out_Check_Audit')
             },
             {
-                path: 'rec_summary_query',
-                name: '应收款汇总查询',
-                component: () => import(/* webpackChunkName: "Query_Stats_Rec_Summary_Stats" */
-                    '../views/Query_Stats/Out_or_Receive/4_Rec_Summary_Stats')
-            },
-            {
-                path: 'rec_detail',
-                name: '应收款明细',
-                component: () => import(/* webpackChunkName: "Query_Stats_Rec_Detail" */
-                    '../views/Query_Stats/Out_or_Receive/5_Rec_Detail')
-            },
-            {
-                path: 'rec_ledger',
-                name: '应收款总账',
-                component: () => import(/* webpackChunkName: "Query_Stats_Rec_Ledger" */
-                    '../views/Query_Stats/Out_or_Receive/6_Rec_Ledger')
+                path: 'rec_query',
+                name: '应收款查询',
+                component: () => import(/* webpackChunkName: "Query_Stats_Rec_Stats" */
+                    '../views/Query_Stats/Out_or_Receive/4_Rec_Stats')
             },
             {
                 path: 'price_diff_stats',

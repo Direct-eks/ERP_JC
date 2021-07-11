@@ -1,6 +1,6 @@
 <template>
     <!--    <p>查询统计</p>-->
-    <!--    <p>应付款汇总查询</p>-->
+    <!--    <p>应付款查询</p>-->
     <v-card>
         <v-toolbar flat>
             <v-toolbar-title>应付款查询</v-toolbar-title>
@@ -24,7 +24,7 @@
             <v-tabs-items v-model="tab">
 
                 <v-tab-item key="summary">
-                    <PaymentQuery mode="in"></PaymentQuery>
+                    <PaymentSummary mode="in"></PaymentSummary>
                 </v-tab-item>
 
                 <v-tab-item>
@@ -46,9 +46,12 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "Pay_summary",
     components: {
-        PaymentQuery: () => import('~/components/QueryComponents/PaymentQueryComponent'),
-        PaymentDetail: () => import('~/components/QueryComponents/PaymentDetailComponent'),
-        PaymentLedger: () => import('~/components/QueryComponents/PaymentLedgerComponent')
+        PaymentSummary: () => import(/* webpackChunkName: "Payment_Summary_Component" */
+            '~/components/QueryComponents/PaymentSummaryComponent'),
+        PaymentDetail: () => import(/* webpackChunkName: "Payment_Detail_Component" */
+            '~/components/QueryComponents/PaymentDetailComponent'),
+        PaymentLedger: () => import(/* webpackChunkName: "Payment_Ledger_Component" */
+            '~/components/QueryComponents/PaymentLedgerComponent')
     },
     data() {
         return {
