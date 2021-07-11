@@ -12,7 +12,6 @@ public class StockLimitO {
     private String categoryCode;
     private String code;
     private String unitName;
-    private String stockUnitPrice;
     private int stockQuantity;
     private int lowerLimit;
     private int upperLimit;

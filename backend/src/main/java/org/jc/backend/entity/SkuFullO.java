@@ -87,5 +87,4 @@ public class SkuFullO {
     private Integer stockUpperLimit;
 
     private int stockQuantity;
-    private String stockUnitPrice;
 }
