@@ -12,7 +12,6 @@
         <result property="code" column="code"/>
         <result property="unitID" column="unit_id"/>
         <result property="unitName" column="unit_name"/>
-        <result property="stockQuantity" column="stock_quantity"/>
         <result property="remark" column="remark"/>
         <result property="supplierID" column="supplier_id"/>
         <result property="companyAbbreviatedName" column="abbreviated_name"/>
@@ -35,7 +34,7 @@
 
     <select id="queryFullSkuByModel" resultMap="SkuResultMap">
         select s.sku_id, s.factory_brand_id, s.factory_code, s.model_id, s.code,
-               s.unit_id, s.unit_name, s.stock_quantity, s.remark, s.supplier_id, c.abbreviated_name,
+               s.unit_id, s.unit_name, s.remark, s.supplier_id, c.abbreviated_name,
                c.full_name, c.phone, c.remark as company_remark, s.record_factory_stock,
                s.factory_price_without_tax, s.factory_price_with_tax, s.settlement_price_without_tax,
                s.price_base_reference, s.wholesale_price_discount, s.wholesale_price, s.retail_price_discount,
@@ -46,7 +45,7 @@
 
     <select id="querySkuByCoarseCategoryAndFactoryBrand" resultMap="SkuResultMap">
         select s.sku_id, s.factory_brand_id, s.factory_code, s.model_id, s.code,
-               s.unit_id, s.unit_name, s.stock_quantity, s.remark, s.supplier_id, c.abbreviated_name,
+               s.unit_id, s.unit_name, s.remark, s.supplier_id, c.abbreviated_name,
                c.full_name, c.phone, c.remark as company_remark, s.record_factory_stock,
                s.factory_price_without_tax, s.factory_price_with_tax, s.settlement_price_without_tax,
                s.price_base_reference, s.wholesale_price_discount, s.wholesale_price, s.retail_price_discount,
@@ -73,10 +72,17 @@
         where sku_id = #{skuID}
     </update>
 
+    <update id="updateStockInfo">
+        update w_sku
+        set stock_quantity = #{quantity},
+            stock_unit_price = ${price}
+        where sku_id = #{id}
+    </update>
+
     <insert id="insertSku" useGeneratedKeys="true"
         keyProperty="skuID" keyColumn="sku_id">
-        insert into w_sku(factory_brand_id, model_id, stock_quantity, remark)
-        values(#{factoryBrandID}, #{modelID}, 0, '')
+        insert into w_sku(factory_brand_id, model_id, remark)
+        values(#{factoryBrandID}, #{modelID}, '')
     </insert>
 
     <update id="updateSku">
@@ -85,4 +91,20 @@
         where sku_id = #{skuID}
     </update>
 
+    <resultMap id="AlertResultMap" type="org.jc.backend.entity.StatO.StockLimitO">
+        <result property="skuID" column="sku_id"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="code" column="code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="stockUnitPrice" column="stock_unit_price_without_tax"/>
+        <result property="lowerLimit" column="stock_lower_limit"/>
+        <result property="upperLimit" column="stock_upper_limit"/>
+    </resultMap>
+
+    <select id="queryStockAlert" resultMap="AlertResultMap">
+        select sku_id, category_code, code, unit_name, stock_quantity,
+               stock_unit_price, stock_lower_limit, stock_upper_limit
+        from sku_full
+    </select>
 </mapper>

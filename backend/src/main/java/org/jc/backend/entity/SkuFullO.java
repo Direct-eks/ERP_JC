@@ -29,8 +29,6 @@ public class SkuFullO {
     // from w_measurement_unit
     private String unitName;
 
-    @NotNull(message = "stockQuantity null error")
-    private Integer stockQuantity;
     private String remark;
 
     private int supplierID;
@@ -87,4 +85,7 @@ public class SkuFullO {
     private Integer stockLowerLimit;
     @NotNull(message = "stockUpperLimit null error")
     private Integer stockUpperLimit;
+
+    private int stockQuantity;
+    private String stockUnitPrice;
 }

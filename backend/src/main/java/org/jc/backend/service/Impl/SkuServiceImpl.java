@@ -6,14 +6,18 @@ import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.entity.SkuO;
+import org.jc.backend.entity.StatO.StockLimitO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
+import org.jc.backend.service.WarehouseStockService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +28,14 @@ public class SkuServiceImpl implements SkuService {
 
     private final SkuMapper skuMapper;
     private final ModelService modelService;
+    private final WarehouseStockService warehouseStockService;
 
     public SkuServiceImpl(SkuMapper skuMapper,
-                          ModelService modelService) {
+                          ModelService modelService,
+                          WarehouseStockService warehouseStockService) {
         this.skuMapper = skuMapper;
         this.modelService = modelService;
+        this.warehouseStockService = warehouseStockService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -77,6 +84,30 @@ public class SkuServiceImpl implements SkuService {
             for (var modifiedSku: skuFullO) {
                 skuMapper.updateSkuPricing(modifiedSku);
             }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateStockInfo(int skuID) {
+        try {
+            var stocks = warehouseStockService.getWarehouseStocksBySku(skuID);
+            int quantity = 0;
+            BigDecimal unitPrice = new BigDecimal(0);
+            for (var stock : stocks) {
+                unitPrice = unitPrice.multiply(BigDecimal.valueOf(quantity))
+                        .add(new BigDecimal(stock.getStockUnitPriceWithoutTax())
+                                .multiply(BigDecimal.valueOf(stock.getStockQuantity())))
+                        .divide(BigDecimal.valueOf(quantity + stock.getStockQuantity()),
+                                MyUtils.myScale, MyUtils.myRoundingMode);
+                quantity += stock.getStockQuantity();
+            }
+            skuMapper.updateStockInfo(skuID, quantity, unitPrice.toPlainString());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -159,6 +190,21 @@ public class SkuServiceImpl implements SkuService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<StockLimitO> getStockAlert() {
+        try {
+            var newList = new ArrayList<>();
+            return skuMapper.queryStockAlert();
+            // todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

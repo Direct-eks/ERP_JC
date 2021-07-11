@@ -6,6 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.entity.SkuO;
+import org.jc.backend.entity.StatO.StockLimitO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
@@ -101,5 +102,13 @@ public class SkuController {
         }
 
         skuService.updateSkuBulk(modelIDsArray, brandIDs);
+    }
+
+    @ApiOperation(value = "", response = StockLimitO.class)
+    @GetMapping("/getStockAlert")
+    public List<StockLimitO> getStockAlert() {
+        logger.info("GET Request to /getStockAlert");
+
+        return skuService.getStockAlert();
     }
 }

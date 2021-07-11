@@ -8,7 +8,6 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.dom4j.rule.Mode;
 import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
@@ -16,10 +15,7 @@ import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.StatO.StockStatO;
 import org.jc.backend.entity.WarehouseStockO;
-import org.jc.backend.service.InboundEntryService;
-import org.jc.backend.service.ModelService;
-import org.jc.backend.service.OutboundEntryService;
-import org.jc.backend.service.WarehouseStockService;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +47,18 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     private final InboundEntryService inboundEntryService;
     private final OutboundEntryService outboundEntryService;
     private final ModelService modelService;
+    private final SkuService skuService;
 
     public WarehouseStockServiceImpl(WarehouseStockMapper warehouseStockMapper,
                                      @Lazy InboundEntryService inboundEntryService,
                                      @Lazy OutboundEntryService outboundEntryService,
-                                     ModelService modelService) {
+                                     ModelService modelService,
+                                     @Lazy SkuService skuService) {
         this.warehouseStockMapper = warehouseStockMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
         this.modelService = modelService;
+        this.skuService = skuService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -191,6 +190,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             stock.setStockUnitPriceWithoutTax(pair.getRight());
             warehouseStockMapper.updateStockInfo(stock);
 
+            // update sku total
+            skuService.updateStockInfo(stock.getSkuID());
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
@@ -315,6 +317,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             stock.setStockUnitPriceWithoutTax(pair.getRight());
             warehouseStockMapper.updateStockInfo(stock);
 
+            // update sku total
+            skuService.updateStockInfo(stock.getSkuID());
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
@@ -359,6 +364,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             stock.setStockUnitPriceWithoutTax(pair.getRight());
             warehouseStockMapper.updateStockInfo(stock);
 
+            // update sku total
+            skuService.updateStockInfo(stock.getSkuID());
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
@@ -399,6 +407,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             stock.setStockQuantity(pair.getLeft());
             stock.setStockUnitPriceWithoutTax(pair.getRight());
             warehouseStockMapper.updateStockInfo(stock);
+
+            // update sku total
+            skuService.updateStockInfo(stock.getSkuID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

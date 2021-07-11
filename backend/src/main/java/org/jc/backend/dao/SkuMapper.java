@@ -3,6 +3,7 @@ package org.jc.backend.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.entity.SkuO;
+import org.jc.backend.entity.StatO.StockLimitO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,10 @@ public interface SkuMapper {
     List<SkuFullO> querySkuByCoarseCategoryAndFactoryBrand(String treeLevel, int factoryBrandID);
 
     void updateSkuPricing(SkuFullO skuFullO);
+    void updateStockInfo(int id, int quantity, String price);
 
     void insertSku(SkuO skuO);
     void updateSku(SkuO skuO);
+
+    List<StockLimitO> queryStockAlert();
 }
