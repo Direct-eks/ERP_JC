@@ -146,6 +146,7 @@ const api = {
     modifySkuPricing: '/sku/modifySkuPricing', // POST
     updateSku: '/sku/updateSku', // POST
     updateSkuBulk: '/sku/updateSkuBulk', // POST
+    stockAlert: '/sku/getStockAlert', // GET
 
     /* ------ /supplier ------*/
     allSuppliers: '/supplier/getAllSuppliers', // GET

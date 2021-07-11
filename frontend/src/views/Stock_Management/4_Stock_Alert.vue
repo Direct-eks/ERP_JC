@@ -75,7 +75,9 @@ export default {
             return color
         },
         search() {
-
+            this.$getRequest(this.$api.stockAlert).then(data => {
+                this.tableData = data
+            }).catch(() => {})
         },
         exportExcel() {
 
