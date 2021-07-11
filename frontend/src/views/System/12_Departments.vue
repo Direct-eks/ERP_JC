@@ -76,11 +76,13 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Departments",
+    created() {
+        this.$store.watch(state => state.departmentOptions, () => {
+            this.tableData = JSON.parse(JSON.stringify(this.$store.state.departmentOptions))
+        })
+    },
     beforeMount() {
-        this.$getRequest(this.$api.departmentOptions).then(data => {
-            console.log('received', data)
-            this.tableData = data
-        }).catch(() => {})
+        this.$store.dispatch('getDepartmentOptions')
     },
     data() {
         return {
@@ -93,7 +95,7 @@ export default {
                 { text: '默认部门', value: 'isDefault', width: '100px' },
             ],
             currentRow: [],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.departmentOptions)),
             newRowIndex: -1,
 
             options: [
@@ -128,6 +130,8 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('clearDepartmentOptions')
                 this.$router.replace('/system')
             }).catch(() => {})
         }

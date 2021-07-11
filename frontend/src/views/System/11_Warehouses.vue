@@ -85,11 +85,13 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Warehouses",
+    created() {
+        this.$store.watch(state => state.warehouseOptions, () => {
+            this.tableData = JSON.parse(JSON.stringify(this.$store.state.warehouseOptions))
+        })
+    },
     beforeMount() {
-        this.$getRequest(this.$api.warehouseOptions).then(data => {
-            console.log('received', data)
-            this.tableData = data
-        }).catch(() => {})
+        this.$store.dispatch('getWarehouseOptions')
     },
     data() {
         return {
@@ -104,7 +106,7 @@ export default {
                 { text: '允许入/出库商品分类', value: 'permittedCategory', width: '150px' },
             ],
             currentRow: [],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.warehouseOptions)),
             newRowIndex: -1,
 
             options: [
@@ -139,6 +141,8 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('clearWarehouseOptions')
                 this.$router.replace('/system')
             }).catch(() => {})
         }

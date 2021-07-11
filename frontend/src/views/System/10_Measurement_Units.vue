@@ -68,11 +68,13 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "MeasurementUnits",
+    created() {
+        this.$store.watch(state => state.taxRateOptions, () => {
+            this.tableData = JSON.parse(JSON.stringify(this.$store.state.taxRateOptions))
+        })
+    },
     beforeMount() {
-        this.$getRequest(this.$api.allUnits).then(data => {
-            console.log('received', data)
-            this.tableData = data
-        }).catch(() => {})
+        this.$store.dispatch('getMeasurementUnits')
     },
     data() {
         return {
@@ -84,7 +86,7 @@ export default {
                 { text: '描述', value: 'remark', width: '180px' },
             ],
             currentRow: [],
-            tableData: [],
+            tableData: JSON.parse(JSON.stringify(this.$store.state.taxRateOptions)),
             newRowIndex: -1
         }
     },
@@ -114,6 +116,8 @@ export default {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'
                 })
+
+                this.$store.commit('clearMeasurementUnits')
                 this.$router.replace('/system')
             }).catch(() => {})
         }

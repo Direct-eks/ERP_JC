@@ -30,13 +30,22 @@ const mutations = {
     modifyWarehouseOptions(state, payload) {
         state.warehouseOptions = payload
     },
+    clearWarehouseOptions(state) {
+        state.warehouseOptions = []
+    },
     /* ------- department data ------------*/
     modifyDepartmentOptions(state, payload) {
         state.departmentOptions = payload
     },
+    clearDepartmentOptions(state) {
+        state.departmentOptions = []
+    },
     /* ------- tax rate data -------*/
     modifyTaxRateOptions(state, payload) {
         state.taxRateOptions = payload
+    },
+    clearTaxRateOptions(state) {
+        state.taxRateOptions = []
     },
     /* ------ /bankAccount ------*/
     modifyBankAccounts(state, payload) {
@@ -48,6 +57,10 @@ const mutations = {
             }
         }
         state.visibleBankAccounts = arr
+    },
+    clearBankAccounts(state) {
+        state.allBankAccounts = []
+        state.visibleBankAccounts = []
     },
     /*----------- company data ------------*/
     modifyCompanyList(state, list) {
@@ -76,6 +89,9 @@ const mutations = {
     modifySupplierData(state, payload) {
         state.suppliers = payload
     },
+    clearSupplierData(state) {
+        state.suppliers = []
+    },
     /*----------- product & model data ------------*/
     modifyModelList(state, list) {
         state.modelCategoryList = list
@@ -99,6 +115,9 @@ const mutations = {
     /* ------- measurement unit data -------*/
     modifyMeasurementUnits(state, payload) {
         state.measurementUnits = payload
+    },
+    clearMeasurementUnits(state) {
+        state.measurementUnits = []
     }
 
 }
