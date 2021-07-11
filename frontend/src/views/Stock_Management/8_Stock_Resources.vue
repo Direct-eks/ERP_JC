@@ -7,12 +7,14 @@
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/stock_management">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <QueryConditions :queries.sync="queries">
+            </QueryConditions>
+            <v-divider class="my-2"></v-divider>
         </v-card-text>
     </v-card>
 </template>
@@ -22,9 +24,20 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Stock_Resources",
+    components: {
+        QueryConditions: () => import('~/components/QueryComponents/QueryConditions')
+    },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
+
+            queries: {
+                treeSelection: {label: '', categoryID: -1, children: []},
+                code: '',
+                warehouseID: -1,
+                factoryBrand: '',
+            },
+
         }
     },
     methods: {
