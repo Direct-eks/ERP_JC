@@ -23,10 +23,10 @@
         where property_name = 'last_warehouse_stock_update_time'
     </select>
     
-    <update id="updateLastWarehouseStockUpdateTime">
+    <update id="updateLastBackupTime">
         update miscellaneous_data
         set property_value = datetime('now', 'localtime')
-        where property_name = 'last_warehouse_stock_update_time'
+        where property_name = 'last_backup_time'
     </update>
 
 </mapper>

@@ -13,5 +13,5 @@ import java.util.List;
 public interface MiscellaneousDataMapper {
     List<MiscellaneousDataO> queryAllTaxRateOptions();
     MiscellaneousDataO queryLastWarehouseStockUpdateTime();
-    void updateLastWarehouseStockUpdateTime();
+    void updateLastBackupTime();
 }

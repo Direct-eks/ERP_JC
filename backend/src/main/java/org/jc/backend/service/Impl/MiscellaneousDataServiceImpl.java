@@ -54,9 +54,9 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
 
     @Transactional
     @Override
-    public void updateLastWarehouseStockUpdateTime() {
+    public void updateLastBackupTime() {
         try {
-            miscellaneousDataMapper.updateLastWarehouseStockUpdateTime();
+            miscellaneousDataMapper.updateLastBackupTime();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

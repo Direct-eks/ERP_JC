@@ -66,7 +66,7 @@ public class ScheduledTask {
             e.printStackTrace();
         }
 
-        miscellaneousDataService.updateLastWarehouseStockUpdateTime();
+        miscellaneousDataService.updateLastBackupTime();
         logger.info("calculateStockPrices task end");
     }
 }

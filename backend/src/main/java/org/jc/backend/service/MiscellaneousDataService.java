@@ -8,5 +8,5 @@ import java.util.List;
 public interface MiscellaneousDataService {
     List<String> getAllTaxRateOptions();
     String getLastWarehouseStockUpdateTime();
-    void updateLastWarehouseStockUpdateTime();
+    void updateLastBackupTime();
 }
