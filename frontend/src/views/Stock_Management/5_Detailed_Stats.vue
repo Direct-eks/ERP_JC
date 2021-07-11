@@ -92,9 +92,7 @@ export default {
         ModelTree: () => import('~/components/ModelTree'),
     },
     beforeMount() {
-        this.$getRequest(this.$api.warehouseOptions).then((data) => {
-            this.warehouseOptions = data
-        }).catch(() => {})
+        this.$store.dispatch('getWarehouseOptions')
     },
     data() {
         return {
@@ -110,7 +108,6 @@ export default {
 
             factoryBrand: '',
             warehouseID: -1,
-            warehouseOptions: [],
 
             headers: [
                 { text: '商品分类', value: '', width: '100px', sortable: false },
@@ -126,6 +123,11 @@ export default {
                 { text: '无税金额', value: '', width: '110px', sortable: true },
                 { text: '仓库', value: '', width: '100px', sortable: false },
             ]
+        }
+    },
+    computed: {
+        warehouseOptions() {
+            return this.$store.state.warehouseOptions
         }
     },
     methods: {
