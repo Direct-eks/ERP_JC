@@ -54,7 +54,6 @@ export default {
                 { text: '分类', value: 'categoryCode', width: '120px' },
                 { text: '代号', value: 'code', width: '180px' },
                 { text: '单位', value: 'unitName', width: '65px' },
-                { text: '库存单价', value: 'stockUnitPrice', width: '100px' },
                 { text: '库存数量', value: 'stockQuantity', width: '100px' },
                 { text: '库存下限', value: 'lowerLimit', width: '90px' },
                 { text: '库存上限', value: 'upperLimit', width: '90px' },

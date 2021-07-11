@@ -74,8 +74,7 @@
 
     <update id="updateStockInfo">
         update w_sku
-        set stock_quantity = #{quantity},
-            stock_unit_price = ${price}
+        set stock_quantity = #{quantity}
         where sku_id = #{id}
     </update>
 
@@ -97,14 +96,13 @@
         <result property="code" column="code"/>
         <result property="unitName" column="unit_name"/>
         <result property="stockQuantity" column="stock_quantity"/>
-        <result property="stockUnitPrice" column="stock_unit_price_without_tax"/>
         <result property="lowerLimit" column="stock_lower_limit"/>
         <result property="upperLimit" column="stock_upper_limit"/>
     </resultMap>
 
     <select id="queryStockAlert" resultMap="AlertResultMap">
         select sku_id, category_code, code, unit_name, stock_quantity,
-               stock_unit_price, stock_lower_limit, stock_upper_limit
+               stock_lower_limit, stock_upper_limit
         from sku_full
     </select>
 </mapper>

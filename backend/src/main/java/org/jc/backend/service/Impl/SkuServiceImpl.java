@@ -98,16 +98,10 @@ public class SkuServiceImpl implements SkuService {
         try {
             var stocks = warehouseStockService.getWarehouseStocksBySku(skuID);
             int quantity = 0;
-            BigDecimal unitPrice = new BigDecimal(0);
             for (var stock : stocks) {
-                unitPrice = unitPrice.multiply(BigDecimal.valueOf(quantity))
-                        .add(new BigDecimal(stock.getStockUnitPriceWithoutTax())
-                                .multiply(BigDecimal.valueOf(stock.getStockQuantity())))
-                        .divide(BigDecimal.valueOf(quantity + stock.getStockQuantity()),
-                                MyUtils.myScale, MyUtils.myRoundingMode);
                 quantity += stock.getStockQuantity();
             }
-            skuMapper.updateStockInfo(skuID, quantity, unitPrice.toPlainString());
+            skuMapper.updateStockInfo(skuID, quantity);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
