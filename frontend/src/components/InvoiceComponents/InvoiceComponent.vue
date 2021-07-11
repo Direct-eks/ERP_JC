@@ -398,11 +398,6 @@ export default {
                 invoiceIndication: [v => !!v || '请选择开票标志']
             },
 
-            invoiceTypeOptions: [
-                { value: '增值税票', label: '增值税票' },
-                { value: '普票', label: '普票' },
-                { value: '收据', label: '收据' }
-            ],
             invoiceIndicationOptions: [
                 { value: '正常', label: '正常'},
                 { value: '红冲', label: '红冲'}
@@ -438,6 +433,11 @@ export default {
             tax: '0',
             sumWithTax: '0',
             sumWithoutTax: '0',
+        }
+    },
+    computed: {
+        invoiceTypeOptions() {
+            return this.$store.state.invoiceTypeOptions
         }
     },
     methods: {

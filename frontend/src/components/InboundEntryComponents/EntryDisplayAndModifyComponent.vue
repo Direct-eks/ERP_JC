@@ -422,19 +422,9 @@ export default {
             break
         }
 
-        this.$getRequest(this.$api.departmentOptions).then((data) => {
-            this.departmentOptions = data
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.warehouseOptions).then((data) => {
-            this.warehouseOptions = data
-        }).catch(() => {})
-
-        this.$getRequest(this.$api.allTaxRates).then((data) => {
-            for (const option of data) {
-                this.taxRateOptions.push(Number(option))
-            }
-        }).catch(() => {})
+        this.$store.dispatch('getWarehouseOptions')
+        this.$store.dispatch('getDepartmentOptions')
+        this.$store.dispatch('getTaxRateOptions')
     },
     data() {
         return {
@@ -452,17 +442,9 @@ export default {
                 taxRate: [v => !!v || '请选择税率'],
             },
 
-            warehouseOptions: [],
-            departmentOptions: [],
-            taxRateOptions: [],
             executionStatusOptions: [
                 {value: '执行', label: '执行'},
                 {value: '中止', label: '中止'}
-            ],
-            invoiceTypeOptions: [
-                {value: '增值税票', label: '增值税票'},
-                {value: '普票', label: '普票'},
-                {value: '收据', label: '收据'}
             ],
 
             tableHeaders: [
@@ -503,6 +485,20 @@ export default {
             sumWithTax: '0',
             sumWithoutTax: '0'
         }
+    },
+    computed: {
+        warehouseOptions() {
+            return this.$store.state.warehouseOptions
+        },
+        departmentOptions() {
+            return this.$store.state.departmentOptions
+        },
+        taxRateOptions() {
+            return this.$store.state.taxRateOptions
+        },
+        invoiceTypeOptions() {
+            return this.$store.state.invoiceTypeOptions
+        },
     },
     methods: {
         /* ----- number calculation ----- */
