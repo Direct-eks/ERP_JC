@@ -1,68 +1,39 @@
 <template>
 <!--  <p>出库结账管理</p>-->
 <!--  <p>出库结账后退货</p>-->
-    <div id="all">
+    <v-card outlined>
+        <v-card-title>
+            出库结账后退货
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/outbound_invoicing">
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
+                返回
+            </v-btn>
+        </v-card-title>
+        <v-card-text>
 
-    </div>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
-    export default {
-        name: "Out_Check_Inv_Return",
-        components: {
-            CompanySearch: () => import("~/components/CompanySearch"),
-        },
-        data() {
-            return {
-                pickerOptions: {
-                    disabledDate(time) {
-                        return time.getTime() > Date.now();
-                    },
-                    shortcuts: [{
-                        text: '今天',
-                        onClick(picker) {
-                            picker.$emit('pick', new Date());
-                        }
-                    }, {
-                        text: '昨天',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24);
-                            picker.$emit('pick', date);
-                        }
-                    }]
-                },
+import {mdiArrowLeft} from "@mdi/js";
 
-                // 单位助选 data
-                fullSearchField: '',
-                fullSearchLoading: false,
-                fullSearchPanelOpen: false,
-            }
-        },
-        updated: function () {
-            this.$nextTick(function () {
-                // Code that will run only after the
-                // entire view has been re-rendered
-                this.abbreviatedSearchLoading = false
-                this.fullSearchLoading = false
-                this.modelSearchLoading = false
-                console.log('deactivate loading')
-            })
-        },
-        methods: {
-            fullSearch() {
-                this.fullSearchLoading = true;
-                this.abbreviatedSearchPanelOpen = false //close the other search panel
-                this.fullSearchPanelOpen = true
-            },
-            fullSearchPanelCloseAction() {
-                this.fullSearchPanelOpen = false
-            },
-            fullSearchChooseAction() {
+export default {
+    name: "Out_Check_Inv_Return",
+    components: {
 
-            },
+    },
+    data() {
+        return {
+            mdiArrowLeft,
         }
+    },
+    methods: {
+
     }
+}
 </script>
 
 <style scoped>
