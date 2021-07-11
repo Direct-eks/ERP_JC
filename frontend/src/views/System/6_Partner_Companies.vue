@@ -62,104 +62,114 @@
                                   :search="filterField"
                                   locale="zh-cn"
                                   dense>
-                        <template v-slot:item.phone="{ item }">
-                            <v-edit-dialog :return-value="item.phone">
-                                {{item.phone}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.phone" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.fax="{ item }">
-                            <v-edit-dialog :return-value="item.fax">
-                                {{item.fax}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.fax" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.remark="{ item }">
-                            <v-edit-dialog :return-value="item.remark">
-                                {{item.remark}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.remark" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.classification="{ item }">
-                            <v-select v-model="item.classification"
-                                      :items="classificationOptions"
-                                      hide-details="auto"
-                                      dense>
-                            </v-select>
-                        </template>
-                        <template v-slot:item.contactPerson="{ item }">
-                            <v-edit-dialog :return-value="item.contactPerson">
-                                {{item.contactPerson}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.contactPerson" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.contactNumber="{ item }">
-                            <v-edit-dialog :return-value="item.contactNumber">
-                                {{item.contactNumber}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.contactNumber" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.address="{ item }">
-                            <v-edit-dialog :return-value="item.address">
-                                {{item.address}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.address" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.zipcode="{ item }">
-                            <v-edit-dialog :return-value="item.zipcode">
-                                {{item.zipcode}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.zipcode" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
-                        <template v-slot:item.fullName="{ item }">
-                            <v-edit-dialog :return-value="item.fullName">
-                                {{item.fullName}}
-                                <template v-slot:input>
-                                    <v-text-field v-model="item.fullName" single-line
-                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
                     </v-data-table>
                 </v-responsive>
                 <v-row class="mt-1">
                     <v-col cols="auto">
-                        <v-btn color="primary" class="ml-3"
-                               @click="">
-                            新增
+                        <v-dialog v-model="editPanelOpen" max-width="900px">
+                            <template v-slot:activator="{ on }">
+                                <v-btn color="primary" class="ml-3" v-on="on"
+                                       @click="modify(false)">
+                                    新增
+                                </v-btn>
+                            </template>
+                            <v-card>
+                                <v-card-title>公司信息</v-card-title>
+                                <v-card-text class="d-flex flex-column">
+                                    <v-row>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.abbreviatedName"
+                                                          label="简称" hide-details="auto"
+                                                          readonly outlined dense
+                                                          style="width: 220px"/>
+                                        </v-col>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.phone"
+                                                          label="电话" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 180px"/>
+                                        </v-col>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.fax"
+                                                          label="传真" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 180px"/>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col>
+                                            <v-textarea v-model="companyData.remark"
+                                                        label="备注" hide-details="auto"
+                                                        outlined dense auto-grow rows="1"/>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="auto">
+                                            <v-select v-model="companyData.classification"
+                                                      :items="classificationOptions"
+                                                      label="分类" hide-details="auto"
+                                                      outlined dense
+                                                      style="width: 140px">
+                                            </v-select>
+                                        </v-col>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.contactPerson"
+                                                          label="联系人" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 100px"/>
+                                        </v-col>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.contactNumber"
+                                                          label="联系人电话" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 130px"/>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.address"
+                                                          label="地址" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 300px"/>
+                                        </v-col>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.zipcode"
+                                                          label="邮编" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 100px"/>
+                                        </v-col>
+                                        <v-col cols="auto">
+                                            <v-text-field v-model="companyData.fullName"
+                                                          label="全称" hide-details="auto"
+                                                          outlined dense
+                                                          style="width: 300px"/>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" @click="editPanelOpen = false">取消</v-btn>
+                                    <v-btn color="success" @click="saveEdit">确认</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn color="accent" class="ml-3"
+                               @click="modify(true)">
+                            修改选中
                         </v-btn>
                     </v-col>
                     <v-col cols="auto">
                         <v-btn color="warning" class="ml-3"
-                               @click="">
+                               @click="removeItem">
                             删除
                         </v-btn>
                     </v-col>
                     <v-spacer></v-spacer>
                     <v-col cols="auto">
                         <v-btn color="success" class="mr-3"
-                               @click="">
+                               @click="saveChanges">
                             保存修改
                         </v-btn>
                     </v-col>
@@ -177,6 +187,9 @@ export default {
     components: {
         CompanyTree: () => import('~/components/CompanyTree')
     },
+    beforeMount() {
+        this.defaultCompanyData = Object.assign({}, this.companyData)
+    },
     data() {
         return {
             mdiArrowLeft,
@@ -187,6 +200,22 @@ export default {
             filterField: '',
             nameSearchField: '',
             phoneSearchField: '',
+
+            editPanelOpen: false,
+            editIndex: -1,
+            companyData: {
+                abbreviatedName: '',
+                phone: '',
+                fax: '',
+                remark: '',
+                classification: '',
+                contactPerson: '',
+                contactNumber: '',
+                address: '',
+                zipcode: '',
+                fullName: '',
+            },
+            defaultCompanyData: {},
 
             headers: [
                 { text: '单位简称', value: 'abbreviatedName', width: '120px' },
@@ -233,13 +262,43 @@ export default {
         },
         treeSelectionResult(data) {
             this.currentRow = []
-            this.tableData = data
+            this.tableData = JSON.parse(JSON.stringify(data))
         },
-        addNewItem() {
-
+        modify(isOld) {
+            if (isOld) {
+                if (this.currentRow.length === 0) {
+                    this.$store.commit('setSnackbar', {
+                        message: '未选中单位', color: 'warning'
+                    })
+                    return
+                }
+                this.editPanelOpen = true
+                this.editIndex = this.tableData.indexOf(this.currentRow[0])
+                Object.assign(this.companyData, this.currentRow[0])
+            }
+            else {
+                this.editIndex = -1
+                Object.assign(this.companyData, this.defaultCompanyData)
+            }
+        },
+        saveEdit() {
+            if (this.editIndex === -1 ) {
+                this.tableData.push(Object.assign({}, this.companyData))
+            }
+            else {
+                Object.assign(this.tableData[this.editIndex], this.companyData)
+            }
+            this.editPanelOpen = false
         },
         removeItem() {
-
+            if (this.currentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '未选中单位', color: 'warning'
+                })
+                return
+            }
+            this.tableData.splice(this.tableData.indexOf(this.currentRow[0]), 1)
+            this.currentRow = []
         },
         saveChanges() {
 
