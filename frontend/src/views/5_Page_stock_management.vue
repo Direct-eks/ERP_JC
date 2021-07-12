@@ -27,9 +27,7 @@
             </v-card>
         </v-col>
 
-        <v-col cols="12"
-               md="11"
-               lg="10">
+        <v-col cols="12" md="11" lg="9" xl="8">
             <router-view></router-view>
         </v-col>
     </v-row>
@@ -41,18 +39,12 @@ import nav from "~/utils/nav";
 export default {
     name: "Page_stock_management",
     beforeMount() {
-        // const userPermissions = this.$store.getters.currentUserPermissions
         let navItems = JSON.parse(JSON.stringify(nav.stock_management_nav))
-        // let itemsToBeRemoved = []
-        // for (const item of navItems) {
-        //     if (!userPermissions.includes(item.requiredPermission)) {
-        //         itemsToBeRemoved.push(item)
-        //     }
-        // }
-        // itemsToBeRemoved.forEach(item => {
-        //     navItems.splice(navItems.indexOf(item), 1)
-        // })
-        this.navItem = navItems
+        for (const item of navItems) {
+            if (this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
+                this.navItem.push(item)
+            }
+        }
 
         if (this.$route.path !== '/stock_management') {
             this.showStatus = false
@@ -65,7 +57,7 @@ export default {
         }
     },
     watch: {
-        $route(to, from) {
+        $route(to, _) {
             this.showStatus = to.path === '/stock_management';
         },
     },

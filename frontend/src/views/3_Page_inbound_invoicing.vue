@@ -27,9 +27,7 @@
             </v-card>
         </v-col>
 
-        <v-col cols="12"
-               md="11"
-               lg="8">
+        <v-col cols="12" md="11" lg="9" xl="8">
             <router-view></router-view>
         </v-col>
     </v-row>
@@ -66,7 +64,7 @@ export default {
         }
     },
     watch: {
-        $route(to, from) {
+        $route(to, _) {
             this.showStatus = to.path === '/inbound_invoicing';
         },
     },
