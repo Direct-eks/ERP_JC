@@ -1,15 +1,33 @@
 <template>
     <!--  <p>生产管理</p>-->
     <!--  <p>领料单录入</p>-->
-    <div>
-        <strong>领料单录入</strong>
-    </div>
+    <v-card>
+        <v-card-title class="d-flex">
+            领料单录入
+            <v-spacer></v-spacer>
+            <v-btn color="accent"
+                   to="/production_management">
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
+                返回
+            </v-btn>
+        </v-card-title>
+        <v-card-text>
+
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
-    export default {
-        name: "MA_Entry"
+import {mdiArrowLeft} from "@mdi/js";
+
+export default {
+    name: "MA_Entry",
+    data() {
+        return {
+            mdiArrowLeft
+        }
     }
+}
 </script>
 
 <style scoped>

@@ -39,20 +39,21 @@ import nav from "~/utils/nav";
 export default {
     name: "Page_production_management",
     beforeMount() {
-        // const userPermissions = this.$store.getters.currentUserPermissions
-        let navItems = JSON.parse(JSON.stringify(nav.stock_management_nav))
-        // let itemsToBeRemoved = []
-        // for (const item of navItems) {
-        //     if (!userPermissions.includes(item.requiredPermission)) {
-        //         itemsToBeRemoved.push(item)
-        //     }
-        // }
-        // itemsToBeRemoved.forEach(item => {
-        //     navItems.splice(navItems.indexOf(item), 1)
-        // })
+        let navItems = JSON.parse(JSON.stringify(nav.production_management_nav))
+        for (const item of navItems) {
+            let itemsToBeRemoved = []
+            for (const subItem of item.children) {
+                if (!this.$store.getters.currentUserIsPermitted(subItem.requiredPermission)) {
+                    itemsToBeRemoved.push(subItem)
+                }
+            }
+            itemsToBeRemoved.forEach(subItem => {
+                item.children.splice(item.children.indexOf(subItem), 1)
+            })
+        }
         this.navItem = navItems
 
-        if (this.$route.path !== '/stock_management') {
+        if (this.$route.path !== '/production_management') {
             this.showStatus = false
         }
     },

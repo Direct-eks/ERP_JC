@@ -26,7 +26,9 @@
                               fixed-header
                               single-select
                               show-select
+                              checkbox-color="accent"
                               @click:row="tableSelect"
+                              @item-selected="tableSelect2"
                               hide-default-footer
                               locale="zh-cn"
                               dense>
@@ -87,8 +89,10 @@
                     <v-tab key="outboundEntry">出库</v-tab>
                     <v-tab key="inboundCheckout">入库结账</v-tab>
                     <v-tab key="outboundCheckout">出库结账</v-tab>
-                    <v-tab key="management">库存管理</v-tab>
+                    <v-tab key="stockManagement">库存管理</v-tab>
+                    <v-tab key="productionManagement">库存管理</v-tab>
                     <v-tab key="resources">资源录入</v-tab>
+                    <v-tab key="system">系统标准</v-tab>
 
                     <v-tabs-items v-model="tab">
                         <v-tab-item key="inboundEntry">
@@ -184,7 +188,7 @@
                                 </v-col>
                             </v-row>
                         </v-tab-item>
-                        <v-tab-item key="management">
+                        <v-tab-item key="stockManagement">
                             <v-row class="ml-10">
                                 <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="商品明细" value="stockManagement:ProductsDetails"/>
@@ -201,7 +205,50 @@
                                 </v-col>
                             </v-row>
                         </v-tab-item>
+                        <v-tab-item key="productionManagement">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="领料单录入" value="productionMaterialApply:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="领料单查询" value="productionMaterialApply:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="领料单修改" value="productionMaterialApply:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="退料单录入" value="productionMaterialReturn:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="退料单查询" value="productionMaterialReturn:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="退料单修改" value="productionMaterialReturn:Modification"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="产成品入库单录入" value="productionWarehouseEntry:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="产成品入库单查询" value="productionWarehouseEntry:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="产成品入库单修改" value="productionWarehouseEntry:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="拆/组装单录入" value="productionAssemblyEntry:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="拆/组装单查询" value="productionAssemblyEntry:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="拆/组装单修改" value="productionAssemblyEntry:Modification"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="零星盘盈单录入" value="productionSporadicProfit:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="零星盘盈单查询" value="productionSporadicProfit:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="零星盘盈单修改" value="productionSporadicProfit:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="零星盘亏单录入" value="productionSporadicLoss:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="零星盘亏单查询" value="productionSporadicLoss:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="零星盘亏单修改" value="productionSporadicLoss:Modification"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="调拨单录入" value="productionDistribution:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="调拨单查询" value="productionDistribution:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="调拨单修改" value="productionDistribution:Modification"/>
+                                    <v-checkbox v-model="form.permissions" label="报废单录入" value="productionScrap:Creation"/>
+                                    <v-checkbox v-model="form.permissions" label="报废单查询" value="productionScrap:Query"/>
+                                    <v-checkbox v-model="form.permissions" label="报废单修改" value="productionScrap:Modification"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
                         <v-tab-item key="resources">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+<!--                                    <v-checkbox v-model="form.permissions" label="" value=""/>-->
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="system">
                             <v-row class="ml-10">
                                 <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="商品分类" value="system:productCategories"/>
@@ -275,6 +322,8 @@ export default {
         this.$getRequest(this.$api.allPermissions).then(data => {
             this.allPermissions = data
         })
+
+        Object.assign(this.emptyForm, this.form)
     },
     data() {
         return {
@@ -297,6 +346,8 @@ export default {
                 role: '',
                 permissions: [],
             },
+            emptyForm: {},
+
             rules: {
                 username: [v => !!v || '名字不能为空'],
                 password: [v => this.isCreatingNewUser || !!v || '密码不能为空'],
@@ -313,8 +364,24 @@ export default {
     },
     methods: {
         tableSelect(row) {
-            this.userTableCurrentRow = [row]
-            Object.assign(this.form, row)
+            if (this.userTableCurrentRow.includes(row)) {
+                this.userTableCurrentRow = []
+                Object.assign(this.form, this.emptyForm)
+            }
+            else {
+                this.userTableCurrentRow = [row]
+                Object.assign(this.form, row)
+            }
+        },
+        tableSelect2(row) {
+            if (!row.value) {
+                this.userTableCurrentRow = []
+                Object.assign(this.form, this.emptyForm)
+            }
+            else {
+                this.userTableCurrentRow = [row.item]
+                Object.assign(this.form, row.item)
+            }
         },
         chooseAllPermission() {
             this.form.permissions = JSON.parse(JSON.stringify(this.allPermissions))
@@ -339,7 +406,7 @@ export default {
                 }).catch(() => {})
                 // refresh curr user permissions
                 if (this.form.username === this.$store.getters.currentUser) {
-                    this.$store.commit('modifyCurrentUserPermissions', this.form.permissions)
+                    this.$store.commit('modifyCurrentUserPermissions', JSON.parse(JSON.parse(this.form.permissions)))
                     sessionStorage.setItem('userPermissions', JSON.stringify(this.form.permissions))
                 }
             }
