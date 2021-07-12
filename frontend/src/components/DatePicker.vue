@@ -1,5 +1,5 @@
 <template>
-    <v-menu close-on-content-click
+    <v-menu :close-on-content-click="false"
             :disabled="disabled"
             :nudge-right="40"
             transition="scale-transition"
