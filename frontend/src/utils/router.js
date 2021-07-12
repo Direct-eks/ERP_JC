@@ -416,122 +416,122 @@ const routes = [
             {
                 path: 'material_apply_entry',
                 name: '领料单录入',
-                component: () => import('../views/Production_Management/Material_Apply/MA_Entry')
+                component: () => import('../views/Production_Management/1_Material_Apply/MA_Entry')
             },
             {
                 path: 'material_apply_query',
                 name: '领料单查询',
-                component: () => import('../views/Production_Management/Material_Apply/MA_Query')
+                component: () => import('../views/Production_Management/1_Material_Apply/MA_Query')
             },
             {
                 path: 'material_apply_modify',
                 name: '领料单修改',
-                component: () => import('../views/Production_Management/Material_Apply/MA_Modify')
+                component: () => import('../views/Production_Management/1_Material_Apply/MA_Modify')
             },
             {
                 path: 'material_return_entry',
                 name: '退料单录入',
-                component: () => import('../views/Production_Management/Material_Return/MR_Entry')
+                component: () => import('../views/Production_Management/2_Material_Return/MR_Entry')
             },
             {
                 path: 'material_return_query',
                 name: '退料单查询',
-                component: () => import('../views/Production_Management/Material_Return/MR_Query')
+                component: () => import('../views/Production_Management/2_Material_Return/MR_Query')
             },
             {
                 path: 'material_return_modify',
                 name: '退料单修改',
-                component: () => import('../views/Production_Management/Material_Return/MR_Modify')
+                component: () => import('../views/Production_Management/2_Material_Return/MR_Modify')
             },
             {
                 path: 'warehouse_entry_entry',
                 name: '产成品入库单录入',
-                component: () => import('../views/Production_Management/Warehousing_Entry/WE_Entry')
+                component: () => import('../views/Production_Management/3_Warehousing_Entry/WE_Entry')
             },
             {
                 path: 'warehouse_entry_query',
                 name: '产成品入库单查询',
-                component: () => import('../views/Production_Management/Warehousing_Entry/WE_Query')
+                component: () => import('../views/Production_Management/3_Warehousing_Entry/WE_Query')
             },
             {
                 path: 'warehouse_entry_modify',
                 name: '产成品入库单修改',
-                component: () => import('../views/Production_Management/Warehousing_Entry/WE_Modify')
+                component: () => import('../views/Production_Management/3_Warehousing_Entry/WE_Modify')
             },
             {
                 path: 'assembly_entry',
                 name: '拆/组装单录入',
-                component: () => import('../views/Production_Management/Assembly_Entry/AE_Entry')
+                component: () => import('../views/Production_Management/4_Assembly_Entry/AE_Entry')
             },
             {
                 path: 'assembly_query',
                 name: '拆/组装单查询',
-                component: () => import('../views/Production_Management/Assembly_Entry/AE_Query')
+                component: () => import('../views/Production_Management/4_Assembly_Entry/AE_Query')
             },
             {
                 path: 'assembly_modify',
                 name: '拆/组装单修改',
-                component: () => import('../views/Production_Management/Assembly_Entry/AE_Modify')
+                component: () => import('../views/Production_Management/4_Assembly_Entry/AE_Modify')
             },
             {
                 path: 'sporadic_profit_entry',
                 name: '零星盘盈单录入',
-                component: () => import('../views/Production_Management/Sporadic_Profit/SP_Entry')
+                component: () => import('../views/Production_Management/5_Sporadic_Profit/SP_Entry')
             },
             {
                 path: 'sporadic_profit_query',
                 name: '零星盘盈单查询',
-                component: () => import('../views/Production_Management/Sporadic_Profit/SP_Query')
+                component: () => import('../views/Production_Management/5_Sporadic_Profit/SP_Query')
             },
             {
                 path: 'sporadic_profit_modify',
                 name: '零星盘盈单修改',
-                component: () => import('../views/Production_Management/Sporadic_Profit/SP_Modify')
+                component: () => import('../views/Production_Management/5_Sporadic_Profit/SP_Modify')
             },
             {
                 path: 'sporadic_loss_entry',
                 name: '零星盘亏单录入',
-                component: () => import('../views/Production_Management/Sporadic_Loss/SL_Entry')
+                component: () => import('../views/Production_Management/6_Sporadic_Loss/SL_Entry')
             },
             {
                 path: 'sporadic_loss_query',
                 name: '零星盘亏单查询',
-                component: () => import('../views/Production_Management/Sporadic_Loss/SL_Query')
+                component: () => import('../views/Production_Management/6_Sporadic_Loss/SL_Query')
             },
             {
                 path: 'sporadic_loss_modify',
                 name: '零星盘亏单修改',
-                component: () => import('../views/Production_Management/Sporadic_Loss/SL_Modify')
+                component: () => import('../views/Production_Management/6_Sporadic_Loss/SL_Modify')
             },
             {
                 path: 'distribution_entry',
                 name: '调拨单录入',
-                component: () => import('../views/Production_Management/Distribution/D_Entry')
+                component: () => import('../views/Production_Management/7_Distribution/D_Entry')
             },
             {
                 path: 'distribution_query',
                 name: '调拨单查询',
-                component: () => import('../views/Production_Management/Distribution/D_Query')
+                component: () => import('../views/Production_Management/7_Distribution/D_Query')
             },
             {
                 path: 'distribution_modify',
                 name: '调拨单修改',
-                component: () => import('../views/Production_Management/Distribution/D_Modify')
+                component: () => import('../views/Production_Management/7_Distribution/D_Modify')
             },
             {
                 path: 'scrap_entry',
                 name: '报废单录入',
-                component: () => import('../views/Production_Management/Scrap/S_Entry')
+                component: () => import('../views/Production_Management/8_Scrap/S_Entry')
             },
             {
                 path: 'scrap_query',
                 name: '报废单查询',
-                component: () => import('../views/Production_Management/Scrap/S_Query')
+                component: () => import('../views/Production_Management/8_Scrap/S_Query')
             },
             {
                 path: 'scrap_modify',
                 name: '报废单修改',
-                component: () => import('../views/Production_Management/Scrap/S_Modify')
+                component: () => import('../views/Production_Management/8_Scrap/S_Modify')
             }
         ]
     },
