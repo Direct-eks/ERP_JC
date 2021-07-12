@@ -20,10 +20,10 @@ export default {
             name: '库存管理',
             url: '/stock_management',
         },
-        // {
-        //     name: '生产管理',
-        //     url: '/production_management',
-        // },
+        {
+            name: '生产管理',
+            url: '/production_management',
+        },
         // {
         //     name: '账目管理',
         //     url: '/accounts_management',
@@ -392,47 +392,47 @@ export default {
         {
             name: '商品明细',
             url: '/stock_management/products_details',
-            requiredPermission: 'management:ProductsDetails',
+            requiredPermission: 'stockManagement:ProductsDetails',
         },
         {
             name: '库存报表',
             url: '/stock_management/stock_report',
-            requiredPermission: 'management:StockReport',
+            requiredPermission: 'stockManagement:StockReport',
         },
         {
             name: '商品定价',
             url: '/stock_management/products_pricing',
-            requiredPermission: 'management:ProductsPricing',
+            requiredPermission: 'stockManagement:ProductsPricing',
         },
         {
             name: '库存报警',
             url: '/stock_management/stock_alert',
-            requiredPermission: 'management:StockAlert',
+            requiredPermission: 'stockManagement:StockAlert',
         },
         {
             name: '明细统计',
             url: '/stock_management/detailed_stats',
-            requiredPermission: 'management:DetailStats',
+            requiredPermission: 'stockManagement:DetailStats',
         },
         {
             name: '库存盘点',
             url: '/stock_management/inventory',
-            requiredPermission: 'management:Inventory',
+            requiredPermission: 'stockManagement:Inventory',
         },
         {
             name: '预销售资源',
             url: '/stock_management/presales_query',
-            requiredPermission: 'management:PresalesQuery',
+            requiredPermission: 'stockManagement:PresalesQuery',
         },
         {
             name: '库存资源',
             url: '/stock_management/stock_resources',
-            requiredPermission: 'management:StockResources',
+            requiredPermission: 'stockManagement:StockResources',
         },
         {
             name: '架位设置',
             url: '/stock_management/storage_place',
-            requiredPermission: 'management:StoragePlace',
+            requiredPermission: 'stockManagement:StoragePlace',
         }
     ],
     production_management_nav: [
@@ -442,15 +442,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/material_apply_entry'
+                    url: '/production_management/material_apply_entry',
+                    requiredPermission: 'productionMaterialApply:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/material_apply_query'
+                    url: '/production_management/material_apply_query',
+                    requiredPermission: 'productionMaterialApply:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/material_apply_modify'
+                    url: '/production_management/material_apply_modify',
+                    requiredPermission: 'productionMaterialApply:Modification'
                 }
             ]
         },
@@ -460,15 +463,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/material_return_entry'
+                    url: '/production_management/material_return_entry',
+                    requiredPermission: 'productionMaterialReturn:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/material_return_query'
+                    url: '/production_management/material_return_query',
+                    requiredPermission: 'productionMaterialReturn:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/material_return_modify'
+                    url: '/production_management/material_return_modify',
+                    requiredPermission: 'productionMaterialReturn:Modification'
                 }
             ]
         },
@@ -478,15 +484,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/warehouse_entry_entry'
+                    url: '/production_management/warehouse_entry_entry',
+                    requiredPermission: 'productionWarehouseEntry:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/warehouse_entry_query'
+                    url: '/production_management/warehouse_entry_query',
+                    requiredPermission: 'productionWarehouseEntry:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/warehouse_entry_modify'
+                    url: '/production_management/warehouse_entry_modify',
+                    requiredPermission: 'productionWarehouseEntry:Modification'
                 }
             ]
         },
@@ -496,15 +505,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/assembly_entry'
+                    url: '/production_management/assembly_entry',
+                    requiredPermission: 'productionAssemblyEntry:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/assembly_query'
+                    url: '/production_management/assembly_query',
+                    requiredPermission: 'productionAssemblyEntry:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/assembly_modify'
+                    url: '/production_management/assembly_modify',
+                    requiredPermission: 'productionAssemblyEntry:Modification'
                 }
             ]
         },
@@ -514,15 +526,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/sporadic_profit_entry'
+                    url: '/production_management/sporadic_profit_entry',
+                    requiredPermission: 'productionSporadicProfit:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/sporadic_profit_query'
+                    url: '/production_management/sporadic_profit_query',
+                    requiredPermission: 'productionSporadicProfit:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/sporadic_profit_modify'
+                    url: '/production_management/sporadic_profit_modify',
+                    requiredPermission: 'productionSporadicProfit:Modification'
                 }
             ]
         },
@@ -532,15 +547,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/sporadic_loss_entry'
+                    url: '/production_management/sporadic_loss_entry',
+                    requiredPermission: 'productionSporadicLoss:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/sporadic_loss_query'
+                    url: '/production_management/sporadic_loss_query',
+                    requiredPermission: 'productionSporadicLoss:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/sporadic_loss_modify'
+                    url: '/production_management/sporadic_loss_modify',
+                    requiredPermission: 'productionSporadicLoss:Modification'
                 }
             ]
         },
@@ -550,15 +568,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/distribution_entry'
+                    url: '/production_management/distribution_entry',
+                    requiredPermission: 'productionDistribution:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/distribution_query'
+                    url: '/production_management/distribution_query',
+                    requiredPermission: 'productionDistribution:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/distribution_modify'
+                    url: '/production_management/distribution_modify',
+                    requiredPermission: 'productionDistribution:Modification'
                 }
             ]
         },
@@ -568,15 +589,18 @@ export default {
             children: [
                 {
                     name: '录入',
-                    url: '/production_management/scrap_entry'
+                    url: '/production_management/scrap_entry',
+                    requiredPermission: 'productionScrap:Creation'
                 },
                 {
                     name: '查询',
-                    url: '/production_management/scrap_query'
+                    url: '/production_management/scrap_query',
+                    requiredPermission: 'productionScrap:Query'
                 },
                 {
                     name: '修改',
-                    url: '/production_management/scrap_modify'
+                    url: '/production_management/scrap_modify',
+                    requiredPermission: 'productionScrap:Modification'
                 }
             ]
         }

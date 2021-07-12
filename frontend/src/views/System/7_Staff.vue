@@ -187,17 +187,17 @@
                         <v-tab-item key="management">
                             <v-row class="ml-10">
                                 <v-col cols="auto">
-                                    <v-checkbox v-model="form.permissions" label="商品明细" value="management:ProductsDetails"/>
-                                    <v-checkbox v-model="form.permissions" label="库存报表" value="management:StockReport"/>
-                                    <v-checkbox v-model="form.permissions" label="商品定价" value="management:ProductsPricing"/>
-                                    <v-checkbox v-model="form.permissions" label="库存报警" value="management:StockAlert"/>
-                                    <v-checkbox v-model="form.permissions" label="明细统计" value="management:DetailStats"/>
+                                    <v-checkbox v-model="form.permissions" label="商品明细" value="stockManagement:ProductsDetails"/>
+                                    <v-checkbox v-model="form.permissions" label="库存报表" value="stockManagement:StockReport"/>
+                                    <v-checkbox v-model="form.permissions" label="商品定价" value="stockManagement:ProductsPricing"/>
+                                    <v-checkbox v-model="form.permissions" label="库存报警" value="stockManagement:StockAlert"/>
+                                    <v-checkbox v-model="form.permissions" label="明细统计" value="stockManagement:DetailStats"/>
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-checkbox v-model="form.permissions" label="库存盘点" value="management:Inventory"/>
-                                    <v-checkbox v-model="form.permissions" label="预销售资源" value="management:PresalesQuery"/>
-                                    <v-checkbox v-model="form.permissions" label="库存资源" value="management:StockResources"/>
-                                    <v-checkbox v-model="form.permissions" label="架位设置" value="management:StoragePlace"/>
+                                    <v-checkbox v-model="form.permissions" label="库存盘点" value="stockManagement:Inventory"/>
+                                    <v-checkbox v-model="form.permissions" label="预销售资源" value="stockManagement:PresalesQuery"/>
+                                    <v-checkbox v-model="form.permissions" label="库存资源" value="stockManagement:StockResources"/>
+                                    <v-checkbox v-model="form.permissions" label="架位设置" value="stockManagement:StoragePlace"/>
                                 </v-col>
                             </v-row>
                         </v-tab-item>
