@@ -21,12 +21,13 @@
                                 activatable
                                 return-object
                                 @update:active="treeSelect"
+                                @update:open="treeSelect"
+                                @input="treeSelect"
                                 color="primary"
                                 open-on-click
                                 dense>
                     </v-treeview>
                 </v-responsive>
-
             </v-card>
             <v-card outlined>
                 <v-responsive max-width="65vw">
@@ -34,14 +35,15 @@
                                   :headers="tableHeaders"
                                   :items="tableData"
                                   item-key="companyID"
+                                  show-select
+                                  single-select
+                                  checkbox-color="accent"
                                   @click:row="tableClick"
                                   @item-selected="tableClick2"
+                                  height="55vh"
                                   disable-sort
                                   disable-pagination
                                   hide-default-footer
-                                  height="55vh"
-                                  show-select
-                                  single-select
                                   fixed-header
                                   locale="zh-cn"
                                   dense>
@@ -50,24 +52,104 @@
                 <v-row class="mt-1">
                     <v-col cols="auto">
                         <v-btn color="primary" class="ml-3"
-                               @click="">
+                               @click="modify(false)">
                             新增
                         </v-btn>
                     </v-col>
                     <v-col cols="auto">
+                        <v-btn color="accent" class="ml-3"
+                               @click="modify(true)">
+                            修改选中
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="auto">
                         <v-btn color="warning" class="ml-3"
-                               @click="">
+                               @click="removeItem">
                             删除
                         </v-btn>
                     </v-col>
                     <v-spacer></v-spacer>
                     <v-col cols="auto">
                         <v-btn color="success" class="mr-3"
-                               @click="">
+                               @click="saveChanges">
                             保存修改
                         </v-btn>
                     </v-col>
                 </v-row>
+                <v-dialog v-model="editPanelOpen" max-width="900px">
+                    <v-card>
+                        <v-card-title>公司信息</v-card-title>
+                        <v-card-text class="d-flex flex-column">
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.abbreviatedName"
+                                                  label="简称" hide-details="auto"
+                                                  :readonly="editIndex !== -1"
+                                                  outlined dense
+                                                  style="width: 220px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.phone"
+                                                  label="电话" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 180px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.fax"
+                                                  label="传真" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 180px"/>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col>
+                                    <v-textarea v-model="companyData.remark"
+                                                label="备注" hide-details="auto"
+                                                outlined dense auto-grow rows="1"/>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.contactPerson"
+                                                  label="联系人" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 100px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.contactNumber"
+                                                  label="联系人电话" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 130px"/>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.address"
+                                                  label="地址" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 300px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.zipcode"
+                                                  label="邮编" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 100px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.fullName"
+                                                  label="全称" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 300px"/>
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="editPanelOpen = false">取消</v-btn>
+                            <v-btn color="success" @click="saveEdit">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-card>
         </v-card-text>
     </v-card>
@@ -79,11 +161,33 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "RelevantCompanies",
     beforeMount() {
+        this.defaultCompanyData = Object.assign({}, this.companyData)
         this.$store.dispatch('getRelevantCompanyCategoryList')
     },
     data() {
         return {
             mdiArrowLeft,
+
+            editPanelOpen: false,
+            editIndex: -1,
+            companyData: {
+                companyID: -1,
+                sequenceNumber: 0,
+                abbreviatedName: '',
+                phone: '',
+                address: '',
+                fax: '',
+                fullName: '',
+                contactPerson: '',
+                contactNumber: '',
+                remark: '',
+                isActive: 1,
+                zipcode: '',
+                email: '',
+                website: ''
+            },
+            defaultCompanyData: {},
+            newItemIndex: -1,
 
             treeSelection: [],
             tableHeaders: [
@@ -111,7 +215,7 @@ export default {
     },
     methods: {
         tableClick(row) {
-            if (this.currentRow.indexOf(row) !== -1) {
+            if (this.currentRow.includes(row)) {
                 this.currentRow = []
             }
             else {
@@ -119,7 +223,7 @@ export default {
             }
         },
         tableClick2(row) {
-            if (row.value) {
+            if (!row.value) {
                 this.currentRow = []
             }
             else {
@@ -128,12 +232,18 @@ export default {
         },
         treeSelect(data) {
             this.currentRow = []
-            if (data.length === 0) return
-            let val = data[0]
+            if (data.length === 0) {
+                this.tableData = []
+                this.treeSelection = []
+                return
+            }
+
+            const val = data[data.length - 1]
+            this.treeSelection = [val]
             if (val.children.length === 0) {
                 let result = this.$store.getters.relevantCompanies(val.categoryID)
                 if (result) {
-                    this.tableData = result
+                    this.tableData = JSON.parse(JSON.stringify(result))
                     return
                 }
                 this.$getRequest(this.$api.relevantCompaniesByCategory +
@@ -143,14 +253,66 @@ export default {
                 }).catch(() => {})
             }
         },
-        addNewItem() {
-
+        modify(isOld) {
+            if (isOld) {
+                if (this.currentRow.length === 0) {
+                    this.$store.commit('setSnackbar', {
+                        message: '未选中单位', color: 'warning'
+                    })
+                    return
+                }
+                this.editPanelOpen = true
+                this.editIndex = this.tableData.indexOf(this.currentRow[0])
+                Object.assign(this.companyData, this.currentRow[0])
+            }
+            else {
+                if (this.treeSelection.length === 0) {
+                    this.$store.commit('setSnackbar', {
+                        message: '未选中分类', color: 'warning'
+                    })
+                    return
+                }
+                this.editPanelOpen = true
+                this.editIndex = -1
+                Object.assign(this.companyData, this.defaultCompanyData)
+                this.companyData.companyID = this.newItemIndex--
+                this.companyData.categoryID = this.treeSelection[0].categoryID
+            }
+        },
+        saveEdit() {
+            if (this.editIndex === -1 ) {
+                this.tableData.push(Object.assign({}, this.companyData))
+            }
+            else {
+                Object.assign(this.tableData[this.editIndex], this.companyData)
+            }
+            this.editPanelOpen = false
         },
         removeItem() {
-
+            if (this.currentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '未选中单位', color: 'warning'
+                })
+                return
+            }
+            this.tableData.splice(this.tableData.indexOf(this.currentRow[0]), 1)
+            this.currentRow = []
         },
         saveChanges() {
+            if (this.treeSelection.length === 0 || this.tableData.length === 0) return
 
+            this.$postRequest(this.$api.updateRelevantCompaniesWithCategoryID, {
+                elements: this.tableData
+            }, {
+                categoryID: this.treeSelection[0].categoryID
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '保存成功', color: 'success'
+                })
+
+                this.$store.commit('clearRelevantCompanyData')
+                this.$router.replace('/system')
+            }).catch(() => {})
         }
     }
 }

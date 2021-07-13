@@ -37,6 +37,11 @@ export default {
             required: false,
             default: true
         },
+        selectForLevel: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
         height: {
             type: String,
             required: true,
@@ -51,7 +56,6 @@ export default {
     data() {
         return {
             treeSelection: [],
-            treeSelectedLevel: '',
         }
     },
     computed: {
@@ -62,15 +66,25 @@ export default {
     },
     methods: {
         treeSelect(data) {
-            if (data.length === 0) return
-            const val = data[0]
-            this.treeSelection = [val]
-            this.treeSelectedLevel = val.label
-
-            if (!this.selectForSearch) {
-                this.$emit('treeSelectionLabel', this.treeSelectedLevel)
+            if (data.length === 0) {
+                this.treeSelection = []
+                if (this.selectForLevel) {
+                    this.$emit('treeSelectionObject', {label: '', areaID: -1, children: []})
+                }
+                if (this.selectForSearch) {
+                    this.$emit('treeSelectionResult', [])
+                }
                 return
             }
+
+            const val = data[data.length - 1]
+            this.treeSelection = [val]
+
+            if (this.selectForLevel) {
+                this.$emit('treeSelectionObject', val)
+            }
+
+            if (!this.selectForSearch) return
 
             if (val.children.length === 0) { // end node
                 const result = this.$store.getters.companies(val.areaID)

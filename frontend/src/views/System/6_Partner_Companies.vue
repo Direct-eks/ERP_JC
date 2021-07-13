@@ -40,6 +40,8 @@
         <v-card-text class="d-flex">
             <v-card outlined>
                 <CompanyTree height="75vh" max-width="230px"
+                             :select-for-level="true"
+                             @treeSelectionObject="treeSelectionObject"
                              @treeSelectionResult="treeSelectionResult">
                 </CompanyTree>
             </v-card>
@@ -66,93 +68,10 @@
                 </v-responsive>
                 <v-row class="mt-1">
                     <v-col cols="auto">
-                        <v-dialog v-model="editPanelOpen" max-width="900px">
-                            <template v-slot:activator="{ on }">
-                                <v-btn color="primary" class="ml-3" v-on="on"
-                                       @click="modify(false)">
-                                    新增
-                                </v-btn>
-                            </template>
-                            <v-card>
-                                <v-card-title>公司信息</v-card-title>
-                                <v-card-text class="d-flex flex-column">
-                                    <v-row>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.abbreviatedName"
-                                                          label="简称" hide-details="auto"
-                                                          readonly outlined dense
-                                                          style="width: 220px"/>
-                                        </v-col>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.phone"
-                                                          label="电话" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 180px"/>
-                                        </v-col>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.fax"
-                                                          label="传真" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 180px"/>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col>
-                                            <v-textarea v-model="companyData.remark"
-                                                        label="备注" hide-details="auto"
-                                                        outlined dense auto-grow rows="1"/>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col cols="auto">
-                                            <v-select v-model="companyData.classification"
-                                                      :items="classificationOptions"
-                                                      label="分类" hide-details="auto"
-                                                      outlined dense
-                                                      style="width: 140px">
-                                            </v-select>
-                                        </v-col>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.contactPerson"
-                                                          label="联系人" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 100px"/>
-                                        </v-col>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.contactNumber"
-                                                          label="联系人电话" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 130px"/>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.address"
-                                                          label="地址" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 300px"/>
-                                        </v-col>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.zipcode"
-                                                          label="邮编" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 100px"/>
-                                        </v-col>
-                                        <v-col cols="auto">
-                                            <v-text-field v-model="companyData.fullName"
-                                                          label="全称" hide-details="auto"
-                                                          outlined dense
-                                                          style="width: 300px"/>
-                                        </v-col>
-                                    </v-row>
-                                </v-card-text>
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="primary" @click="editPanelOpen = false">取消</v-btn>
-                                    <v-btn color="success" @click="saveEdit">确认</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-dialog>
+                        <v-btn color="primary" class="ml-3"
+                               @click="modify(false)">
+                            新增
+                        </v-btn>
                     </v-col>
                     <v-col cols="auto">
                         <v-btn color="accent" class="ml-3"
@@ -174,6 +93,88 @@
                         </v-btn>
                     </v-col>
                 </v-row>
+                <v-dialog v-model="editPanelOpen" max-width="900px">
+                    <v-card>
+                        <v-card-title>公司信息</v-card-title>
+                        <v-card-text class="d-flex flex-column">
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.abbreviatedName"
+                                                  label="简称" hide-details="auto"
+                                                  :readonly="editIndex !== -1"
+                                                  outlined dense
+                                                  style="width: 220px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.phone"
+                                                  label="电话" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 180px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.fax"
+                                                  label="传真" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 180px"/>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col>
+                                    <v-textarea v-model="companyData.remark"
+                                                label="备注" hide-details="auto"
+                                                outlined dense auto-grow rows="1"/>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-select v-model="companyData.classification"
+                                              :items="classificationOptions"
+                                              label="分类" hide-details="auto"
+                                              outlined dense
+                                              style="width: 140px">
+                                    </v-select>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.contactPerson"
+                                                  label="联系人" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 100px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.contactNumber"
+                                                  label="联系人电话" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 130px"/>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.address"
+                                                  label="地址" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 300px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.zipcode"
+                                                  label="邮编" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 100px"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-text-field v-model="companyData.fullName"
+                                                  label="全称" hide-details="auto"
+                                                  outlined dense
+                                                  style="width: 300px"/>
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="editPanelOpen = false">取消</v-btn>
+                            <v-btn color="success" @click="saveEdit">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-card>
         </v-card-text>
     </v-card>
@@ -201,21 +202,30 @@ export default {
             nameSearchField: '',
             phoneSearchField: '',
 
+            treeLevel: {label: '', areaID: -1, children: []},
+
             editPanelOpen: false,
             editIndex: -1,
             companyData: {
+                companyID: -1,
+                sequenceNumber: 0,
+                brandCode: '',
                 abbreviatedName: '',
                 phone: '',
+                address: '',
                 fax: '',
-                remark: '',
                 classification: '',
+                fullName: '',
                 contactPerson: '',
                 contactNumber: '',
-                address: '',
+                remark: '',
+                isActive: 1,
                 zipcode: '',
-                fullName: '',
+                email: '',
+                website: ''
             },
             defaultCompanyData: {},
+            newItemIndex: -1,
 
             headers: [
                 { text: '单位简称', value: 'abbreviatedName', width: '120px' },
@@ -245,7 +255,7 @@ export default {
             }).catch(() => {})
         },
         tableClick(val) {
-            if (this.currentRow.indexOf(val) !== -1) {
+            if (this.currentRow.includes(val)) {
                 this.currentRow = []
             }
             else {
@@ -264,6 +274,9 @@ export default {
             this.currentRow = []
             this.tableData = JSON.parse(JSON.stringify(data))
         },
+        treeSelectionObject(data) {
+            this.treeLevel = data
+        },
         modify(isOld) {
             if (isOld) {
                 if (this.currentRow.length === 0) {
@@ -277,8 +290,17 @@ export default {
                 Object.assign(this.companyData, this.currentRow[0])
             }
             else {
+                if (this.treeLevel.areaID === -1) {
+                    this.$store.commit('setSnackbar', {
+                        message: '未选中分类', color: 'warning'
+                    })
+                    return
+                }
+                this.editPanelOpen = true
                 this.editIndex = -1
                 Object.assign(this.companyData, this.defaultCompanyData)
+                this.companyData.companyID = this.newItemIndex--
+                this.companyData.areaID = this.treeLevel.areaID
             }
         },
         saveEdit() {
@@ -301,7 +323,20 @@ export default {
             this.currentRow = []
         },
         saveChanges() {
+            if (this.treeLevel.areaID === -1 || this.tableData.length === 0) return
 
+            this.$postRequest(this.$api.updateCompaniesWithAreaID, {
+                elements: this.tableData
+            }, {
+                areaID: this.treeLevel.areaID
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '保存成功', color: 'success'
+                })
+
+                this.$store.commit('clearCompanyData')
+                this.$router.replace('/system')
+            }).catch(() => {})
         }
     }
 }

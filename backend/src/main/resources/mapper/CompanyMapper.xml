@@ -104,23 +104,23 @@
 
     <update id="updateCompany">
         update c_partner_company
-        set sequence_number = #{sequeceNumber},
+        set sequence_number = #{sequenceNumber},
             brand_code = #{brandCode},
-            abbreviated_name = ${abbreviatedName},
-            area_id = ${areaID},
+            abbreviated_name = #{abbreviatedName},
+            area_id = #{areaID},
             phone = #{phone},
             address = #{address},
-            fax = ${fax},
-            classification = ${classification},
-            full_name = ${fullName},
+            fax = #{fax},
+            classification = #{classification},
+            full_name = #{fullName},
             contact_person = #{contactPerson},
             contact_number = #{contactNumber},
-            remark = ${remark},
-            is_active = ${isActive},
-            zipcode = ${zipcode},
-            email = ${email},
-            website = ${website}
-        where partner_company_id = ${companyID}
+            remark = #{remark},
+            is_active = #{isActive},
+            zipcode = #{zipcode},
+            email = #{email},
+            website = #{website}
+        where partner_company_id = #{companyID}
     </update>
 
 
@@ -198,7 +198,7 @@
             email = #{email},
             website = #{website},
             category_id = #{categoryID},
-            remark = ${remark}
+            remark = #{remark}
         where relevant_company_id = #{companyID}
     </update>
 

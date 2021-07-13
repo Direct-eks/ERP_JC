@@ -28,14 +28,14 @@ const api = {
     companyAreas: '/company/getCompanyAreas', // GET
     companiesByAreaID: '/company/getCompaniesByAreaID/', // GET
     updateCompanyAreas: '/company/updateCompanyAreas', // POST
-    updateCompaniesWithAreaID: '',
+    updateCompaniesWithAreaID: '/company/updatePartnerCompanyWithArea', // POST
 
     selfCompany: '/company/getSelfCompany', // GET
 
     relevantCompanyCategories: '/company/getRelevantCompanyCategories', // GET
     relevantCompaniesByCategory: '/company/getRelevantCompaniesByCategory/', // GET {id}
     updateRelevantCompanyCategories: '/company/updateRelevantCompanyCategories', // POST
-    updateRelevantCompaniesWithCategoryID: '/company/updateRelevantCompanyWithCategory/', // POST {id}
+    updateRelevantCompaniesWithCategoryID: '/company/updateRelevantCompanyWithCategory', // POST {id}
 
     /* ------ /department ------*/
     departmentOptions: '/department/getDepartmentOptions', // GET
