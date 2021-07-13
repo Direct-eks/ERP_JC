@@ -1,4 +1,4 @@
-package org.jc.backend.controller;
+package org.jc.backend.controller.products;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

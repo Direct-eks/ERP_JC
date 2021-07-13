@@ -1,4 +1,4 @@
-package org.jc.backend.controller;
+package org.jc.backend.controller.entries;
 
 import io.swagger.annotations.Api;
 import org.jc.backend.service.InitialMoneyEntryService;
