@@ -694,55 +694,48 @@ export default {
     query_stats_nav: [
         {
             name: '入库单汇总统计',
-            url: '/query_stats/in_summary_stats'
+            url: '/query_stats/in_summary_stats',
+            requiredPermission: 'query:InboundEntrySummary',
         },
         {
-            name: '入库结账单',
-            url: '/query_stats/in_check',
-            children: [
-                {
-                    name: '汇总统计',
-                    url: '/query_stats/in_check_summary_stats'
-                },
-                {
-                    name: '审核',
-                    url: '/query_stats/in_check_audit'
-                }
-            ]
+            name: '入库结账单汇总统计',
+            url: '/query_stats/in_check_summary_stats',
+            requiredPermission: 'query:InboundCheckoutSummary',
         },
         {
             name: '应付款查询',
             url: '/query_stats/pay_query',
+            requiredPermission: 'query:Payable',
         },
         {
             name: '出库单汇总统计',
-            url: '/query_stats/out_summary_stats'
+            url: '/query_stats/out_summary_stats',
+            requiredPermission: 'query:OutboundEntrySummary',
         },
         {
-            name: '出库结账单',
-            url: '/query_stats/out_check',
-            children: [
-                {
-                    name: '汇总统计',
-                    url: '/query_stats/out_check_summary_stats'
-                },
-                {
-                    name: '审核',
-                    url: '/query_stats/out_check_audit'
-                }
-            ]
+            name: '出库结账单汇总统计',
+            url: '/query_stats/out_check_summary_stats',
+            requiredPermission: 'query:OutboundCheckoutSummary',
         },
         {
             name: '应收款查询',
             url: '/query_stats/rec_query',
+            requiredPermission: 'query:Receivable',
+        },
+        {
+            name: '结账单审核',
+            url: '/query_stats/check_audit',
+            requiredPermission: 'query:Audit',
         },
         {
             name: '销售价差统计',
-            url: '/query_stats/price_diff_stats'
+            url: '/query_stats/price_diff_stats',
+            requiredPermission: 'query:Diff',
         },
         {
             name: '年度出入库统计',
-            url: '/query_stats/yearly_stats'
+            url: '/query_stats/yearly_stats',
+            requiredPermission: 'query:YearlyStat',
         }
     ],
     resources_nav: [

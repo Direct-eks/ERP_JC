@@ -40,18 +40,12 @@ import nav from "~/utils/nav";
 export default {
     name: "Page_query_stats",
     beforeMount() {
-        // const userPermissions = this.$store.getters.currentUserPermissions
         let navItems = JSON.parse(JSON.stringify(nav.query_stats_nav))
-        // let itemsToBeRemoved = []
-        // for (const item of navItems) {
-        //     if (!userPermissions.includes(item.requiredPermission)) {
-        //         itemsToBeRemoved.push(item)
-        //     }
-        // }
-        // itemsToBeRemoved.forEach(item => {
-        //     navItems.splice(navItems.indexOf(item), 1)
-        // })
-        this.navItem = navItems
+        for (const item of navItems) {
+            if (this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
+                this.navItem.push(item)
+            }
+        }
 
         if (this.$route.path !== '/query_stats') {
             this.showStatus = false

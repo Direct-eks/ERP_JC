@@ -564,16 +564,10 @@ const routes = [
                     '../views/Query_Stats/In_or_Pay/2_In_Check_Summary_Stats')
             },
             {
-                path: 'in_check_audit',
-                name: '入库结账单审核',
-                component: () => import(/* webpackChunkName: "Query_Stats_In_Check_Audit" */
-                    '../views/Query_Stats/In_or_Pay/3_In_Check_Audit')
-            },
-            {
                 path: 'pay_query',
                 name: '应付款查询',
                 component: () => import(/* webpackChunkName: "Query_Stats_Pay_Query" */
-                    '../views/Query_Stats/In_or_Pay/4_Pay_Query')
+                    '../views/Query_Stats/In_or_Pay/3_Pay_Query')
             },
             {
                 path: 'out_summary_stats',
@@ -588,16 +582,16 @@ const routes = [
                     '../views/Query_Stats/Out_or_Receive/2_Out_Check_Summary_Stats')
             },
             {
-                path: 'out_check_audit',
-                name: '出库结账单审核',
-                component: () => import(/* webpackChunkName: "Query_Stats_Out_Check_Audit" */
-                    '../views/Query_Stats/Out_or_Receive/3_Out_Check_Audit')
-            },
-            {
                 path: 'rec_query',
                 name: '应收款查询',
                 component: () => import(/* webpackChunkName: "Query_Stats_Rec_Stats" */
-                    '../views/Query_Stats/Out_or_Receive/4_Rec_Stats')
+                    '../views/Query_Stats/Out_or_Receive/3_Rec_Stats')
+            },
+            {
+                path: 'check_audit',
+                name: '结账单审核',
+                component: () => import(/* webpackChunkName: "Query_Stats_Check_Audit" */
+                    '../views/Query_Stats/Others/Check_Audit')
             },
             {
                 path: 'price_diff_stats',

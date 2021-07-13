@@ -1,9 +1,9 @@
 <template>
     <!--    <p>查询统计</p>-->
-    <!--    <p>出库结账单审核</p>-->
+    <!--    <p>结账单审核</p>-->
     <v-card>
         <v-card-title class="d-flex">
-            出库结账单审核
+            结账单审核
             <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/query_stats">
@@ -21,7 +21,7 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "Out_Check_Audit",
+    name: "In_Check_Audit",
     data() {
         return {
             mdiArrowLeft,

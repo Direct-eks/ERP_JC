@@ -90,7 +90,8 @@
                     <v-tab key="inboundCheckout">入库结账</v-tab>
                     <v-tab key="outboundCheckout">出库结账</v-tab>
                     <v-tab key="stockManagement">库存管理</v-tab>
-                    <v-tab key="productionManagement">库存管理</v-tab>
+                    <v-tab key="productionManagement">生产管理</v-tab>
+                    <v-tab key="query">查询统计</v-tab>
                     <v-tab key="resources">资源录入</v-tab>
                     <v-tab key="system">系统标准</v-tab>
 
@@ -248,6 +249,25 @@
                                 </v-col>
                             </v-row>
                         </v-tab-item>
+                        <v-tab-item key="query">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="入库单汇总统计" value="query:InboundEntrySummary"/>
+                                    <v-checkbox v-model="form.permissions" label="入库结账单汇总统计" value="query:InboundCheckoutSummary"/>
+                                    <v-checkbox v-model="form.permissions" label="应付款查询" value="query:Payable"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="出库单汇总统计" value="query:OutboundEntrySummary"/>
+                                    <v-checkbox v-model="form.permissions" label="出库结账单汇总统计" value="query:OutboundCheckoutSummary"/>
+                                    <v-checkbox v-model="form.permissions" label="应收款查询" value="query:Receivable"/>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="结账单审核" value="query:Audit"/>
+                                    <v-checkbox v-model="form.permissions" label="销售价差统计" value="query:Diff"/>
+                                    <v-checkbox v-model="form.permissions" label="年度出入库统计" value="query:YearlyStat"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
                         <v-tab-item key="system">
                             <v-row class="ml-10">
                                 <v-col cols="auto">
@@ -332,7 +352,7 @@ export default {
             userTableHeaders: [
                 { text: '序号', value: 'index', width: '65px' },
                 { text: '用户', value: 'username', width: '110px' },
-                { text: '级别', value: 'role.role', width: '70px' },
+                { text: '级别', value: 'role', width: '70px' },
                 { text: '备注', value: 'remark', width: '180px' },
             ],
             userTableData: [],
@@ -403,12 +423,12 @@ export default {
                     this.$store.commit('setSnackbar', {
                         message: '保存成功', color: 'success'
                     })
+                    // refresh curr user permissions
+                    if (this.form.username === this.$store.getters.currentUser) {
+                        this.$store.commit('modifyCurrentUserPermissions', JSON.parse(JSON.parse(this.form.permissions)))
+                        sessionStorage.setItem('userPermissions', JSON.stringify(this.form.permissions))
+                    }
                 }).catch(() => {})
-                // refresh curr user permissions
-                if (this.form.username === this.$store.getters.currentUser) {
-                    this.$store.commit('modifyCurrentUserPermissions', JSON.parse(JSON.parse(this.form.permissions)))
-                    sessionStorage.setItem('userPermissions', JSON.stringify(this.form.permissions))
-                }
             }
         },
         deleteUser() {
