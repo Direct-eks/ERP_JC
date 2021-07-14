@@ -8,5 +8,20 @@ import lombok.ToString;
 @Setter
 @ToString
 public class WarehouseEntryDO {
+    private String warehouseEntryID;
+    private String entryDate;
+    private String creationDate;
+    private String totalAmount;
+    private String drawer;
 
+    private int departmentID;
+    // from e_department
+    private String departmentName;
+
+    private int warehouseID;
+    // from w_warehouse
+    private String warehouseName;
+
+    private String remark;
+    private String relatedEntrySerial;
 }

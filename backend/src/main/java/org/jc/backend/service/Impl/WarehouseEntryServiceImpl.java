@@ -22,7 +22,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional
     @Override
-    public void createEntry() {
+    public void createProductionEntry() {
 
     }
 }
