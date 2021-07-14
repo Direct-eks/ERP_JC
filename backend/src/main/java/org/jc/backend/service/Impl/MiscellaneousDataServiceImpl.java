@@ -64,4 +64,56 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
             throw e;
         }
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public String getPermittedRoundingAmountByUser(String username) {
+        try {
+            return miscellaneousDataMapper.queryPermittedRoundingAmountByUser(username);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void insertPermittedRoundingAmountByUser(String username, String amount) {
+        try {
+            miscellaneousDataMapper.insertPermittedRoundingAmountByUser(username, amount);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updatePermittedRoundingAmountByUser(String username, String amount) {
+        try {
+            miscellaneousDataMapper.updatePermittedRoundingAmountByUser(username, amount);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deletePermittedRoundingAmountByUser(String username) {
+        try {
+            miscellaneousDataMapper.deletePermittedRoundingAmountByUser(username);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
 }

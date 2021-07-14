@@ -12,21 +12,46 @@
 
 
     <select id="queryAllTaxRateOptions" resultMap="miscellaneousDataResultMap">
-        select property_name, property_value, property_remark
+        select property_name, property_value, property_value2
         from miscellaneous_data
         where property_name = 'tax_rate'
     </select>
     
     <select id="queryLastWarehouseStockUpdateTime" resultMap="miscellaneousDataResultMap">
-        select property_name, property_value, property_remark
+        select property_name, property_value, property_value2
         from miscellaneous_data
         where property_name = 'last_warehouse_stock_update_time'
     </select>
-    
+
     <update id="updateLastBackupTime">
         update miscellaneous_data
         set property_value = datetime('now', 'localtime')
         where property_name = 'last_backup_time'
     </update>
+
+    <select id="queryPermittedRoundingAmountByUser" resultType="java.lang.String">
+        select property_value2
+        from miscellaneous_data
+        where property_name = 'permitted_rounding_amount'
+            and property_value = #{username}
+    </select>
+
+    <insert id="insertPermittedRoundingAmountByUser">
+        insert into miscellaneous_data(property_name, property_value, property_value2)
+        values ('permittedRoundingAmount', #{username}, #{amount})
+    </insert>
+
+    <update id="updatePermittedRoundingAmountByUser">
+        update miscellaneous_data
+        set property_value2 = #{amount}
+        where property_name = 'permitted_rounding_amount'
+            and property_value = #{username}
+    </update>
+
+    <delete id="deletePermittedRoundingAmountByUser">
+        delete from miscellaneous_data
+        where property_name = 'permitted_rounding_amount'
+            and property_value = #{username}
+    </delete>
 
 </mapper>

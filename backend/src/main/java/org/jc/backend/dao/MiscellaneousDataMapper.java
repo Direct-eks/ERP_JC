@@ -12,6 +12,12 @@ import java.util.List;
 @Repository
 public interface MiscellaneousDataMapper {
     List<MiscellaneousDataO> queryAllTaxRateOptions();
+
     MiscellaneousDataO queryLastWarehouseStockUpdateTime();
     void updateLastBackupTime();
+
+    String queryPermittedRoundingAmountByUser(String username);
+    void insertPermittedRoundingAmountByUser(String username, String amount);
+    void updatePermittedRoundingAmountByUser(String username, String amount);
+    void deletePermittedRoundingAmountByUser(String username);
 }
