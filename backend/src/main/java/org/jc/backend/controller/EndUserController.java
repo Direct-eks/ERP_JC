@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.EndUserO.EndUserLoginVO;
 import org.jc.backend.entity.EndUserO.EndUserVO;
 import org.jc.backend.entity.EndUserO.UserPermission;
@@ -127,7 +128,7 @@ public class EndUserController {
     @ApiOperation(value = "", response = void.class)
     @RequiresRoles("admin")
     @DeleteMapping("/deleteUser")
-    public void deleteUser(@RequestParam("userID") int userID) {
+    public void deleteUser(@RequestParam("userID") int userID) throws GlobalParamException {
         logger.info("POST Request to /user/createNewUser, id: {}", userID);
 
         endUserService.deleteUser(userID);

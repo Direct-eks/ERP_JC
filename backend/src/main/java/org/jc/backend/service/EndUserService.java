@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.EndUserO.*;
 import org.springframework.stereotype.Indexed;
 
@@ -26,5 +27,5 @@ public interface EndUserService {
 
     void updateUser(EndUserVO endUserVO);
     void createUser(EndUserVO endUserVO);
-    void deleteUser(int id);
+    void deleteUser(int id) throws GlobalParamException;
 }

@@ -6,9 +6,11 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.EndUserMapper;
 import org.jc.backend.entity.EndUserO.*;
 import org.jc.backend.service.EndUserService;
+import org.jc.backend.service.MiscellaneousDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,9 +27,14 @@ public class EndUserServiceImpl implements EndUserService {
     private static final Logger logger = LoggerFactory.getLogger(EndUserServiceImpl.class);
 
     private final EndUserMapper endUserMapper;
+    private final MiscellaneousDataService miscellaneousDataService;
 
-    public EndUserServiceImpl(EndUserMapper endUserMapper) {
+    public EndUserServiceImpl(
+            EndUserMapper endUserMapper,
+            MiscellaneousDataService miscellaneousDataService
+    ) {
         this.endUserMapper = endUserMapper;
+        this.miscellaneousDataService = miscellaneousDataService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -35,8 +42,11 @@ public class EndUserServiceImpl implements EndUserService {
     @Transactional(readOnly = true)
     @Override
     public EndUserDO getUserByName(String username) {
-        EndUserDO userDO = new EndUserDO();
-        BeanUtils.copyProperties(endUserMapper.queryUserByName(username), userDO);
+        EndUserDO userDO = endUserMapper.queryUserByName(username);
+
+        String amount = miscellaneousDataService.getPermittedRoundingAmountByUser(username);
+        userDO.setPermittedRoundingAmount(amount);
+
         return userDO;
     }
 
@@ -125,6 +135,9 @@ public class EndUserServiceImpl implements EndUserService {
                 int id = userVO.getUserID();
                 userVO.setRole(endUserMapper.queryRoleByUserId(id));
                 userVO.setPermissions(endUserMapper.queryPermissionsByUserId(id));
+
+                String amount = miscellaneousDataService.getPermittedRoundingAmountByUser(user.getUsername());
+                userVO.setPermittedRoundingAmount(amount);
 
                 userList.add(userVO);
             }
@@ -215,6 +228,10 @@ public class EndUserServiceImpl implements EndUserService {
                 endUserMapper.deleteUserPermission(id, permissionID);
             }
 
+            String username = endUserVO.getUsername();
+            String amount = endUserVO.getPermittedRoundingAmount();
+            miscellaneousDataService.updatePermittedRoundingAmountByUser(username, amount);
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
@@ -261,6 +278,10 @@ public class EndUserServiceImpl implements EndUserService {
                 endUserMapper.insertUserPermission(id, permissionID);
             }
 
+            String username = endUserVO.getUsername();
+            String amount = endUserVO.getPermittedRoundingAmount();
+            miscellaneousDataService.insertPermittedRoundingAmountByUser(username, amount);
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
@@ -269,14 +290,24 @@ public class EndUserServiceImpl implements EndUserService {
     }
 
     @Override
-    public void deleteUser(int id) {
+    public void deleteUser(int id) throws GlobalParamException {
+        Subject subject = SecurityUtils.getSubject();
+        String username = (String) subject.getPrincipals().getPrimaryPrincipal();
+
         try {
+            var u = endUserMapper.queryUserByName(username);
+            if (u.getUserID() == id) {
+                throw new GlobalParamException("不能删除自己");
+            }
+
             endUserMapper.deleteUserInfo(id);
             endUserMapper.deleteUserRole(id);
             List<UserPermission> allPermissions = endUserMapper.queryAllPermissions();
             for (var p : allPermissions) {
                 endUserMapper.deleteUserPermission(id, p.getPermissionID());
             }
+
+            miscellaneousDataService.deletePermittedRoundingAmountByUser(username);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

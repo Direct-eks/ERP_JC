@@ -10,4 +10,5 @@ public class EndUserDO {
     private String username;
     private String password;
     private String remark;
+    private String permittedRoundingAmount;
 }
