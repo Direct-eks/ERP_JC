@@ -1,6 +1,9 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.CheckoutEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
@@ -31,19 +34,22 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final MoneyEntryService moneyEntryService;
     private final InvoiceEntryService invoiceEntryService;
     private final ModificationMapper modificationMapper;
+    private final MiscellaneousDataService miscellaneousDataService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     InboundEntryService inboundEntryService,
                                     OutboundEntryService outboundEntryService,
                                     MoneyEntryService moneyEntryService,
                                     InvoiceEntryService invoiceEntryService,
-                                    ModificationMapper modificationMapper) {
+                                    ModificationMapper modificationMapper,
+                                    MiscellaneousDataService miscellaneousDataService) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
         this.moneyEntryService = moneyEntryService;
         this.invoiceEntryService = invoiceEntryService;
         this.modificationMapper = modificationMapper;
+        this.miscellaneousDataService = miscellaneousDataService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -51,12 +57,20 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     @Transactional
     @Override
     public void createEntry(CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
-                            boolean isInbound, boolean isReturn) {
+                            boolean isInbound, boolean isReturn) throws GlobalParamException {
 
         CheckoutEntryDO checkoutEntry = new CheckoutEntryDO();
         BeanUtils.copyProperties(checkoutEntryWithProductsVO, checkoutEntry);
 
         try {
+            Subject subject = SecurityUtils.getSubject();
+            String username = (String) subject.getPrincipals().getPrimaryPrincipal();
+            String permittedAmount = miscellaneousDataService.getPermittedRoundingAmountByUser(username);
+
+            if (new BigDecimal(permittedAmount).compareTo(new BigDecimal(checkoutEntry.getRoundedAmount())) < 0) {
+                throw new GlobalParamException("抹零值超出限定");
+            }
+
             String prefix = isInbound ? (isReturn ? "出退" : "入结") : (isReturn ? "入退" : "出结");
             int count = checkoutEntryMapper.countNumberOfEntriesOfToday(prefix);
             String newCheckoutSerial = MyUtils.formNewSerial(prefix, count, checkoutEntry.getCheckoutDate());

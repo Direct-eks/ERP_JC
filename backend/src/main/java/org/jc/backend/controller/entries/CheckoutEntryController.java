@@ -38,7 +38,8 @@ public class CheckoutEntryController {
     @PutMapping("/createEntry")
     public void createEntry(@RequestBody @Validated CheckoutEntryWithProductsVO checkoutEntryWithProductsVO,
                             @RequestParam("isInbound") boolean isInbound,
-                            @RequestParam(value = "isReturn", defaultValue = "false") boolean isReturn) {
+                            @RequestParam(value = "isReturn", defaultValue = "false") boolean isReturn
+    ) throws GlobalParamException {
         logger.info("PUT Request to /checkoutEntry/createEntry， isInbound: {}; data: {}", isInbound,
                 checkoutEntryWithProductsVO.toString());
 
