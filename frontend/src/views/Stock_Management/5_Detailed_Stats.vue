@@ -28,7 +28,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "Product_Detail",
     components: {
-        QueryConditions: () => import('~/components/QueryComponents/QueryConditions')
+        QueryConditions: () => import('~/components/StockManagementComponents/QueryConditions')
     },
     data() {
         return {

@@ -42,7 +42,7 @@ import { mdiArrowLeft } from '@mdi/js'
 export default {
     name: "Stock_Report",
     components: {
-        QueryConditions: () => import('~/components/QueryComponents/QueryConditions')
+        QueryConditions: () => import('~/components/StockManagementComponents/QueryConditions')
     },
     data() {
         return {
