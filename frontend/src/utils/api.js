@@ -41,6 +41,10 @@ const api = {
     departmentOptions: '/department/getDepartmentOptions', // GET
     updateDepartments: '/department/updateDepartments',
 
+    /* ------ /entry ------*/
+    getAuditEntries: '/entry/getAuditEntries/', // GET {month}
+    auditEntries: '/entry/auditEntries', // POST
+
     /* ------ /factoryBrand ------*/
     allFactoryBrands: '/factoryBrand/allFactoryBrands', // GET
     updateFactoryBrands: '/factoryBrand/updateAllFactoryBrands',
@@ -83,6 +87,8 @@ const api = {
 
     /* ------ /miscellaneousData ------*/
     allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
+    lastBackupTime: '/miscellaneousData/getLastBackupTime', // GET
+    auditMonths: '/miscellaneousData/getAuditMonths', // GET
 
     /* ------ /modificationRecord ------*/
     modificationRecordsBySerial: '/modificationRecord/getRecordsBySerial/', // GET {serial}

@@ -12,7 +12,63 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <v-row>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-menu :close-on-content-click="true"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y>
+                        <template v-slot:activator="{on}">
+                            <v-text-field v-model="month"
+                                          v-on="on"
+                                          label="月份"
+                                          hide-details="auto"
+                                          outlined dense
+                                          readonly
+                                          style="width: 110px">
+                            </v-text-field>
+                        </template>
+                        <v-date-picker v-model="month"
+                                       no-title type="month"
+                                       :max="allowedMaxMonth"
+                                       locale="zh-cn">
+                        </v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn color="primary" @click="search">查询</v-btn>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-dialog v-model="confirmDialog" max-width="300px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="success" v-on="on">审核</v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>确认审核？</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" @click="confirmDialog = false">取消</v-btn>
+                                <v-btn color="primary" @click="audit">确认</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-data-table :headers="tableHeaders"
+                              :items="tableData"
+                              item-key="entryID"
+                              height="75vh"
+                              calculate-widths
+                              disable-sort
+                              fixed-header
+                              disable-pagination
+                              dense
+                              locale="zh-cn">
+                </v-data-table>
+            </v-row>
         </v-card-text>
     </v-card>
 </template>
@@ -25,10 +81,34 @@ export default {
     data() {
         return {
             mdiArrowLeft,
+
+            month: new Date().format('yyyy-MM'),
+            allowedMaxMonth: new Date().format('yyyy-MM'),
+
+            confirmDialog: false,
+
+            tableHeaders: [
+                { text: '单号', value: 'entryID', width: '140px' },
+            ],
+            tableData: [],
         }
     },
     methods: {
-
+        search() {
+            this.$getRequest(this.$api.getAuditEntries + encodeURI(this.month)).then(data => {
+                this.tableData = data
+            }).catch(() => {})
+        },
+        audit() {
+            this.$postRequest(this.$api.auditEntries, {}, {
+                month: this.month
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '审核成功', color: 'success'
+                })
+                this.$router.replace('/stockManagement')
+            }).catch(() => {})
+        }
     }
 }
 </script>
