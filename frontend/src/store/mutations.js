@@ -14,6 +14,9 @@ const mutations = {
     modifyCurrentUserPermissions(state, userPermissions) {
         state.currentUserPermissions = userPermissions
     },
+    modifyUserPermittedRoundingAmount(state, amount) {
+        state.permittedRoundingAmount = amount
+    },
 
     /*------- global data for snack bar -------*/
     setSnackbar(state, payload) {

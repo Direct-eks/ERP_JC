@@ -365,6 +365,7 @@ export default {
                 remark: '',
                 role: '',
                 permissions: [],
+                permittedRoundingAmount: ''
             },
             emptyForm: {},
 
@@ -425,7 +426,10 @@ export default {
                     })
                     // refresh curr user permissions
                     if (this.form.username === this.$store.getters.currentUser) {
-                        this.$store.commit('modifyCurrentUserPermissions', JSON.parse(JSON.parse(this.form.permissions)))
+                        this.$store.commit('modifyCurrentUserPermissions',
+                            JSON.parse(JSON.stringify(this.form.permissions)))
+                        this.$store.commit('modifyUserPermittedRoundingAmount',
+                            JSON.parse(JSON.stringify(this.form.permittedRoundingAmount)))
                         sessionStorage.setItem('userPermissions', JSON.stringify(this.form.permissions))
                     }
                 }).catch(() => {})

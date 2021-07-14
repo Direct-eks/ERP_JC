@@ -4,6 +4,7 @@ const state = {
     currentUser: null, // current username
     currentUserRole: null,
     currentUserPermissions: [],
+    permittedRoundingAmount: '0',
     /* ------- global data for snack bar -------*/
     snackbar: {
         message: '',

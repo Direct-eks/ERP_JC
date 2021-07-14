@@ -97,6 +97,7 @@ export default {
                     this.$store.commit('modifyCurrentUser', data.username)
                     this.$store.commit('modifyCurrentUserRole', data.role)
                     this.$store.commit('modifyCurrentUserPermissions', data.permissions)
+                    this.$store.commit('modifyUserPermittedRoundingAmount', data.permittedRoundingAmount)
                     // use sessionStorage to store user information
                     sessionStorage.setItem('userName', data.username)
                     sessionStorage.setItem('userToken', data.sessionID)
