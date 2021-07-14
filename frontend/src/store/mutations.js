@@ -8,8 +8,8 @@ const mutations = {
             // use sessionStorage to store user information
             sessionStorage.setItem('userName', user.username)
             sessionStorage.setItem('userToken', user.sessionID)
-            sessionStorage.setItem('userRole', user.role)
-            sessionStorage.setItem('userPermissions', JSON.stringify(user.permissions))
+            sessionStorage.setItem('userRole', user.userRole)
+            sessionStorage.setItem('userPermissions', JSON.stringify(user.userPermissions))
             sessionStorage.setItem('isAuthenticated', 'true')
         }
         else { // if is null, then logout

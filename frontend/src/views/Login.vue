@@ -98,7 +98,8 @@ export default {
                         username: data.username,
                         userRole: data.role,
                         userPermissions: data.permissions,
-                        amount: data.permittedRoundingAmount
+                        amount: data.permittedRoundingAmount,
+                        sessionID: data.sessionID
                     })
 
                     this.username = ''
