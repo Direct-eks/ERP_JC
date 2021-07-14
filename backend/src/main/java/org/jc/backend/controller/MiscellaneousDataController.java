@@ -39,10 +39,19 @@ public class MiscellaneousDataController {
 
     @ApiOperation(value = "", response = String.class)
     @RequiresAuthentication
-    @GetMapping("/getLastWarehouseStockUpdateTime")
+    @GetMapping("/getLastBackupTime")
     public String getLastWarehouseStockUpdateTime() {
-        logger.info("GET Request to /miscellaneousData/getLastWarehouseStockUpdateTime");
+        logger.info("GET Request to /miscellaneousData/getLastBackupTime");
 
-        return miscellaneousDataService.getLastWarehouseStockUpdateTime();
+        return miscellaneousDataService.getLastBackupTime();
+    }
+
+    @ApiOperation(value = "", response = String.class)
+    @RequiresAuthentication
+    @GetMapping("/getAuditMonths")
+    public List<String> getAuditMonths() {
+        logger.info("GET Request to /miscellaneousData/getAuditMonths");
+
+        return miscellaneousDataService.queryAuditMonths();
     }
 }

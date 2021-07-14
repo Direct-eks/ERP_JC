@@ -13,11 +13,15 @@ import java.util.List;
 public interface MiscellaneousDataMapper {
     List<MiscellaneousDataO> queryAllTaxRateOptions();
 
-    MiscellaneousDataO queryLastWarehouseStockUpdateTime();
+    String queryLastBackupTime();
     void updateLastBackupTime();
 
     String queryPermittedRoundingAmountByUser(String username);
     void insertPermittedRoundingAmountByUser(String username, String amount);
     void updatePermittedRoundingAmountByUser(String username, String amount);
     void deletePermittedRoundingAmountByUser(String username);
+
+    List<String> queryAuditMonths();
+    void insertAuditMonth(String month);
+    void deleteAuditMonth(String month);
 }

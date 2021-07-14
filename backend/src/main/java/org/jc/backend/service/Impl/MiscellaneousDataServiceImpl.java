@@ -41,9 +41,9 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
 
     @Transactional(readOnly = true)
     @Override
-    public String getLastWarehouseStockUpdateTime() {
+    public String getLastBackupTime() {
         try {
-            return miscellaneousDataMapper.queryLastWarehouseStockUpdateTime().getPropertyValue();
+            return miscellaneousDataMapper.queryLastBackupTime();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -109,6 +109,45 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
     public void deletePermittedRoundingAmountByUser(String username) {
         try {
             miscellaneousDataMapper.deletePermittedRoundingAmountByUser(username);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<String> queryAuditMonths() {
+        try {
+            return miscellaneousDataMapper.queryAuditMonths();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void addNewAuditMonth(String month) {
+        try {
+            miscellaneousDataMapper.insertAuditMonth(month);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteAuditMonth(String month) {
+        try {
+            miscellaneousDataMapper.deleteAuditMonth(month);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -17,10 +17,10 @@
         where property_name = 'tax_rate'
     </select>
     
-    <select id="queryLastWarehouseStockUpdateTime" resultMap="miscellaneousDataResultMap">
-        select property_name, property_value, property_value2
+    <select id="queryLastBackupTime" resultType="java.lang.String">
+        select property_value
         from miscellaneous_data
-        where property_name = 'last_warehouse_stock_update_time'
+        where property_name = 'last_backup_time'
     </select>
 
     <update id="updateLastBackupTime">
@@ -52,6 +52,23 @@
         delete from miscellaneous_data
         where property_name = 'permitted_rounding_amount'
             and property_value = #{username}
+    </delete>
+
+
+    <select id="queryAuditMonths" resultType="java.lang.String">
+        select property_value
+        from miscellaneous_data
+        where property_name = 'audit_month'
+    </select>
+
+    <insert id="insertAuditMonth">
+        insert into miscellaneous_data(property_name, property_value)
+        values ('audit_month', #{month})
+    </insert>
+
+    <delete id="deleteAuditMonth">
+        delete from miscellaneous_data
+        where property_name = 'audit_month' and property_value = #{month}
     </delete>
 
 </mapper>
