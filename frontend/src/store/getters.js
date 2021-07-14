@@ -20,6 +20,13 @@ const getters = {
         }
         return state.currentUserPermissions
     },
+    currentUserPermittedRoundingAmount(state) {
+        if (state.permittedRoundingAmount === '') {
+            return sessionStorage.getItem('userPermissions') != null ?
+                JSON.parse(sessionStorage.getItem('permittedRoundingAmount')) : '0'
+        }
+        return state.permittedRoundingAmount
+    },
     currentUserIsPermitted(state) {
         return (permission) => {
             if (state.currentUserPermissions.length === 0) {

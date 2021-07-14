@@ -11,10 +11,6 @@ export default {
     methods: {
         logout() {
             this.$store.commit('modifyCurrentUser', null)
-            this.$store.commit('modifyCurrentUserRole', null)
-            this.$store.commit('modifyCurrentPermissions', [])
-
-            sessionStorage.clear()
             this.$router.replace('/login')
         }
     }

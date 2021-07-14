@@ -216,9 +216,6 @@ export default {
             }
             this.$postRequest(this.$api.userLogout, {}).then(() => {
                 this.$store.commit('modifyCurrentUser', null)
-                this.$store.commit('modifyCurrentUserRole', null)
-                this.$store.commit('modifyCurrentUserPermissions', [])
-                sessionStorage.clear()
                 this.$router.replace('/login')
             }).catch(() => {})
         },

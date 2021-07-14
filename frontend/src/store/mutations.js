@@ -1,21 +1,24 @@
 const mutations = {
-    modifyCurrentUser(state, username) {
-        if (username) {
-            state.currentUser = username
+    modifyCurrentUser(state, user) {
+        if (user) {
+            state.currentUser = user.username
+            state.currentUserRole = user.userRole
+            state.currentUserPermissions = user.userPermissions
+            state.permittedRoundingAmount = user.amount
+            // use sessionStorage to store user information
+            sessionStorage.setItem('userName', user.username)
+            sessionStorage.setItem('userToken', user.sessionID)
+            sessionStorage.setItem('userRole', user.role)
+            sessionStorage.setItem('userPermissions', JSON.stringify(user.permissions))
+            sessionStorage.setItem('isAuthenticated', 'true')
         }
         else { // if is null, then logout
-            sessionStorage.clear()
             state.currentUser = null
+            state.currentUserRole = ''
+            state.currentUserPermissions = []
+            state.permittedRoundingAmount = ''
+            sessionStorage.clear()
         }
-    },
-    modifyCurrentUserRole(state, userRole) {
-        state.currentUserRole = userRole
-    },
-    modifyCurrentUserPermissions(state, userPermissions) {
-        state.currentUserPermissions = userPermissions
-    },
-    modifyUserPermittedRoundingAmount(state, amount) {
-        state.permittedRoundingAmount = amount
     },
 
     /*------- global data for snack bar -------*/

@@ -602,6 +602,15 @@ export default {
             this.form.roundedAmount = this.form.roundedAmount === '' ? '0' :
                 this.$validateFloat(this.form.roundedAmount)
 
+            const r = this.$Big(this.form.roundedAmount)
+            const p = JSON.parse(JSON.stringify(this.$store.getters.currentUserPermittedRoundingAmount))
+            if (!r.minus(p).toString().startsWith('-')) {
+                this.$store.commit('setSnackbar', {
+                    message: '超出允许抹零范围', color: 'warning'
+                })
+                this.form.roundedAmount = p
+            }
+
             if (this.form.isRounded === 1) {
                 this.form.debt = this.$Big(this.form.totalAmount).minus(this.form.paymentAmount)
                     .minus(this.form.roundedAmount).toString()

@@ -94,16 +94,12 @@ export default {
                     })
 
                     // use vuex to store user information
-                    this.$store.commit('modifyCurrentUser', data.username)
-                    this.$store.commit('modifyCurrentUserRole', data.role)
-                    this.$store.commit('modifyCurrentUserPermissions', data.permissions)
-                    this.$store.commit('modifyUserPermittedRoundingAmount', data.permittedRoundingAmount)
-                    // use sessionStorage to store user information
-                    sessionStorage.setItem('userName', data.username)
-                    sessionStorage.setItem('userToken', data.sessionID)
-                    sessionStorage.setItem('userRole', data.role)
-                    sessionStorage.setItem('userPermissions', JSON.stringify(data.permissions))
-                    sessionStorage.setItem('isAuthenticated', 'true')
+                    this.$store.commit('modifyCurrentUser', {
+                        username: data.username,
+                        userRole: data.role,
+                        userPermissions: data.permissions,
+                        amount: data.permittedRoundingAmount
+                    })
 
                     this.username = ''
                     this.password = ''

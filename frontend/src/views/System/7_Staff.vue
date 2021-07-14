@@ -81,6 +81,16 @@
                                       style="width: 180px">
                         </v-text-field>
                     </v-col>
+                    <v-col cols="auto">
+                        <v-text-field v-model="form.permittedRoundingAmount"
+                                      label="允许抹零数量"
+                                      hide-details="auto"
+                                      @change="permittedRoundingAmountChange"
+                                      outlined
+                                      dense
+                                      style="width: 180px">
+                        </v-text-field>
+                    </v-col>
                 </v-row>
             </v-form>
             <v-row v-if="userTableCurrentRow.length !== 0 || isCreatingNewUser">
@@ -404,6 +414,9 @@ export default {
                 Object.assign(this.form, row.item)
             }
         },
+        permittedRoundingAmountChange() {
+            this.form.permittedRoundingAmount = this.$validateFloat(this.form.permittedRoundingAmount)
+        },
         chooseAllPermission() {
             this.form.permissions = JSON.parse(JSON.stringify(this.allPermissions))
         },
@@ -426,11 +439,12 @@ export default {
                     })
                     // refresh curr user permissions
                     if (this.form.username === this.$store.getters.currentUser) {
-                        this.$store.commit('modifyCurrentUserPermissions',
-                            JSON.parse(JSON.stringify(this.form.permissions)))
-                        this.$store.commit('modifyUserPermittedRoundingAmount',
-                            JSON.parse(JSON.stringify(this.form.permittedRoundingAmount)))
-                        sessionStorage.setItem('userPermissions', JSON.stringify(this.form.permissions))
+                        this.$store.commit('modifyCurrentUser', {
+                            username: this.form.username,
+                            userRole: this.form.role,
+                            userPermissions: this.form.permissions,
+                            amount: this.form.permittedRoundingAmount
+                        })
                     }
                 }).catch(() => {})
             }
