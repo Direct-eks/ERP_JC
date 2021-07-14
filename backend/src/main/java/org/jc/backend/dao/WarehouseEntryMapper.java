@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Indexed
 @Mapper
 @Repository
-public class WarehouseEntryMapper {
+public interface WarehouseEntryMapper {
 
 }
