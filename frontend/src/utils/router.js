@@ -476,17 +476,17 @@ const routes = [
             {
                 path: 'sporadic_profit_entry',
                 name: '零星盘盈单录入',
-                component: () => import('../views/Production_Management/5_Sporadic_Profit/SP_Entry')
+                component: () => import('../views/Production_Management/5_Inventory_Profit/IP_Entry')
             },
             {
                 path: 'sporadic_profit_query',
                 name: '零星盘盈单查询',
-                component: () => import('../views/Production_Management/5_Sporadic_Profit/SP_Query')
+                component: () => import('../views/Production_Management/5_Inventory_Profit/IP_Query')
             },
             {
                 path: 'sporadic_profit_modify',
                 name: '零星盘盈单修改',
-                component: () => import('../views/Production_Management/5_Sporadic_Profit/SP_Modify')
+                component: () => import('../views/Production_Management/5_Inventory_Profit/IP_Modify')
             },
             {
                 path: 'sporadic_loss_entry',
