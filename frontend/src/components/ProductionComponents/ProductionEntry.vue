@@ -239,6 +239,20 @@ export default {
         prefix: {
             type: String,
             required: true
+        },
+        paramForm: {
+            type: Object,
+            required: false,
+        }
+    },
+    watch: {
+        paramForm: {
+            handler: function (val) {
+                if (this.creationMode) return
+                this.form = val
+                this.handleTotalChange()
+            },
+            deep: true
         }
     },
     data() {
