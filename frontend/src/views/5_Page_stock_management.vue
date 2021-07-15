@@ -27,7 +27,9 @@
             </v-card>
         </v-col>
 
-        <v-col cols="12" md="11" lg="9" xl="8">
+        <v-col md="12"
+               lg="11"
+               xl="10">
             <router-view></router-view>
         </v-col>
     </v-row>

@@ -5,14 +5,17 @@
         <v-card-title class="d-flex">
             明细统计
             <v-spacer></v-spacer>
+            <v-btn class="mr-4" color="primary" @click="fullScreen">
+                全屏
+            </v-btn>
             <v-btn color="accent"
                    to="/stock_management">
-                <v-icon>{{ mdiArrowLeftPath }}</v-icon>
+                <v-icon>{{ mdiArrowLeft }}</v-icon>
                 返回
             </v-btn>
         </v-card-title>
         <v-card-text>
-            <v-row>
+            <v-row v-show="showStatus">
                 <v-col cols="auto">
                     <v-text-field v-model="modelCode"
                                   label="代号筛选"
@@ -33,11 +36,9 @@
                 <v-col cols="auto">
                     <v-radio-group v-model="modelSearchMethod"
                                    hide-details="auto"
-                                   dense
-                                   row>
+                                   dense row>
                         <v-radio label="前匹配" value="prefix"></v-radio>
                         <v-radio label="模糊" value="infix"></v-radio>
-                        <v-radio label="后匹配" value="suffix"></v-radio>
                     </v-radio-group>
                 </v-col>
                 <v-col cols="auto">
@@ -55,14 +56,12 @@
                 </v-col>
             </v-row>
             <v-row class="d-flex">
-
-                <v-card outlined>
+                <v-card outlined v-show="showStatus">
                     <ModelTree height="65vh" max-width="230px"
                                @treeSelectionResult="treeSelect">
                     </ModelTree>
                 </v-card>
-
-                <v-card outlined>
+                <v-card outlined v-show="showStatus">
                     <v-data-table class="flex-shrink-1"
                                   v-model="modelTableCurrentRow"
                                   :headers="modelTableHeaders"
@@ -84,7 +83,7 @@
 
                 <div class="d-flex flex-column">
                     <div class="d-flex">
-                        <v-card outlined>
+                        <v-card outlined v-show="showStatus">
                             <v-data-table v-model="skuTableCurrentRow"
                                           :headers="skuTableHeaders"
                                           :items="skuTableData"
@@ -100,7 +99,7 @@
                                           dense>
                             </v-data-table>
                         </v-card>
-                        <v-card outlined>
+                        <v-card outlined v-show="showStatus">
                             <v-responsive height="30vh" max-width="55vw"
                                           style="overflow: auto">
                                 <v-data-table v-model="warehouseStockCurrentRow"
@@ -121,7 +120,7 @@
                         </v-card>
                     </div>
 
-                    <v-card outlined>
+                    <v-card outlined v-show="showStatus">
                         <v-data-table :headers="supplierTableHeaders"
                                       :items="supplierTableData"
                                       item-key=""
@@ -134,16 +133,14 @@
                                       dense>
                         </v-data-table>
                     </v-card>
-
                 </div>
-
             </v-row>
 
             <v-card outlined>
                 <v-data-table :headers="detailTableHeaders"
                               :items="detailTableData"
                               item-key=""
-                              height="20vh"
+                              :height="detailTableHeight"
                               calculate-widths
                               disable-sort
                               fixed-header
@@ -151,7 +148,7 @@
                               locale="zh-cn"
                               dense>
                 </v-data-table>
-            </v-card>>
+            </v-card>
 
         </v-card-text>
     </v-card>
@@ -167,7 +164,9 @@ export default {
     },
     data() {
         return {
-            mdiArrowLeftPath: mdiArrowLeft,
+            mdiArrowLeft,
+            showStatus: true,
+            detailTableHeight: '20vh',
 
             modelCode: '',
             modelSearchName: '',
@@ -218,7 +217,6 @@ export default {
                 name: this.modelSearchName,
                 method: this.modelSearchMethod
             }).then((data) => {
-                console.log('received', data)
                 this.modelTableData = data
             }).catch(() => {})
         },
@@ -270,6 +268,15 @@ export default {
         productDetail() {
 
         },
+        fullScreen() {
+            this.showStatus = !this.showStatus
+            if (this.showStatus) {
+                this.detailTableHeight = '20vh'
+            }
+            else {
+                this.detailTableHeight = '80vh'
+            }
+        }
     }
 }
 </script>
