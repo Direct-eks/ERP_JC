@@ -60,7 +60,7 @@ public class ProductionEntryController {
 
         return productionEntryService.getEntriesInDateRange(startDate, endDate);
     }
-    
+
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(@RequestBody @Validated WarehouseEntryWithProductsVO entry) {
