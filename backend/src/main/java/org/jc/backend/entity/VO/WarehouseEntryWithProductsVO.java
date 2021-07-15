@@ -50,6 +50,8 @@ public class WarehouseEntryWithProductsVO {
 
     private String relatedEntrySerial;
 
+    private String classification;
+
     @Valid
     @NotEmpty
     private List<WarehouseProductO> entryProducts;

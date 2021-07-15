@@ -24,4 +24,6 @@ public class WarehouseEntryDO {
 
     private String remark;
     private String relatedEntrySerial;
+
+    private String classification;
 }
