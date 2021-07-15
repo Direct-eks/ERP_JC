@@ -428,35 +428,35 @@ const routes = [
                 name: '领料单修改',
                 component: () => import('../views/Production_Management/1_Material_Apply/MA_Modify')
             },
-            {
-                path: 'material_return_entry',
-                name: '退料单录入',
-                component: () => import('../views/Production_Management/2_Material_Return/MR_Entry')
-            },
-            {
-                path: 'material_return_query',
-                name: '退料单查询',
-                component: () => import('../views/Production_Management/2_Material_Return/MR_Query')
-            },
-            {
-                path: 'material_return_modify',
-                name: '退料单修改',
-                component: () => import('../views/Production_Management/2_Material_Return/MR_Modify')
-            },
+            // {
+            //     path: 'material_return_entry',
+            //     name: '退料单录入',
+            //     component: () => import('../views/Production_Management/2_Material_Return/MR_Entry')
+            // },
+            // {
+            //     path: 'material_return_query',
+            //     name: '退料单查询',
+            //     component: () => import('../views/Production_Management/2_Material_Return/MR_Query')
+            // },
+            // {
+            //     path: 'material_return_modify',
+            //     name: '退料单修改',
+            //     component: () => import('../views/Production_Management/2_Material_Return/MR_Modify')
+            // },
             {
                 path: 'warehouse_entry_entry',
                 name: '产成品入库单录入',
-                component: () => import('../views/Production_Management/3_Warehousing_Entry/WE_Entry')
+                component: () => import('../views/Production_Management/3_Production_Entry/PE_Entry')
             },
             {
                 path: 'warehouse_entry_query',
                 name: '产成品入库单查询',
-                component: () => import('../views/Production_Management/3_Warehousing_Entry/WE_Query')
+                component: () => import('../views/Production_Management/3_Production_Entry/PE_Query')
             },
             {
                 path: 'warehouse_entry_modify',
                 name: '产成品入库单修改',
-                component: () => import('../views/Production_Management/3_Warehousing_Entry/WE_Modify')
+                component: () => import('../views/Production_Management/3_Production_Entry/PE_Modify')
             },
             {
                 path: 'assembly_entry',

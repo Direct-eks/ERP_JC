@@ -457,27 +457,27 @@ export default {
                 }
             ]
         },
-        {
-            name: '退料单',
-            url: '/production_management/material_return',
-            children: [
-                {
-                    name: '录入',
-                    url: '/production_management/material_return_entry',
-                    requiredPermission: 'productionMaterialReturn:Creation'
-                },
-                {
-                    name: '查询',
-                    url: '/production_management/material_return_query',
-                    requiredPermission: 'productionMaterialReturn:Query'
-                },
-                {
-                    name: '修改',
-                    url: '/production_management/material_return_modify',
-                    requiredPermission: 'productionMaterialReturn:Modification'
-                }
-            ]
-        },
+        // {
+        //     name: '退料单',
+        //     url: '/production_management/material_return',
+        //     children: [
+        //         {
+        //             name: '录入',
+        //             url: '/production_management/material_return_entry',
+        //             requiredPermission: 'productionMaterialReturn:Creation'
+        //         },
+        //         {
+        //             name: '查询',
+        //             url: '/production_management/material_return_query',
+        //             requiredPermission: 'productionMaterialReturn:Query'
+        //         },
+        //         {
+        //             name: '修改',
+        //             url: '/production_management/material_return_modify',
+        //             requiredPermission: 'productionMaterialReturn:Modification'
+        //         }
+        //     ]
+        // },
         {
             name: '产成品入库单',
             url: '/production_management/warehouse_entry',
