@@ -5,26 +5,27 @@ import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.service.WarehouseEntryService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
 
 @Indexed
-@Api(tags = "WarehouseEntry Related")
+@Api(tags = "ProductionEntry Related")
 @RestController
-@RequestMapping("/warehouseEntry")
+@RequestMapping("/productionEntry")
 public class ProductionEntryController {
     private static final Logger logger = LoggerFactory.getLogger(ProductionEntryController.class);
 
-    private final WarehouseEntryService warehouseEntryService;
+    private final WarehouseEntryService productionEntryService;
 
-    public ProductionEntryController(WarehouseEntryService warehouseEntryService) {
-        this.warehouseEntryService = warehouseEntryService;
+    public ProductionEntryController(WarehouseEntryService productionEntryService) {
+        this.productionEntryService = productionEntryService;
     }
 
     /* ------------------------------ API ------------------------------ */
@@ -42,6 +43,29 @@ public class ProductionEntryController {
             }
         }
 
-        warehouseEntryService.createEntry(entry);
+        productionEntryService.createEntry(entry);
+    }
+
+    @ApiOperation(value = "", response = WarehouseEntryWithProductsVO.class)
+    @GetMapping("/getEntriesInDateRange")
+    public List<WarehouseEntryWithProductsVO> getEntriesInDateRange(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString
+    ) throws GlobalParamException {
+        logger.info("GET Request to /productionEntry/getEntriesInDateRange, start date: " +
+                "{}, end date: {}", startDateString, endDateString);
+
+        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
+        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+
+        return productionEntryService.getEntriesInDateRange(startDate, endDate);
+    }
+    
+    @ApiOperation(value = "", response = void.class)
+    @PatchMapping("/modifyEntry")
+    public void modifyEntry(@RequestBody @Validated WarehouseEntryWithProductsVO entry) {
+        logger.info("PATCH Request to /productionEntry/modifyEntry, entry: {}", entry);
+
+        productionEntryService.modifyEntry(entry);
     }
 }
