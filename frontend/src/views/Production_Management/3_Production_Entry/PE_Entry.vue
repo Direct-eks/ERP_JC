@@ -12,7 +12,9 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-            <EntryComponent mode="creation">
+            <EntryComponent editMode="creation"
+                            type="productionEntry"
+                            prefix="产入">
             </EntryComponent>
         </v-card-text>
     </v-card>
