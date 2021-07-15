@@ -506,17 +506,17 @@ const routes = [
             {
                 path: 'distribution_entry',
                 name: '调拨单录入',
-                component: () => import('../views/Production_Management/7_Distribution/D_Entry')
+                component: () => import('../views/Production_Management/7_Transfer/T_Entry')
             },
             {
                 path: 'distribution_query',
                 name: '调拨单查询',
-                component: () => import('../views/Production_Management/7_Distribution/D_Query')
+                component: () => import('../views/Production_Management/7_Transfer/T_Query')
             },
             {
                 path: 'distribution_modify',
                 name: '调拨单修改',
-                component: () => import('../views/Production_Management/7_Distribution/D_Modify')
+                component: () => import('../views/Production_Management/7_Transfer/T_Modify')
             },
             {
                 path: 'scrap_entry',
