@@ -12,7 +12,10 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <EntryComponent editMode="creation"
+                            type="materialApply"
+                            prefix="领料">
+            </EntryComponent>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +25,10 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "MA_Entry",
+    components: {
+        EntryComponent: () => import(/* webpackChunkName: "ProductionEntryComponent" */
+            '~/components/ProductionComponents/ProductionEntry')
+    },
     data() {
         return {
             mdiArrowLeft

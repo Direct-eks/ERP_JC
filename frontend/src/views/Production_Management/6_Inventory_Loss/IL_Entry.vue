@@ -12,7 +12,10 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <EntryComponent editMode="creation"
+                            type="inventoryLoss"
+                            prefix="盘亏">
+            </EntryComponent>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +25,9 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "SL_Entry",
+    components: {
+        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry')
+    },
     data() {
         return {
             mdiArrowLeft
