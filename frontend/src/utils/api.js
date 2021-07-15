@@ -13,6 +13,9 @@ const api = {
     createNewUser: '/user/createNewUser', // PUT
     deleteUser: '/user/deleteUser', // DELETE
 
+    /* ------ /assemblyEntry ------*/
+    createAssemblyEntry: '/assemblyEntry/createEntry', // PUT
+
     /* ------ /bankAccount ------*/
     allBankAccounts: '/bankAccount/getAllAccounts', // GET
     visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET
@@ -69,12 +72,21 @@ const api = {
     inboundNotYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
     inboundSummary: '/inboundEntry/getInboundSummary', // GET
 
+    /* ------ /inventoryLoss ------*/
+    createInventoryLossEntry: '/inventoryLossEntry/createEntry', // PUT
+
+    /* ------ /inventoryProfit ------*/
+    createInventoryProfitEntry: '/inventoryProfitEntry/createEntry', // PUT
+
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
     // GET isInbound, startDate, endDate, companyID, invoiceDate, invoiceNumber,
     // invoiceType, isFollowUpIndication, forModify
     invoiceEntriesInDateRange: '/invoiceEntry/getEntriesInDateRange',
     modifyInvoiceEntry: '/invoiceEntry/modifyEntry', // PATCH
+
+    /* ------ /materialApply ------*/
+    createMaterialApplyEntry: '/materialApplyEntry/createEntry', // PUT
 
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
@@ -120,6 +132,9 @@ const api = {
     presaleProducts: '/outboundEntry/getPresaleProducts', // GET
     exportPresaleProducts: '/outboundEntry/exportPresaleProducts', // GET
 
+    /* ------ /productionEntry ------*/
+    createScrapEntry: '/scrapEntry/createEntry', // PUT
+
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
     // GET startDate= endDate= companyID=int
@@ -163,6 +178,9 @@ const api = {
 
     resourcesByCategoryAndFactoryBrand: '/supplier/resourcesByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
     createSupplierWithResources: '/supplier/createSupplierWithResources', // POST supplierID, list
+
+    /* ------ /transferEntry ------*/
+    createTransferEntry: '/transferEntry/createEntry', // PUT
 
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET
