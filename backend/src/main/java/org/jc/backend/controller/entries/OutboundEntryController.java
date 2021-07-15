@@ -41,6 +41,8 @@ public class OutboundEntryController {
     public void createEntry(@RequestBody @Validated OutboundEntryWithProductsVO entryVO) throws GlobalParamException {
         logger.info("PUT Request to /outboundEntry/createEntry, data: {}", entryVO.toString());
 
+        // check for outbound quantity, VO validation only check for >= 0 due to quantity
+        // becoming 0 after returning.
         for (var p : entryVO.getOutboundProducts()) {
             if (p.getQuantity() < 1) {
                 throw new GlobalParamException("商品出库数量必须大于0");
