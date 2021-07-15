@@ -491,17 +491,17 @@ const routes = [
             {
                 path: 'sporadic_loss_entry',
                 name: '零星盘亏单录入',
-                component: () => import('../views/Production_Management/6_Sporadic_Loss/SL_Entry')
+                component: () => import('../views/Production_Management/6_Inventory_Loss/IL_Entry')
             },
             {
                 path: 'sporadic_loss_query',
                 name: '零星盘亏单查询',
-                component: () => import('../views/Production_Management/6_Sporadic_Loss/SL_Query')
+                component: () => import('../views/Production_Management/6_Inventory_Loss/IL_Query')
             },
             {
                 path: 'sporadic_loss_modify',
                 name: '零星盘亏单修改',
-                component: () => import('../views/Production_Management/6_Sporadic_Loss/SL_Modify')
+                component: () => import('../views/Production_Management/6_Inventory_Loss/IL_Modify')
             },
             {
                 path: 'distribution_entry',
