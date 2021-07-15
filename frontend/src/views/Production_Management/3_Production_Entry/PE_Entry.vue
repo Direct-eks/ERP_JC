@@ -12,7 +12,8 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <EntryComponent mode="creation">
+            </EntryComponent>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +23,10 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "WE_Entry",
+    components: {
+        EntryComponent: () => import(/* webpackChunkName: "ProductionEntryComponent" */
+            '~/components/ProductionComponents/ProductionEntry')
+    },
     data() {
         return {
             mdiArrowLeft
