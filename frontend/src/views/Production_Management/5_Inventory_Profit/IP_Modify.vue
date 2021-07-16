@@ -23,7 +23,10 @@
         <v-tabs-items v-model="tab">
 
             <v-tab-item key="browse">
-
+                <QueryComponent displayMode="modification"
+                                type="inventoryProfit"
+                                prefix="盘盈">
+                </QueryComponent>
             </v-tab-item>
 
             <v-tab-item key="detail" :eager="true">
@@ -44,7 +47,8 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "SP_Modify",
     components: {
-        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry')
+        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry'),
+        QueryComponent: () => import('~/components/ProductionComponents/QueryDisplayComponent')
     },
     beforeMount() {
         this.originalForm = JSON.parse(JSON.stringify(this.form))

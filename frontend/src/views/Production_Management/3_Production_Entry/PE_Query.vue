@@ -23,7 +23,10 @@
         <v-tabs-items v-model="tab">
 
             <v-tab-item key="browse">
-
+                <QueryComponent displayMode="display"
+                                type="productionEntry"
+                                prefix="产入">
+                </QueryComponent>
             </v-tab-item>
 
             <v-tab-item key="detail" :eager="true">
@@ -44,7 +47,8 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "WE_Query",
     components: {
-        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry')
+        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry'),
+        QueryComponent: () => import('~/components/ProductionComponents/QueryDisplayComponent')
     },
     beforeMount() {
         this.originalForm = JSON.parse(JSON.stringify(this.form))

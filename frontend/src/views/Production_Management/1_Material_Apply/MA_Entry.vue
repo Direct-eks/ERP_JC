@@ -26,7 +26,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "MA_Entry",
     components: {
-        EntryComponent: () => import(/* webpackChunkName: "ProductionEntryComponent" */
+        EntryComponent: () => import(/* webpackChunkName: "WarehouseEntryComponent" */
             '~/components/ProductionComponents/ProductionEntry')
     },
     data() {
