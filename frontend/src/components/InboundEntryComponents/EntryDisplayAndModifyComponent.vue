@@ -436,8 +436,8 @@ export default {
             inboundEntryReturnMode: false,
 
             rules: {
-                warehouseID: [v => !!v || '请选择仓库'],
-                departmentID: [v => !!v || '请选择部门'],
+                warehouseID: [v => v !== -1 || '请选择仓库'],
+                departmentID: [v => v !== -1 || '请选择部门'],
                 invoiceType: [v => !!v || ' 请选择单据类型'], //no need to validate if is purchase order
                 taxRate: [v => !!v || '请选择税率'],
             },
