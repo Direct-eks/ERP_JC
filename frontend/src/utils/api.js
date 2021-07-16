@@ -15,6 +15,8 @@ const api = {
 
     /* ------ /assemblyEntry ------*/
     createAssemblyEntry: '/assemblyEntry/createEntry', // PUT
+    assemblyEntriesInDateRange: '', // GET
+    modifyAssemblyEntry: '', // PATCH
 
     /* ------ /bankAccount ------*/
     allBankAccounts: '/bankAccount/getAllAccounts', // GET
@@ -74,9 +76,13 @@ const api = {
 
     /* ------ /inventoryLoss ------*/
     createInventoryLossEntry: '/inventoryLossEntry/createEntry', // PUT
+    inventoryLossEntriesInDateRange: '', // GET
+    modifyInventoryLossEntry: '', // PATCH
 
     /* ------ /inventoryProfit ------*/
     createInventoryProfitEntry: '/inventoryProfitEntry/createEntry', // PUT
+    inventoryProfitEntriesInDateRange: '', // GET
+    modifyInventoryProfitEntry: '', // PATCH
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
@@ -87,6 +93,8 @@ const api = {
 
     /* ------ /materialApply ------*/
     createMaterialApplyEntry: '/materialApplyEntry/createEntry', // PUT
+    materialApplyEntriesInDateRange: '', // GET
+    modifyMaterialApplyEntry: '', // PATCH
 
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
@@ -133,7 +141,9 @@ const api = {
     exportPresaleProducts: '/outboundEntry/exportPresaleProducts', // GET
 
     /* ------ /productionEntry ------*/
-    createScrapEntry: '/scrapEntry/createEntry', // PUT
+    createProductionEntry: '/productionEntry/createEntry', // PUT
+    productionEntriesInDateRange: '', // GET
+    modifyProductionEntry: '', // PATCH
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
@@ -155,6 +165,11 @@ const api = {
     salesOrdersInDateRangeByCompanyID: '/salesOrder/getOrdersInDateRangeByCompanyID', // GET
     salesOrdersByCompanyID: '/salesOrder/getOrdersByCompanyID/', // GET companyID
     modifySalesOrder: '/salesOrder/modifyOrder', // PATCH
+
+    /* ------ /scrapEntry ------*/
+    createScrapEntry: '/scrapEntry/createEntry', // PUT
+    scrapEntriesInDateRange: '', // GET
+    modifyScrapEntry: '', // PATCH
 
     /* ------ /shippingCostEntry ------*/
     createShippingCostEntry: '/shippingCostEntry/createEntry',

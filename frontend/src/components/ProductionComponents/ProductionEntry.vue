@@ -169,9 +169,9 @@
                                @save="handlePriceChange(item)"
                                @cancel="handlePriceChange(item)"
                                @close="handlePriceChange(item)">
-                    {{ item.unitPriceWithoutTax }}
+                    {{ item.unitPrice }}
                     <template v-slot:input>
-                        <v-text-field v-model="item.unitPriceWithoutTax" single-line
+                        <v-text-field v-model="item.unitPrice" single-line
                                       @focus="$event.target.setSelectionRange(0, 100)"/>
                     </template>
                 </v-edit-dialog>
@@ -324,7 +324,6 @@ export default {
                 }
             }
             let newVal = JSON.parse(JSON.stringify(val))
-            newVal.taxRate = this.form.taxRate
             this.tableData.push(newVal)
 
             this.$store.commit('setSnackbar', {
@@ -387,13 +386,53 @@ export default {
         },
         saveEntry() {
             if (this.$refs.form.validate()) {
+                let api = ''
+                switch (this.type) {
+                    case 'materialApply':
+                        api = this.$api.createMaterialApplyEntry
+                        break
+                    case 'productionEntry':
+                        api = this.$api.createProductionEntry
+                        break
+                    case 'inventoryLoss':
+                        api = this.$api.createInventoryLossEntry
+                        break
+                    case 'inventoryProfit':
+                        api = this.$api.createInventoryProfitEntry
+                        break
+                    case 'scrapEntry':
+                        api = this.$api.createScrapEntry
+                        break
+                }
 
+                this.$putRequest(api, this.form, {
+
+                }).then(() => {
+
+                }).catch(() => {})
             }
             this.submitPopup = false
         },
         saveChanges() {
             if (this.$refs.form.validate()) {
-
+                let api = ''
+                switch (this.type) {
+                    case 'materialApply':
+                        api = this.$api.modifyMaterialApplyEntry
+                        break
+                    case 'productionEntry':
+                        api = this.$api.modifyProductionEntry
+                        break
+                    case 'inventoryLoss':
+                        api = this.$api.modifyInventoryLossEntry
+                        break
+                    case 'inventoryProfit':
+                        api = this.$api.modifyInventoryProfitEntry
+                        break
+                    case 'scrapEntry':
+                        api = this.$api.modifyScrapEntry
+                        break
+                }
             }
             this.submitPopup2 = false
         }
