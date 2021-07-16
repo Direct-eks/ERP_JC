@@ -483,7 +483,7 @@ export default {
                     found = true
                     stockQuantity = item.stockQuantity
                     warehouseStockID = item.warehouseStockID
-                    stockUnitPrice = item.stockUnitPriceWithTax
+                    stockUnitPrice = item.stockUnitPriceWithoutTax
                     break
                 }
             }

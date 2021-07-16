@@ -280,7 +280,7 @@ export default {
                     if (item.warehouseID === this.warehouseID) {
                         stockQuantity = item.stockQuantity
                         warehouseStockID = item.warehouseStockID
-                        stockUnitPrice = item.stockUnitPriceWithTax
+                        stockUnitPrice = item.stockUnitPriceWithoutTax
                         break
                     }
                 }
