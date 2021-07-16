@@ -1,7 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.WarehouseEntryMapper;
+import org.jc.backend.dao.WarehouseInEntryMapper;
 import org.jc.backend.entity.DO.WarehouseEntryDO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseProductO;
@@ -17,22 +17,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Service("productionEntryService")
-public class ProductionEntryServiceImpl implements WarehouseEntryService {
+@Service
+public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductionEntryServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(WarehouseEntryServiceImpl.class);
 
-    private final WarehouseEntryMapper warehouseEntryMapper;
+    private final WarehouseInEntryMapper warehouseInEntryMapper;
 
-    public ProductionEntryServiceImpl(WarehouseEntryMapper warehouseEntryMapper) {
-        this.warehouseEntryMapper = warehouseEntryMapper;
+    public WarehouseEntryServiceImpl(WarehouseInEntryMapper warehouseInEntryMapper) {
+        this.warehouseInEntryMapper = warehouseInEntryMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
 
     @Transactional
     @Override
-    public void createEntry(WarehouseEntryWithProductsVO entryVO) {
+    public void createEntry(WarehouseEntryWithProductsVO entryVO, String type, boolean isInbound) {
         try {
 
         } catch (PersistenceException e) {
@@ -44,9 +44,10 @@ public class ProductionEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<WarehouseEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate) {
+    public List<WarehouseEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
+                                                                    String type, boolean isInbound) {
         try {
-            List<WarehouseEntryDO> entriesFromDatabase = warehouseEntryMapper.queryEntriesInDateRangeByType(
+            List<WarehouseEntryDO> entriesFromDatabase = warehouseInEntryMapper.queryEntriesInDateRangeByType(
                     MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), "");
 
             List<WarehouseEntryWithProductsVO> entries = new ArrayList<>();
@@ -54,7 +55,7 @@ public class ProductionEntryServiceImpl implements WarehouseEntryService {
                 WarehouseEntryWithProductsVO tempEntry = new WarehouseEntryWithProductsVO();
                 BeanUtils.copyProperties(entry, tempEntry);
 
-                List<WarehouseProductO> products = warehouseEntryMapper.queryProductsByEntryID(
+                List<WarehouseProductO> products = warehouseInEntryMapper.queryProductsByEntryID(
                         tempEntry.getWarehouseEntryID());
                 tempEntry.setEntryProducts(products);
 
@@ -71,7 +72,7 @@ public class ProductionEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional
     @Override
-    public void modifyEntry(WarehouseEntryWithProductsVO entry) {
+    public void modifyEntry(WarehouseEntryWithProductsVO entry, String type, boolean isInbound) {
         try {
 
         } catch (PersistenceException e) {
@@ -81,4 +82,15 @@ public class ProductionEntryServiceImpl implements WarehouseEntryService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public void getAllProductsByWarehouseStockID(int id, String type, boolean isInbound) {
+        try {
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

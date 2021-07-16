@@ -8,7 +8,9 @@ import java.util.List;
 
 @Indexed
 public interface WarehouseEntryService {
-    void createEntry(WarehouseEntryWithProductsVO entry);
-    List<WarehouseEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate);
-    void modifyEntry(WarehouseEntryWithProductsVO entry);
+    void createEntry(WarehouseEntryWithProductsVO entry, String type, boolean isInbound);
+    List<WarehouseEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate, String type, boolean isInbound);
+    void modifyEntry(WarehouseEntryWithProductsVO entry, String type, boolean isInbound);
+
+    void getAllProductsByWarehouseStockID(int id, String type, boolean isInbound);
 }

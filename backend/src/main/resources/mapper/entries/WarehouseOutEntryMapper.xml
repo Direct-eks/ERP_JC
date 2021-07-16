@@ -2,36 +2,36 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.jc.backend.dao.WarehouseEntryMapper">
+<mapper namespace="org.jc.backend.dao.WarehouseOutEntryMapper">
 
     <select id="countNumberOfEntriesOfGivenDateAndType" resultType="int">
         select count(warehouse_entry_id)
-        from p_warehouse_entry
+        from p_warehouse_out_entry
         where entry_date = #{date} and classification = #{type}
     </select>
 
     <insert id="insertNewEntry">
-        insert into p_warehouse_entry(
+        insert into p_warehouse_out_entry(
             warehouse_entry_id, entry_date, creation_date, total_amount, drawer,
             department_id, warehouse_id, remark, related_entry_serial, classification
         )
         values (
-            #{warehouseEntryID}, #{entryDate}, date('now', 'localtime'), #{totalAmount},
-            #{drawer}, #{departmentID}, #{warehouseID}, #{remark},
-            #{relatedEntrySerial}, #{classification}
-        )
+                   #{warehouseEntryID}, #{entryDate}, date('now', 'localtime'), #{totalAmount},
+                   #{drawer}, #{departmentID}, #{warehouseID}, #{remark},
+                   #{relatedEntrySerial}, #{classification}
+               )
     </insert>
 
     <insert id="insertNewProduct" useGeneratedKeys="true" keyProperty="warehouseProductID"
             keyColumn="warehouse_product_id">
-        insert into p_warehouse_product (
+        insert into p_warehouse_out_product (
             warehouse_entry_id, sku_id, quantity, stock_quantity, remark,
             warehouse_stock_id, warehouse_id, unit_price, stock_unit_price
         )
         values (
-            #{warehouseEntryID}, #{skuID}, #{quantity}, #{stockQuantity},
-            #{remark}, #{warehouseStockID}, #{warehouseID}, #{unitPrice}, #{stockUnitPrice}
-        )
+                   #{warehouseEntryID}, #{skuID}, #{quantity}, #{stockQuantity},
+                   #{remark}, #{warehouseStockID}, #{warehouseID}, #{unitPrice}, #{stockUnitPrice}
+               )
     </insert>
 
 
@@ -71,10 +71,10 @@
         select e.warehouse_entry_id, e.entry_date, e.creation_date, e.total_amount,
                e.drawer, e.department_id, d.name as department_name, e.warehouse_id,
                w.name as warehouse_name, e.remark, e.related_entry_serial, e.classification
-        from p_warehouse_entry as e join e_department as d on e.department_id = d.department_id
-            join w_warehouse as w on e.warehouse_id = w.warehouse_id
+        from p_warehouse_out_entry as e join e_department as d on e.department_id = d.department_id
+                                    join w_warehouse as w on e.warehouse_id = w.warehouse_id
         where e.entry_date between #{startDate} and #{endDate}
-            and e.classification = #{type}
+          and e.classification = #{type}
         order by e.warehouse_entry_id desc
     </select>
 
@@ -83,7 +83,7 @@
                s.unit_name, s.factory_code, p.quantity, p.stock_quantity,
                p.remark, p.warehouse_stock_id, p.warehouse_id, p.unit_price,
                p.stock_unit_price
-        from p_warehouse_product as p join sku_full as s on p.sku_id = s.sku_id
+        from p_warehouse_out_product as p join sku_full as s on p.sku_id = s.sku_id
         where warehouse_product_id = #{id}
         order by warehouse_product_id
     </select>
@@ -91,29 +91,59 @@
     <select id="selectEntryForCompare" resultMap="EntryResultMap">
         select warehouse_entry_id, total_amount, drawer, e.department_id,
                d.name as department_name, e.remark
-        from p_warehouse_entry as e join e_department as d on e.department_id = d.department_id
+        from p_warehouse_out_entry as e join e_department as d on e.department_id = d.department_id
         where warehouse_entry_id = #{id}
     </select>
 
     <select id="selectProductsForCompare" resultMap="ProductResultMap">
         select warehouse_product_id, warehouse_entry_id, s.code, quantity, p.remark, p.unit_price
-        from p_warehouse_product as p join sku_full as s on p.sku_id = s.sku_id
+        from p_warehouse_out_product as p join sku_full as s on p.sku_id = s.sku_id
         where warehouse_entry_id = #{id}
     </select>
 
     <update id="updateEntry">
-        update p_warehouse_entry
+        update p_warehouse_out_entry
         set total_amount = #{totalAmount},
             department_id = #{departmentID}
         where warehouse_entry_id = #{warehouseEntryID}
     </update>
 
     <update id="updateProduct">
-        update p_warehouse_product
+        update p_warehouse_out_product
         set quantity = #{quantity},
             remark = #{remark},
             unit_price = #{unitPrice}
         where warehouse_product_id = #{warehouseProductID}
+    </update>
+
+
+    <resultMap id="productStatResultMap" type="org.jc.backend.entity.StatO.ProductStatO">
+        <result property="outboundEntryID" column="warehouse_entry_id"/>
+        <result property="shipmentDate" column="entry_date"/>
+        <result property="outboundProductID" column="warehouse_product_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="stockQuantity" column="stock_quantity"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="unitPriceWithoutTax" column="unit_price"/>
+        <result property="stockUnitPrice" column="stock_unit_price"/>
+    </resultMap>
+
+    <select id="queryAllOutboundProductsByWarehouseStockID" resultMap="productStatResultMap">
+        select e.warehouse_entry_id, e.entry_date, p.warehouse_product_id,
+               p.sku_id, p.quantity, p.stock_quantity, p.warehouse_stock_id,
+               p.warehouse_id, p.unit_price, p.stock_unit_price
+        from p_warehouse_out_entry as e join p_warehouse_out_product as p
+                                         on e.warehouse_entry_id = p.warehouse_entry_id
+        where warehouse_stock_id = #{id}
+    </select>
+
+    <update id="updateProductStockInfo">
+        update p_warehouse_out_product
+        set stock_quantity = #{stockQuantity},
+            unit_price = #{stockUnitPrice}
+        where warehouse_product_id = #{inboundProductID}
     </update>
 
 </mapper>
