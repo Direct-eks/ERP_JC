@@ -47,7 +47,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "SP_Query",
     components: {
-        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry'),
+        EntryComponent: () => import('~/components/ProductionComponents/WarehouseEntry'),
         QueryComponent: () => import('~/components/ProductionComponents/QueryDisplayComponent')
     },
     beforeMount() {

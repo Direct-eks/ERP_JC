@@ -27,7 +27,7 @@ export default {
     name: "MA_Entry",
     components: {
         EntryComponent: () => import(/* webpackChunkName: "WarehouseEntryComponent" */
-            '~/components/ProductionComponents/ProductionEntry')
+            '~/components/ProductionComponents/WarehouseEntry')
     },
     data() {
         return {

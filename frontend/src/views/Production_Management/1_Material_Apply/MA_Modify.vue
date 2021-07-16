@@ -47,7 +47,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "MA_Modify",
     components: {
-        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry'),
+        EntryComponent: () => import('~/components/ProductionComponents/WarehouseEntry'),
         QueryComponent: () => import(/* webpackChunkName: "WarehouseEntryQueryComponent" */
             '~/components/ProductionComponents/QueryDisplayComponent')
     },

@@ -26,7 +26,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "SP_Entry",
     components: {
-        EntryComponent: () => import('~/components/ProductionComponents/ProductionEntry')
+        EntryComponent: () => import('~/components/ProductionComponents/WarehouseEntry')
     },
     data() {
         return {
