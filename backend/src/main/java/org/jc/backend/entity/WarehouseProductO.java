@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class WarehouseProductO {
-    private Integer warehouseProductID;
+    private int warehouseProductID;
     private String warehouseEntryID;
 
     @NotNull(message = "skuID null error")

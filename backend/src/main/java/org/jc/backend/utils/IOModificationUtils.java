@@ -1,11 +1,9 @@
 package org.jc.backend.utils;
 
-import org.jc.backend.entity.DO.InboundEntryDO;
-import org.jc.backend.entity.DO.OutboundEntryDO;
-import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
-import org.jc.backend.entity.DO.QuoteEntryDO;
+import org.jc.backend.entity.DO.*;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.SupplierResourceO;
+import org.jc.backend.entity.WarehouseProductO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
@@ -230,6 +228,63 @@ public class IOModificationUtils {
             bool = true;
             record.append(String.format("型号(%s) 税价: %s -> %s; ", modelCode,
                     originProduct.getUnitPriceWithTax(), modifiedProduct.getUnitPriceWithTax()));
+        }
+
+        return bool;
+    }
+
+    public static boolean warehouseEntryCompareAndFormModificationRecord(
+            StringBuilder record,
+            WarehouseEntryDO modifiedO,
+            WarehouseEntryDO originO,
+            boolean priceChange
+    ) {
+        boolean bool = false;
+
+        if (originO.getDepartmentID() != modifiedO.getDepartmentID()) {
+            bool = true;
+            record.append(String.format("部门: %s -> %s; ", originO.getDepartmentName(), modifiedO.getDepartmentName()));
+        }
+        if (priceChange) {
+            if (new BigDecimal(modifiedO.getTotalAmount()).compareTo(new BigDecimal(originO.getTotalAmount())) != 0) {
+                bool = true;
+                record.append(String.format("总金额: %s -> %s; ", originO.getTotalAmount(), modifiedO.getTotalAmount()));
+            }
+        }
+        if (!originO.getRemark().equals(modifiedO.getRemark())) {
+            bool = true;
+            record.append(String.format("备注: %s -> %s;", originO.getRemark(), modifiedO.getRemark()));
+        }
+
+        return bool;
+    }
+
+    public static boolean warehouseProductCompareAndFormModificationRecord(
+            StringBuilder record,
+            WarehouseProductO modifiedO,
+            WarehouseProductO originO,
+            boolean priceChange
+    ) {
+        boolean bool = false;
+        String modelCode = originO.getCode();
+
+        if (!modifiedO.getQuantity().equals(originO.getQuantity())) {
+            bool = true;
+            record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
+                    originO.getQuantity(), modifiedO.getQuantity()));
+        }
+        if (priceChange) {
+            if (new BigDecimal(modifiedO.getUnitPrice())
+                    .compareTo(new BigDecimal(originO.getUnitPrice())) != 0) {
+                bool = true;
+                record.append(String.format("型号(%s) 单价: %s -> %s; ", modelCode,
+                        originO.getUnitPrice(), modifiedO.getUnitPrice()));
+            }
+        }
+        if (!modifiedO.getRemark().equals(originO.getRemark())) {
+            bool = true;
+            record.append(String.format("型号(%s) 备注: %s -> %s; ", modelCode,
+                    originO.getRemark(), modifiedO.getRemark()));
         }
 
         return bool;

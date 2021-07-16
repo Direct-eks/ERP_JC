@@ -1,15 +1,18 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.WarehouseInEntryMapper;
 import org.jc.backend.dao.WarehouseOutEntryMapper;
 import org.jc.backend.entity.DO.WarehouseEntryDO;
+import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseProductO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.WarehouseEntryService;
 import org.jc.backend.service.WarehouseStockService;
+import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +32,17 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     private final WarehouseInEntryMapper warehouseInEntryMapper;
     private final WarehouseOutEntryMapper warehouseOutEntryMapper;
     private final WarehouseStockService warehouseStockService;
+    private final ModificationMapper modificationMapper;
 
     public WarehouseEntryServiceImpl(
             WarehouseInEntryMapper warehouseInEntryMapper,
             WarehouseOutEntryMapper warehouseOutEntryMapper,
-            WarehouseStockService warehouseStockService) {
+            WarehouseStockService warehouseStockService,
+            ModificationMapper modificationMapper) {
         this.warehouseInEntryMapper = warehouseInEntryMapper;
         this.warehouseOutEntryMapper = warehouseOutEntryMapper;
         this.warehouseStockService = warehouseStockService;
+        this.modificationMapper = modificationMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -145,10 +151,75 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional
     @Override
-    public void modifyEntry(WarehouseEntryWithProductsVO entry, String type, boolean isInbound) {
-        try {
+    public void modifyEntry(WarehouseEntryWithProductsVO entryVO, String type, boolean isInbound) {
 
-            
+        WarehouseEntryDO currentEntry = new WarehouseEntryDO();
+        BeanUtils.copyProperties(entryVO, currentEntry);
+        List<WarehouseProductO> currentProducts = entryVO.getEntryProducts();
+
+        try {
+            String id = currentEntry.getWarehouseEntryID();
+            logger.info("Serial to be changed: " + id);
+
+            WarehouseEntryDO originalEntry;
+            originalEntry = isInbound ? warehouseInEntryMapper.selectEntryForCompare(id) :
+                    warehouseOutEntryMapper.selectEntryForCompare(id);
+            List<WarehouseProductO> originalProducts;
+            originalProducts = isInbound ? warehouseInEntryMapper.selectProductsForCompare(id) :
+                    warehouseOutEntryMapper.selectProductsForCompare(id);
+
+            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
+            boolean entryChanged = false;
+            boolean productsChanged = false;
+            if (IOModificationUtils.warehouseEntryCompareAndFormModificationRecord(
+                    record, currentEntry, originalEntry, isInbound)) {
+                entryChanged = true;
+                if (isInbound) {
+                    warehouseInEntryMapper.updateEntry(currentEntry);
+                }
+                else {
+                    warehouseOutEntryMapper.updateEntry(currentEntry);
+                }
+            }
+
+            for (var originalProduct : originalProducts) {
+                boolean found = false;
+                for (var currentProduct : currentProducts) {
+                    if (currentProduct.getWarehouseProductID() == originalProduct.getWarehouseProductID()) {
+                        if (IOModificationUtils.warehouseProductCompareAndFormModificationRecord(
+                                record, currentProduct, originalProduct, isInbound)) {
+                            productsChanged = true;
+                            if (isInbound) {
+                                warehouseInEntryMapper.updateProduct(currentProduct);
+                                // todo change warehouseStockService to support warehouseProductO
+//                                warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate());
+                            }
+                            else {
+                                warehouseOutEntryMapper.updateProduct(currentProduct);
+                                // todo change warehouseStockService to support warehouseProductO
+//                                warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate());
+                            }
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // todo adapt to deletion
+                    logger.error("deleted product found");
+                    throw new RuntimeException();
+                }
+            }
+
+            if (entryChanged || productsChanged) {
+                logger.info("Modification: " + record);
+                modificationMapper.insertModificationRecord(new ModificationO(
+                        originalEntry.getWarehouseEntryID(), record.toString()));
+            }
+            else {
+                logger.warn("nothing changed, begin rolling back");
+                throw new RuntimeException();
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
