@@ -626,11 +626,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     @Override
     public List<ProductStatO> getAllInboundProducts(int id) {
         try {
-            var list = inboundEntryMapper.queryAllInboundProductsByWarehouseStockID(id);
-            for (var p : list) {
-                p.setInbound(true);
-            }
-            return list;
+            return inboundEntryMapper.queryAllInboundProductsByWarehouseStockID(id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
