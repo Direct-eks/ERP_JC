@@ -15,8 +15,8 @@ const api = {
 
     /* ------ /assemblyEntry ------*/
     createAssemblyEntry: '/assemblyEntry/createEntry', // PUT
-    assemblyEntriesInDateRange: '', // GET
-    modifyAssemblyEntry: '', // PATCH
+    assemblyEntriesInDateRange: '/assemblyEntry/getEntriesInDateRange', // GET
+    modifyAssemblyEntry: '/assemblyEntry/modifyEntry', // PATCH
 
     /* ------ /bankAccount ------*/
     allBankAccounts: '/bankAccount/getAllAccounts', // GET
@@ -76,13 +76,13 @@ const api = {
 
     /* ------ /inventoryLoss ------*/
     createInventoryLossEntry: '/inventoryLossEntry/createEntry', // PUT
-    inventoryLossEntriesInDateRange: '', // GET
-    modifyInventoryLossEntry: '', // PATCH
+    inventoryLossEntriesInDateRange: '/inventoryLossEntry/getEntriesInDateRange', // GET
+    modifyInventoryLossEntry: '/inventoryLossEntry/modifyEntry', // PATCH
 
     /* ------ /inventoryProfit ------*/
     createInventoryProfitEntry: '/inventoryProfitEntry/createEntry', // PUT
-    inventoryProfitEntriesInDateRange: '', // GET
-    modifyInventoryProfitEntry: '', // PATCH
+    inventoryProfitEntriesInDateRange: '/inventoryProfitEntry/getEntriesInDateRange', // GET
+    modifyInventoryProfitEntry: '/inventoryProfitEntry/modifyEntry', // PATCH
 
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
@@ -93,8 +93,8 @@ const api = {
 
     /* ------ /materialApply ------*/
     createMaterialApplyEntry: '/materialApplyEntry/createEntry', // PUT
-    materialApplyEntriesInDateRange: '', // GET
-    modifyMaterialApplyEntry: '', // PATCH
+    materialApplyEntriesInDateRange: '/materialApplyEntry/getEntriesInDateRange', // GET
+    modifyMaterialApplyEntry: '/materialApplyEntry/modifyEntry', // PATCH
 
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
@@ -142,8 +142,8 @@ const api = {
 
     /* ------ /productionEntry ------*/
     createProductionEntry: '/productionEntry/createEntry', // PUT
-    productionEntriesInDateRange: '', // GET
-    modifyProductionEntry: '', // PATCH
+    productionEntriesInDateRange: '/productionEntry/getEntriesInDateRange', // GET
+    modifyProductionEntry: '/productionEntry/modifyEntry', // PATCH
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
@@ -168,8 +168,8 @@ const api = {
 
     /* ------ /scrapEntry ------*/
     createScrapEntry: '/scrapEntry/createEntry', // PUT
-    scrapEntriesInDateRange: '', // GET
-    modifyScrapEntry: '', // PATCH
+    scrapEntriesInDateRange: '/scrapEntry/getEntriesInDateRange', // GET
+    modifyScrapEntry: '/scrapEntry/modifyEntry', // PATCH
 
     /* ------ /shippingCostEntry ------*/
     createShippingCostEntry: '/shippingCostEntry/createEntry',
@@ -196,6 +196,8 @@ const api = {
 
     /* ------ /transferEntry ------*/
     createTransferEntry: '/transferEntry/createEntry', // PUT
+    transferEntriesInDateRange: '/transferEntry/getEntriesInDateRange', // GET
+    modifyTransferEntry: '/transferEntry/modifyEntry', // PATCH
 
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET

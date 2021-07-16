@@ -81,26 +81,26 @@ export default {
         }
 
         switch (this.type) {
-            case 'materialApply':
-                this.api = this.$api.materialApplyEntriesInDateRange
-                break
-            case 'productionEntry':
-                this.api = this.$api.productionEntriesInDateRange
-                break
-            case 'inventoryLoss':
-                this.api = this.$api.inventoryLossEntriesInDateRange
-                break
-            case 'inventoryProfit':
-                this.api = this.$api.inventoryProfitEntriesInDateRange
-                break
-            case 'scrapEntry':
-                this.api = this.$api.scrapEntriesInDateRange
-                break
+        case 'materialApply':
+            this.api = this.$api.materialApplyEntriesInDateRange
+            break
+        case 'productionEntry':
+            this.api = this.$api.productionEntriesInDateRange
+            break
+        case 'inventoryLoss':
+            this.api = this.$api.inventoryLossEntriesInDateRange
+            break
+        case 'inventoryProfit':
+            this.api = this.$api.inventoryProfitEntriesInDateRange
+            break
+        case 'scrapEntry':
+            this.api = this.$api.scrapEntriesInDateRange
+            break
         }
     },
     data() {
         return {
-            api: '',
+            api: null,
 
             dateRange: [
                 new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0, 10),
