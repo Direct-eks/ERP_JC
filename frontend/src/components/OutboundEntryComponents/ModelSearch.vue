@@ -98,18 +98,12 @@
                         <v-card outlined>
                             <v-responsive height="30vh" max-width="55vw"
                                           style="overflow: auto">
-                                <v-data-table v-model="warehouseStockCurrentRow"
-                                              :headers="warehouseStockTableHeaders"
+                                <v-data-table :headers="warehouseStockTableHeaders"
                                               :items="warehouseStockTableData"
                                               item-key="warehouseStockID"
-                                              @click:row="warehouseStockTableChoose"
-                                              @item-selected="warehouseStockTableChoose2"
                                               height="20vh"
                                               calculate-widths
                                               disable-sort
-                                              single-select
-                                              show-select
-                                              checkbox-color="accent"
                                               fixed-header
                                               hide-default-footer
                                               locale="zh-cn"
@@ -193,9 +187,9 @@
                         </v-card>
                     </div>
 
-                    <v-card outlined class="text-h6">
-                        <p>{{flattenedTreePosition}}</p>
-                    </v-card>
+<!--                    <v-card outlined class="text-h6">-->
+<!--                        <p>{{flattenedTreePosition}}</p>-->
+<!--                    </v-card>-->
                     <v-card outlined>
                         <v-data-table :headers="resourceTableHeader"
                                       :items="resourceTableData"
@@ -291,7 +285,7 @@ export default {
                 {text: '库存数', value: 'stockQuantity', width: '80px'},
             ],
             warehouseStockTableData: [],
-            warehouseStockCurrentRow: [],
+            // warehouseStockCurrentRow: [],
 
             resourceTableHeader: [
                 { text: '摘要', value: '', width: '' },
@@ -435,26 +429,26 @@ export default {
                 this.skuTableChoose(row.item)
             }
         },
-        warehouseStockTableChoose(val) {
-            this.resourceTableData = []
-
-            if (this.warehouseStockCurrentRow.indexOf(val) !== -1) {
-                this.warehouseStockCurrentRow = []
-            }
-            else {
-                this.warehouseStockCurrentRow = [val]
-            }
-        },
-        warehouseStockTableChoose2(row) {
-            this.resourceTableData = []
-
-            if (!row.value) {
-                this.warehouseStockCurrentRow = []
-            }
-            else {
-                this.warehouseStockCurrentRow = [row.item]
-            }
-        },
+        // warehouseStockTableChoose(val) {
+        //     this.resourceTableData = []
+        //
+        //     if (this.warehouseStockCurrentRow.indexOf(val) !== -1) {
+        //         this.warehouseStockCurrentRow = []
+        //     }
+        //     else {
+        //         this.warehouseStockCurrentRow = [val]
+        //     }
+        // },
+        // warehouseStockTableChoose2(row) {
+        //     this.resourceTableData = []
+        //
+        //     if (!row.value) {
+        //         this.warehouseStockCurrentRow = []
+        //     }
+        //     else {
+        //         this.warehouseStockCurrentRow = [row.item]
+        //     }
+        // },
         handleWholesaleDiscountChange(value) {
             if (value === '') return
             const discount = 100 - value
@@ -481,22 +475,23 @@ export default {
                 return
             }
 
-            if (this.warehouseStockCurrentRow.length === 0 ||
-                    this.warehouseStockCurrentRow[0].warehouseID !== this.warehouseID) {
-                this.$store.commit('setSnackbar', {
-                    message: '选择的仓库与出库单仓库不符', color: 'warning'
-                })
-                return
-            }
-
+            let found = false
             let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = '0'
-            for (let item of this.warehouseStockTableData) {
+
+            for (const item of this.warehouseStockTableData) {
                 if (item.warehouseID === this.warehouseID) {
+                    found = true
                     stockQuantity = item.stockQuantity
                     warehouseStockID = item.warehouseStockID
                     stockUnitPrice = item.stockUnitPriceWithTax
                     break
                 }
+            }
+            if (!found) {
+                this.$store.commit('setSnackbar', {
+                    message: '出库仓库无所选商品库存记录', color: 'warning'
+                })
+                return
             }
 
             this.$emit('modelSearchChoose', {
