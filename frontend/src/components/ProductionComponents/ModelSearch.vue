@@ -147,16 +147,16 @@ export default {
             modelTableCurrentRow: [],
 
             skuTableHeaders: [
-                {text: '生产厂', value: 'factoryCode', width: '80px'}
+                {text: '生产厂', value: 'factoryCode', width: '70px'}
             ],
             skuTableData: [],
             skuTableCurrentRow: [],
 
             warehouseStockTableHeaders: [
                 {text: '仓库', value: 'warehouseName', width: '90px'},
-                {text: '架位', value: '', width: '100px'},
                 {text: '库存数量', value: 'stockQuantity', width: '90px'},
-                {text: '库存无税价', value: 'stockUnitPriceWithoutTax', width: '100px'}
+                {text: '库存无税价', value: 'stockUnitPriceWithoutTax', width: '100px'},
+                {text: '架位', value: '', width: '100px'}
             ],
             warehouseStockTableData: [],
         }
@@ -250,22 +250,23 @@ export default {
                 return
             }
 
-            if ((!this.isInbound) && (this.warehouseStockCurrentRow.length === 0 ||
-                this.warehouseStockCurrentRow[0].warehouseID !== this.warehouseID)) {
-                this.$store.commit('setSnackbar', {
-                    message: '选择的仓库与出库单仓库不符', color: 'warning'
-                })
-                return
-            }
-
             let stockQuantity = 0, warehouseStockID = -1, stockUnitPrice = '0'
-            for (let item of this.warehouseStockTableData) {
+            let found = false
+
+            for (const item of this.warehouseStockTableData) {
                 if (item.warehouseID === this.warehouseID) {
+                    found = true
                     stockQuantity = item.stockQuantity
                     warehouseStockID = item.warehouseStockID
-                    stockUnitPrice = item.stockUnitPriceWithTax
+                    stockUnitPrice = item.stockUnitPriceWithoutTax
                     break
                 }
+            }
+            if (!this.isInbound && !found) {
+                this.$store.commit('setSnackbar', {
+                    message: '出库仓库无所选商品库存记录', color: 'warning'
+                })
+                return
             }
 
             this.$emit('modelSearchChoose', {

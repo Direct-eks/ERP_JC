@@ -82,7 +82,10 @@
                           no-click-animation
                           max-width="85vw">
                     <template v-slot:activator="{on}">
-                        <v-btn color="accent" v-on="on">型号助选</v-btn>
+                        <v-btn color="accent" v-on="on"
+                               :disabled="form.warehouseID === -1">
+                            型号助选
+                        </v-btn>
                     </template>
                     <ModelSearch :warehouseID="form.warehouseID"
                                  :isInbound="isInbound"
@@ -281,8 +284,8 @@ export default {
                 products: []
             },
             rules: {
-                warehouseID: [v => !!v || '请选择仓库'],
-                departmentID: [v => !!v || '请选择部门'],
+                warehouseID: [v => v !== -1 || '请选择仓库'],
+                departmentID: [v => v !== -1 || '请选择部门'],
             },
 
             tableHeaders: [
@@ -367,7 +370,7 @@ export default {
         },
         handlePriceChange(item) {
             item.unitPrice = this.$validateFloat(item.unitPrice)
-            this.handleQuantityChange()
+            this.handleQuantityChange(item)
         },
         /* ------- table & entry submission -------*/
         handleDeleteRow() {
@@ -388,21 +391,21 @@ export default {
             if (this.$refs.form.validate()) {
                 let api = ''
                 switch (this.type) {
-                    case 'materialApply':
-                        api = this.$api.createMaterialApplyEntry
-                        break
-                    case 'productionEntry':
-                        api = this.$api.createProductionEntry
-                        break
-                    case 'inventoryLoss':
-                        api = this.$api.createInventoryLossEntry
-                        break
-                    case 'inventoryProfit':
-                        api = this.$api.createInventoryProfitEntry
-                        break
-                    case 'scrapEntry':
-                        api = this.$api.createScrapEntry
-                        break
+                case 'materialApply':
+                    api = this.$api.createMaterialApplyEntry
+                    break
+                case 'productionEntry':
+                    api = this.$api.createProductionEntry
+                    break
+                case 'inventoryLoss':
+                    api = this.$api.createInventoryLossEntry
+                    break
+                case 'inventoryProfit':
+                    api = this.$api.createInventoryProfitEntry
+                    break
+                case 'scrapEntry':
+                    api = this.$api.createScrapEntry
+                    break
                 }
 
                 this.$putRequest(api, this.form, {
@@ -417,21 +420,21 @@ export default {
             if (this.$refs.form.validate()) {
                 let api = ''
                 switch (this.type) {
-                    case 'materialApply':
-                        api = this.$api.modifyMaterialApplyEntry
-                        break
-                    case 'productionEntry':
-                        api = this.$api.modifyProductionEntry
-                        break
-                    case 'inventoryLoss':
-                        api = this.$api.modifyInventoryLossEntry
-                        break
-                    case 'inventoryProfit':
-                        api = this.$api.modifyInventoryProfitEntry
-                        break
-                    case 'scrapEntry':
-                        api = this.$api.modifyScrapEntry
-                        break
+                case 'materialApply':
+                    api = this.$api.modifyMaterialApplyEntry
+                    break
+                case 'productionEntry':
+                    api = this.$api.modifyProductionEntry
+                    break
+                case 'inventoryLoss':
+                    api = this.$api.modifyInventoryLossEntry
+                    break
+                case 'inventoryProfit':
+                    api = this.$api.modifyInventoryProfitEntry
+                    break
+                case 'scrapEntry':
+                    api = this.$api.modifyScrapEntry
+                    break
                 }
             }
             this.submitPopup2 = false
