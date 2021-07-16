@@ -7,7 +7,9 @@ import org.jc.backend.entity.DO.WarehouseEntryDO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseProductO;
+import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.WarehouseEntryService;
+import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +28,15 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     private final WarehouseInEntryMapper warehouseInEntryMapper;
     private final WarehouseOutEntryMapper warehouseOutEntryMapper;
+    private final WarehouseStockService warehouseStockService;
 
     public WarehouseEntryServiceImpl(
             WarehouseInEntryMapper warehouseInEntryMapper,
-            WarehouseOutEntryMapper warehouseOutEntryMapper) {
+            WarehouseOutEntryMapper warehouseOutEntryMapper,
+            WarehouseStockService warehouseStockService) {
         this.warehouseInEntryMapper = warehouseInEntryMapper;
         this.warehouseOutEntryMapper = warehouseOutEntryMapper;
+        this.warehouseStockService = warehouseStockService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -39,7 +44,57 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Transactional
     @Override
     public void createEntry(WarehouseEntryWithProductsVO entryVO, String type, boolean isInbound) {
+
+        WarehouseEntryDO newEntry = new WarehouseEntryDO();
+        BeanUtils.copyProperties(entryVO, newEntry);
+        List<WarehouseProductO> newProducts = entryVO.getEntryProducts();
+
         try {
+            // todo presale check
+
+            String entryDate = newEntry.getEntryDate();
+            int count = isInbound ? warehouseInEntryMapper.countNumberOfEntriesOfGivenDateAndType(entryDate, type) :
+                    warehouseOutEntryMapper.countNumberOfEntriesOfGivenDateAndType(entryDate, type);
+            String newSerial = MyUtils.formNewSerial(type, count, entryDate);
+
+            newEntry.setWarehouseEntryID(newSerial);
+            if (isInbound) {
+                warehouseInEntryMapper.insertNewEntry(newEntry);
+            } else {
+                warehouseOutEntryMapper.insertNewEntry(newEntry);
+            }
+
+            int warehouseID = newEntry.getWarehouseID();
+            for (var product : newProducts) {
+                product.setWarehouseEntryID(newSerial);
+
+                int skuID = product.getSkuID();
+                if (product.getWarehouseStockID() == -1 ||
+                        warehouseStockService.getWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
+                    if (isInbound) {
+                        WarehouseStockO newWarehouseStock = new WarehouseStockO();
+                        newWarehouseStock.setSkuID(skuID);
+                        newWarehouseStock.setWarehouseID(warehouseID);
+                        int newID = warehouseStockService.insertNewWarehouseStock(newWarehouseStock);
+                        product.setWarehouseStockID(newID);
+                    }
+                    else {
+                        // todo outbound does not support on product with no stock record
+                    }
+                }
+
+                // todo change warehouseStockService to support warehouseProductO
+//                warehouseStockService.increaseStock(product, entryDate);
+
+                if (isInbound) {
+                    warehouseInEntryMapper.insertNewProduct(product);
+                }
+                else {
+                    warehouseOutEntryMapper.insertNewProduct(product);
+                }
+                int id = product.getWarehouseProductID();
+                logger.info("Insert new warehouse product id: {}", id);
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -92,6 +147,8 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Override
     public void modifyEntry(WarehouseEntryWithProductsVO entry, String type, boolean isInbound) {
         try {
+
+            
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
