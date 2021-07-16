@@ -2,7 +2,9 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.WarehouseInEntryMapper;
+import org.jc.backend.dao.WarehouseOutEntryMapper;
 import org.jc.backend.entity.DO.WarehouseEntryDO;
+import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseProductO;
 import org.jc.backend.service.WarehouseEntryService;
@@ -23,9 +25,13 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     private static final Logger logger = LoggerFactory.getLogger(WarehouseEntryServiceImpl.class);
 
     private final WarehouseInEntryMapper warehouseInEntryMapper;
+    private final WarehouseOutEntryMapper warehouseOutEntryMapper;
 
-    public WarehouseEntryServiceImpl(WarehouseInEntryMapper warehouseInEntryMapper) {
+    public WarehouseEntryServiceImpl(
+            WarehouseInEntryMapper warehouseInEntryMapper,
+            WarehouseOutEntryMapper warehouseOutEntryMapper) {
         this.warehouseInEntryMapper = warehouseInEntryMapper;
+        this.warehouseOutEntryMapper = warehouseOutEntryMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -47,16 +53,28 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     public List<WarehouseEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                                     String type, boolean isInbound) {
         try {
-            List<WarehouseEntryDO> entriesFromDatabase = warehouseInEntryMapper.queryEntriesInDateRangeByType(
-                    MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), "");
+            List<WarehouseEntryDO> entriesFromDatabase;
+            if (isInbound) {
+                entriesFromDatabase = warehouseInEntryMapper.queryEntriesInDateRangeByType(
+                        MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), type);
+            }
+            else {
+                entriesFromDatabase = warehouseOutEntryMapper.queryEntriesInDateRangeByType(
+                        MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), type);
+            }
 
             List<WarehouseEntryWithProductsVO> entries = new ArrayList<>();
             for (var entry : entriesFromDatabase) {
                 WarehouseEntryWithProductsVO tempEntry = new WarehouseEntryWithProductsVO();
                 BeanUtils.copyProperties(entry, tempEntry);
 
-                List<WarehouseProductO> products = warehouseInEntryMapper.queryProductsByEntryID(
-                        tempEntry.getWarehouseEntryID());
+                List<WarehouseProductO> products;
+                if (isInbound) {
+                    products = warehouseInEntryMapper.queryProductsByEntryID(tempEntry.getWarehouseEntryID());
+                }
+                else {
+                    products = warehouseOutEntryMapper.queryProductsByEntryID(tempEntry.getWarehouseEntryID());
+                }
                 tempEntry.setEntryProducts(products);
 
                 entries.add(tempEntry);
@@ -84,8 +102,10 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public void getAllProductsByWarehouseStockID(int id, String type, boolean isInbound) {
+    public List<ProductStatO> getAllProductsByWarehouseStockID(int id, boolean isInbound) {
         try {
+            return isInbound ? warehouseInEntryMapper.queryAllInboundProductsByWarehouseStockID(id) :
+                    warehouseOutEntryMapper.queryAllOutboundProductsByWarehouseStockID(id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
