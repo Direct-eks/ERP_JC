@@ -24,6 +24,9 @@ public class ProductionEntryController {
 
     private final WarehouseEntryService productionEntryService;
 
+    private static final String ENTRY_TYPE = "产入";
+    private static final boolean INBOUND = true;
+
     public ProductionEntryController(WarehouseEntryService productionEntryService) {
         this.productionEntryService = productionEntryService;
     }
@@ -43,7 +46,7 @@ public class ProductionEntryController {
             }
         }
 
-        productionEntryService.createEntry(entry);
+        productionEntryService.createEntry(entry, ENTRY_TYPE, INBOUND);
     }
 
     @ApiOperation(value = "", response = WarehouseEntryWithProductsVO.class)
@@ -58,7 +61,7 @@ public class ProductionEntryController {
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        return productionEntryService.getEntriesInDateRange(startDate, endDate);
+        return productionEntryService.getEntriesInDateRange(startDate, endDate, ENTRY_TYPE, INBOUND);
     }
 
     @ApiOperation(value = "", response = void.class)
@@ -66,6 +69,6 @@ public class ProductionEntryController {
     public void modifyEntry(@RequestBody @Validated WarehouseEntryWithProductsVO entry) {
         logger.info("PATCH Request to /productionEntry/modifyEntry, entry: {}", entry);
 
-        productionEntryService.modifyEntry(entry);
+        productionEntryService.modifyEntry(entry, ENTRY_TYPE, INBOUND);
     }
 }
