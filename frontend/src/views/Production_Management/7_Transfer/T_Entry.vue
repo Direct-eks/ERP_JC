@@ -12,7 +12,10 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <EntryComponent editMode="creation"
+                            type="transferEntry"
+                            prefix="调">
+            </EntryComponent>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +25,9 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "D_Entry",
+    components: {
+        EntryComponent: () => import('~/components/ProductionComponents/DuelEntry')
+    },
     data() {
         return {
             mdiArrowLeft
