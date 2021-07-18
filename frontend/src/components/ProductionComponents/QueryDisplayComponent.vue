@@ -96,11 +96,20 @@ export default {
         case 'scrapEntry':
             this.api = this.$api.scrapEntriesInDateRange
             break
+        case 'assemblyEntry':
+            this.api = this.$api.assemblyEntriesInDateRange
+            this.isDuelMode = true
+            break
+        case 'transferEntry':
+            this.api = this.$api.transferEntriesInDateRange
+            this.isDuelMode = true
+            break
         }
     },
     data() {
         return {
             api: null,
+            isDuelMode: false,
 
             dateRange: [
                 new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0, 10),
@@ -119,6 +128,7 @@ export default {
                 { text: '库存单价', value: 'stockUnitPrice', width: '120px' }
             ],
             queryTableData: [],
+            originalData: [],
             queryTableCurrentRow: [],
 
             modificationRecordTableHeader: [
@@ -135,9 +145,18 @@ export default {
         query() {
             this.$getRequest(this.api, {
                 startDate: this.dateRange[0],
-                endDate: this.dateRange[1],
-                type: this.prefix
+                endDate: this.dateRange[1]
             }).then(data => {
+                if (this.isDuelMode) {
+                    const list = []
+                    for (const item of data) {
+                        list.push(item[0])
+                        list.push(item[1])
+                    }
+                    this.queryTableData = list
+                    this.originalData = data
+                    return
+                }
                 this.queryTableData = data
             }).catch(() => {})
         },
@@ -151,6 +170,11 @@ export default {
             }
             else {
                 this.queryTableCurrentRow = [val]
+                if (this.isDuelMode) {
+                    const index = Math.floor(this.queryTableData.indexOf(val) / 2)
+                    this.$emit('tableClick', this.originalData[index])
+                    return
+                }
                 this.$emit('tableClick', val)
             }
         },
@@ -161,6 +185,11 @@ export default {
             }
             else {
                 this.queryTableCurrentRow = [row.item]
+                if (this.isDuelMode) {
+                    const index = Math.floor(this.queryTableData.indexOf(row.item) / 2)
+                    this.$emit('tableClick', this.originalData[index])
+                    return
+                }
                 this.$emit('tableClick', row.item)
             }
         },
