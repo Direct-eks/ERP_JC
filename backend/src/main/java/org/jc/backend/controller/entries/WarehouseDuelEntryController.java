@@ -14,23 +14,17 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Indexed
-@Api(tags = "AssemblyEntry Related")
+@Api(tags = "WarehouseDuelEntry Related")
 @RestController
-@RequestMapping("/assemblyEntry")
-public class AssemblyEntryController {
-    private static final Logger logger = LoggerFactory.getLogger(AssemblyEntryController.class);
+@RequestMapping("/warehouseDuelEntry")
+public class WarehouseDuelEntryController {
+    private static final Logger logger = LoggerFactory.getLogger(WarehouseDuelEntryController.class);
 
     private final WarehouseEntryService assemblyEntryService;
 
-    private static final String ENTRY_TYPE1 = "拆出";
-    private static final String ENTRY_TYPE2 = "拆入";
-    private static final boolean INBOUND1 = false;
-    private static final boolean INBOUND2 = true;
-
-    public AssemblyEntryController(WarehouseEntryService assemblyEntryService) {
+    public WarehouseDuelEntryController(WarehouseEntryService assemblyEntryService) {
         this.assemblyEntryService = assemblyEntryService;
     }
 
@@ -39,9 +33,11 @@ public class AssemblyEntryController {
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
     public void createEntry(
+            @RequestParam("type") String type,
             @RequestBody @Validated ListUpdateVO<WarehouseEntryWithProductsVO> entries
     ) throws GlobalParamException {
-        logger.info("PUT Request to /assemblyEntry/createEntry, data: {}", entries.getElements());
+        logger.info("PUT Request to /warehouseDuelEntry/createEntry, type: {}, data: {}",
+                type, entries.getElements());
 
         // check for quantity, VO validation only check for >= 0 due to quantity
         // becoming 0 after returning.
@@ -56,24 +52,25 @@ public class AssemblyEntryController {
         if (entries.getElements().size() != 2) throw new GlobalParamException("elements size error");
 
         // todo related entry serial
-        assemblyEntryService.createEntry(entries.getElements().get(0), ENTRY_TYPE1, INBOUND1);
-        assemblyEntryService.createEntry(entries.getElements().get(1), ENTRY_TYPE2, INBOUND2);
+        assemblyEntryService.createEntry(entries.getElements().get(0), type + "出", false);
+        assemblyEntryService.createEntry(entries.getElements().get(1), type + "入", true);
     }
 
     @ApiOperation(value = "", response = WarehouseEntryWithProductsVO.class)
     @GetMapping("/getEntriesInDateRange")
     public WarehouseEntryWithProductsVO[][] getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,
-            @RequestParam("endDate") String endDateString
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("type") String type
     ) throws GlobalParamException {
-        logger.info("GET Request to /assemblyEntry/getEntriesInDateRange, start date: " +
-                "{}, end date: {}", startDateString, endDateString);
+        logger.info("GET Request to /warehouseDuelEntry/getEntriesInDateRange, type: {}," +
+                "start date: {}, end date: {}", type, startDateString, endDateString);
 
         Date startDate = MyUtils.parseAndCheckDateString(startDateString);
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
-        var list1 = assemblyEntryService.getEntriesInDateRange(startDate, endDate, ENTRY_TYPE1, INBOUND1);
-        var list2 = assemblyEntryService.getEntriesInDateRange(startDate, endDate, ENTRY_TYPE2, INBOUND2);
+        var list1 = assemblyEntryService.getEntriesInDateRange(startDate, endDate, type + "出", false);
+        var list2 = assemblyEntryService.getEntriesInDateRange(startDate, endDate, type + "入", true);
         WarehouseEntryWithProductsVO[][] results = new WarehouseEntryWithProductsVO[list1.size()][2];
         for (int i = 0; i < list1.size(); ++i) {
             results[i][0] = list1.get(i);
@@ -85,12 +82,14 @@ public class AssemblyEntryController {
     @ApiOperation(value = "", response = void.class)
     @PatchMapping("/modifyEntry")
     public void modifyEntry(
+            @RequestParam("type") String type,
             @RequestBody @Validated ListUpdateVO<WarehouseEntryWithProductsVO> entries
     ) {
-        logger.info("PATCH Request to /assemblyEntry/modifyEntry, entry: {}", entries.getElements());
+        logger.info("PATCH Request to /warehouseDuelEntry/modifyEntry, type: {}, entry: {}",
+                type, entries.getElements());
 
-        assemblyEntryService.modifyEntry(entries.getElements().get(0), ENTRY_TYPE1, INBOUND1);
-        assemblyEntryService.modifyEntry(entries.getElements().get(1), ENTRY_TYPE2, INBOUND2);
+        assemblyEntryService.modifyEntry(entries.getElements().get(0), type + "出", false);
+        assemblyEntryService.modifyEntry(entries.getElements().get(1), type + "入", true);
     }
 
 }
