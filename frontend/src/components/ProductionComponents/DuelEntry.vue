@@ -117,10 +117,8 @@ export default {
         paramFormsArray: {
             handler: function (val) {
                 if (this.creationMode) return
-                console.log('aaa')
                 this.form1 = val[0]
                 this.form2 = val[1]
-                this.handleTotalChange()
             },
             deep: true
         },
@@ -227,7 +225,7 @@ export default {
         },
         saveChanges() {
             this.submitPopup2 = false
-            if (!this.$refs.entry1.validate() || !this.$refs.entry2.validate()) return
+            if (!this.$refs.entry1.$refs.form.validate() || !this.$refs.entry2.$refs.form.validate()) return
 
             let api = ''
             switch (this.type) {
