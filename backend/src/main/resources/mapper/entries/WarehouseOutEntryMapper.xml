@@ -84,7 +84,7 @@
                p.remark, p.warehouse_stock_id, p.warehouse_id, p.unit_price,
                p.stock_unit_price
         from p_warehouse_out_product as p join sku_full as s on p.sku_id = s.sku_id
-        where warehouse_product_id = #{id}
+        where warehouse_entry_id = #{id}
         order by warehouse_product_id
     </select>
 
