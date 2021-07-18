@@ -82,33 +82,19 @@ export default {
 
         switch (this.type) {
         case 'materialApply':
-            this.api = this.$api.materialApplyEntriesInDateRange
-            break
         case 'productionEntry':
-            this.api = this.$api.productionEntriesInDateRange
-            break
         case 'inventoryLoss':
-            this.api = this.$api.inventoryLossEntriesInDateRange
-            break
         case 'inventoryProfit':
-            this.api = this.$api.inventoryProfitEntriesInDateRange
-            break
         case 'scrapEntry':
-            this.api = this.$api.scrapEntriesInDateRange
             break
         case 'assemblyEntry':
-            this.api = this.$api.assemblyEntriesInDateRange
-            this.isDuelMode = true
-            break
         case 'transferEntry':
-            this.api = this.$api.transferEntriesInDateRange
             this.isDuelMode = true
             break
         }
     },
     data() {
         return {
-            api: null,
             isDuelMode: false,
 
             dateRange: [
@@ -142,11 +128,12 @@ export default {
             this.dateRange = val
         },
         query() {
-            this.$getRequest(this.api, {
-                startDate: this.dateRange[0],
-                endDate: this.dateRange[1]
-            }).then(data => {
-                if (this.isDuelMode) {
+            if (this.isDuelMode) {
+                this.$getRequest(this.$api.duelEntriesInDateRange, {
+                    startDate: this.dateRange[0],
+                    endDate: this.dateRange[1],
+                    type: this.prefix.substr(0, 1)
+                }).then(data => {
                     const list = []
                     for (const item of data) {
                         list.push(item[0])
@@ -154,10 +141,17 @@ export default {
                     }
                     this.queryTableData = list
                     this.originalData = data
-                    return
-                }
-                this.queryTableData = data
-            }).catch(() => {})
+                }).catch(() => {})
+            }
+            else {
+                this.$getRequest(this.$api.duelEntriesInDateRange, {
+                    startDate: this.dateRange[0],
+                    endDate: this.dateRange[1],
+                    type: this.prefix
+                }).then(data => {
+                    this.queryTableData = data
+                }).catch(() => {})
+            }
         },
         chipColor(item) {
             return item.isModified === 1 ? 'red' : null

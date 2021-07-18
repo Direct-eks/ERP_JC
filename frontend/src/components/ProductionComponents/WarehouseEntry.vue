@@ -388,26 +388,9 @@ export default {
         },
         saveEntry() {
             if (this.$refs.form.validate()) {
-                let api = ''
-                switch (this.type) {
-                case 'materialApply':
-                    api = this.$api.createMaterialApplyEntry
-                    break
-                case 'productionEntry':
-                    api = this.$api.createProductionEntry
-                    break
-                case 'inventoryLoss':
-                    api = this.$api.createInventoryLossEntry
-                    break
-                case 'inventoryProfit':
-                    api = this.$api.createInventoryProfitEntry
-                    break
-                case 'scrapEntry':
-                    api = this.$api.createScrapEntry
-                    break
-                }
-
-                this.$putRequest(api, this.form).then(() => {
+                this.$putRequest(this.$api.createWarehouseEntry, this.form, {
+                    type: this.prefix
+                }).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })
@@ -418,26 +401,9 @@ export default {
         },
         saveChanges() {
             if (this.$refs.form.validate()) {
-                let api = ''
-                switch (this.type) {
-                case 'materialApply':
-                    api = this.$api.modifyMaterialApplyEntry
-                    break
-                case 'productionEntry':
-                    api = this.$api.modifyProductionEntry
-                    break
-                case 'inventoryLoss':
-                    api = this.$api.modifyInventoryLossEntry
-                    break
-                case 'inventoryProfit':
-                    api = this.$api.modifyInventoryProfitEntry
-                    break
-                case 'scrapEntry':
-                    api = this.$api.modifyScrapEntry
-                    break
-                }
-
-                this.$patchRequest(api, this.form).then(() => {
+                this.$patchRequest(this.$api.modifyWarehouseEntry, this.form, {
+                    type: this.prefix
+                }).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
                     })

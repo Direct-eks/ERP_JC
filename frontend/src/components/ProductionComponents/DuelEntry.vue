@@ -206,18 +206,10 @@ export default {
             if (!this.verifyAssemblyMode()) return
             if (!this.$refs.entry1.$refs.form.validate() || !this.$refs.entry2.$refs.form.validate()) return
 
-            let api = ''
-            switch (this.type) {
-            case 'assemblyEntry':
-                api = this.$api.createAssemblyEntry
-                break
-            case 'transferEntry':
-                api = this.$api.createTransferEntry
-                break
-            }
-
-            this.$putRequest(api, {
+            this.$putRequest(this.$api.createWarehouseDuelEntry, {
                 elements: [this.$refs.entry1.form, this.$refs.entry2.form]
+            }, {
+                type: this.prefix
             }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'
@@ -229,18 +221,10 @@ export default {
             this.submitPopup2 = false
             if (!this.$refs.entry1.$refs.form.validate() || !this.$refs.entry2.$refs.form.validate()) return
 
-            let api = ''
-            switch (this.type) {
-            case 'assemblyEntry':
-                api = this.$api.modifyAssemblyEntry
-                break
-            case 'transferEntry':
-                api = this.$api.modifyTransferEntry
-                break
-            }
-
-            this.$patchRequest(api, {
+            this.$patchRequest(this.$api.modifyDuelEntry, {
                 elements: [this.$refs.entry1.form, this.$refs.entry2.form]
+            }, {
+                type: this.prefix
             }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '提交成功', color: 'success'

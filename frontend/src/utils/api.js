@@ -13,11 +13,6 @@ const api = {
     createNewUser: '/user/createNewUser', // PUT
     deleteUser: '/user/deleteUser', // DELETE
 
-    /* ------ /assemblyEntry ------*/
-    createAssemblyEntry: '/assemblyEntry/createEntry', // PUT
-    assemblyEntriesInDateRange: '/assemblyEntry/getEntriesInDateRange', // GET
-    modifyAssemblyEntry: '/assemblyEntry/modifyEntry', // PATCH
-
     /* ------ /bankAccount ------*/
     allBankAccounts: '/bankAccount/getAllAccounts', // GET
     visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET
@@ -74,27 +69,12 @@ const api = {
     inboundNotYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
     inboundSummary: '/inboundEntry/getInboundSummary', // GET
 
-    /* ------ /inventoryLoss ------*/
-    createInventoryLossEntry: '/inventoryLossEntry/createEntry', // PUT
-    inventoryLossEntriesInDateRange: '/inventoryLossEntry/getEntriesInDateRange', // GET
-    modifyInventoryLossEntry: '/inventoryLossEntry/modifyEntry', // PATCH
-
-    /* ------ /inventoryProfit ------*/
-    createInventoryProfitEntry: '/inventoryProfitEntry/createEntry', // PUT
-    inventoryProfitEntriesInDateRange: '/inventoryProfitEntry/getEntriesInDateRange', // GET
-    modifyInventoryProfitEntry: '/inventoryProfitEntry/modifyEntry', // PATCH
-
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
     // GET isInbound, startDate, endDate, companyID, invoiceDate, invoiceNumber,
     // invoiceType, isFollowUpIndication, forModify
     invoiceEntriesInDateRange: '/invoiceEntry/getEntriesInDateRange',
     modifyInvoiceEntry: '/invoiceEntry/modifyEntry', // PATCH
-
-    /* ------ /materialApply ------*/
-    createMaterialApplyEntry: '/materialApplyEntry/createEntry', // PUT
-    materialApplyEntriesInDateRange: '/materialApplyEntry/getEntriesInDateRange', // GET
-    modifyMaterialApplyEntry: '/materialApplyEntry/modifyEntry', // PATCH
 
     /* ------ /model ------*/
     modelCategories: '/model/getModelCategories', // GET
@@ -140,17 +120,13 @@ const api = {
     presaleProducts: '/outboundEntry/getPresaleProducts', // GET
     exportPresaleProducts: '/outboundEntry/exportPresaleProducts', // GET
 
-    /* ------ /productionEntry ------*/
-    createProductionEntry: '/productionEntry/createEntry', // PUT
-    productionEntriesInDateRange: '/productionEntry/getEntriesInDateRange', // GET
-    modifyProductionEntry: '/productionEntry/modifyEntry', // PATCH
-
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT
     // GET startDate= endDate= companyID=int
     purchaseOrdersInDateRangeByCompanyID: '/purchaseOrder/getOrdersInDateRangeByCompanyID', // GET
     purchaseOrdersByCompanyID: '/purchaseOrder/getOrdersByCompanyID/', // GET companyID
     modifyPurchaseOrder: '/purchaseOrder/modifyOrder', // PATCH
+    purchaseSummary: '/purchaseOrder/summary', // GET
 
     /* ------ /quoteEntry ------*/
     createQuote: '/quoteEntry/createQuote', // PUT
@@ -165,11 +141,7 @@ const api = {
     salesOrdersInDateRangeByCompanyID: '/salesOrder/getOrdersInDateRangeByCompanyID', // GET
     salesOrdersByCompanyID: '/salesOrder/getOrdersByCompanyID/', // GET companyID
     modifySalesOrder: '/salesOrder/modifyOrder', // PATCH
-
-    /* ------ /scrapEntry ------*/
-    createScrapEntry: '/scrapEntry/createEntry', // PUT
-    scrapEntriesInDateRange: '/scrapEntry/getEntriesInDateRange', // GET
-    modifyScrapEntry: '/scrapEntry/modifyEntry', // PATCH
+    salesSummary: '/salesOrder/summary', // GET
 
     /* ------ /shippingCostEntry ------*/
     createShippingCostEntry: '/shippingCostEntry/createEntry',
@@ -194,11 +166,6 @@ const api = {
     resourcesByCategoryAndFactoryBrand: '/supplier/resourcesByCategoryAndFactoryBrand', // GET categoryID, factoryBrandID
     createSupplierWithResources: '/supplier/createSupplierWithResources', // POST supplierID, list
 
-    /* ------ /transferEntry ------*/
-    createTransferEntry: '/transferEntry/createEntry', // PUT
-    transferEntriesInDateRange: '/transferEntry/getEntriesInDateRange', // GET
-    modifyTransferEntry: '/transferEntry/modifyEntry', // PATCH
-
     /* ------ /unit ------*/
     allUnits: '/unit/getAllUnits', // GET
     updateUnits: '/unit/updateUnits', // POST
@@ -206,6 +173,16 @@ const api = {
     /* ------ /warehouse ------*/
     warehouseOptions: '/warehouse/getWarehouseOptions',
     updateWarehouses: '/warehouse/updateWarehouses',
+
+    /* ------ /warehouseEntry ------*/
+    createWarehouseEntry: '/warehouseEntry/createEntry', // PUT
+    warehouseEntriesInDateRange: '/warehouseEntry/getEntriesInDateRange', // GET
+    modifyWarehouseEntry: '/warehouseEntry/modifyEntry', // PATCH
+    warehouseEntrySummary: '/warehouseEntry/summary', // GET
+    /* ------ /warehouseDuelEntry ------*/
+    createWarehouseDuelEntry: '/warehouseDuelEntry/createEntry', // PUT
+    duelEntriesInDateRange: '/warehouseDuelEntry/getEntriesInDateRange', // GET
+    modifyDuelEntry: '/warehouseDuelEntry/modifyEntry', // PATCH
 
     /* ------ /warehouseStock ------*/
     warehouseStockBySKu: '/warehouseStock/getWarehouseStocksBySku/', // GET {id}
