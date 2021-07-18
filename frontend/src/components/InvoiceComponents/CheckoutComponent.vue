@@ -17,7 +17,7 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker :label="checkoutDateTitle"
-                                :entryDate.sync="form.checkoutDate"
+                                v-model="form.checkoutDate"
                                 :disabled="!creationMode">
                     </DatePicker>
                 </v-col>

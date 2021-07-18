@@ -14,7 +14,7 @@
 <!--                </v-col>-->
                 <v-col cols="auto">
                     <DatePicker label="开票日期"
-                                :entryDate.sync="form.invoiceDate"
+                                v-model="form.invoiceDate"
                                 :disabled="displayMode || modifyMode">
                     </DatePicker>
                 </v-col>
@@ -148,7 +148,7 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="发票开具日期"
-                                :entryDate.sync="form.invoiceNumberDate"
+                                v-model="form.invoiceNumberDate"
                                 :disabled="displayMode">
                     </DatePicker>
                 </v-col>

@@ -17,7 +17,7 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="结账日期"
-                                :entryDate.sync="form.paymentDate"
+                                v-model="form.paymentDate"
                                 :disabled="displayMode || modifyMode">
                     </DatePicker>
                 </v-col>

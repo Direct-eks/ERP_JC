@@ -4,7 +4,7 @@
             <v-row>
                 <v-col cols="auto">
                     <DatePicker label="结账日期"
-                                :entryDate.sync="form.checkoutDate"
+                                v-model="form.checkoutDate"
                                 :disabled="displayMode || modifyMode">
                     </DatePicker>
                 </v-col>
@@ -102,7 +102,7 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="发票开具日期"
-                                :entryDate.sync="form.invoiceDate"
+                                v-model="form.invoiceDate"
                                 :disabled="displayMode">
                     </DatePicker>
                 </v-col>

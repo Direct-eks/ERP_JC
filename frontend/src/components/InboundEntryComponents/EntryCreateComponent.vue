@@ -30,7 +30,7 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="入库日期"
-                                :entryDate.sync="form.entryDate">
+                                v-model="form.entryDate">
                     </DatePicker>
                 </v-col>
             </v-row>
