@@ -12,7 +12,7 @@
                               label="仓库"
                               hide-details="auto"
                               outlined dense
-                              :readonly="form.products.length !== 0 || !creationMode"
+                              :readonly="form.entryProducts.length !== 0 || !creationMode"
                               style="width: 150px">
                     </v-select>
                 </v-col>
@@ -143,7 +143,7 @@
 
         <v-data-table v-model="tableCurrRows"
                       :headers="tableHeaders"
-                      :items="form.products"
+                      :items="form.entryProducts"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -281,7 +281,7 @@ export default {
                 warehouseID: -1, warehouseName: '',
                 remark: '',
                 classification: this.prefix,
-                products: []
+                entryProducts: []
             },
             rules: {
                 warehouseID: [v => v !== -1 || '请选择仓库'],
@@ -317,7 +317,7 @@ export default {
             this.modelSearchPanelOpen = false
         },
         modelSearchChooseAction(val) {
-            for (const item of this.form.products) {
+            for (const item of this.form.entryProducts) {
                 if (item.skuID === val.skuID) {
                     this.$store.commit('setSnackbar', {
                         message: '已添加改商品', color: 'warning'
@@ -326,12 +326,12 @@ export default {
                 }
             }
             let newVal = JSON.parse(JSON.stringify(val))
-            this.form.products.push(newVal)
+            this.form.entryProducts.push(newVal)
 
             this.$store.commit('setSnackbar', {
                 message: '添加成功', color: 'success'
             })
-            this.form.products.forEach(row => {
+            this.form.entryProducts.forEach(row => {
                 this.handlePriceChange(row)
             })
         },
@@ -355,7 +355,7 @@ export default {
         /* ----- number calculation ----- */
         handleTotalChange() {
             let tempSum = this.$Big('0')
-            this.form.products.forEach(item => {
+            this.form.entryProducts.forEach(item => {
                 const itemQuantity = this.$Big(item.quantity)
                 tempSum = tempSum.add(itemQuantity.times(item.unitPrice))
             })
@@ -376,7 +376,7 @@ export default {
             this.deleteTableRowPopup = false
             if (this.tableCurrRows.length !== 0) {
                 for (const item of this.tableCurrRows) {
-                    this.form.products.splice(this.form.products.indexOf(item), 1)
+                    this.form.entryProducts.splice(this.form.entryProducts.indexOf(item), 1)
                 }
                 this.tableCurrRows = []
             }

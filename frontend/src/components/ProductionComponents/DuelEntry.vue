@@ -117,7 +117,8 @@ export default {
         paramFormsArray: {
             handler: function (val) {
                 if (this.creationMode) return
-                this.form = val
+                this.form1 = val[0]
+                this.form2 = val[1]
                 this.handleTotalChange()
             },
             deep: true
@@ -126,7 +127,7 @@ export default {
             handler: function() {
                 this.form2.entryDate = this.form1.entryDate
                 if (!this.isAssemblyMode) {
-                    this.form2.products = this.form1.products
+                    this.form2.entryProducts = this.form1.entryProducts
                 }
             },
             deep: true
@@ -167,7 +168,7 @@ export default {
                 warehouseID: -1, warehouseName: '',
                 remark: '',
                 classification: this.prefix + '入',
-                products: []
+                entryProducts: []
             },
         }
     },
@@ -175,20 +176,20 @@ export default {
         verifyAssemblyMode() {
             switch (this.assemblyMode) {
             case "拆":
-                if (this.$refs.entry1.form.products.length === 1 &&
-                    this.$refs.entry2.form.products.length > 1) {
+                if (this.$refs.entry1.form.entryProducts.length === 1 &&
+                    this.$refs.entry2.form.entryProducts.length > 1) {
                     return true
                 }
                 break
             case "装":
-                if (this.$refs.entry1.form.products.length > 1 &&
-                    this.$refs.entry2.form.products.length === 1) {
+                if (this.$refs.entry1.form.entryProducts.length > 1 &&
+                    this.$refs.entry2.form.entryProducts.length === 1) {
                     return true
                 }
                 break
             case "组合":
-                if (this.$refs.entry1.form.products.length >= 1 &&
-                    this.$refs.entry2.form.products.length >= 1) {
+                if (this.$refs.entry1.form.entryProducts.length >= 1 &&
+                    this.$refs.entry2.form.entryProducts.length >= 1) {
                     return true
                 }
                 break
@@ -213,17 +214,13 @@ export default {
                 break
             }
 
-            this.$putRequest(api, this.$refs.entry1.form, {
-                mode: 'out'
+            this.$putRequest(api, {
+                elements: [this.$refs.entry1.form, this.$refs.entry2.form]
             }).then(() => {
-                this.$putRequest(api, this.$refs.entry2.form, {
-                    mode: 'in'
-                }).then(() => {
-                    this.$store.commit('setSnackbar', {
-                        message: '提交成功', color: 'success'
-                    })
-                    this.$router.replace('/production_management')
-                }).catch(() => {})
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+                this.$router.replace('/production_management')
             }).catch(() => {})
         },
         saveChanges() {
@@ -240,17 +237,13 @@ export default {
                 break
             }
 
-            this.$patchRequest(api, this.$refs.entry1.form, {
-                mode: 'out'
+            this.$patchRequest(api, {
+                elements: [this.$refs.entry1.form, this.$refs.entry2.form]
             }).then(() => {
-                this.$patchRequest(api, this.$refs.entry2.form ,{
-                    mode: 'in'
-                }).then(() => {
-                    this.$store.commit('setSnackbar', {
-                        message: '提交成功', color: 'success'
-                    })
-                    this.$router.replace('/production_management')
-                }).catch(() => {})
+                this.$store.commit('setSnackbar', {
+                    message: '提交成功', color: 'success'
+                })
+                this.$router.replace('/production_management')
             }).catch(() => {})
         }
     }
