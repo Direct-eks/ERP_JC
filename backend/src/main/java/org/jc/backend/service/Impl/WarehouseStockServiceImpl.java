@@ -54,7 +54,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     public WarehouseStockServiceImpl(WarehouseStockMapper warehouseStockMapper,
                                      @Lazy InboundEntryService inboundEntryService,
                                      @Lazy OutboundEntryService outboundEntryService,
-                                     WarehouseEntryService warehouseEntryService,
+                                     @Lazy WarehouseEntryService warehouseEntryService,
                                      ModelService modelService,
                                      @Lazy SkuService skuService) {
         this.warehouseStockMapper = warehouseStockMapper;
