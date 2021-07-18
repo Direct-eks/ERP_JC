@@ -124,7 +124,7 @@ export default {
         },
         form1: {
             handler: function() {
-                if (!this.creationMode || !this.assemblyMode) return
+                if (!this.creationMode) return
                 this.form2.entryDate = this.form1.entryDate
                 if (!this.isAssemblyMode) {
                     this.form2.entryProducts = this.form1.entryProducts
@@ -174,6 +174,8 @@ export default {
     },
     methods: {
         verifyAssemblyMode() {
+            if (!this.isAssemblyMode) return true
+
             switch (this.assemblyMode) {
             case "拆":
                 if (this.$refs.entry1.form.entryProducts.length === 1 &&

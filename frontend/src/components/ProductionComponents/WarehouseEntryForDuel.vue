@@ -226,7 +226,6 @@ export default {
     watch: {
         paramForm: {
             handler: function (val) {
-                // if (this.creationMode && this.type !== 'transferEntryOut') return
                 this.form = val
                 this.handleTotalChange()
             },
