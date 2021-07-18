@@ -12,7 +12,7 @@
                               label="仓库"
                               hide-details="auto"
                               outlined dense
-                              :readonly="tableData.length !== 0 || !creationMode"
+                              :readonly="form.products.length !== 0 || !creationMode"
                               style="width: 150px">
                     </v-select>
                 </v-col>
@@ -32,7 +32,7 @@
                 <v-col cols="auto">
                     <DatePicker :label="prefix + '日期'"
                                 :disabled="!creationMode"
-                                :entryDate.sync="form.entryDate">
+                                v-model="form.entryDate">
                     </DatePicker>
                 </v-col>
                 <v-spacer></v-spacer>
@@ -143,7 +143,7 @@
 
         <v-data-table v-model="tableCurrRows"
                       :headers="tableHeaders"
-                      :items="tableData"
+                      :items="form.products"
                       item-key="skuID"
                       height="45vh"
                       calculate-widths
@@ -299,7 +299,6 @@ export default {
                 { text: '库存数量', value: 'stockQuantity', width: '120px' },
                 { text: '库存单价', value: 'stockUnitPrice', width: '120px' }
             ],
-            tableData: [],
             tableCurrRows: [],
 
         }
@@ -318,7 +317,7 @@ export default {
             this.modelSearchPanelOpen = false
         },
         modelSearchChooseAction(val) {
-            for (const item of this.tableData) {
+            for (const item of this.form.products) {
                 if (item.skuID === val.skuID) {
                     this.$store.commit('setSnackbar', {
                         message: '已添加改商品', color: 'warning'
@@ -327,12 +326,12 @@ export default {
                 }
             }
             let newVal = JSON.parse(JSON.stringify(val))
-            this.tableData.push(newVal)
+            this.form.products.push(newVal)
 
             this.$store.commit('setSnackbar', {
                 message: '添加成功', color: 'success'
             })
-            this.tableData.forEach(row => {
+            this.form.products.forEach(row => {
                 this.handlePriceChange(row)
             })
         },
@@ -356,7 +355,7 @@ export default {
         /* ----- number calculation ----- */
         handleTotalChange() {
             let tempSum = this.$Big('0')
-            this.tableData.forEach(item => {
+            this.form.products.forEach(item => {
                 const itemQuantity = this.$Big(item.quantity)
                 tempSum = tempSum.add(itemQuantity.times(item.unitPrice))
             })
@@ -377,7 +376,7 @@ export default {
             this.deleteTableRowPopup = false
             if (this.tableCurrRows.length !== 0) {
                 for (const item of this.tableCurrRows) {
-                    this.tableData.splice(this.tableData.indexOf(item), 1)
+                    this.form.products.splice(this.form.products.indexOf(item), 1)
                 }
                 this.tableCurrRows = []
             }
