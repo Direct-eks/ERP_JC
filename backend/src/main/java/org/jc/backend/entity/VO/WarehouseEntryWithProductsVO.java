@@ -48,7 +48,7 @@ public class WarehouseEntryWithProductsVO {
     @NotNull(message = "remark null error")
     private String remark;
 
-    private String relatedEntrySerial;
+    private String relatedEntrySerial = "";
 
     private String classification;
 

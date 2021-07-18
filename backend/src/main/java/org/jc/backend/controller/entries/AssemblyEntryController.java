@@ -55,6 +55,7 @@ public class AssemblyEntryController {
 
         if (entries.getElements().size() != 2) throw new GlobalParamException("elements size error");
 
+        // todo related entry serial
         assemblyEntryService.createEntry(entries.getElements().get(0), ENTRY_TYPE1, INBOUND1);
         assemblyEntryService.createEntry(entries.getElements().get(1), ENTRY_TYPE2, INBOUND2);
     }
