@@ -217,8 +217,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                         originalEntry.getWarehouseEntryID(), record.toString()));
             }
             else {
-                logger.warn("nothing changed, begin rolling back");
-                throw new RuntimeException();
+                logger.info("nothing changed!");
             }
 
         } catch (PersistenceException e) {
