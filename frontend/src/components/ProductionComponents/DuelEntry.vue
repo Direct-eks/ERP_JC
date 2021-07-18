@@ -3,7 +3,7 @@
 
         <v-row class="mb-1" dense>
             <v-col cols="auto">
-                <v-select v-if="isAssemblyMode"
+                <v-select v-if="creationMode && isAssemblyMode"
                           v-model="assemblyMode"
                           :items="assemblyOptions"
                           label="拆/装形式"
@@ -58,7 +58,7 @@
                             :editMode="editMode"
                             :type="type + 'In'"
                             :prefix="prefix + '入'"
-                            :paramForm.sync="form2">
+                            :paramForm="form2">
             </EntryComponent>
         </v-card>
 
@@ -109,7 +109,7 @@ export default {
             required: true
         },
         paramFormsArray: {
-            type: Object,
+            type: Array,
             required: false,
         }
     },
@@ -117,6 +117,7 @@ export default {
         paramFormsArray: {
             handler: function (val) {
                 if (this.creationMode) return
+                console.log('aaa')
                 this.form1 = val[0]
                 this.form2 = val[1]
                 this.handleTotalChange()
@@ -125,6 +126,7 @@ export default {
         },
         form1: {
             handler: function() {
+                if (!this.creationMode || !this.assemblyMode) return
                 this.form2.entryDate = this.form1.entryDate
                 if (!this.isAssemblyMode) {
                     this.form2.entryProducts = this.form1.entryProducts
@@ -157,7 +159,7 @@ export default {
                 warehouseID: -1, warehouseName: '',
                 remark: '',
                 classification: this.prefix + '出',
-                products: []
+                entryProducts: []
             },
             form2: {
                 entryDate: new Date().format('yyyy-MM-dd').substr(0, 10),

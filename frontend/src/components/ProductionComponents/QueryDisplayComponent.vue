@@ -117,15 +117,14 @@ export default {
             ],
 
             queryTableHeaders: [
-                { text: '代号', value: 'code', width: '180px' },
-                { text: '厂牌', value: 'factoryCode', width: '65px' },
-                { text: this.prefix + '数量', value: 'quantity', width: '90px' },
-                { text: '单位', value: 'unitName', width: '60px' },
-                { text: '单价', value: 'unitPrice', width: '100px' },
-                { text: '金额', value: 'total', width: '100px' },
-                { text: '备注', value: 'remark', width: '180px' },
-                { text: '库存数量', value: 'stockQuantity', width: '120px' },
-                { text: '库存单价', value: 'stockUnitPrice', width: '120px' }
+                {text: '单号', value: 'warehouseEntryID', width: '140px'},
+                {text: '类别', value: 'classification', width: '60px'},
+                {text: '总金额', value: 'totalAmount', width: '85px'},
+                {text: '备注', value: 'remark', width: '120px'},
+                {text: '仓库', value: 'warehouseName', width: '65px'},
+                {text: '部门', value: 'departmentName', width: '80px'},
+                {text: '开单人', value: 'drawer', width: '60px'},
+                {text: '开单日期', value: 'entryDate', width: '110px'},
             ],
             queryTableData: [],
             originalData: [],
