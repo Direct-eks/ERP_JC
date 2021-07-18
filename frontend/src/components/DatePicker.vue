@@ -46,6 +46,9 @@ export default {
         }
     },
     watch: {
+        entryDate(val) {
+            this.localEntryDate = val
+        },
         localEntryDate() {
             this.$emit('changeDate', this.localEntryDate)
         }
