@@ -12,7 +12,7 @@
                               label="仓库"
                               hide-details="auto"
                               outlined dense
-                              :readonly="tableData.length !== 0 || !creationMode"
+                              :readonly="form.products.length !== 0 || !creationMode || disableWarehouse"
                               style="width: 150px">
                     </v-select>
                 </v-col>
@@ -24,7 +24,7 @@
                               item-text="name"
                               label="部门"
                               hide-details="auto"
-                              :readonly="displayMode"
+                              :readonly="displayMode || disableDepartment"
                               outlined dense
                               style="width: 180px">
                     </v-select>
@@ -32,7 +32,7 @@
                 <v-col cols="auto">
                     <DatePicker :label="prefix + '日期'"
                                 :disabled="!creationMode || disableDate"
-                                :entryDate.sync="form.entryDate">
+                                v-model="form.entryDate">
                     </DatePicker>
                 </v-col>
                 <v-spacer></v-spacer>
@@ -75,7 +75,8 @@
         </v-form>
 
         <v-row class="my-2" dense>
-            <v-col v-if="creationMode">
+            <v-spacer v-if="disableModelImport"></v-spacer>
+            <v-col v-if="creationMode && !disableModelImport">
                 <v-dialog v-model="modelSearchPanelOpen"
                           persistent
                           scrollable
@@ -94,7 +95,7 @@
                     </ModelSearch>
                 </v-dialog>
             </v-col>
-            <v-col v-if="!displayMode">
+            <v-col v-if="!displayMode && !disableModelImport">
                 <v-dialog v-model="deleteTableRowPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="red lighten-1" v-on="on">删除</v-btn>
@@ -113,7 +114,7 @@
 
         <v-data-table v-model="tableCurrRows"
                       :headers="tableHeaders"
-                      :items="tableData"
+                      :items="form.products"
                       item-key="skuID"
                       height="25vh"
                       calculate-widths
@@ -125,7 +126,7 @@
                       disable-pagination
                       hide-default-footer
                       locale="zh-cn">
-            <template v-if="!displayMode" v-slot:item.quantity="{ item }">
+            <template v-if="!displayMode && enableQuantityChange" v-slot:item.quantity="{ item }">
                 <v-edit-dialog :return-value="item.quantity"
                                @save="handleQuantityChange(item)"
                                @cancel="handleQuantityChange(item)"
@@ -184,23 +185,20 @@ export default {
         }
 
         switch (this.type) {
+        case 'assemblyEntryOut':
+            break
         case 'assemblyEntryIn':
             this.isInbound = true
-            this.enablePriceChange = true
-            break
-        case 'assemblyEntryOut':
-            this.isInbound = false
-            this.enablePriceChange = true
-            break
-        case 'transferEntryIn':
-            this.isInbound = true
-            this.enablePriceChange = false
             this.disableDate = true
             break
         case 'transferEntryOut':
-            this.isInbound = false
-            this.enablePriceChange = false
+            break
+        case 'transferEntryIn':
+            this.isInbound = true
             this.disableDate = true
+            this.disableModelImport = true
+            this.enableQuantityChange = false
+            this.enablePriceChange = false
             break
         }
 
@@ -220,9 +218,25 @@ export default {
             type: String,
             required: true
         },
-        form: {
+        paramForm: {
             type: Object,
             required: false,
+        },
+    },
+    watch: {
+        paramForm: {
+            handler: function (val) {
+                // if (this.creationMode && this.type !== 'transferEntryOut') return
+                this.form = val
+                this.handleTotalChange()
+            },
+            deep: true
+        },
+        form: {
+            handler: function() {
+                this.$emit('update:paramForm', this.form)
+            },
+            deep: true
         }
     },
     data() {
@@ -232,12 +246,27 @@ export default {
             displayMode: false,
 
             isInbound: false,
-            enablePriceChange: false,
             disableDate: false,
+            disableWarehouse: false,
+            disableDepartment: false,
+            disableModelImport: false,
+            enableQuantityChange: true,
+            enablePriceChange: true,
 
             modelSearchPanelOpen: false,
             deleteTableRowPopup: false,
 
+            form: {
+                entryDate: new Date().format('yyyy-MM-dd').substr(0, 10),
+                creationDate: new Date().format('yyyy-MM-dd').substr(0, 10),
+                totalAmount: '0',
+                drawer: this.$store.getters.currentUser,
+                departmentID: -1, departmentName: '',
+                warehouseID: -1, warehouseName: '',
+                remark: '',
+                classification: this.prefix,
+                products: []
+            },
             rules: {
                 warehouseID: [v => v !== -1 || '请选择仓库'],
                 departmentID: [v => v !== -1 || '请选择部门'],
@@ -254,7 +283,6 @@ export default {
                 { text: '库存数量', value: 'stockQuantity', width: '120px' },
                 { text: '库存单价', value: 'stockUnitPrice', width: '120px' }
             ],
-            tableData: [],
             tableCurrRows: [],
 
         }
@@ -273,7 +301,7 @@ export default {
             this.modelSearchPanelOpen = false
         },
         modelSearchChooseAction(val) {
-            for (const item of this.tableData) {
+            for (const item of this.form.products) {
                 if (item.skuID === val.skuID) {
                     this.$store.commit('setSnackbar', {
                         message: '已添加改商品', color: 'warning'
@@ -282,12 +310,12 @@ export default {
                 }
             }
             let newVal = JSON.parse(JSON.stringify(val))
-            this.tableData.push(newVal)
+            this.form.products.push(newVal)
 
             this.$store.commit('setSnackbar', {
                 message: '添加成功', color: 'success'
             })
-            this.tableData.forEach(row => {
+            this.form.products.forEach(row => {
                 this.handlePriceChange(row)
             })
         },
@@ -311,7 +339,7 @@ export default {
         /* ----- number calculation ----- */
         handleTotalChange() {
             let tempSum = this.$Big('0')
-            this.tableData.forEach(item => {
+            this.form.products.forEach(item => {
                 const itemQuantity = this.$Big(item.quantity)
                 tempSum = tempSum.add(itemQuantity.times(item.unitPrice))
             })
@@ -332,7 +360,7 @@ export default {
             this.deleteTableRowPopup = false
             if (this.tableCurrRows.length !== 0) {
                 for (const item of this.tableCurrRows) {
-                    this.tableData.splice(this.tableData.indexOf(item), 1)
+                    this.form.products.splice(this.form.products.indexOf(item), 1)
                 }
                 this.tableCurrRows = []
             }

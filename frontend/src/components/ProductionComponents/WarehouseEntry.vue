@@ -407,10 +407,11 @@ export default {
                     break
                 }
 
-                this.$putRequest(api, this.form, {
-
-                }).then(() => {
-
+                this.$putRequest(api, this.form).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/production_management')
                 }).catch(() => {})
             }
             this.submitPopup = false
@@ -435,6 +436,13 @@ export default {
                     api = this.$api.modifyScrapEntry
                     break
                 }
+
+                this.$patchRequest(api, this.form).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/production_management')
+                }).catch(() => {})
             }
             this.submitPopup2 = false
         }

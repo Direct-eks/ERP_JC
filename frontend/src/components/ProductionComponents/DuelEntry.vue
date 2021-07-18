@@ -1,22 +1,18 @@
 <template>
     <v-container>
 
-        <v-card outlined>
-            <EntryComponent ref="entry1"
-                            editMode="creation"
-                            :type="type + 'In'"
-                            :prefix="prefix + '入'" :form.sync="form1">
-            </EntryComponent>
-        </v-card>
-        <v-card outlined>
-            <EntryComponent ref="entry2"
-                            editMode="creation"
-                            :type="type + 'Out'"
-                            :prefix="prefix + '出'" :form.sync="form2">
-            </EntryComponent>
-        </v-card>
-
-        <v-row class="my-2" dense>
+        <v-row class="mb-1" dense>
+            <v-col cols="auto">
+                <v-select v-if="isAssemblyMode"
+                          v-model="assemblyMode"
+                          :items="assemblyOptions"
+                          label="拆/装形式"
+                          hide-details="auto"
+                          outlined dense
+                          style="width: 110px">
+                </v-select>
+            </v-col>
+            <v-spacer></v-spacer>
             <v-col v-if="creationMode">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
@@ -49,6 +45,23 @@
             </v-col>
         </v-row>
 
+        <v-card outlined>
+            <EntryComponent ref="entry1"
+                            :editMode="editMode"
+                            :type="type + 'Out'"
+                            :prefix="prefix + '出'"
+                            :paramForm.sync="form1">
+            </EntryComponent>
+        </v-card>
+        <v-card outlined>
+            <EntryComponent ref="entry2"
+                            :editMode="editMode"
+                            :type="type + 'In'"
+                            :prefix="prefix + '入'"
+                            :paramForm.sync="form2">
+            </EntryComponent>
+        </v-card>
+
     </v-container>
 </template>
 
@@ -73,7 +86,10 @@ export default {
 
         switch (this.type) {
         case 'assemblyEntry':
+            this.isAssemblyMode = true
+            break
         case 'transferEntry':
+            break
         }
 
         this.$store.dispatch('getWarehouseOptions')
@@ -92,13 +108,13 @@ export default {
             type: String,
             required: true
         },
-        paramForms: {
+        paramFormsArray: {
             type: Object,
             required: false,
         }
     },
     watch: {
-        paramForms: {
+        paramFormsArray: {
             handler: function (val) {
                 if (this.creationMode) return
                 this.form = val
@@ -107,8 +123,11 @@ export default {
             deep: true
         },
         form1: {
-            handler: function (val) {
-                console.log('aaa')
+            handler: function() {
+                this.form2.entryDate = this.form1.entryDate
+                if (!this.isAssemblyMode) {
+                    this.form2.products = this.form1.products
+                }
             },
             deep: true
         }
@@ -118,6 +137,12 @@ export default {
             creationMode: false,
             modificationMode: false,
             displayMode: false,
+            isAssemblyMode: false,
+
+            assemblyMode: '拆',
+            assemblyOptions: [
+                '拆', '装', '组合'
+            ],
 
             submitPopup: false,
             submitPopup2: false,
@@ -130,7 +155,7 @@ export default {
                 departmentID: -1, departmentName: '',
                 warehouseID: -1, warehouseName: '',
                 remark: '',
-                classification: this.prefix + '入',
+                classification: this.prefix + '出',
                 products: []
             },
             form2: {
@@ -141,45 +166,92 @@ export default {
                 departmentID: -1, departmentName: '',
                 warehouseID: -1, warehouseName: '',
                 remark: '',
-                classification: this.prefix + '出',
+                classification: this.prefix + '入',
                 products: []
             },
         }
     },
     methods: {
-        saveEntry() {
-            if (this.$refs.entry1.validate() && this.$refs.entry2.validate()) {
-                let api = ''
-                switch (this.type) {
-                case 'assemblyEntry':
-                    api = this.$api.createAssemblyEntry
-                    break
-                case 'transferEntry':
-                    api = this.$api.createTransferEntry
-                    break
+        verifyAssemblyMode() {
+            switch (this.assemblyMode) {
+            case "拆":
+                if (this.$refs.entry1.form.products.length === 1 &&
+                    this.$refs.entry2.form.products.length > 1) {
+                    return true
                 }
-
-                this.$putRequest(api, this.form, {
-
-                }).then(() => {
-
-                }).catch(() => {})
+                break
+            case "装":
+                if (this.$refs.entry1.form.products.length > 1 &&
+                    this.$refs.entry2.form.products.length === 1) {
+                    return true
+                }
+                break
+            case "组合":
+                if (this.$refs.entry1.form.products.length >= 1 &&
+                    this.$refs.entry2.form.products.length >= 1) {
+                    return true
+                }
+                break
             }
+            this.$store.commit('setSnackbar', {
+                message: '拆/（组）装 形式错误', color: 'warning'
+            })
+            return false
+        },
+        saveEntry() {
             this.submitPopup = false
+            if (!this.verifyAssemblyMode()) return
+            if (!this.$refs.entry1.$refs.form.validate() || !this.$refs.entry2.$refs.form.validate()) return
+
+            let api = ''
+            switch (this.type) {
+            case 'assemblyEntry':
+                api = this.$api.createAssemblyEntry
+                break
+            case 'transferEntry':
+                api = this.$api.createTransferEntry
+                break
+            }
+
+            this.$putRequest(api, this.$refs.entry1.form, {
+                mode: 'out'
+            }).then(() => {
+                this.$putRequest(api, this.$refs.entry2.form, {
+                    mode: 'in'
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/production_management')
+                }).catch(() => {})
+            }).catch(() => {})
         },
         saveChanges() {
-            if (this.$refs.entry1.validate() && this.$refs.entry2.validate()) {
-                let api = ''
-                switch (this.type) {
-                case 'assemblyEntry':
-                    api = this.$api.modifyAssemblyEntry
-                    break
-                case 'transferEntry':
-                    api = this.$api.modifyTransferEntry
-                    break
-                }
-            }
             this.submitPopup2 = false
+            if (!this.$refs.entry1.validate() || !this.$refs.entry2.validate()) return
+
+            let api = ''
+            switch (this.type) {
+            case 'assemblyEntry':
+                api = this.$api.modifyAssemblyEntry
+                break
+            case 'transferEntry':
+                api = this.$api.modifyTransferEntry
+                break
+            }
+
+            this.$patchRequest(api, this.$refs.entry1.form, {
+                mode: 'out'
+            }).then(() => {
+                this.$patchRequest(api, this.$refs.entry2.form ,{
+                    mode: 'in'
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$router.replace('/production_management')
+                }).catch(() => {})
+            }).catch(() => {})
         }
     }
 }
