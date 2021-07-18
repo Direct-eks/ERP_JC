@@ -4,6 +4,7 @@ import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.StatO.StockStatO;
+import org.jc.backend.entity.WarehouseProductO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.springframework.stereotype.Indexed;
 
@@ -21,6 +22,10 @@ public interface WarehouseStockService {
     void modifyStock(InboundProductO product, String date);
     void decreaseStock(OutboundProductO product, String date);
     void modifyStock(OutboundProductO product, String date);
+
+    void increaseStock(WarehouseProductO product, String date, String type);
+    void decreaseStock(WarehouseProductO product, String date, String type);
+    void modifyStock(WarehouseProductO product, String date, boolean isInbound);
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
 

@@ -14,4 +14,5 @@ public interface WarehouseEntryService {
     void modifyEntry(WarehouseEntryWithProductsVO entry, String type, boolean isInbound);
 
     List<ProductStatO> getAllProductsByWarehouseStockID(int id, boolean isInbound);
+    void updateProductForStock(ProductStatO productStatO, boolean isInbound);
 }

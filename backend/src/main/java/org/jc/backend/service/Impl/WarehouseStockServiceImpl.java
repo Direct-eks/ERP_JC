@@ -14,6 +14,7 @@ import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.StatO.ProductStatO;
 import org.jc.backend.entity.StatO.StockStatO;
+import org.jc.backend.entity.WarehouseProductO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
@@ -46,17 +47,20 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     private final WarehouseStockMapper warehouseStockMapper;
     private final InboundEntryService inboundEntryService;
     private final OutboundEntryService outboundEntryService;
+    private final WarehouseEntryService warehouseEntryService;
     private final ModelService modelService;
     private final SkuService skuService;
 
     public WarehouseStockServiceImpl(WarehouseStockMapper warehouseStockMapper,
                                      @Lazy InboundEntryService inboundEntryService,
                                      @Lazy OutboundEntryService outboundEntryService,
+                                     WarehouseEntryService warehouseEntryService,
                                      ModelService modelService,
                                      @Lazy SkuService skuService) {
         this.warehouseStockMapper = warehouseStockMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
+        this.warehouseEntryService = warehouseEntryService;
         this.modelService = modelService;
         this.skuService = skuService;
     }
@@ -214,10 +218,49 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         var outboundProductMap = outboundProducts.parallelStream()
                 .peek(p -> p.setInbound(false))
                 .collect(Collectors.groupingBy(ProductStatO::getShipmentDate, TreeMap::new, Collectors.toList()));
-        outboundProductMap.forEach((k, v) -> v.sort(Comparator.comparingInt(ProductStatO::getOutboundProductID)));
+
+        List<ProductStatO> warehouseInProducts = warehouseEntryService
+                .getAllProductsByWarehouseStockID(stockID, true);
+        List<ProductStatO> warehouseOutProducts = warehouseEntryService
+                .getAllProductsByWarehouseStockID(stockID, false);
+
+        var warehouseInProductMap = warehouseInProducts.parallelStream()
+                .peek(p -> {p.setInbound(true); p.setWarehouseProduct(true);})
+                .collect(Collectors.groupingBy(ProductStatO::getEntryDate, TreeMap::new, Collectors.toList()));
+
+        var warehouseOutProductMap = warehouseOutProducts.parallelStream()
+                .peek(p -> {p.setInbound(false); p.setWarehouseProduct(true);})
+                .collect(Collectors.groupingBy(ProductStatO::getShipmentDate, TreeMap::new, Collectors.toList()));
+
+        // merge inbound products map
+        for (var entry : warehouseInProductMap.entrySet()) {
+            entry.getValue().sort(Comparator.comparingInt(ProductStatO::getInboundProductID));
+            String key = entry.getKey();
+            var value = entry.getValue();
+            if (inboundProductMap.containsKey(key)) {
+                inboundProductMap.get(key).addAll(value);
+            }
+            else {
+                inboundProductMap.put(key, value);
+            }
+        }
+
+        // merge outbound products map
+        for (var entry : warehouseOutProductMap.entrySet()) {
+            entry.getValue().sort(Comparator.comparingInt(ProductStatO::getOutboundProductID));
+            String key = entry.getKey();
+            var value = entry.getValue();
+            if (outboundProductMap.containsKey(key)) {
+                outboundProductMap.get(key).addAll(value);
+            }
+            else {
+                outboundProductMap.put(key, value);
+            }
+        }
 
         var productMap = new TreeMap<>(inboundProductMap);
         for (var entry : outboundProductMap.entrySet()) { // merge map
+            entry.getValue().sort(Comparator.comparingInt(ProductStatO::getOutboundProductID));
             String key = entry.getKey();
             var value = entry.getValue();
             if (productMap.containsKey(key)) {
@@ -268,15 +311,23 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
         // change all following records if curr record is not the last one
         for (var p : affectedProducts) {
+            // todo re-set unit price for warehouse product
+
             var pair = this.doCalculation(lastEntry, lastEntry.isInbound());
             p.setStockQuantity(pair.getLeft());
             p.setStockUnitPrice(pair.getRight());
-            if (p.isInbound()) {
-                inboundEntryService.updateInboundProduct(p);
+            if (p.isWarehouseProduct()) {
+                warehouseEntryService.updateProductForStock(p, p.isInbound());
             }
             else {
-                outboundEntryService.updateOutboundProduct(p);
+                if (p.isInbound()) {
+                    inboundEntryService.updateInboundProduct(p);
+                }
+                else {
+                    outboundEntryService.updateOutboundProduct(p);
+                }
             }
+
             lastEntry = p;
         }
 
@@ -415,6 +466,45 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void increaseStock(WarehouseProductO product, String date, String type) {
+        InboundProductO inboundProductO = new InboundProductO();
+        inboundProductO.setWarehouseStockID(product.getWarehouseStockID());
+        this.increaseStock(inboundProductO, date);
+        product.setStockQuantity(inboundProductO.getStockQuantity());
+        product.setStockUnitPrice(inboundProductO.getStockUnitPrice());
+    }
+
+    @Transactional
+    @Override
+    public void decreaseStock(WarehouseProductO product, String date, String type) {
+        OutboundProductO outboundProductO = new OutboundProductO();
+        outboundProductO.setWarehouseStockID(product.getWarehouseStockID());
+        this.decreaseStock(outboundProductO, date);
+        product.setStockQuantity(outboundProductO.getStockQuantity());
+        product.setStockUnitPrice(outboundProductO.getStockUnitPrice());
+    }
+
+    @Transactional
+    @Override
+    public void modifyStock(WarehouseProductO product, String date, boolean isInbound) {
+        if (isInbound) {
+            InboundProductO inboundProductO = new InboundProductO();
+            inboundProductO.setWarehouseStockID(product.getWarehouseStockID());
+            inboundProductO.setInboundProductID(product.getWarehouseProductID());
+            this.modifyStock(inboundProductO, date);
+            // todo modify unit price
+        }
+        else {
+            OutboundProductO outboundProductO = new OutboundProductO();
+            outboundProductO.setWarehouseStockID(product.getWarehouseStockID());
+            outboundProductO.setOutboundProductID(product.getWarehouseProductID());
+            this.modifyStock(outboundProductO, date);
+            // todo modify unit price
         }
     }
 

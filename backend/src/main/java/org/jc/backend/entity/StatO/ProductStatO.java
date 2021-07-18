@@ -10,6 +10,7 @@ import lombok.Setter;
 public class ProductStatO {
     // identifier
     private boolean isInbound;
+    private boolean isWarehouseProduct;
     // from e_entry
     private String inboundEntryID;
     private String outboundEntryID;

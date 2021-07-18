@@ -89,13 +89,12 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                     }
                 }
 
-                // todo change warehouseStockService to support warehouseProductO
-//                warehouseStockService.increaseStock(product, entryDate);
-
                 if (isInbound) {
+                    warehouseStockService.increaseStock(product, entryDate, type);
                     warehouseInEntryMapper.insertNewProduct(product);
                 }
                 else {
+                    warehouseStockService.decreaseStock(product, entryDate, type);
                     warehouseOutEntryMapper.insertNewProduct(product);
                 }
                 int id = product.getWarehouseProductID();
@@ -189,15 +188,12 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                         if (IOModificationUtils.warehouseProductCompareAndFormModificationRecord(
                                 record, currentProduct, originalProduct, isInbound)) {
                             productsChanged = true;
+                            warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate(), isInbound);
                             if (isInbound) {
                                 warehouseInEntryMapper.updateProduct(currentProduct);
-                                // todo change warehouseStockService to support warehouseProductO
-//                                warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate());
                             }
                             else {
                                 warehouseOutEntryMapper.updateProduct(currentProduct);
-                                // todo change warehouseStockService to support warehouseProductO
-//                                warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate());
                             }
                         }
                         found = true;
@@ -233,6 +229,23 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         try {
             return isInbound ? warehouseInEntryMapper.queryAllInboundProductsByWarehouseStockID(id) :
                     warehouseOutEntryMapper.queryAllOutboundProductsByWarehouseStockID(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateProductForStock(ProductStatO productStatO, boolean isInbound) {
+        try {
+            if (isInbound) {
+                warehouseInEntryMapper.updateProductStockInfo(productStatO);
+            } else {
+                warehouseOutEntryMapper.updateProductStockInfo(productStatO);
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

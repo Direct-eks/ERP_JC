@@ -186,12 +186,14 @@ export default {
 
         switch (this.type) {
         case 'assemblyEntryOut':
+            this.enablePriceChange = false
             break
         case 'assemblyEntryIn':
             this.isInbound = true
             this.disableDate = true
             break
         case 'transferEntryOut':
+            this.enablePriceChange = false
             break
         case 'transferEntryIn':
             this.isInbound = true

@@ -141,7 +141,7 @@
     <update id="updateProductStockInfo">
         update p_warehouse_in_product
         set stock_quantity = #{stockQuantity},
-            unit_price = #{stockUnitPrice}
+            stock_unit_price = #{stockUnitPrice}
         where warehouse_product_id = #{inboundProductID}
     </update>
 
