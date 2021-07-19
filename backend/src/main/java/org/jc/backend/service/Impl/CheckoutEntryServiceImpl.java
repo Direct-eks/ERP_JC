@@ -141,11 +141,13 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                     List<InboundProductO> products = inboundEntryService.getProductsWithCheckoutSerial(
                             tempEntry.getCheckoutEntrySerial());
                     tempEntry.setInboundCheckoutProducts(products);
+                    tempEntry.setOutboundCheckoutProducts(new ArrayList<>());
                 }
                 else {
                     List<OutboundProductO> products = outboundEntryService.getProductsWithCheckoutSerial(
                             tempEntry.getCheckoutEntrySerial());
                     tempEntry.setOutboundCheckoutProducts(products);
+                    tempEntry.setInboundCheckoutProducts(new ArrayList<>());
                 }
 
                 entries.add(tempEntry);
