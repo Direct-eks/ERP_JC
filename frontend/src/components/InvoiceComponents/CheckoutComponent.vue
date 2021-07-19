@@ -159,12 +159,25 @@
                               item-value="value"
                               item-text="label"
                               label="结账类型"
-                              :readonly="displayMode || isInbound ? form.inboundCheckoutProducts.length !== 0 :
-                                                    form.outboundCheckoutProducts.length !== 0"
+                              :readonly="displayMode || returnMode ||
+                                            isInbound ? form.inboundCheckoutProducts.length !== 0 :
+                                                form.outboundCheckoutProducts.length !== 0"
                               hide-details="auto"
                               outlined dense
                               style="width: 180px">
                     </v-select>
+                </v-col>
+                <v-col cols="auto">
+                    <v-text-field v-model="form.serviceFee"
+                                  label="服务费"
+                                  hide-details="auto"
+                                  type="number"
+                                  outlined
+                                  @change="calculateSums"
+                                  :readonly="displayMode"
+                                  dense
+                                  style="width: 100px">
+                    </v-text-field>
                 </v-col>
                 <v-col cols="auto" class="pr-0">
                     <v-radio-group v-model="form.isRounded"
@@ -229,7 +242,7 @@
         </v-form>
 
         <v-expand-transition>
-            <v-card v-if="creationMode"
+            <v-card v-if="creationMode || returnMode"
                     v-show="invoicePanelOpen"
                     class="my-2" outlined>
                 <InvoiceComponent mode="checkoutEntry"
@@ -261,7 +274,7 @@
                         </v-btn>
                     </template>
                     <CheckoutProductsChoose mode="checkout"
-                                            :isInbound="true"
+                                            :isInbound="isInbound"
                                             :companyID="form.partnerCompanyID"
                                             :invoiceType="form.invoiceType"
                                             @productsChoose="productsChooseAction">
@@ -309,7 +322,7 @@
                 </v-dialog>
             </v-col>
         </v-row>
-        <v-row v-if="modifyMode">
+        <v-row v-if="modifyMode || returnMode" class="my-2" dense>
             <v-col cols="auto">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
@@ -345,7 +358,7 @@
         </v-data-table>
 
         <div class="d-flex">
-            <v-btn color="error" @click="handleDeleteRow">删除</v-btn>
+            <v-btn v-if="creationMode" color="error" @click="handleDeleteRow">删除</v-btn>
             <v-spacer></v-spacer>
             <div class="my-2">
                 <strong>税额合计：</strong>
@@ -413,6 +426,9 @@ export default {
         case 'modify':
             this.modifyMode = true
             break
+        case 'return':
+            this.returnMode = true
+            break
         }
 
         this.$store.dispatch('getDepartmentOptions')
@@ -423,6 +439,7 @@ export default {
             creationMode: false,
             displayMode: false,
             modifyMode: false,
+            returnMode: false,
 
             checkoutDateTitle: this.isInbound ? '入库结账日期' : '出库结账日期',
             paymentMethodTitle: this.isInbound ? '付款方式' : '收款方式',
@@ -446,7 +463,7 @@ export default {
                 paymentMethod: '', paymentNumber: '', paymentAmount: '',
                 bankAccountID: -1, bankAccountName: '',
                 totalAmount: '0.0', isRounded: 0, roundedAmount: '',
-                debt: '0.0', serviceFee: '',
+                debt: '0.0', serviceFee: '0',
                 remark: '', drawer: this.$store.getters.currentUser,
                 creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 checkoutDate: new Date().format("yyyy-MM-dd").substr(0, 10),
@@ -570,7 +587,6 @@ export default {
                 }
 
                 this.calculateSums()
-                this.form.totalAmount = this.sumWithTax
                 this.handlePaymentAmountChange()
             }
             this.productsChoosePanelOpen = false
@@ -595,6 +611,9 @@ export default {
             this.sumWithoutTax = tempSumWithoutTax.toString()
             this.sumWithTax = tempSumWithTax.toString()
             this.tax = tempTax.toString()
+
+            this.form.totalAmount = tempSumWithTax.add(this.form.serviceFee === '' ?
+                '0' : this.form.serviceFee).toString()
         },
         handlePaymentAmountChange() {
             this.form.paymentAmount = this.form.paymentAmount === '' ? '0' :
@@ -689,7 +708,7 @@ export default {
                     })
                     this.$store.commit('setOverlay', false)
 
-                    this.$router.replace('/inbound_invoicing')
+                    this.$router.replace(this.isInbound ? '/inbound_invoicing' : '/outbound_invoicing')
                 }).catch(() => {})
             }
             this.submitPopup = false
