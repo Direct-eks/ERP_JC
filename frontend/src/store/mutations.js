@@ -10,6 +10,7 @@ const mutations = {
             sessionStorage.setItem('userToken', user.sessionID)
             sessionStorage.setItem('userRole', user.userRole)
             sessionStorage.setItem('userPermissions', JSON.stringify(user.userPermissions))
+            sessionStorage.setItem('permittedRoundingAmount', user.amount)
             sessionStorage.setItem('isAuthenticated', 'true')
         }
         else { // if is null, then logout
