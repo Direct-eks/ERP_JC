@@ -116,6 +116,7 @@ export default {
         case 'query':
             break
         case 'modify':
+        case 'return':
             this.isModify = true
             break
         }
