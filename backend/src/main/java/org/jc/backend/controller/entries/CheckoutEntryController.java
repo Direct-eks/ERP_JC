@@ -104,5 +104,8 @@ public class CheckoutEntryController {
             @RequestParam("isInbound") boolean isInbound) {
         logger.info("POST Request to /checkoutEntry/returnEntry, isInbound: {}; data: {}",
                 isInbound, returnVO.toString());
+
+        checkoutEntryService.returnEntry(returnVO, isInbound);
     }
+
 }

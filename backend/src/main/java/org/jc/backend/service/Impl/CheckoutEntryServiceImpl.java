@@ -11,6 +11,7 @@ import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
+import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -239,5 +240,17 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         }
 
         return bool;
+    }
+
+    @Transactional
+    @Override
+    public void returnEntry(CheckoutEntryWithProductsVO returnVO, boolean isInbound) {
+        try {
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
     }
 }
