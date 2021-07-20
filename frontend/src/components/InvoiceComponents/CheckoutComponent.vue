@@ -743,7 +743,7 @@ export default {
                     })
                     this.$store.commit('setOverlay', false)
 
-                    this.$router.replace('/inbound_invoicing')
+                    this.$router.replace(this.isInbound ? '/inbound_invoicing' : '/outbound_invoicing')
                 }).catch(() => {})
             }
             else if (this.returnMode) {
@@ -755,7 +755,7 @@ export default {
                     })
                     this.$store.commit('setOverlay', false)
 
-                    this.$router.replace('/inbound_invoicing')
+                    this.$router.replace(this.isInbound ? '/inbound_invoicing' : '/outbound_invoicing')
                 }).catch(() => {})
             }
         },

@@ -69,7 +69,7 @@
                       locale="zh-cn"
                       dense>
             <template v-slot:item.checkoutEntrySerial="{ item }">
-                <v-chip :color="item.isModified === 1 ? 'red' : null">
+                <v-chip :color="chipColor(item)">
                     {{ item.checkoutEntrySerial }}
                 </v-chip>
             </template>
@@ -203,6 +203,17 @@ export default {
                 this.modificationRecords = data
             }).catch(() => {})
         },
+        chipColor(item) {
+            let color = null
+            if (item.isModified === 1) {
+                color = 'red'
+                if (item.returnSerial !== '') color = 'orange'
+            }
+            else if (item.returnSerial !== '') {
+                color = 'blue'
+            }
+            return color
+        },
         tableClick(row) {
             this.modificationRecords = []
             if (this.queryTableCurrentRow.includes(row)) {
@@ -210,6 +221,12 @@ export default {
             }
             else {
                 this.queryTableCurrentRow = [row]
+                if (this.displayMode === 'return' && row.isReturned === 1) {
+                    this.$store.commit('setSnackbar', {
+                        message: '结账单已退货', color: 'warning'
+                    })
+                    return
+                }
                 this.$emit('tableClick', row)
             }
         },
@@ -220,6 +237,12 @@ export default {
             }
             else {
                 this.queryTableCurrentRow = [row.item]
+                if (this.displayMode === 'return' && row.item.returnSerial !== '') {
+                    this.$store.commit('setSnackbar', {
+                        message: '结账单已退货', color: 'warning'
+                    })
+                    return
+                }
                 this.$emit('tableClick', row.item)
             }
         }
