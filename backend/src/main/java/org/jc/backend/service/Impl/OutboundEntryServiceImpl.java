@@ -11,11 +11,9 @@ import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
-import org.jc.backend.entity.StatO.InvoiceStatDO;
-import org.jc.backend.entity.StatO.InvoiceStatVO;
-import org.jc.backend.entity.StatO.PresaleO;
-import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.*;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
+import org.jc.backend.service.ModelService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -42,13 +40,16 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     private final OutboundEntryMapper outboundEntryMapper;
     private final ModificationMapper modificationMapper;
     private final WarehouseStockService warehouseStockService;
+    private final ModelService modelService;
 
     public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper,
                                     ModificationMapper modificationMapper,
-                                    WarehouseStockService warehouseStockService) {
+                                    WarehouseStockService warehouseStockService,
+                                    ModelService modelService) {
         this.outboundEntryMapper = outboundEntryMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockService = warehouseStockService;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -736,6 +737,46 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         } catch (IOException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("io failed");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<SummaryO> getOutboundSummary(String type, Date startDate, Date endDate, int categoryID,
+                                             String factoryBrand, int warehouseID, int departmentID) {
+        try {
+            String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
+
+            var list = outboundEntryMapper.queryOutboundSummary(treeLevel);
+            list.removeIf(item -> {
+                if (!item.getEntryID().startsWith(type)) {
+                    return true;
+                }
+                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
+                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                    return true;
+                }
+                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
+                    return true;
+                }
+                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
+                    return true;
+                }
+                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
+                    return true;
+                }
+                return false;
+            });
+            list.forEach(item -> {
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
         }
     }
 }

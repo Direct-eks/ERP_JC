@@ -7,6 +7,7 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.PresaleO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -261,5 +262,32 @@ public class OutboundEntryController {
         logger.info("GET Request to /outboundEntry/exportPresaleProducts");
 
         outboundEntryService.exportPresaleProducts(response);
+    }
+
+    @ApiOperation(value = "", response = SummaryO.class)
+    @GetMapping("/getOutboundSummary")
+    public List<SummaryO> getInboundSummary(
+            @RequestParam("type") String type,
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("factoryBrand") String factoryBrand,
+            @RequestParam("warehouseID") int warehouseID,
+            @RequestParam("departmentID") int departmentID
+    ) throws GlobalParamException {
+        logger.info("GET Request to /outboundEntry/getOutboundSummary");
+
+        switch (type) {
+            case "销售":
+            case "入退":
+                break;
+            default: throw new GlobalParamException("invalid category");
+        }
+
+        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
+        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+
+        return outboundEntryService.getOutboundSummary(type, startDate, endDate, categoryID,
+                factoryBrand, warehouseID, departmentID);
     }
 }

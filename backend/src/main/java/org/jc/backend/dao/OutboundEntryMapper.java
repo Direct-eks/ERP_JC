@@ -6,6 +6,7 @@ import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.PresaleO;
 import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -69,4 +70,7 @@ public interface OutboundEntryMapper {
 
     // for presale query
     List<PresaleO> queryPresaleProducts();
+
+    List<SummaryO> queryOutboundSummary(String treeLevel);
+
 }

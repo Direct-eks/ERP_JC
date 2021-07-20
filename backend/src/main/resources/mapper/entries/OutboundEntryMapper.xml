@@ -422,4 +422,49 @@
         where p.is_presale = 1
     </select>
 
+
+    <resultMap id="summaryResultMap" type="org.jc.backend.entity.StatO.SummaryO">
+        <result property="entryID" column="outbound_entry_id"/>
+        <result property="entryDate" column="shipment_date"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="drawer" column="drawer"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="abbreviated_name"/>
+        <result property="departmentID" column="department_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="remark" column="remark"/>
+        <result property="classification" column="classification"/>
+        <result property="shippingCost" column="shipping_cost"/>
+        <result property="shippingCostType" column="shipping_cost_type"/>
+        <result property="shippingQuantity" column="shipping_quantity"/>
+        <result property="shippingNumber" column="shipping_number"/>
+        <result property="shippingMethodID" column="shipping_method_id"/>
+        <result property="relevantCompanyName" column="relevant_company_name"/>
+        <result property="productID" column="outbound_product_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="code" column="code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+    </resultMap>
+
+    <select id="queryOutboundSummary" resultMap="summaryResultMap">
+        select e.outbound_entry_id, e.shipment_date, invoice_type, e.tax_rate, drawer, e.partner_company_id,
+               c.abbreviated_name, e.department_id, e.warehouse_id, e.remark, e.classification,
+               e.shipping_cost, e.shipping_cost_type, e.shipping_quantity, e.shipping_method_id,
+               r.abbreviated_name as relevant_company_name, p.outbound_product_id, p.sku_id,
+               s.code, s.unit_name, s.factory_code, p.quantity, p.warehouse_stock_id,
+               p.unit_price_with_tax, p.unit_price_without_tax
+        from e_outbound_entry as e join e_outbound_product as p
+            on e.outbound_entry_id = p.outbound_entry_id
+            join sku_full as s on p.sku_id = s.sku_id
+            join c_partner_company as c on e.partner_company_id = c.partner_company_id
+            left join c_relevant_company as r on e.shipping_method_id = r.relevant_company_id
+        where s.tree_level like #{treeLevel}||'%'
+    </select>
+
 </mapper>

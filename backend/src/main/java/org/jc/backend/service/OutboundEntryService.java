@@ -7,6 +7,7 @@ import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.PresaleO;
 import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
@@ -59,4 +60,7 @@ public interface OutboundEntryService {
 
     List<PresaleO> getPresaleProducts();
     void exportPresaleProducts(HttpServletResponse response);
+
+    List<SummaryO> getOutboundSummary(String type, Date startDate, Date endDate, int categoryID,
+                                     String factoryBrand, int warehouseID, int departmentID);
 }
