@@ -221,7 +221,7 @@ export default {
             }
             else {
                 this.queryTableCurrentRow = [row]
-                if (this.displayMode === 'return' && row.isReturned === 1) {
+                if (this.displayMode === 'return' && row.returnSerial !== '') {
                     this.$store.commit('setSnackbar', {
                         message: '结账单已退货', color: 'warning'
                     })

@@ -24,7 +24,7 @@
 
             <v-tab-item key="browse">
                 <QueryDisplayComponent
-                    displayMode="modify"
+                    displayMode="return"
                     :isInbound="false"
                     @tableClick="tableClickAction">
                 </QueryDisplayComponent>
