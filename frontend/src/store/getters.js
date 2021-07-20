@@ -21,7 +21,7 @@ const getters = {
         return state.currentUserPermissions
     },
     currentUserPermittedRoundingAmount(state) {
-        if (state.permittedRoundingAmount === '') {
+        if (state.permittedRoundingAmount === '0') {
             return sessionStorage.getItem('permittedRoundingAmount') != null ?
                 JSON.parse(sessionStorage.getItem('permittedRoundingAmount')) : '0'
         }
