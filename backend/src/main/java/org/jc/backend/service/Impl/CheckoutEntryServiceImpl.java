@@ -73,8 +73,8 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 throw new GlobalParamException("抹零值超出限定");
             }
 
-            String prefix = isInbound ? (isReturn ? "出退" : "入结") : (isReturn ? "入退" : "出结");
-            int count = checkoutEntryMapper.countNumberOfEntriesOfToday(prefix);
+            String prefix = isInbound ? "入结" : "出结";
+            int count = checkoutEntryMapper.countNumberOfEntriesOfToday(checkoutEntry.getCheckoutDate(), prefix);
             String newCheckoutSerial = MyUtils.formNewSerial(prefix, count, checkoutEntry.getCheckoutDate());
 
             checkoutEntry.setCheckoutEntrySerial(newCheckoutSerial);
@@ -270,12 +270,16 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 outVO.setShippingNumber("");
                 outVO.setShippingMethodID(-1);
 
+                // extract and transform products
                 List<OutboundProductO> returnProducts = new ArrayList<>();
                 for (var p :  returnVO.getInboundCheckoutProducts()) {
                     var np = new OutboundProductO();
                     BeanUtils.copyProperties(p, np);
                     returnProducts.add(np);
                 }
+                outVO.setTaxRate(returnProducts.get(0).getTaxRate());
+                outVO.setWarehouseID(returnProducts.get(0).getWarehouseID());
+
                 outVO.setOutboundProducts(returnProducts);
 
                 returnSerial = outboundEntryService.createEntry(outVO);
@@ -297,6 +301,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 inVO.setShippingNumber("");
                 inVO.setShippingMethodID(-1);
 
+                // extract and transform products
                 List<InboundProductO> returnProducts = new ArrayList<>();
                 for (var p :  returnVO.getOutboundCheckoutProducts()) {
                     var np = new InboundProductO();
@@ -319,11 +324,19 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 }
             }
 
-            CheckoutEntryDO returnDO = new CheckoutEntryDO();
-            BeanUtils.copyProperties(returnVO, returnDO);
+            // update return serial for current checkout serial
+            returnVO.setReturnSerial(returnSerial);
+            checkoutEntryMapper.returnEntry(returnVO);
 
-            returnDO.setReturnSerial(returnSerial);
-            checkoutEntryMapper.returnEntry(returnDO);
+            // create new checkout entry for newly created inbound/outbound entry
+            if (isInbound) { // refill outbound products for inbound return
+                returnVO.setOutboundCheckoutProducts(outboundEntryService.getProductsWithEntryID(returnSerial));
+            }
+            else {
+                returnVO.setInboundCheckoutProducts(inboundEntryService.getProductsWithEntryID(returnSerial));
+            }
+            this.createEntry(returnVO, !isInbound, true); // inverse isInbound
+
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

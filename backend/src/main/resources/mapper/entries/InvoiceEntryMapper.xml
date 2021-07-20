@@ -7,7 +7,7 @@
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(invoice_entry_serial)
         from m_invoice_entry
-        where invoice_date = date('now', 'localtime')
+        where invoice_date = #{date}
           and m_invoice_entry.invoice_entry_serial like #{prefix}||'%'
     </select>
 

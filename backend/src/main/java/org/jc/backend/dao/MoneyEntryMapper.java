@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface MoneyEntryMapper {
-    int countNumberOfEntriesOfToday(String prefix);
+    int countNumberOfEntriesOfToday(String date, String prefix);
     void insertEntry(MoneyEntryO moneyEntryO);
     List<MoneyEntryO> getEntriesInDateRangeAndParams(String startDate, String endDate, int companyID,
                                                      String paymentMethod, int bankAccountID, String prefix);

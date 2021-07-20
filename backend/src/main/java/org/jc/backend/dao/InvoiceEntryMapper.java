@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface InvoiceEntryMapper {
-    int countNumberOfEntriesOfToday(String prefix);
+    int countNumberOfEntriesOfToday(String date, String prefix);
     void insertEntry(InvoiceEntryO invoiceEntryO);
     List<InvoiceEntryO> getEntriesInDateRangeAndParams(String startDate, String endDate, String invoiceNumberDate,
                                                        int companyID, int isFollowUpIndication,

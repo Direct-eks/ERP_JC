@@ -7,7 +7,7 @@
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(money_entry_serial)
         from m_money_entry
-        where payment_date = date('now', 'localtime')
+        where payment_date = #{date}
           and money_entry_serial like #{prefix}||'%'
     </select>
 

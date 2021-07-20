@@ -2,6 +2,7 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
+import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface CheckoutEntryMapper {
-    int countNumberOfEntriesOfToday(String prefix);
+    int countNumberOfEntriesOfToday(String date, String prefix);
     void insertEntry(CheckoutEntryDO checkoutEntryDO);
 
     List<CheckoutEntryDO> getEntriesInDateRangeByInvoiceTypeAndCompanyID(
@@ -20,5 +21,5 @@ public interface CheckoutEntryMapper {
 
     CheckoutEntryDO selectEntryBySerialForCompare(String serial);
     void modifyEntry(CheckoutEntryDO modifyDO);
-    void returnEntry(CheckoutEntryDO returnDO);
+    void returnEntry(CheckoutEntryWithProductsVO returnVO);
 }

@@ -7,7 +7,7 @@
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(checkout_entry_serial)
         from m_checkout_entry
-        where checkout_date = date('now', 'localtime')
+        where checkout_date = #{date}
             and checkout_entry_serial like #{prefix}||'%'
     </select>
 

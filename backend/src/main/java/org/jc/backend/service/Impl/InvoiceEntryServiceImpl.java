@@ -61,7 +61,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         try {
             String prefix = getEntryPrefix(isInbound, invoiceEntryO.getInvoiceType());
 
-            int count = invoiceEntryMapper.countNumberOfEntriesOfToday(prefix);
+            int count = invoiceEntryMapper.countNumberOfEntriesOfToday(invoiceEntryO.getInvoiceDate(), prefix);
             String newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntryO.getInvoiceDate());
 
             invoiceEntryO.setInvoiceEntrySerial(newSerial);
@@ -210,7 +210,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         try {
             String prefix = getEntryPrefix(isInbound, checkoutEntryWithProductsVO.getInvoiceType());
 
-            int count = invoiceEntryMapper.countNumberOfEntriesOfToday(prefix);
+            int count = invoiceEntryMapper.countNumberOfEntriesOfToday(invoiceEntry.getInvoiceDate(), prefix);
             String newSerial = MyUtils.formNewSerial(prefix, count, invoiceEntry.getInvoiceDate());
 
             invoiceEntry.setInvoiceEntrySerial(newSerial);

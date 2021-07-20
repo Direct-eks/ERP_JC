@@ -351,6 +351,19 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
+    public List<InboundProductO> getProductsWithEntryID(String id) {
+        try {
+            return inboundEntryMapper.queryProductsByEntryID(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<InboundProductO> getNotCheckedOutProductsByEntryID(
             String entryID, String invoiceType) throws GlobalParamException {
         try {

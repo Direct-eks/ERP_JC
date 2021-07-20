@@ -43,7 +43,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
     public void createEntry(MoneyEntryO moneyEntryO, boolean isInbound) {
         try {
             String prefix = getPrefix(isInbound);
-            int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
+            int count = moneyEntryMapper.countNumberOfEntriesOfToday(moneyEntryO.getPaymentDate(), prefix);
             String newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
 
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
@@ -177,7 +177,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
 
         try {
             String prefix = getPrefix(isInbound);
-            int count = moneyEntryMapper.countNumberOfEntriesOfToday(prefix);
+            int count = moneyEntryMapper.countNumberOfEntriesOfToday(moneyEntryO.getPaymentDate(), prefix);
             String newMoneySerial = MyUtils.formNewSerial(prefix, count, moneyEntryO.getPaymentDate());
 
             moneyEntryO.setCheckoutSerial(checkoutSerial);

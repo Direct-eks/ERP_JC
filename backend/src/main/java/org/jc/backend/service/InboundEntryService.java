@@ -22,6 +22,7 @@ public interface InboundEntryService {
     void deleteEntry(String id);
     void returnEntry(InboundEntryWithProductsVO returnVO);
 
+    List<InboundProductO> getProductsWithEntryID(String id);
     List<InboundProductO> getNotCheckedOutProductsByEntryID(String entryID, String invoiceType) throws GlobalParamException;
     List<InboundProductO> getNotCheckedOutProducts(int companyID, String invoiceType);
     List<InboundProductO> getCheckoutButNotInvoicedProductsByEntryID(String entryID, String invoiceType) throws GlobalParamException;
