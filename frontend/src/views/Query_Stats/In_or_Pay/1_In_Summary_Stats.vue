@@ -29,7 +29,8 @@
                     <v-btn color="primary" @click="search" :loading="loading">查询</v-btn>
                 </v-col>
             </v-row>
-            <QueryConditions :queries.sync="queries">
+            <QueryConditions :queries.sync="queries"
+                             @clear="clear">
             </QueryConditions>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
@@ -98,6 +99,9 @@ export default {
         }
     },
     methods: {
+        clear() {
+            this.tableData = []
+        },
         search() {
             this.loading = true
             let api = ''
@@ -110,27 +114,21 @@ export default {
                 api = this.$api.purchaseSummary
                 break
             case '产入':
-                api = this.$api.productionSummary
-                break
             case '折入':
-                api = this.$api.assemblyInSummary
-                break
             case '调入':
-                api = this.$api.transferInSummary
-                break
             case '盘盈':
-                api = this.$api.inventoryProfitSummary
+                api = this.$api.warehouseEntrySummary
                 break
             }
 
             this.$getRequest(api, {
-                type: this.category,
-                startDate: this.dateRange[0],
-                endDate: this.dateRange[1],
-                categoryID: this.treeSelection.categoryID,
-                factoryBrand: this.factoryBrand,
-                warehouseID: this.warehouseID,
-                departmentID: this.departmentID
+                type: this.queries.category,
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                categoryID: this.queries.treeSelection.categoryID,
+                factoryBrand: this.queries.factoryBrand,
+                warehouseID: this.queries.warehouseID,
+                departmentID: this.queries.departmentID
             }).then(data => {
                 this.loading = false
                 this.tableData = data

@@ -51,13 +51,13 @@
                       persistent
                       scrollable
                       no-click-animation
-                      width="40vw">
+                      max-width="300px">
                 <template v-slot:activator="{on}">
                     <v-btn color="accent" v-on="on">选择分类</v-btn>
                 </template>
                 <v-card>
                     <v-card-text>
-                        <ModelTree height="60vh" max-width=""
+                        <ModelTree height="40vh" max-width=""
                                    :select-for-search="false"
                                    :select-for-level="true"
                                    :show-select="true"
@@ -157,6 +157,7 @@ export default {
             if (this.queries.departmentID !== undefined) this.queries.departmentID = -1
             if (this.queries.warehouseID !== undefined) this.queries.warehouseID = -1
             if (this.queries.factoryBrand !== undefined) this.queries.factoryBrand = ''
+            this.$emit('clear')
         }
     }
 }
