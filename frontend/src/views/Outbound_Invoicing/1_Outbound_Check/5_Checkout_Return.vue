@@ -93,6 +93,20 @@ export default {
         tableClickAction(val) {
             this.currentTableRow = val
             this.form = Object.assign(this.form, this.currentTableRow)
+            this.form.paymentMethod = ''
+            this.form.paymentNumber = ''
+            this.form.paymentAmount = '0'
+            this.form.bankAccountID = -1
+            this.form.bankAccountName = ''
+            this.form.totalAmount = '0'
+            this.form.isRounded = 0
+            this.form.roundedAmount = '0'
+            this.form.debt = '0'
+            this.form.serviceFee = '0'
+            this.form.remark = ''
+            this.form.departmentID = -1
+            this.form.departmentName = ''
+            this.form.invoiceEntry = null
         }
     }
 }

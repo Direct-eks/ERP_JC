@@ -179,6 +179,8 @@ export default {
         clearSearchFields() {
             this.category = ''
             this.companyName = ''
+            this.queryTableData = []
+            this.modificationRecords = []
         },
         query() {
             if (this.category === '') return

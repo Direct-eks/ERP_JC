@@ -246,7 +246,7 @@
                     v-show="invoicePanelOpen"
                     class="my-2" outlined>
                 <InvoiceComponent mode="checkoutEntry"
-                                  :isInbound="true"
+                                  :isInbound="isInbound"
                                   :params="{
                                         checkoutDate: form.checkoutDate,
                                         partnerCompanyID: form.partnerCompanyID,
@@ -259,8 +259,8 @@
             </v-card>
         </v-expand-transition>
 
-        <v-row v-if="creationMode" class="my-2" dense>
-            <v-col>
+        <v-row class="my-2" dense>
+            <v-col v-if="creationMode">
                 <v-dialog v-model="productsChoosePanelOpen"
                           :eager="true"
                           persistent
@@ -281,8 +281,8 @@
                     </CheckoutProductsChoose>
                 </v-dialog>
             </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="auto" class="d-flex">
+            <v-spacer v-if="creationMode"></v-spacer>
+            <v-col v-if="creationMode" cols="auto" class="d-flex">
                 <v-text-field v-model="entryIDSearchField"
                               label="根据单据导入"
                               hide-details="auto"
@@ -293,20 +293,20 @@
                 <v-btn color="info" @click="importProductsByEntry">导入</v-btn>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col v-if="creationMode" cols="auto">
+            <v-col v-if="creationMode || returnMode" cols="auto">
                 <v-btn color="accent"
                        @click="triggerInvoice(true)">
                     开票
                 </v-btn>
             </v-col>
-            <v-col v-if="creationMode" cols="auto">
+            <v-col v-if="creationMode || returnMode" cols="auto">
                 <v-btn color="accent"
                        @click="triggerInvoice(false)">
                     不开票
                 </v-btn>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col>
+            <v-col v-if="creationMode">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存</v-btn>
@@ -321,10 +321,8 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-        </v-row>
-        <v-row v-if="modifyMode || returnMode" class="my-2" dense>
-            <v-col cols="auto">
-                <v-dialog v-model="submitPopup" max-width="300px">
+            <v-col v-if="modifyMode || returnMode" cols="auto">
+                <v-dialog v-model="submitPopup2" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存修改</v-btn>
                     </template>
@@ -649,6 +647,7 @@ export default {
             }
         },
         passiveUpdateInvoiceEntryAction(val) {
+            if (!this.invoicePanelOpen) return // only allow changes to be made when panel is open
             this.form.invoiceEntry = val
         },
         tableClick(row) {
