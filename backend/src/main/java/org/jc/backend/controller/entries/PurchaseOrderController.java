@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.MyUtils;
@@ -82,6 +83,24 @@ public class PurchaseOrderController {
         logger.info("DELETE Request to /purchaseOrder/deleteOrder, id: {}", id);
 
         purchaseOrderService.deleteOrder(id);
+    }
+
+    @ApiOperation(value = "", response = InboundSummaryO.class)
+    @GetMapping("/summary")
+    public List<InboundSummaryO> purchaseSummary(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("factoryBrand") String factoryBrand,
+            @RequestParam("warehouseID") int warehouseID,
+            @RequestParam("departmentID") int departmentID
+    ) throws GlobalParamException {
+
+        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
+        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+
+        return purchaseOrderService.getPurchaseSummary(startDate, endDate, categoryID,
+                factoryBrand, warehouseID, departmentID);
     }
 
 }

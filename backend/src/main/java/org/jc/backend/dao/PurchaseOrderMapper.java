@@ -3,6 +3,7 @@ package org.jc.backend.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.PurchaseOrderProductO;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Repository
 public interface PurchaseOrderMapper {
 
-    int countNumberOfEntriesOfToday();
+    int countNumberOfEntriesOfToday(String date);
     void insertNewOrderEntry(PurchaseOrderEntryDO entry);
     int insertNewOrderProduct(PurchaseOrderProductO product);
 
@@ -29,4 +30,6 @@ public interface PurchaseOrderMapper {
 
     void deleteOrderEntry(String id);
     void deleteOrderProductsByEntryID(String id);
+
+    List<InboundSummaryO> querySummary(String treeLevel);
 }

@@ -7,7 +7,7 @@
     <select id="countNumberOfEntriesOfToday" resultType="int">
         select count(purchase_order_entry_id)
         from e_purchase_order_entry
-        where entry_date = date('now', 'localtime')
+        where entry_date = #{date}
     </select>
 
     <insert id="insertNewOrderEntry">
@@ -166,5 +166,40 @@
         delete from e_purchase_order_product
         where purchase_order_entry_id = #{id}
     </delete>
+
+    <resultMap id="summaryResultMap" type="org.jc.backend.entity.StatO.InboundSummaryO">
+        <result property="entryID" column="purchase_order_entry_id"/>
+        <result property="entryDate" column="entry_date"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="drawer" column="drawer"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="companyAbbreviatedName" column="abbreviated_name"/>
+        <result property="departmentID" column="department_id"/>
+        <result property="warehouseID" column="warehouse_id"/>
+        <result property="remark" column="remark"/>
+        <result property="productID" column="purchase_order_product_id"/>
+        <result property="skuID" column="sku_id"/>
+        <result property="code" column="code"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="warehouseStockID" column="warehouse_stock_id"/>
+        <result property="unitPriceWithoutTax" column="unit_price_without_tax"/>
+        <result property="unitPriceWithTax" column="unit_price_with_tax"/>
+    </resultMap>
+
+    <select id="querySummary" resultMap="summaryResultMap">
+        select e.purchase_order_entry_id, e.entry_date, invoice_type, e.tax_rate, drawer,
+               e.partner_company_id, c.abbreviated_name, e.department_id, e.warehouse_id,
+               e.remark, p.purchase_order_product_id, p.sku_id,
+               s.code, s.unit_name, s.factory_code, p.quantity, p.warehouse_stock_id,
+               p.unit_price_with_tax, p.unit_price_without_tax
+        from e_purchase_order_entry as e join e_purchase_order_product as p
+            on e.purchase_order_entry_id = p.purchase_order_entry_id
+            join sku_full as s on p.sku_id = s.sku_id
+            join c_partner_company as c on e.partner_company_id = c.partner_company_id
+        where s.tree_level like #{treeLevel}||'%'
+    </select>
 
 </mapper>
