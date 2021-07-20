@@ -56,6 +56,19 @@ public class ModelServiceImpl implements ModelService {
         }
     }
 
+    @Override
+    public String getTreeLevelByCategoryID(int categoryID) {
+        var categories = modelMapper.queryModelCategories();
+        String treeLevel = null;
+        for (var c : categories) {
+            if (c.getModelCategoryID() == categoryID) {
+                treeLevel = c.getTreeLevel();
+                break;
+            }
+        }
+        return treeLevel == null ? "" : treeLevel;
+    }
+
     /**
      * get models by category id. Since models only use the tail node in category
      * tree, here the id must be a tail node id.

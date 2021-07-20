@@ -227,15 +227,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
     public List<SummaryO> getSalesSummary(Date startDate, Date endDate, int categoryID,
                                           String factoryBrand, int warehouseID, int departmentID) {
         try {
-            var categories = modelService.getModelCategories();
-            String treeLevel = null;
-            for (var c : categories) {
-                if (c.getModelCategoryID() == categoryID) {
-                    treeLevel = c.getTreeLevel();
-                    break;
-                }
-            }
-            treeLevel = treeLevel == null ? "" : treeLevel;
+            String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
 
             var list = salesOrderMapper.querySummary(treeLevel);
             list.removeIf(item -> {

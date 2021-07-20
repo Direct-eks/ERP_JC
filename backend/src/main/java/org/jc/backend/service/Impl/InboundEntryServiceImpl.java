@@ -677,15 +677,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     public List<SummaryO> getInboundSummary(String type, Date startDate, Date endDate, int categoryID,
                                             String factoryBrand, int warehouseID, int departmentID) {
         try {
-            var categories = modelService.getModelCategories();
-            String treeLevel = null;
-            for (var c : categories) {
-                if (c.getModelCategoryID() == categoryID) {
-                    treeLevel = c.getTreeLevel();
-                    break;
-                }
-            }
-            treeLevel = treeLevel == null ? "" : treeLevel;
+            String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
 
             var list = inboundEntryMapper.queryInboundSummary(treeLevel);
             list.removeIf(item -> {

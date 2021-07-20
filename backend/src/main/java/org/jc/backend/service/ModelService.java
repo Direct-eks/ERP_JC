@@ -12,6 +12,7 @@ import java.util.List;
 @Indexed
 public interface ModelService {
     List<ModelCategoryO> getModelCategories();
+    String getTreeLevelByCategoryID(int id);
     void updateModelCategories(ListUpdateVO<ModelCategoryO> updateVO);
 
     List<ModelO> getModelsByCategory(int id);
