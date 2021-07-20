@@ -262,6 +262,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 outVO.setPartnerCompanyID(returnVO.getPartnerCompanyID());
                 outVO.setDepartmentID(returnVO.getDepartmentID());
                 outVO.setWarehouseID(-1); // todo
+                outVO.setRemark(outVO.getRemark());
                 outVO.setClassification("入退");
                 outVO.setShippingCost("0");
                 outVO.setShippingCostType("无");
@@ -269,7 +270,13 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 outVO.setShippingNumber("");
                 outVO.setShippingMethodID(-1);
 
-                outVO.setOutboundProducts(returnVO.getOutboundCheckoutProducts());
+                List<OutboundProductO> returnProducts = new ArrayList<>();
+                for (var p :  returnVO.getInboundCheckoutProducts()) {
+                    var np = new OutboundProductO();
+                    BeanUtils.copyProperties(p, np);
+                    returnProducts.add(np);
+                }
+                outVO.setOutboundProducts(returnProducts);
 
                 returnSerial = outboundEntryService.createEntry(outVO);
             }
@@ -279,19 +286,27 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 inVO.setCreationDate(MyUtils.todayDateString());
                 inVO.setTotalCost(returnVO.getTotalAmount()); // todo, amount?
                 inVO.setInvoiceType(returnVO.getInvoiceType());
-                inVO.setTaxRate(-1); // todo
                 inVO.setDrawer(returnVO.getDrawer());
                 inVO.setPartnerCompanyID(returnVO.getPartnerCompanyID());
                 inVO.setDepartmentID(returnVO.getDepartmentID());
-                inVO.setWarehouseID(-1); // todo
-                inVO.setClassification("入退");
+                inVO.setRemark(returnVO.getRemark());
+                inVO.setClassification("出退");
                 inVO.setShippingCost("0");
                 inVO.setShippingCostType("无");
                 inVO.setShippingQuantity(0);
                 inVO.setShippingNumber("");
                 inVO.setShippingMethodID(-1);
 
-                inVO.setInboundProducts(returnVO.getInboundCheckoutProducts());
+                List<InboundProductO> returnProducts = new ArrayList<>();
+                for (var p :  returnVO.getOutboundCheckoutProducts()) {
+                    var np = new InboundProductO();
+                    BeanUtils.copyProperties(p, np);
+                    returnProducts.add(np);
+                }
+                inVO.setTaxRate(returnProducts.get(0).getTaxRate());
+                inVO.setWarehouseID(returnProducts.get(0).getWarehouseID());
+
+                inVO.setInboundProducts(returnProducts);
 
                 try {
                     returnSerial = inboundEntryService.createEntry(inVO);
@@ -307,7 +322,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             CheckoutEntryDO returnDO = new CheckoutEntryDO();
             BeanUtils.copyProperties(returnVO, returnDO);
 
-            returnDO.setCheckoutEntrySerial(returnSerial);
+            returnDO.setReturnSerial(returnSerial);
             checkoutEntryMapper.returnEntry(returnDO);
 
         } catch (PersistenceException e) {

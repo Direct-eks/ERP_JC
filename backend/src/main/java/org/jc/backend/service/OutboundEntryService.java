@@ -19,7 +19,7 @@ public interface OutboundEntryService {
     // for inbound service usage
     boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate);
 
-    String createEntry(OutboundEntryWithProductsVO entryWithProductsVO);
+    String createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException;
 
     List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                             String type, int id);

@@ -86,7 +86,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     @Transactional
     @Override
-    public String createEntry(OutboundEntryWithProductsVO entryWithProductsVO) {
+    public String createEntry(OutboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException {
 
         OutboundEntryDO newEntry = new OutboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
@@ -99,8 +99,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
         try {
             String shipmentDate = newEntry.getShipmentDate();
-            int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate);
-            String newSerial = MyUtils.formNewSerial("销出", count, shipmentDate);
+            String newSerial;
+            if (newEntry.getClassification().equals("销出")) {
+                int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate, "销出");
+                newSerial = MyUtils.formNewSerial("销出", count, shipmentDate);
+            }
+            else if (newEntry.getClassification().equals("入退")) {
+                int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate, "入退");
+                newSerial = MyUtils.formNewSerial("入退", count, shipmentDate);
+            }
+            else {
+                throw new GlobalParamException("incorrect classification");
+            }
 
             newEntry.setOutboundEntryID(newSerial);
             outboundEntryMapper.insertNewEntry(newEntry);

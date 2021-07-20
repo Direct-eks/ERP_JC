@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface OutboundEntryMapper {
-    int countNumberOfEntriesOfGivenDate(String date);
+    int countNumberOfEntriesOfGivenDate(String date, String type);
     void insertNewEntry(OutboundEntryDO entryDO);
     int insertNewProduct(OutboundProductO productO);
 

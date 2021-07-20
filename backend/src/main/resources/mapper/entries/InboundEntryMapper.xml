@@ -7,7 +7,7 @@
     <select id="countNumberOfEntriesOfGivenDate" resultType="int">
         select count(inbound_entry_id)
         from e_inbound_entry
-        where entry_date = #{date}
+        where entry_date = #{date} and classification = #{type}
     </select>
 
     <insert id="insertNewEntry">

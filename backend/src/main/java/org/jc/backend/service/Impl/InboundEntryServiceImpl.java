@@ -83,8 +83,18 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             }
 
             String entryDate = newEntry.getEntryDate();
-            int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate);
-            String newSerial = MyUtils.formNewSerial("购入", count, entryDate);
+            String newSerial;
+            if (newEntry.getClassification().equals("购入")) {
+                int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, "购入");
+                newSerial = MyUtils.formNewSerial("购入", count, entryDate);
+            }
+            else if (newEntry.getClassification().equals("出退")) {
+                int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, "出退");
+                newSerial = MyUtils.formNewSerial("出退", count, entryDate);
+            }
+            else {
+                throw new GlobalParamException("incorrect classification");
+            }
 
             // set new inbound entry serial, and insert
             newEntry.setInboundEntryID(newSerial);
