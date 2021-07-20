@@ -7,8 +7,10 @@ import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.DO.SalesOrderEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.SalesOrderProductO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.SalesOrderEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
+import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SalesOrderService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -29,13 +31,16 @@ public class SalesOrderServiceImpl implements SalesOrderService {
     private final SalesOrderMapper salesOrderMapper;
     private final ModificationMapper modificationMapper;
     private final WarehouseStockMapper warehouseStockMapper;
+    private final ModelService modelService;
 
     public SalesOrderServiceImpl(SalesOrderMapper salesOrderMapper,
                                  ModificationMapper modificationMapper,
-                                 WarehouseStockMapper warehouseStockMapper) {
+                                 WarehouseStockMapper warehouseStockMapper,
+                                 ModelService modelService) {
         this.salesOrderMapper = salesOrderMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockMapper = warehouseStockMapper;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -217,4 +222,48 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<SummaryO> getSalesSummary(Date startDate, Date endDate, int categoryID,
+                                          String factoryBrand, int warehouseID, int departmentID) {
+        try {
+            var categories = modelService.getModelCategories();
+            String treeLevel = null;
+            for (var c : categories) {
+                if (c.getModelCategoryID() == categoryID) {
+                    treeLevel = c.getTreeLevel();
+                    break;
+                }
+            }
+            treeLevel = treeLevel == null ? "" : treeLevel;
+
+            var list = salesOrderMapper.querySummary(treeLevel);
+            list.removeIf(item -> {
+                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
+                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                    return true;
+                }
+                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
+                    return true;
+                }
+                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
+                    return true;
+                }
+                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
+                    return true;
+                }
+                return false;
+            });
+            list.forEach(item -> {
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query error");
+            throw e;
+        }
+    }
 }
