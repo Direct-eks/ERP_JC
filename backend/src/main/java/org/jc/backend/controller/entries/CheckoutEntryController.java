@@ -101,7 +101,8 @@ public class CheckoutEntryController {
     @PostMapping("/returnEntry")
     public void returnEntry(
             @RequestBody @Validated CheckoutEntryWithProductsVO returnVO,
-            @RequestParam("isInbound") boolean isInbound) {
+            @RequestParam("isInbound") boolean isInbound
+    ) throws GlobalParamException {
         logger.info("POST Request to /checkoutEntry/returnEntry, isInbound: {}; data: {}",
                 isInbound, returnVO.toString());
 

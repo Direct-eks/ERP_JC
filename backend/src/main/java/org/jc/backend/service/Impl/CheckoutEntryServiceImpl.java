@@ -12,6 +12,7 @@ import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
+import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -246,8 +247,68 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
     @Transactional
     @Override
-    public void returnEntry(CheckoutEntryWithProductsVO returnVO, boolean isInbound) {
+    public void returnEntry(CheckoutEntryWithProductsVO returnVO,
+                            boolean isInbound) throws GlobalParamException  {
         try {
+            String returnSerial;
+            if (isInbound) { // create new outbound entry for inbound return
+                OutboundEntryWithProductsVO outVO = new OutboundEntryWithProductsVO();
+                outVO.setShipmentDate(MyUtils.todayDateString());
+                outVO.setCreationDate(MyUtils.todayDateString());
+                outVO.setTotalAmount(returnVO.getTotalAmount()); // todo, amount?
+                outVO.setInvoiceType(returnVO.getInvoiceType());
+                outVO.setTaxRate(-1); // todo
+                outVO.setDrawer(returnVO.getDrawer());
+                outVO.setPartnerCompanyID(returnVO.getPartnerCompanyID());
+                outVO.setDepartmentID(returnVO.getDepartmentID());
+                outVO.setWarehouseID(-1); // todo
+                outVO.setClassification("入退");
+                outVO.setShippingCost("0");
+                outVO.setShippingCostType("无");
+                outVO.setShippingQuantity(0);
+                outVO.setShippingNumber("");
+                outVO.setShippingMethodID(-1);
+
+                outVO.setOutboundProducts(returnVO.getOutboundCheckoutProducts());
+
+                returnSerial = outboundEntryService.createEntry(outVO);
+            }
+            else {
+                InboundEntryWithProductsVO inVO = new InboundEntryWithProductsVO();
+                inVO.setEntryDate(MyUtils.todayDateString());
+                inVO.setCreationDate(MyUtils.todayDateString());
+                inVO.setTotalCost(returnVO.getTotalAmount()); // todo, amount?
+                inVO.setInvoiceType(returnVO.getInvoiceType());
+                inVO.setTaxRate(-1); // todo
+                inVO.setDrawer(returnVO.getDrawer());
+                inVO.setPartnerCompanyID(returnVO.getPartnerCompanyID());
+                inVO.setDepartmentID(returnVO.getDepartmentID());
+                inVO.setWarehouseID(-1); // todo
+                inVO.setClassification("入退");
+                inVO.setShippingCost("0");
+                inVO.setShippingCostType("无");
+                inVO.setShippingQuantity(0);
+                inVO.setShippingNumber("");
+                inVO.setShippingMethodID(-1);
+
+                inVO.setInboundProducts(returnVO.getInboundCheckoutProducts());
+
+                try {
+                    returnSerial = inboundEntryService.createEntry(inVO);
+                } catch (GlobalParamException e) {
+                    String s = "The new generated inbound entry cannot be " +
+                            "inserted because there exists presale on the" +
+                            "returned products.";
+                    logger.info(s);
+                    throw new GlobalParamException(s);
+                }
+            }
+
+            CheckoutEntryDO returnDO = new CheckoutEntryDO();
+            BeanUtils.copyProperties(returnVO, returnDO);
+
+            returnDO.setCheckoutEntrySerial(returnSerial);
+            checkoutEntryMapper.returnEntry(returnDO);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

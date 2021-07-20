@@ -19,7 +19,7 @@ public interface OutboundEntryService {
     // for inbound service usage
     boolean passPresaleDateCheck(List<InboundProductO> products, String entryDate);
 
-    void createEntry(OutboundEntryWithProductsVO entryWithProductsVO);
+    String createEntry(OutboundEntryWithProductsVO entryWithProductsVO);
 
     List<OutboundEntryWithProductsVO> getEntriesInDateRange(Date startDate, Date endDate,
                                                             String type, int id);

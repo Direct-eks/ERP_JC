@@ -14,7 +14,7 @@ import java.util.List;
 
 @Indexed
 public interface InboundEntryService {
-    void createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException;
+    String createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException;
     List<InboundEntryWithProductsVO> getEntriesInDateRangeByTypeAndCompanyID(Date startDate, Date endDate,
                                                                              String type, int companyID);
     void completeEntry(InboundEntryWithProductsVO completionVO);

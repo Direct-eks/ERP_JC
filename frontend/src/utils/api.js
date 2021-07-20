@@ -22,6 +22,7 @@ const api = {
     // GET startDate= endDate=  companyID= invoiceType=
     checkoutEntriesInDateRange: '/checkoutEntry/getEntriesInDateRange',
     modifyCheckoutEntry: '/checkoutEntry/modifyEntry', // PATCH
+    returnCheckoutEntry: '/checkoutEntry/returnEntry', // POST
 
     /* ------ /company ------*/
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=

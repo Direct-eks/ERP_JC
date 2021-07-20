@@ -20,4 +20,5 @@ public interface CheckoutEntryMapper {
 
     CheckoutEntryDO selectEntryBySerialForCompare(String serial);
     void modifyEntry(CheckoutEntryDO modifyDO);
+    void returnEntry(CheckoutEntryDO returnDO);
 }

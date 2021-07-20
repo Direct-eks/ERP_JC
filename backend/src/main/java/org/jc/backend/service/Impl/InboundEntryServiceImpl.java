@@ -56,7 +56,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional
     @Override
-    public void createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException{
+    public String createEntry(InboundEntryWithProductsVO entryWithProductsVO) throws GlobalParamException{
 
         InboundEntryDO newEntry = new InboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
@@ -115,6 +115,7 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 int id = product.getInboundProductID();
                 logger.info("Insert new inbound product id: {}", id);
             }
+            return newSerial;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

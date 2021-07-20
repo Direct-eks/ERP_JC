@@ -86,7 +86,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     @Transactional
     @Override
-    public void createEntry(OutboundEntryWithProductsVO entryWithProductsVO) {
+    public String createEntry(OutboundEntryWithProductsVO entryWithProductsVO) {
 
         OutboundEntryDO newEntry = new OutboundEntryDO();
         BeanUtils.copyProperties(entryWithProductsVO, newEntry);
@@ -118,6 +118,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 // does not support presale on product that does not have warehouseStock record
                 warehouseStockService.decreaseStock(product, shipmentDate);
             }
+            return newSerial;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

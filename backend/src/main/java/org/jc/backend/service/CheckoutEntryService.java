@@ -14,5 +14,5 @@ public interface CheckoutEntryService {
     List<CheckoutEntryWithProductsVO> getEntriesInDateRange(boolean isInbound,Date startDate, Date endDate,
                                                             int companyID, String invoiceType);
     void modifyEntry(CheckoutEntryWithProductsVO modifyVO);
-    void returnEntry(CheckoutEntryWithProductsVO returnVO, boolean isInbound);
+    void returnEntry(CheckoutEntryWithProductsVO returnVO, boolean isInbound) throws GlobalParamException;
 }

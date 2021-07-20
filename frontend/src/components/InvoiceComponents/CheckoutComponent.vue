@@ -714,29 +714,30 @@ export default {
             this.submitPopup = false
         },
         modifyCheckoutEntry() {
-            if (this.$refs.form.validate()) {
-                //change drawer name for modification
-                this.form.drawer = this.$store.getters.currentUser
+            this.submitPopup2 = false
+            if (!this.$refs.form.validate()) return
 
-                //fill in department name
-                for (const item of this.departmentOptions) {
-                    if (item.departmentID === this.form.departmentID) {
-                        this.form.departmentName = item.name
-                        break
-                    }
+            //change drawer name for modification
+            this.form.drawer = this.$store.getters.currentUser
+            //fill in department name
+            for (const item of this.departmentOptions) {
+                if (item.departmentID === this.form.departmentID) {
+                    this.form.departmentName = item.name
+                    break
                 }
-
-                //fill in bankAccountName
-                for (const item of this.bankAccountOptions) {
-                    if (item.bankAccountID === this.form.bankAccountID) {
-                        this.form.bankAccountName = item.name
-                        break
-                    }
+            }
+            //fill in bankAccountName
+            for (const item of this.bankAccountOptions) {
+                if (item.bankAccountID === this.form.bankAccountID) {
+                    this.form.bankAccountName = item.name
+                    break
                 }
+            }
 
-                this.$store.commit('setOverlay', true)
+            this.$store.commit('setOverlay', true)
+            if (this.modifyMode) {
                 this.$patchRequest(this.$api.modifyCheckoutEntry, this.form, {
-                    isInbound: true
+                    isInbound: this.isInbound
                 }).then(() => {
                     this.$store.commit('setSnackbar', {
                         message: '提交成功', color: 'success'
@@ -746,7 +747,18 @@ export default {
                     this.$router.replace('/inbound_invoicing')
                 }).catch(() => {})
             }
-            this.submitPopup2 = false
+            else if (this.returnMode) {
+                this.$postRequest(this.$api.returnCheckoutEntry, this.form, {
+                    isInbound: this.isInbound
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '提交成功', color: 'success'
+                    })
+                    this.$store.commit('setOverlay', false)
+
+                    this.$router.replace('/inbound_invoicing')
+                }).catch(() => {})
+            }
         },
     }
 }
