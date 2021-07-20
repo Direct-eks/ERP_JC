@@ -1,6 +1,7 @@
 package org.jc.backend.service;
 
 import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
@@ -15,4 +16,7 @@ public interface WarehouseEntryService {
 
     List<ProductStatO> getAllProductsByWarehouseStockID(int id, boolean isInbound);
     void updateProductForStock(ProductStatO productStatO, boolean isInbound);
+
+    List<SummaryO> getSummary(boolean isInbound, String type, String startDateString, String endDateString,
+                              int categoryID, String factoryBrand, int warehouseID, int departmentID);
 }

@@ -31,7 +31,7 @@ public class WarehouseEntryController {
 
     /* ------------------------------ API ------------------------------ */
 
-    private static boolean isInbound(String type) {
+    private static boolean isInbound(String type) throws GlobalParamException {
         switch (type) {
             case "产入":
             case "折入":
@@ -43,8 +43,9 @@ public class WarehouseEntryController {
             case "调出":
             case "盘亏":
             case "报废":
-            default:
                 return false;
+            default:
+                throw new GlobalParamException("type error");
         }
     }
 
@@ -89,7 +90,7 @@ public class WarehouseEntryController {
     public void modifyEntry(
             @RequestBody @Validated WarehouseEntryWithProductsVO entry,
             @RequestParam("type") String type
-    ) {
+    ) throws GlobalParamException {
         logger.info("PATCH Request to /warehouseEntry/modifyEntry, type: {}, " +
                 "entry: {}", type, entry);
 
@@ -106,10 +107,11 @@ public class WarehouseEntryController {
             @RequestParam("factoryBrand") String factoryBrand,
             @RequestParam("warehouseID") int warehouseID,
             @RequestParam("departmentID") int departmentID
-    ) {
+    ) throws GlobalParamException {
         logger.info("GET Request to /warehouseEntry/summary");
 
-        return null;
+        return warehouseEntryService.getSummary(isInbound(type), type, startDateString, endDateString,
+                categoryID, factoryBrand, warehouseID, departmentID);
     }
 
 }

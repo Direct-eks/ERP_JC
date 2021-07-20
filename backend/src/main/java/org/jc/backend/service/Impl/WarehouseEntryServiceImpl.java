@@ -7,9 +7,11 @@ import org.jc.backend.dao.WarehouseOutEntryMapper;
 import org.jc.backend.entity.DO.WarehouseEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseProductO;
 import org.jc.backend.entity.WarehouseStockO;
+import org.jc.backend.service.ModelService;
 import org.jc.backend.service.WarehouseEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -33,16 +35,19 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     private final WarehouseOutEntryMapper warehouseOutEntryMapper;
     private final WarehouseStockService warehouseStockService;
     private final ModificationMapper modificationMapper;
+    private final ModelService modelService;
 
     public WarehouseEntryServiceImpl(
             WarehouseInEntryMapper warehouseInEntryMapper,
             WarehouseOutEntryMapper warehouseOutEntryMapper,
             WarehouseStockService warehouseStockService,
-            ModificationMapper modificationMapper) {
+            ModificationMapper modificationMapper,
+            ModelService modelService) {
         this.warehouseInEntryMapper = warehouseInEntryMapper;
         this.warehouseOutEntryMapper = warehouseOutEntryMapper;
         this.warehouseStockService = warehouseStockService;
         this.modificationMapper = modificationMapper;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -246,6 +251,52 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             } else {
                 warehouseOutEntryMapper.updateProductStockInfo(productStatO);
             }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<SummaryO> getSummary(boolean isInbound, String type, String startDate, String endDate,
+                                     int categoryID, String factoryBrand, int warehouseID, int departmentID) {
+        try {
+            String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
+
+            List<SummaryO> list;
+            if (isInbound) {
+                list = warehouseInEntryMapper.querySummary(treeLevel);
+            }
+            else {
+                list = warehouseOutEntryMapper.querySummary(treeLevel);
+            }
+            list.removeIf(item -> {
+                if (!item.getEntryID().startsWith(type)) {
+                    return true;
+                }
+                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
+                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                    return true;
+                }
+                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
+                    return true;
+                }
+                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
+                    return true;
+                }
+                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
+                    return true;
+                }
+                return false;
+            });
+            list.forEach(item -> {
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
+            });
+            return list;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
