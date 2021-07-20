@@ -7,9 +7,12 @@ import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.PurchaseOrderProductO;
+import org.jc.backend.entity.StatO.InboundSummaryO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
+import org.jc.backend.service.ModelService;
 import org.jc.backend.service.PurchaseOrderService;
+import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,14 +33,17 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     private final PurchaseOrderMapper purchaseOrderMapper;
     private final ModificationMapper modificationMapper;
-    private final WarehouseStockMapper warehouseStockMapper;
+    private final WarehouseStockService warehouseStockService;
+    private final ModelService modelService;
 
     public PurchaseOrderServiceImpl(PurchaseOrderMapper purchaseOrderMapper,
                                     ModificationMapper modificationMapper,
-                                    WarehouseStockMapper warehouseStockMapper) {
+                                    WarehouseStockService warehouseStockService,
+                                    ModelService modelService) {
         this.purchaseOrderMapper = purchaseOrderMapper;
         this.modificationMapper = modificationMapper;
-        this.warehouseStockMapper = warehouseStockMapper;
+        this.warehouseStockService = warehouseStockService;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -50,8 +57,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         List<PurchaseOrderProductO> newProducts = entryWithProducts.getPurchaseOrderProducts();
 
         try {
-            // calculate the number of entries have been created for today's date, and generate new serial
-            int count = purchaseOrderMapper.countNumberOfEntriesOfToday();
+            // calculate the number of entries have been created for entry date, and generate new serial
+            int count = purchaseOrderMapper.countNumberOfEntriesOfToday(newEntry.getEntryDate());
             String newSerial = MyUtils.formNewSerial("采订", count, newEntry.getEntryDate());
 
             newEntry.setPurchaseOrderEntryID(newSerial);
@@ -63,14 +70,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 //check warehouseStock for existence, if not, create new one
                 int warehouseID = product.getWarehouseID();
                 int skuID = product.getSkuID();
-                if (product.getWarehouseStockID() == -1 ||
-                        warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
-                    WarehouseStockO newWarehouseStock = new WarehouseStockO();
-                    newWarehouseStock.setSkuID(skuID);
-                    newWarehouseStock.setWarehouseID(warehouseID);
-                    warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
-                    int newID = newWarehouseStock.getWarehouseStockID();
-                    product.setWarehouseStockID(newID);
+                if (warehouseStockService.getWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
+                    product.setWarehouseStockID(-1);
                 }
 
                 purchaseOrderMapper.insertNewOrderProduct(product);
@@ -160,42 +161,36 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             //first check if warehouse is changed, if so, check warehouse_stock and update all products
             if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
                 for (var product : currentProducts) {
-                    WarehouseStockO warehouseStock = warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(
+                    var s = warehouseStockService.getWarehouseStockByWarehouseAndSku(
                             product.getWarehouseID(), product.getSkuID());
-                    int newWarehouseStockID;
-                    if (warehouseStock == null) {
-                        WarehouseStockO newWarehouseStock = new WarehouseStockO();
-                        newWarehouseStock.setSkuID(product.getSkuID());
-                        newWarehouseStock.setWarehouseID(currentEntry.getWarehouseID());
-                        warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
-                        newWarehouseStockID = newWarehouseStock.getWarehouseStockID();
+                    if (s == null) {
+                        product.setWarehouseStockID(-1);
                     }
                     else {
-                        newWarehouseStockID = warehouseStock.getWarehouseStockID();
+                        product.setWarehouseStockID(s.getWarehouseStockID());
                     }
                     product.setWarehouseID(currentEntry.getWarehouseID());
-                    product.setWarehouseStockID(newWarehouseStockID);
                 }
             }
 
             //compare entry
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            boolean entryChanged = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
-            if (bool1) {
+            if (entryChanged) {
                 purchaseOrderMapper.updateOrderEntry(currentEntry);
             }
 
-            boolean bool2 = false; //bool to indicate changes to products
+            boolean productsChanged = false;
             for (var originProduct : originProducts) {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getPurchaseOrderProductID() == originProduct.getPurchaseOrderProductID()) {
-                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
+                        boolean productChanged = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
-                        if (bool3) {
-                            bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
+                        if (productChanged) {
+                            productsChanged = true; //productsChanged here in case only one product is changed and productsChanged will be overwritten
                             purchaseOrderMapper.updateOrderProduct(currentProduct);
                         }
                         found = true;
@@ -207,7 +202,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 }
             }
 
-            if (bool1 || bool2) {
+            if (entryChanged || productsChanged) {
                 logger.info("Modification: " + record);
                 modificationMapper.insertModificationRecord(new ModificationO(
                         originEntry.getPurchaseOrderEntryID(), record.toString()));
@@ -237,4 +232,49 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<InboundSummaryO> getPurchaseSummary(Date startDate, Date endDate,int categoryID,
+                                                    String factoryBrand, int warehouseID, int departmentID) {
+        try {
+            var categories = modelService.getModelCategories();
+            String treeLevel = null;
+            for (var c : categories) {
+                if (c.getModelCategoryID() == categoryID) {
+                    treeLevel = c.getTreeLevel();
+                    break;
+                }
+            }
+            treeLevel = treeLevel == null ? "" : treeLevel;
+
+            var list = purchaseOrderMapper.querySummary(treeLevel);
+            list.removeIf(item -> {
+                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
+                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                    return true;
+                }
+                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
+                    return true;
+                }
+                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
+                    return true;
+                }
+                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
+                    return true;
+                }
+                return false;
+            });
+            list.forEach(item -> {
+                BigDecimal unitPriceWithTax = new BigDecimal(item.getUnitPriceWithTax());
+                BigDecimal totalPrice = unitPriceWithTax.multiply(new BigDecimal(item.getQuantity()));
+                item.setTotalPrice(totalPrice.toPlainString());
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query error");
+            throw e;
+        }
+    }
 }
