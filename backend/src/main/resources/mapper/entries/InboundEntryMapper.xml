@@ -367,7 +367,7 @@
         where inbound_product_id = #{inboundProductID}
     </update>
 
-    <resultMap id="summaryResultMap" type="org.jc.backend.entity.StatO.InboundSummaryO">
+    <resultMap id="summaryResultMap" type="org.jc.backend.entity.StatO.SummaryO">
         <result property="entryID" column="inbound_entry_id"/>
         <result property="entryDate" column="entry_date"/>
         <result property="invoiceType" column="invoice_type"/>

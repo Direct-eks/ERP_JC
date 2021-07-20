@@ -7,7 +7,7 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
-import org.jc.backend.entity.StatO.InboundSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.ProductStatO;
@@ -674,8 +674,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<InboundSummaryO> getInboundSummary(String type, Date startDate, Date endDate, int categoryID,
-                                                   String factoryBrand, int warehouseID, int departmentID) {
+    public List<SummaryO> getInboundSummary(String type, Date startDate, Date endDate, int categoryID,
+                                            String factoryBrand, int warehouseID, int departmentID) {
         try {
             var categories = modelService.getModelCategories();
             String treeLevel = null;
@@ -708,9 +708,8 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 return false;
             });
             list.forEach(item -> {
-                BigDecimal unitPriceWithTax = new BigDecimal(item.getUnitPriceWithTax());
-                BigDecimal totalPrice = unitPriceWithTax.multiply(new BigDecimal(item.getQuantity()));
-                item.setTotalPrice(totalPrice.toPlainString());
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
             });
             return list;
 

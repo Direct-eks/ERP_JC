@@ -25,6 +25,10 @@
                     </v-select>
                 </v-col>
                 <v-spacer></v-spacer>
+                <div class="my-2">
+                    <strong class="red--text">此处单价和总价不完全精确</strong>
+                </div>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-btn color="primary" @click="search" :loading="loading">查询</v-btn>
                 </v-col>

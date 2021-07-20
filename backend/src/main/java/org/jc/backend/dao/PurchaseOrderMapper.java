@@ -3,7 +3,7 @@ package org.jc.backend.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.PurchaseOrderProductO;
-import org.jc.backend.entity.StatO.InboundSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -31,5 +31,5 @@ public interface PurchaseOrderMapper {
     void deleteOrderEntry(String id);
     void deleteOrderProductsByEntryID(String id);
 
-    List<InboundSummaryO> querySummary(String treeLevel);
+    List<SummaryO> querySummary(String treeLevel);
 }

@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.entity.StatO.InboundSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.utils.MyUtils;
@@ -85,9 +85,9 @@ public class PurchaseOrderController {
         purchaseOrderService.deleteOrder(id);
     }
 
-    @ApiOperation(value = "", response = InboundSummaryO.class)
+    @ApiOperation(value = "", response = SummaryO.class)
     @GetMapping("/summary")
-    public List<InboundSummaryO> purchaseSummary(
+    public List<SummaryO> purchaseSummary(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam("categoryID") int categoryID,

@@ -7,7 +7,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.StatO.InboundSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.service.InboundEntryService;
@@ -251,9 +251,9 @@ public class InboundEntryController {
         return inboundEntryService.getNotYetInvoiceDetailByCompanyID(companyID);
     }
 
-    @ApiOperation(value = "", response = InboundSummaryO.class)
+    @ApiOperation(value = "", response = SummaryO.class)
     @GetMapping("/getInboundSummary")
-    public List<InboundSummaryO> getInboundSummary(
+    public List<SummaryO> getInboundSummary(
             @RequestParam("type") String type,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,

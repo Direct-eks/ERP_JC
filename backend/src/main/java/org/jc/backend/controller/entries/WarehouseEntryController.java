@@ -3,7 +3,7 @@ package org.jc.backend.controller.entries;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.entity.StatO.InboundSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.service.WarehouseEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -96,9 +96,9 @@ public class WarehouseEntryController {
         warehouseEntryService.modifyEntry(entry, type, isInbound(type));
     }
 
-    @ApiOperation(value = "", response = InboundSummaryO.class)
+    @ApiOperation(value = "", response = SummaryO.class)
     @GetMapping("/summary")
-    public List<InboundSummaryO> getSummary(
+    public List<SummaryO> getSummary(
             @RequestParam("type") String type,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,

@@ -3,13 +3,11 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.PurchaseOrderMapper;
-import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.PurchaseOrderProductO;
-import org.jc.backend.entity.StatO.InboundSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
-import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.service.WarehouseStockService;
@@ -21,7 +19,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -234,8 +231,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<InboundSummaryO> getPurchaseSummary(Date startDate, Date endDate,int categoryID,
-                                                    String factoryBrand, int warehouseID, int departmentID) {
+    public List<SummaryO> getPurchaseSummary(Date startDate, Date endDate, int categoryID,
+                                             String factoryBrand, int warehouseID, int departmentID) {
         try {
             var categories = modelService.getModelCategories();
             String treeLevel = null;
@@ -265,9 +262,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 return false;
             });
             list.forEach(item -> {
-                BigDecimal unitPriceWithTax = new BigDecimal(item.getUnitPriceWithTax());
-                BigDecimal totalPrice = unitPriceWithTax.multiply(new BigDecimal(item.getQuantity()));
-                item.setTotalPrice(totalPrice.toPlainString());
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
             });
             return list;
 
