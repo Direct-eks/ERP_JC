@@ -1,9 +1,8 @@
 <template>
     <v-row justify="center" class="pink" dense>
-        <v-col cols="auto"
-               v-show="showStatus">
+        <v-col cols="auto" v-show="showStatus">
             <v-card>
-                <v-list expand>
+                <v-list>
                     <template v-for="(item, i) in navItem">
                         <v-list-group v-if="item.children"
                                       :key="i"

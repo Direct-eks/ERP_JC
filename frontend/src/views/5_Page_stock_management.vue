@@ -1,7 +1,6 @@
 <template>
     <v-row justify="center" dense>
-        <v-col cols="auto"
-               v-show="showStatus">
+        <v-col cols="auto" v-show="showStatus">
             <v-card>
                 <v-list>
                     <template v-for="(item, i) in navItem">
