@@ -71,6 +71,7 @@ public interface OutboundEntryMapper {
     // for presale query
     List<PresaleO> queryPresaleProducts();
 
-    List<SummaryO> queryOutboundSummary(String treeLevel);
+    List<SummaryO> queryOutboundSummary(String type, int companyID, String startDate, String endDate,
+                                        String treeLevel, String factoryBrand, int warehouseID, int departmentID);
 
 }

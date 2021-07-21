@@ -464,7 +464,22 @@
             join sku_full as s on p.sku_id = s.sku_id
             join c_partner_company as c on e.partner_company_id = c.partner_company_id
             left join c_relevant_company as r on e.shipping_method_id = r.relevant_company_id
-        where s.tree_level like #{treeLevel}||'%'
+        where e.classification = #{type} and (shipment_date between #{startDate} and #{endDate})
+        <if test="companyID != -1">
+            and e.partner_company_id = #{companyID}
+        </if>
+        <if test="treeLevel != ''">
+            and s.tree_level like #{treeLevel}||'%'
+        </if>
+        <if test="factoryBrand != ''">
+            and factory_code = #{factoryBrnad}
+        </if>
+        <if test="warehouseID != -1">
+            and e.warehouse_id = #{warehouseID}
+        </if>
+        <if test="departmentID != -1">
+            and department_id = #{departmentID}
+        </if>
     </select>
 
 </mapper>

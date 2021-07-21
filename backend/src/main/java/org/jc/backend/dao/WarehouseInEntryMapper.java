@@ -29,5 +29,6 @@ public interface WarehouseInEntryMapper {
     List<ProductStatO> queryAllInboundProductsByWarehouseStockID(int id);
     void updateProductStockInfo(ProductStatO productStatO);
 
-    List<SummaryO> querySummary(String treeLevel);
+    List<SummaryO> querySummary(String type, String startDate, String endDate, String treeLevel,
+                                String factoryBrand, int warehouseID, int departmentID);
 }

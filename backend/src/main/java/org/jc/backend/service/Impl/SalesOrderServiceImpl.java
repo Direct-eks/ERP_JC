@@ -228,27 +228,10 @@ public class SalesOrderServiceImpl implements SalesOrderService {
                                           String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
+            factoryBrand = factoryBrand.isBlank() ? "" : factoryBrand;
 
-            var list = salesOrderMapper.querySummary(treeLevel);
-            list.removeIf(item -> {
-                if (companyID != -1 && item.getPartnerCompanyID() != companyID) {
-                    return true;
-                }
-                if (item.getEntryDate().compareTo(startDate) < 0 ||
-                        item.getEntryDate().compareTo(endDate) > 0) {
-                    return true;
-                }
-                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
-                    return true;
-                }
-                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
-                    return true;
-                }
-                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
-                    return true;
-                }
-                return false;
-            });
+            var list = salesOrderMapper.querySummary(companyID, startDate, endDate,
+                    treeLevel, factoryBrand, warehouseID, departmentID);
             list.forEach(item -> {
                 double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
                 item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));

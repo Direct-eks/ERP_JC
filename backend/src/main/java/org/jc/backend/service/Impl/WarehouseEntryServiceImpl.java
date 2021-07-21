@@ -264,37 +264,19 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     public List<SummaryO> getSummary(boolean isInbound, String type, int companyID, String startDate, String endDate,
                                      int categoryID, String factoryBrand, int warehouseID, int departmentID) {
         try {
+            if (companyID != -1 && companyID != 0) return new ArrayList<>();
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
+            factoryBrand = factoryBrand.isBlank() ? "" : factoryBrand;
 
             List<SummaryO> list;
             if (isInbound) {
-                list = warehouseInEntryMapper.querySummary(treeLevel);
+                list = warehouseInEntryMapper.querySummary(treeLevel, type, startDate, endDate,
+                        factoryBrand, warehouseID, departmentID);
             }
             else {
-                list = warehouseOutEntryMapper.querySummary(treeLevel);
+                list = warehouseOutEntryMapper.querySummary(treeLevel, type, startDate, endDate,
+                        factoryBrand, warehouseID, departmentID);
             }
-            list.removeIf(item -> {
-                if (!item.getEntryID().startsWith(type)) {
-                    return true;
-                }
-                if (companyID != -1 && item.getPartnerCompanyID() != companyID) {
-                    return true;
-                }
-                if (item.getEntryDate().compareTo(startDate) < 0 ||
-                        item.getEntryDate().compareTo(endDate) > 0) {
-                    return true;
-                }
-                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
-                    return true;
-                }
-                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
-                    return true;
-                }
-                if (departmentID != -1 && item.getDepartmentID() != departmentID) {
-                    return true;
-                }
-                return false;
-            });
             list.forEach(item -> {
                 double unitPriceWithoutTax = Double.parseDouble(item.getUnitPriceWithoutTax());
                 item.setTotalPrice(Double.toString(unitPriceWithoutTax * item.getQuantity()));

@@ -63,5 +63,6 @@ public interface InboundEntryMapper {
     List<ProductStatO> queryAllInboundProductsByWarehouseStockID(int id);
     void updateProductStockInfo(ProductStatO productStatO);
 
-    List<SummaryO> queryInboundSummary(String treeLevel);
+    List<SummaryO> queryInboundSummary(String type, int companyID, String startDate, String endDate,
+                                       String treeLevel, String factoryBrand, int warehouseID, int departmentID);
 }

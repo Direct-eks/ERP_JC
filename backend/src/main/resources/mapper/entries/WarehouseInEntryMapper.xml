@@ -171,7 +171,19 @@
         from p_warehouse_in_entry as e join p_warehouse_in_product as p
             on e.warehouse_entry_id = p.warehouse_entry_id
             join sku_full as s on p.sku_id = s.sku_id
-        where s.tree_level like #{treeLevel}||'%'
+        where classification = #{type} and (entry_date between #{startDate} and #{endDate})
+        <if test="treeLevel != ''">
+            and s.tree_level like #{treeLevel}||'%'
+        </if>
+        <if test="factoryBrand != ''">
+            and factory_code = #{factoryBrnad}
+        </if>
+        <if test="warehouseID != -1">
+            and e.warehouse_id = #{warehouseID}
+        </if>
+        <if test="departmentID != -1">
+            and department_id = #{departmentID}
+        </if>
     </select>
 
 </mapper>

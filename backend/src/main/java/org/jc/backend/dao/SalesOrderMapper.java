@@ -30,5 +30,6 @@ public interface SalesOrderMapper {
     void deleteOrderEntry(String id);
     void deleteOrderProductsByEntryID(String id);
 
-    List<SummaryO> querySummary(String treeLevel);
+    List<SummaryO> querySummary(int companyID, String startDate, String endDate, String treeLevel,
+                                String factoryBrand, int warehouseID, int departmentID);
 }
