@@ -10,6 +10,7 @@ import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
+import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
@@ -37,6 +38,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final InvoiceEntryService invoiceEntryService;
     private final ModificationMapper modificationMapper;
     private final MiscellaneousDataService miscellaneousDataService;
+    private final ModelService modelService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     InboundEntryService inboundEntryService,
@@ -44,7 +46,8 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                                     MoneyEntryService moneyEntryService,
                                     InvoiceEntryService invoiceEntryService,
                                     ModificationMapper modificationMapper,
-                                    MiscellaneousDataService miscellaneousDataService) {
+                                    MiscellaneousDataService miscellaneousDataService,
+                                    ModelService modelService) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
@@ -52,6 +55,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         this.invoiceEntryService = invoiceEntryService;
         this.modificationMapper = modificationMapper;
         this.miscellaneousDataService = miscellaneousDataService;
+        this.modelService = modelService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -341,6 +345,37 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CheckoutSummaryO> getSummary(boolean isInbound, int companyID, String startDate, String endDate,
+                                             int categoryID, String factoryBrand, int warehouseID, int departmentID) {
+        try {
+            String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
+            factoryBrand = factoryBrand.isBlank() ? "" : factoryBrand;
+
+
+            List<CheckoutSummaryO> list;
+            if (isInbound) {
+                list = checkoutEntryMapper.getInboundSummary(startDate, endDate, companyID, treeLevel,
+                        factoryBrand, warehouseID, departmentID);
+            }
+            else {
+                list = checkoutEntryMapper.getOutboundSummary(startDate, endDate, companyID, treeLevel,
+                        factoryBrand, warehouseID, departmentID);
+            }
+            list.forEach(item -> {
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
             throw e;
         }
     }

@@ -14,8 +14,12 @@
         <v-card-text>
             <v-row dense>
                 <v-spacer></v-spacer>
+                <div class="my-2">
+                    <strong class="red--text">此处单价和总价不完全精确</strong>
+                </div>
+                <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn color="primary" @click="search" :loading="loading">查询一</v-btn>
+                    <v-btn color="primary" @click="search" :loading="loading">查询</v-btn>
                 </v-col>
             </v-row>
             <QueryConditions :queries.sync="queries">
@@ -49,8 +53,6 @@ export default {
             loading: false,
 
             queries: {
-                companyID: -1,
-                companyName: '',
                 dateRange: [
                     new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
                     new Date().format("yyyy-MM-dd").substr(0,10)
@@ -78,7 +80,18 @@ export default {
     methods: {
         search() {
             this.loading = true
-
+            this.$getRequest(this.$api.checkoutSummary, {
+                isInbound: true,
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                categoryID: this.queries.treeSelection.categoryID,
+                factoryBrand: this.queries.factoryBrand,
+                warehouseID: this.queries.warehouseID,
+                departmentID: this.queries.departmentID
+            }).then(data => {
+                this.loading = false
+                this.tableData = data
+            }).catch(() => {})
         },
     }
 }

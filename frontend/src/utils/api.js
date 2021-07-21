@@ -23,6 +23,7 @@ const api = {
     checkoutEntriesInDateRange: '/checkoutEntry/getEntriesInDateRange',
     modifyCheckoutEntry: '/checkoutEntry/modifyEntry', // PATCH
     returnCheckoutEntry: '/checkoutEntry/returnEntry', // POST
+    checkoutSummary: '/checkoutEntry/summary', // GET
 
     /* ------ /company ------*/
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=

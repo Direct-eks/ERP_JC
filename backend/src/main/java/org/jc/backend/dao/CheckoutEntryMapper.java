@@ -2,6 +2,7 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
+import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
@@ -22,4 +23,9 @@ public interface CheckoutEntryMapper {
     CheckoutEntryDO selectEntryBySerialForCompare(String serial);
     void modifyEntry(CheckoutEntryDO modifyDO);
     void returnEntry(CheckoutEntryWithProductsVO returnVO);
+
+    List<CheckoutSummaryO> getInboundSummary(String startDate, String endDate, int companyID, String treeLevel,
+                                             String factoryBrand, int warehouseID, int departmentID);
+    List<CheckoutSummaryO> getOutboundSummary(String startDate, String endDate, int companyID, String treeLevel,
+                                              String factoryBrand, int warehouseID, int departmentID);
 }

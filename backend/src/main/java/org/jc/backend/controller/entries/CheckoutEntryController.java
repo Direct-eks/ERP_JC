@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -109,4 +110,25 @@ public class CheckoutEntryController {
         checkoutEntryService.returnEntry(returnVO, isInbound);
     }
 
+
+    @ApiOperation(value = "", response = CheckoutSummaryO.class)
+    @GetMapping("/summary")
+    public List<CheckoutSummaryO> getSummary(
+            @RequestParam("isInbound") boolean isInbound,
+            @RequestParam("companyID") int companyID,
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("factoryBrand") String factoryBrand,
+            @RequestParam("warehouseID") int warehouseID,
+            @RequestParam("departmentID") int departmentID
+    ) throws GlobalParamException {
+        logger.info("POST Request to /checkoutEntry/returnEntry");
+
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
+
+        return checkoutEntryService.getSummary(isInbound, companyID, startDateString, endDateString,
+                categoryID, factoryBrand, warehouseID, departmentID);
+    }
 }
