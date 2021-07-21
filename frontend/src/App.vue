@@ -1,17 +1,17 @@
 <template>
     <v-app>
-        <v-app-bar app
-                   dense
-                   flat
-                   color="white">
+        <v-app-bar app dense flat color="white">
 
-            <v-menu open-on-hover top offset-y>
+            <v-menu top offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-app-bar-nav-icon v-bind="attrs"
-                                        v-on="on"></v-app-bar-nav-icon>
+                    <v-app-bar-nav-icon v-bind="attrs" v-on="on"/>
                 </template>
-
                 <v-list dense nav>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title/>
+                        </v-list-item-content>
+                    </v-list-item>
                     <v-list-item v-for="(item, i) in nav"
                                  :key="i"
                                  :to="item.url">
@@ -29,12 +29,8 @@
 
             <v-bottom-sheet v-model="helpSheet" inset>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon
-                           v-bind="attrs"
-                           v-on="on">
-                        <v-icon>
-                            {{ mdiHelpCircle }}
-                        </v-icon>
+                    <v-btn icon v-bind="attrs" v-on="on">
+                        <v-icon>{{ mdiHelpCircle }}</v-icon>
                     </v-btn>
                 </template>
                 <v-sheet class="text-center">
@@ -49,9 +45,7 @@
 
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon to="/home"
-                           v-bind="attrs"
-                           v-on="on">
+                    <v-btn icon to="/home" v-bind="attrs" v-on="on">
                         <v-icon>{{ mdiHome }}</v-icon>
                     </v-btn>
                 </template>
@@ -60,9 +54,7 @@
 
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon
-                           v-bind="attrs"
-                           v-on="on">
+                    <v-btn icon v-bind="attrs" v-on="on">
                         <v-icon @click="logout">{{ mdiLogout }}</v-icon>
                     </v-btn>
                 </template>
@@ -71,9 +63,7 @@
 
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon
-                           v-bind="attrs"
-                           v-on="on">
+                    <v-btn icon v-bind="attrs" v-on="on">
                         <v-icon @click="shutdown">{{ mdiPower }}</v-icon>
                     </v-btn>
                 </template>
