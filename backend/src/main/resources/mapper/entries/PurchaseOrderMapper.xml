@@ -207,7 +207,7 @@
             and s.tree_level like #{treeLevel}||'%'
         </if>
         <if test="factoryBrand != ''">
-            and factory_code = #{factoryBrnad}
+            and factory_code = #{factoryBrand}
         </if>
         <if test="warehouseID != -1">
             and e.warehouse_id = #{warehouseID}
