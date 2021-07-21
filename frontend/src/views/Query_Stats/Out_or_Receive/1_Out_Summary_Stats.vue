@@ -48,7 +48,14 @@
             </QueryConditions>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
-                <v-data-table></v-data-table>
+                <v-data-table :headers="headers"
+                              :items="tableData"
+                              :loading="loading"
+                              calculate-widths
+                              fixed-header
+                              locale="zh-cn"
+                              dense>
+                </v-data-table>
             </v-card>
         </v-card-text>
     </v-card>
@@ -119,30 +126,22 @@ export default {
                 api = this.$api.salesSummary
                 break
             case '领料':
-                api = this.$api.materialApplySummary
-                break
             case '拆出':
-                api = this.$api.assemblyOutSummary
-                break
             case '调出':
-                api = this.$api.transferOutSummary
-                break
             case '盘亏':
-                api = this.$api.inventoryLossSummary
-                break
             case '报废':
-                api = this.$api.scrapSummary
+                api = this.$api.warehouseEntrySummary
                 break
             }
 
             this.$getRequest(api, {
                 type: this.category,
-                startDate: this.dateRange[0],
-                endDate: this.dateRange[1],
-                categoryID: this.treeSelection.categoryID,
-                factoryBrand: this.factoryBrand,
-                warehouseID: this.warehouseID,
-                departmentID: this.departmentID
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                categoryID: this.queries.treeSelection.categoryID,
+                factoryBrand: this.queries.factoryBrand,
+                warehouseID: this.queries.warehouseID,
+                departmentID: this.queries.departmentID
             }).then(data => {
                 this.loading = false
                 this.tableData = data
