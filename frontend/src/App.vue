@@ -1,28 +1,28 @@
 <template>
     <v-app>
-        <v-navigation-drawer v-model="navDrawer"
-                             app
-                             stateless
-                             disable-resize-watcher>
-            <v-list dense nav>
-                <v-list-item v-for="(item, i) in nav"
-                             :key="i"
-                             :to="item.url"
-                             @click.stop="navDrawer = false">
-                    <v-list-item-content>
-                        <v-list-item-title>
-                            {{ item.name }}
-                        </v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-            </v-list>
-        </v-navigation-drawer>
-
         <v-app-bar app
                    dense
                    flat
                    color="white">
-            <v-app-bar-nav-icon @click.stop="navDrawer = !navDrawer"></v-app-bar-nav-icon>
+
+            <v-menu open-on-hover top offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-app-bar-nav-icon v-bind="attrs"
+                                        v-on="on"></v-app-bar-nav-icon>
+                </template>
+
+                <v-list dense nav>
+                    <v-list-item v-for="(item, i) in nav"
+                                 :key="i"
+                                 :to="item.url">
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                {{ item.name }}
+                            </v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
 
             <v-toolbar-title>精诚轴承</v-toolbar-title>
             <v-spacer></v-spacer>
@@ -176,7 +176,6 @@ export default {
             mdiArchiveArrowUpOutline,
 
             nav: nav.items,
-            navDrawer: false,
             navBottomShow: true,
             helpSheet: false,
             helpContent: [],
@@ -185,15 +184,6 @@ export default {
     },
     watch: {
         $route(to, _) {
-            if (to.path === '/home') {
-                this.navDrawer = true
-            }
-            else if (to.path === 'login') {
-                this.navDrawer = false
-            }
-            else {
-                this.navDrawer = false
-            }
             this.navBottomShow = to.path === '/home'
             this.helpContent = []
             for (const item of helpContent.items) {
