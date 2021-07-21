@@ -261,7 +261,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SummaryO> getSummary(boolean isInbound, String type, String startDate, String endDate,
+    public List<SummaryO> getSummary(boolean isInbound, String type, int companyID, String startDate, String endDate,
                                      int categoryID, String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
@@ -275,6 +275,9 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             }
             list.removeIf(item -> {
                 if (!item.getEntryID().startsWith(type)) {
+                    return true;
+                }
+                if (companyID != -1 && item.getPartnerCompanyID() != companyID) {
                     return true;
                 }
                 if (item.getEntryDate().compareTo(startDate) < 0 ||

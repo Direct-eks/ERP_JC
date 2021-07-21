@@ -127,6 +127,7 @@ export default {
 
             this.$getRequest(api, {
                 type: this.category,
+                companyID: this.queries.companyID,
                 startDate: this.queries.dateRange[0],
                 endDate: this.queries.dateRange[1],
                 categoryID: this.queries.treeSelection.categoryID,

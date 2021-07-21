@@ -674,14 +674,17 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SummaryO> getInboundSummary(String type, String startDate, String endDate, int categoryID,
-                                            String factoryBrand, int warehouseID, int departmentID) {
+    public List<SummaryO> getInboundSummary(String type, int companyID, String startDate, String endDate,
+                                            int categoryID, String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
 
             var list = inboundEntryMapper.queryInboundSummary(treeLevel);
             list.removeIf(item -> {
                 if (!item.getEntryID().startsWith(type)) {
+                    return true;
+                }
+                if (companyID != -1 && item.getPartnerCompanyID() != companyID) {
                     return true;
                 }
                 if (item.getEntryDate().compareTo(startDate) < 0 ||

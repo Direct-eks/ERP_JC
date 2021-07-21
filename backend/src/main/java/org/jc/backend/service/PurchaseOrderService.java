@@ -15,6 +15,6 @@ public interface PurchaseOrderService {
     void modifyOrder(PurchaseOrderEntryWithProductsVO modificationVO);
     void deleteOrder(String id);
 
-    List<SummaryO> getPurchaseSummary(String startDate, String endDate, int categoryID,
+    List<SummaryO> getPurchaseSummary(int companyID, String startDate, String endDate, int categoryID,
                                       String factoryBrand, int warehouseID, int departmentID);
 }

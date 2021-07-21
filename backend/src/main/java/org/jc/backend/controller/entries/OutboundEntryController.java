@@ -268,6 +268,7 @@ public class OutboundEntryController {
     @GetMapping("/getOutboundSummary")
     public List<SummaryO> getInboundSummary(
             @RequestParam("type") String type,
+            @RequestParam("companyID") int companyID,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam("categoryID") int categoryID,
@@ -287,7 +288,7 @@ public class OutboundEntryController {
         MyUtils.parseAndCheckDateString(startDateString);
         MyUtils.parseAndCheckDateString(endDateString);
 
-        return outboundEntryService.getOutboundSummary(type, startDateString, endDateString,
+        return outboundEntryService.getOutboundSummary(type, companyID, startDateString, endDateString,
                 categoryID, factoryBrand, warehouseID, departmentID);
     }
 }

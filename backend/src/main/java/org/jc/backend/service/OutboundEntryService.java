@@ -61,6 +61,6 @@ public interface OutboundEntryService {
     List<PresaleO> getPresaleProducts();
     void exportPresaleProducts(HttpServletResponse response);
 
-    List<SummaryO> getOutboundSummary(String type, String startDate, String endDate, int categoryID,
-                                      String factoryBrand, int warehouseID, int departmentID);
+    List<SummaryO> getOutboundSummary(String type, int companyID, String startDate, String endDate,
+                                      int categoryID, String factoryBrand, int warehouseID, int departmentID);
 }

@@ -88,6 +88,7 @@ public class PurchaseOrderController {
     @ApiOperation(value = "", response = SummaryO.class)
     @GetMapping("/summary")
     public List<SummaryO> purchaseSummary(
+            @RequestParam("companyID") int companyID,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam("categoryID") int categoryID,
@@ -99,7 +100,7 @@ public class PurchaseOrderController {
         MyUtils.parseAndCheckDateString(startDateString);
         MyUtils.parseAndCheckDateString(endDateString);
 
-        return purchaseOrderService.getPurchaseSummary(startDateString, endDateString,
+        return purchaseOrderService.getPurchaseSummary(companyID, startDateString, endDateString,
                 categoryID, factoryBrand, warehouseID, departmentID);
     }
 

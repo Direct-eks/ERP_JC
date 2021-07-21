@@ -101,6 +101,7 @@ public class WarehouseEntryController {
     @GetMapping("/summary")
     public List<SummaryO> getSummary(
             @RequestParam("type") String type,
+            @RequestParam("companyID") int companyID,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam("categoryID") int categoryID,
@@ -110,8 +111,8 @@ public class WarehouseEntryController {
     ) throws GlobalParamException {
         logger.info("GET Request to /warehouseEntry/summary");
 
-        return warehouseEntryService.getSummary(isInbound(type), type, startDateString, endDateString,
-                categoryID, factoryBrand, warehouseID, departmentID);
+        return warehouseEntryService.getSummary(isInbound(type), type, companyID, startDateString,
+                endDateString, categoryID, factoryBrand, warehouseID, departmentID);
     }
 
 }

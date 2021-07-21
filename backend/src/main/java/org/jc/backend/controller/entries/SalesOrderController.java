@@ -88,6 +88,7 @@ public class SalesOrderController {
     @ApiOperation(value = "", response = SummaryO.class)
     @GetMapping("/summary")
     public List<SummaryO> salesSummary(
+            @RequestParam("companyID") int companyID,
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
             @RequestParam("categoryID") int categoryID,
@@ -99,7 +100,7 @@ public class SalesOrderController {
         MyUtils.parseAndCheckDateString(startDateString);
         MyUtils.parseAndCheckDateString(endDateString);
 
-        return salesOrderService.getSalesSummary(startDateString, endDateString,
+        return salesOrderService.getSalesSummary(companyID, startDateString, endDateString,
                 categoryID, factoryBrand, warehouseID, departmentID);
     }
 
