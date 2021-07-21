@@ -17,6 +17,6 @@ public interface WarehouseEntryService {
     List<ProductStatO> getAllProductsByWarehouseStockID(int id, boolean isInbound);
     void updateProductForStock(ProductStatO productStatO, boolean isInbound);
 
-    List<SummaryO> getSummary(boolean isInbound, String type, String startDateString, String endDateString,
+    List<SummaryO> getSummary(boolean isInbound, String type, String startDate, String endDate,
                               int categoryID, String factoryBrand, int warehouseID, int departmentID);
 }

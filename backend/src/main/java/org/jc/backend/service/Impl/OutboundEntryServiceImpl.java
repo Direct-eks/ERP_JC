@@ -742,7 +742,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SummaryO> getOutboundSummary(String type, Date startDate, Date endDate, int categoryID,
+    public List<SummaryO> getOutboundSummary(String type, String startDate, String endDate, int categoryID,
                                              String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
@@ -752,8 +752,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 if (!item.getEntryID().startsWith(type)) {
                     return true;
                 }
-                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
-                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                if (item.getEntryDate().compareTo(startDate) < 0 ||
+                        item.getEntryDate().compareTo(endDate) > 0) {
                     return true;
                 }
                 if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {

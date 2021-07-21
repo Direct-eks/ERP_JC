@@ -50,6 +50,6 @@ public interface InboundEntryService {
     List<ProductStatO> getAllInboundProducts(int id);
     void updateInboundProduct(ProductStatO productO);
 
-    List<SummaryO> getInboundSummary(String type, Date startDate, Date endDate, int categoryID,
+    List<SummaryO> getInboundSummary(String type, String startDate, String endDate, int categoryID,
                                      String factoryBrand, int warehouseID, int departmentID);
 }

@@ -277,8 +277,8 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                 if (!item.getEntryID().startsWith(type)) {
                     return true;
                 }
-                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
-                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                if (item.getEntryDate().compareTo(startDate) < 0 ||
+                        item.getEntryDate().compareTo(endDate) > 0) {
                     return true;
                 }
                 if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {

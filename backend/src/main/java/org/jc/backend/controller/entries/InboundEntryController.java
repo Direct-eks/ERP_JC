@@ -271,10 +271,10 @@ public class InboundEntryController {
             default: throw new GlobalParamException("invalid category");
         }
 
-        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
-        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
 
-        return inboundEntryService.getInboundSummary(type, startDate, endDate, categoryID,
-                factoryBrand, warehouseID, departmentID);
+        return inboundEntryService.getInboundSummary(type, startDateString, endDateString,
+                categoryID, factoryBrand, warehouseID, departmentID);
     }
 }

@@ -224,15 +224,15 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SummaryO> getSalesSummary(Date startDate, Date endDate, int categoryID,
+    public List<SummaryO> getSalesSummary(String startDate, String endDate, int categoryID,
                                           String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
 
             var list = salesOrderMapper.querySummary(treeLevel);
             list.removeIf(item -> {
-                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
-                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                if (item.getEntryDate().compareTo(startDate) < 0 ||
+                        item.getEntryDate().compareTo(endDate) > 0) {
                     return true;
                 }
                 if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {

@@ -284,10 +284,10 @@ public class OutboundEntryController {
             default: throw new GlobalParamException("invalid category");
         }
 
-        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
-        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
 
-        return outboundEntryService.getOutboundSummary(type, startDate, endDate, categoryID,
-                factoryBrand, warehouseID, departmentID);
+        return outboundEntryService.getOutboundSummary(type, startDateString, endDateString,
+                categoryID, factoryBrand, warehouseID, departmentID);
     }
 }

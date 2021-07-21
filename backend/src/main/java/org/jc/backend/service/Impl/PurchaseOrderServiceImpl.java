@@ -231,15 +231,15 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<SummaryO> getPurchaseSummary(Date startDate, Date endDate, int categoryID,
+    public List<SummaryO> getPurchaseSummary(String startDate, String endDate, int categoryID,
                                              String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
 
             var list = purchaseOrderMapper.querySummary(treeLevel);
             list.removeIf(item -> {
-                if (item.getEntryDate().compareTo(MyUtils.dateFormat.format(startDate)) < 0 ||
-                        item.getEntryDate().compareTo(MyUtils.dateFormat.format(endDate)) > 0) {
+                if (item.getEntryDate().compareTo(startDate) < 0 ||
+                        item.getEntryDate().compareTo(endDate) > 0) {
                     return true;
                 }
                 if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {

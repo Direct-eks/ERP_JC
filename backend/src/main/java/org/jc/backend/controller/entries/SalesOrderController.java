@@ -96,11 +96,11 @@ public class SalesOrderController {
             @RequestParam("departmentID") int departmentID
     ) throws GlobalParamException {
 
-        Date startDate = MyUtils.parseAndCheckDateString(startDateString);
-        Date endDate = MyUtils.parseAndCheckDateString(endDateString);
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
 
-        return salesOrderService.getSalesSummary(startDate, endDate, categoryID,
-                factoryBrand, warehouseID, departmentID);
+        return salesOrderService.getSalesSummary(startDateString, endDateString,
+                categoryID, factoryBrand, warehouseID, departmentID);
     }
 
 }

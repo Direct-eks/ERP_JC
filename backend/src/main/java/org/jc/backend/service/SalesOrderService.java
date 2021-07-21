@@ -15,6 +15,6 @@ public interface SalesOrderService {
     void modifyOrder(SalesOrderEntryWithProductsVO salesOrderEntryWithProductsVO);
     void deleteOrder(String id);
 
-    List<SummaryO> getSalesSummary(Date startDate, Date endDate, int categoryID,
+    List<SummaryO> getSalesSummary(String startDate, String endDate, int categoryID,
                                    String factoryBrand, int warehouseID, int departmentID);
 }
