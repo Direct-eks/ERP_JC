@@ -25,7 +25,8 @@
             <v-tab-item key="browse">
                 <QueryComponent displayMode="modification"
                                 type="materialApply"
-                                prefix="领料">
+                                prefix="领料"
+                                @tableClick="tableClickAction">
                 </QueryComponent>
             </v-tab-item>
 
@@ -61,7 +62,12 @@ export default {
             currentTableRow: null,
 
             form: {
-
+                entryDate: '', creationDate: '',
+                totalAmount: '', drawer: '',
+                departmentID: -1, departmentName: '',
+                warehouseID: -1, warehouseName: '',
+                remark: '', classification: '',
+                entryProducts: []
             },
             originalForm: {}
         }
@@ -70,12 +76,12 @@ export default {
         handleTabChange(val) {
             if (val === 0) {
                 this.currentTableRow = null
-                this.form = Object.assign(this.form, this.originalForm) // reset form
+                Object.assign(this.form, this.originalForm) // reset form
             }
         },
         tableClickAction(val) {
             this.currentTableRow = val
-            this.form = Object.assign(this.form, this.currentTableRow)
+            Object.assign(this.form, this.currentTableRow)
         }
     }
 }

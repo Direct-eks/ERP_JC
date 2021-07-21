@@ -483,7 +483,8 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     @Override
     public void decreaseStock(WarehouseProductO product, String date, String type) {
         OutboundProductO outboundProductO = new OutboundProductO();
-        outboundProductO.setWarehouseStockID(product.getWarehouseStockID());
+        BeanUtils.copyProperties(product, outboundProductO);
+        outboundProductO.setUnitPriceWithoutTax(product.getUnitPrice());
         this.decreaseStock(outboundProductO, date);
         product.setStockQuantity(outboundProductO.getStockQuantity());
         product.setStockUnitPrice(outboundProductO.getStockUnitPrice());

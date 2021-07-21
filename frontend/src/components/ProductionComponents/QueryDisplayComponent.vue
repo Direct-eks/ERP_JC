@@ -144,7 +144,7 @@ export default {
                 }).catch(() => {})
             }
             else {
-                this.$getRequest(this.$api.duelEntriesInDateRange, {
+                this.$getRequest(this.$api.warehouseEntriesInDateRange, {
                     startDate: this.dateRange[0],
                     endDate: this.dateRange[1],
                     type: this.prefix
