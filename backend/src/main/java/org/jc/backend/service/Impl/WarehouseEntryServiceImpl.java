@@ -293,8 +293,8 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                 return false;
             });
             list.forEach(item -> {
-                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
-                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
+                double unitPriceWithoutTax = Double.parseDouble(item.getUnitPriceWithoutTax());
+                item.setTotalPrice(Double.toString(unitPriceWithoutTax * item.getQuantity()));
             });
             return list;
 
