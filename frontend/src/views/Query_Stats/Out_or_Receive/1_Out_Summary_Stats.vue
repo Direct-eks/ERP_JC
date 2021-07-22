@@ -29,19 +29,19 @@
                     <strong class="red--text">此处单价和总价不完全精确</strong>
                 </div>
                 <v-spacer></v-spacer>
-                <v-col cols="auto">
+                <v-col v-if="category === '销售'" cols="auto">
                     <v-btn color="primary" @click="queryForParentCategory">商品大类</v-btn>
                 </v-col>
-                <v-col cols="auto">
+                <v-col v-if="category === '销售'" cols="auto">
                     <v-btn color="primary" @click="queryForSubCategory">子分类</v-btn>
                 </v-col>
-                <v-col cols="auto">
+                <v-col v-if="category === '销售'" cols="auto">
                     <v-btn color="primary" @click="queryForBrand">厂牌</v-btn>
                 </v-col>
-                <v-col cols="auto">
+                <v-col v-if="category === '销售'" cols="auto">
                     <v-btn color="primary" @click="queryForCompany">往来单位</v-btn>
                 </v-col>
-                <v-col cols="auto">
+                <v-col v-if="category === '销售'" cols="auto">
                     <v-btn color="primary" @click="queryForCompanyByMonth">往来单位按月</v-btn>
                 </v-col>
                 <v-col cols="auto">
@@ -85,7 +85,7 @@ export default {
                     new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
                     new Date().format("yyyy-MM-dd").substr(0,10)
                 ],
-                treeSelection: {label: '', categoryID: -1, children: []},
+                treeSelection: {label: '', categoryID: -1, treeLevel: '', children: []},
                 factoryBrand: '',
                 departmentID: -1,
                 warehouseID: -1,
@@ -153,19 +153,57 @@ export default {
             }).catch(() => {})
         },
         queryForParentCategory() {
+            this.$getRequest(this.$api.outboundSummaryByParams, {
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                type: 'parentCategory'
+            }).then(data => {
 
+            })
         },
         queryForSubCategory() {
+            if (this.queries.treeSelection.categoryID === -1 ||
+                    this.queries.treeSelection.treeLevel.length !== 1) {
+                this.$store.commit('setSnackbar', {
+                    message: '请选择正确的商品大类', color: 'warning'
+                })
+                return
+            }
+            this.$getRequest(this.$api.outboundSummaryByParams, {
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                type: 'subCategory',
+                id: this.queries.treeSelection.categoryID
+            }).then(data => {
 
+            })
         },
         queryForBrand() {
+            this.$getRequest(this.$api.outboundSummaryByParams, {
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                type: 'brand'
+            }).then(data => {
 
+            })
         },
         queryForCompany() {
+            this.$getRequest(this.$api.outboundSummaryByParams, {
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                type: 'company'
+            }).then(data => {
 
+            })
         },
         queryForCompanyByMonth() {
+            this.$getRequest(this.$api.outboundSummaryByParams, {
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                type: 'companyByMonth'
+            }).then(data => {
 
+            })
         }
     }
 }

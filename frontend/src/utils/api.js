@@ -126,6 +126,7 @@ const api = {
     presaleProducts: '/outboundEntry/getPresaleProducts', // GET
     exportPresaleProducts: '/outboundEntry/exportPresaleProducts', // GET
     outboundSummary: '/outboundEntry/getOutboundSummary', // GET
+    outboundSummaryByParams: '/outboundEntry/getOutboundSummaryByParams',
 
     /* ------ /purchaseOrder ------*/
     createPurchaseOrder: '/purchaseOrder/createOrder', // PUT

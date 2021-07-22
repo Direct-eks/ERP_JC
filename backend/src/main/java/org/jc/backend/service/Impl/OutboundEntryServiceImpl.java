@@ -762,4 +762,71 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             throw e;
         }
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getOutboundSummaryByParentCategory(String startDate, String endDate) {
+        try {
+            var categories = modelService.getModelCategories();
+//            modelService.getTreeLevelByCategoryID();
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getOutboundSummaryBySubCategory(String startDate, String endDate, int id) {
+        try {
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getOutboundSummaryByBrand(String startDate, String endDate) {
+        try {
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getOutboundSummaryByCompany(String startDate, String endDate) {
+        try {
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getOutboundSummaryByCompanyByMonth(String startDate, String endDate) {
+        try {
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

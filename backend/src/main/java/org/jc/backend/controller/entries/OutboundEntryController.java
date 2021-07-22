@@ -6,6 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
+import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
 import org.jc.backend.entity.StatO.PresaleO;
 import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
@@ -290,5 +291,35 @@ public class OutboundEntryController {
 
         return outboundEntryService.getOutboundSummary(type, companyID, startDateString, endDateString,
                 categoryID, factoryBrand, warehouseID, departmentID);
+    }
+
+    @ApiOperation(value = "", response = SummaryO.class)
+    @GetMapping("/getOutboundSummaryByParams")
+    public List<OutboundSpecialSummaryO> getOutboundSummaryByParams(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("type") String type,
+            @RequestParam(value = "id", defaultValue = "-1") int id
+    ) throws GlobalParamException {
+        logger.info("GET Request to /outboundEntry/getOutboundSummaryByParams");
+
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
+
+        switch (type) {
+            case "parentCategory":
+                return outboundEntryService.getOutboundSummaryByParentCategory(startDateString, endDateString);
+            case "subCategory":
+                if (id == -1) throw new GlobalParamException("invalid category id");
+                return outboundEntryService.getOutboundSummaryBySubCategory(startDateString, endDateString, id);
+            case "brand":
+                return outboundEntryService.getOutboundSummaryByBrand(startDateString, endDateString);
+            case "company":
+                return outboundEntryService.getOutboundSummaryByCompany(startDateString, endDateString);
+            case "companyByMonth":
+                return outboundEntryService.getOutboundSummaryByCompanyByMonth(startDateString, endDateString);
+            default:
+                throw new GlobalParamException("invalid type");
+        }
     }
 }

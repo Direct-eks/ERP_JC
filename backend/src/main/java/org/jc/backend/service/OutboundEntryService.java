@@ -4,10 +4,7 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.OutboundProductO;
-import org.jc.backend.entity.StatO.InvoiceStatVO;
-import org.jc.backend.entity.StatO.PresaleO;
-import org.jc.backend.entity.StatO.ProductStatO;
-import org.jc.backend.entity.StatO.SummaryO;
+import org.jc.backend.entity.StatO.*;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
@@ -63,4 +60,10 @@ public interface OutboundEntryService {
 
     List<SummaryO> getOutboundSummary(String type, int companyID, String startDate, String endDate,
                                       int categoryID, String factoryBrand, int warehouseID, int departmentID);
+
+    List<OutboundSpecialSummaryO> getOutboundSummaryByParentCategory(String startDate, String endDate);
+    List<OutboundSpecialSummaryO> getOutboundSummaryBySubCategory(String startDate, String endDate, int id);
+    List<OutboundSpecialSummaryO> getOutboundSummaryByBrand(String startDate, String endDate);
+    List<OutboundSpecialSummaryO> getOutboundSummaryByCompany(String startDate, String endDate);
+    List<OutboundSpecialSummaryO> getOutboundSummaryByCompanyByMonth(String startDate, String endDate);
 }

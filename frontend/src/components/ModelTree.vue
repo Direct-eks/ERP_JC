@@ -69,7 +69,7 @@ export default {
             if (data.length === 0) { // de-select
                 this.treeSelection = []
                 if (this.selectForLevel) {
-                    this.$emit('treeSelectionObject', {label: '', categoryID: -1, children: []})
+                    this.$emit('treeSelectionObject', {label: '', categoryID: -1, treeLevel: '', children: []})
                 }
                 if (this.selectForSearch) {
                     this.$emit('treeSelectionResult', [])
