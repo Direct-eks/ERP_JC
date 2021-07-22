@@ -70,7 +70,7 @@ export default {
 
             headers: [
                 { text: '单据序号', value: 'entryID', width: '140px' },
-                { text: '购入单位', value: 'companyAbbreviatedName', width: '200px' },
+                { text: '客户', value: 'companyAbbreviatedName', width: '200px' },
                 { text: '代号', value: 'code', width: '180px' },
                 { text: '厂牌', value: 'factoryCode', width: '65px' },
                 { text: '入库数量', value: 'quantity', width: '90px' },

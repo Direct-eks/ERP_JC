@@ -71,12 +71,15 @@
                     <v-row>
                         <v-data-table :headers="tableHeaders"
                                       :items="tableData"
-                                      item-key="entryID"
+                                      item-key="productID"
                                       height="75vh"
                                       calculate-widths
                                       disable-sort
                                       fixed-header
                                       disable-pagination
+                                      group-by="checkoutEntrySerial"
+                                      group-desc
+                                      show-group-by
                                       dense
                                       locale="zh-cn">
                         </v-data-table>
@@ -108,20 +111,19 @@ export default {
             confirmDialog: false,
 
             tableHeaders: [
-                { text: '单号', value: 'entryID', width: '140px' },
-                { text: '供应商', value: '', width: '90px' },
-                { text: '结账类型', value: '', width: '90px' },
-                { text: '代号', value: '', width: '180px' },
-                { text: '厂牌', value: '', width: '65px' },
-                { text: '数量', value: '', width: '90px' },
-                { text: '单位', value: '', width: '60px' },
-                { text: '无税单价', value: '', width: '90px' },
-                { text: '含税单价', value: '', width: '90px' },
-                { text: '含税金额', value: '', width: '90px' },
-                { text: '服务费', value: '', width: '90px' },
-                { text: '付款单号', value: '', width: '90px' },
-                { text: '方式', value: '', width: '90px' },
-                { text: '付款金额', value: '', width: '90px' },
+                { text: '结账单号', value: 'checkoutEntrySerial', width: '140px', groupable: true },
+                { text: '代号', value: 'code', width: '180px', groupable: false },
+                { text: '厂牌', value: 'factoryCode', width: '65px', groupable: false },
+                { text: '数量', value: 'quantity', width: '90px', groupable: false },
+                { text: '单位', value: 'unitName', width: '60px', groupable: false },
+                { text: '含税单价', value: 'unitPriceWithTax', width: '100px', groupable: false },
+                { text: '无税单价', value: 'unitPriceWithoutTax', width: '100px', groupable: false },
+                { text: '无税金额', value: 'totalWithoutTax', width: '100px', groupable: false },
+                { text: '税率', value: 'taxRate', width: '65px', groupable: false },
+                { text: '税额', value: 'totalTax', width: '90px', groupable: false },
+                { text: '备注', value: 'remark', width: '180px', groupable: false },
+                { text: '库存数量', value: 'stockQuantity', width: '120px', groupable: false },
+                { text: '库存单价', value: 'stockUnitPrice', width: '120px', groupable: false }
             ],
             tableData: [],
         }

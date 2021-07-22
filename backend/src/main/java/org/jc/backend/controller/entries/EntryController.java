@@ -14,16 +14,4 @@ import java.util.List;
 @RequestMapping("/entry")
 public class EntryController {
 
-    @ApiOperation(value = "", response = EntryStatO.class)
-    @GetMapping("/getAuditEntries/{month}")
-    public List<EntryStatO> getAuditEntries(@PathVariable("month") String month) {
-
-        return null;
-    }
-
-    @ApiOperation(value = "", response = void.class)
-    @PostMapping("/auditEntries")
-    public void auditEntries(@RequestParam("month") String month) {
-
-    }
 }

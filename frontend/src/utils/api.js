@@ -23,7 +23,10 @@ const api = {
     checkoutEntriesInDateRange: '/checkoutEntry/getEntriesInDateRange',
     modifyCheckoutEntry: '/checkoutEntry/modifyEntry', // PATCH
     returnCheckoutEntry: '/checkoutEntry/returnEntry', // POST
+
     checkoutSummary: '/checkoutEntry/summary', // GET
+    getAuditEntries: '/checkoutEntry/getAuditEntries/', // GET {month}
+    auditEntries: '/checkoutEntry/auditEntries', // POST
 
     /* ------ /company ------*/
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=
@@ -44,8 +47,6 @@ const api = {
     updateDepartments: '/department/updateDepartments',
 
     /* ------ /entry ------*/
-    getAuditEntries: '/entry/getAuditEntries/', // GET {month}
-    auditEntries: '/entry/auditEntries', // POST
 
     /* ------ /factoryBrand ------*/
     allFactoryBrands: '/factoryBrand/allFactoryBrands', // GET

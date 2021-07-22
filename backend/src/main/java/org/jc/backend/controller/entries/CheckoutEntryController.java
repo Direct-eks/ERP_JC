@@ -6,6 +6,7 @@ import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
+import org.jc.backend.entity.StatO.EntryStatO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -130,5 +131,18 @@ public class CheckoutEntryController {
 
         return checkoutEntryService.getSummary(isInbound, companyID, startDateString, endDateString,
                 categoryID, factoryBrand, warehouseID, departmentID);
+    }
+
+    @ApiOperation(value = "", response = EntryStatO.class)
+    @GetMapping("/getAuditEntries/{month}")
+    public List<CheckoutSummaryO> getAuditEntries(@PathVariable("month") String month) {
+        return checkoutEntryService.getSummary(true, -1, "2020-01-01",
+                "2021-07-22", -1, "", -1, -1);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/auditEntries")
+    public void auditEntries(@RequestParam("month") String month) {
+
     }
 }
