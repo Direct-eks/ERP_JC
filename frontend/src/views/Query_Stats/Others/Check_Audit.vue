@@ -75,7 +75,7 @@
                         <v-data-table :headers="auditTableHeaders"
                                       :items="auditTableData"
                                       item-key="productID"
-                                      height="75vh"
+                                      height="70vh"
                                       calculate-widths
                                       disable-sort
                                       fixed-header
@@ -120,7 +120,7 @@
                                   :headers="queryTableHeaders"
                                   :items="queryTableData"
                                   item-key="index"
-                                  height="75vh"
+                                  height="55vh"
                                   calculate-widths
                                   disable-sort
                                   fixed-header

@@ -29,4 +29,9 @@ public class CheckoutSummaryO {
     private String unitPriceWithTax;
     private Integer quantity;
     private String totalPrice;
+
+    // for diff stat only
+    private String stockUnitPrice;
+    private String grossProfit;
+    private String grossProfitRate;
 }

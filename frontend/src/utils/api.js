@@ -29,6 +29,8 @@ const api = {
     auditEntries: '/checkoutEntry/auditEntries', // POST
     deleteAuditMonth: '/checkoutEntry/deleteAuditMonth/', // DELETE
 
+    diffStat: '/checkoutEntry/diffStat', // GET
+
     /* ------ /company ------*/
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=
     companyAreas: '/company/getCompanyAreas', // GET

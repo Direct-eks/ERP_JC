@@ -17,9 +17,12 @@ public interface CheckoutEntryService {
     void modifyEntry(CheckoutEntryWithProductsVO modifyVO);
     void returnEntry(CheckoutEntryWithProductsVO returnVO, boolean isInbound) throws GlobalParamException;
 
-    List<CheckoutSummaryO> getSummary(boolean isInbound, int companyID, String startDate, String endDate,
-                                      int categoryID, String factoryBrand, int warehouseID, int departmentID);
+    List<CheckoutSummaryO> getCheckoutSummary(boolean accurate, boolean isInbound, int companyID, String startDate, String endDate,
+                                              int categoryID, String factoryBrand, int warehouseID, int departmentID);
 
     void auditEntriesByMonth(boolean isInbound, String month) throws GlobalParamException;
     void deleteAuditMonth(String month, String value) throws GlobalParamException;
+
+    List<CheckoutSummaryO> getDiffStat(int companyID, String startDate, String endDate,
+                                       int categoryID, String factoryBrand, int departmentID);
 }

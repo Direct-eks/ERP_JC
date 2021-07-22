@@ -12,106 +12,59 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-            <v-row dense>
-                <v-col cols="auto">
-                    <DateRangePicker @chooseDate="chooseDateAction">
-                    </DateRangePicker>
-                </v-col>
-                <v-col cols="auto">
-                    <v-text-field v-model="companyName"
-                                  label="单位简称"
-                                  hide-details="auto"
-                                  outlined
-                                  dense
-                                  readonly
-                                  style="width: 200px">
-                    </v-text-field>
-                </v-col>
-                <v-col cols="auto">
-                    <v-dialog v-model="companySearchPanelOpen"
-                              persistent
-                              scrollable
-                              no-click-animation
-                              width="80vw">
-                        <template v-slot:activator="{on}">
-                            <v-btn color="accent" v-on="on">
-                                单位助选
-                            </v-btn>
-                        </template>
-                        <CompanySearch @fullSearchChoose="companySearchChooseAction">
-                        </CompanySearch>
-                    </v-dialog>
-                </v-col>
-                <v-spacer></v-spacer>
-                <v-col cols="auto">
-                    <v-btn color="primary" @click="search">查询</v-btn>
-                </v-col>
-            </v-row>
-            <v-row dense>
-                <v-col cols="auto">
-                    <v-text-field v-model="treeSelection.label"
-                                  label="商品分类"
-                                  hide-details="auto"
-                                  outlined
-                                  readonly
-                                  dense
-                                  style="max-width: 180px">
-                    </v-text-field>
-                </v-col>
-                <v-col cols="auto">
-                    <v-dialog v-model="modelPanel"
-                              persistent
-                              scrollable
-                              no-click-animation
-                              width="40vw">
-                        <template v-slot:activator="{on}">
-                            <v-btn color="accent" v-on="on">选择分类</v-btn>
-                        </template>
-                        <v-card>
-                            <v-card-text>
-                                <ModelTree height="60vh" max-width=""
-                                           :select-for-search="false"
-                                           :select-for-level="true"
-                                           :show-select="true"
-                                           @treeSelectionObject="treeSelectionAction">
-                                </ModelTree>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="accent" @click="modelPanel = false">确认</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-dialog>
-                </v-col>
-                <v-col cols="auto">
-                    <v-text-field v-model="factoryBrand"
-                                  label="厂牌代号"
-                                  hide-details="auto"
-                                  outlined
-                                  dense
-                                  class="ml-2"
-                                  style="max-width: 100px">
-                    </v-text-field>
-                </v-col>
-                <v-col cols="auto">
-                    <v-select v-model="departmentID"
-                              :items="departmentOptions"
-                              item-value="departmentID"
-                              item-text="name"
-                              label="部门"
-                              hide-details="auto"
-                              outlined dense
-                              style="width: 180px">
-                    </v-select>
-                </v-col>
-                <v-spacer></v-spacer>
-                <v-col cols="auto">
-                    <v-btn color="warning" @click="clear">清空</v-btn>
-                </v-col>
-            </v-row>
+            <QueryConditions :queries.sync="queries"
+                             @clear="clear">
+            </QueryConditions>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
-                <v-data-table></v-data-table>
+                <v-data-table :headers="headers"
+                              :items="tableData"
+                              :loading="loading"
+                              calculate-widths
+                              height="60vh"
+                              fixed-header
+                              locale="zh-cn"
+                              dense>
+                </v-data-table>
+
+                <div class="d-flex">
+                    <div class="my-2">
+                        <strong>销售总额：</strong>
+                    </div>
+                    <div class="my-2 mr-5">
+                        <strong>{{ stat.totalPriceWithoutTax }}</strong>
+                    </div>
+                    <div class="my-2">
+                        <strong>含税总额：</strong>
+                    </div>
+                    <div class="my-2 mr-5">
+                        <strong>{{ stat.totalPriceWithTax }}</strong>
+                    </div>
+                    <div class="my-2">
+                        <strong>毛利合计：</strong>
+                    </div>
+                    <div class="my-2 mr-5">
+                        <strong>{{ stat.totalGrossProfit }}</strong>
+                    </div>
+                    <div class="my-2">
+                        <strong>总毛利率：</strong>
+                    </div>
+                    <div class="my-2 mr-5">
+                        <strong>{{ stat.totalGrossProfitRate }}</strong>
+                    </div>
+                    <div class="my-2">
+                        <strong>服务费合计：</strong>
+                    </div>
+                    <div class="my-2 mr-5">
+                        <strong>{{ stat.totalServiceFee }}</strong>
+                    </div>
+                    <div class="my-2">
+                        <strong>扣服务费毛利率：</strong>
+                    </div>
+                    <div class="my-2 mr-5">
+                        <strong>{{ stat.totalGrossProfitRateWithoutServiceFee }}</strong>
+                    </div>
+                </div>
             </v-card>
         </v-card-text>
     </v-card>
@@ -123,60 +76,87 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "Price_Diff_Stats",
     components: {
-        CompanySearch: () => import("~/components/CompanySearch"),
-        DateRangePicker: () => import("~/components/DateRangePicker"),
-        ModelTree: () => import('~/components/ModelTree'),
-    },
-    beforeMount() {
-        this.$getRequest(this.$api.departmentOptions).then((data) => {
-            this.departmentOptions = data
-        }).catch(() => {})
+        QueryConditions: () => import('~/components/QueryComponents/QueryConditions')
     },
     data() {
         return {
             mdiArrowLeft,
+            loading: false,
 
-            dateRange: [
-                new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
-                new Date().format("yyyy-MM-dd").substr(0,10)
+            queries: {
+                companyID: -1,
+                companyName: '',
+                dateRange: [
+                    new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
+                    new Date().format("yyyy-MM-dd").substr(0,10)
+                ],
+                treeSelection: {label: '', categoryID: -1, children: []},
+                factoryBrand: '',
+                departmentID: -1,
+            },
+
+            stat: {
+                totalPriceWithoutTax: '0',
+                totalPriceWithTax: '0',
+                totalGrossProfit: '0',
+                totalGrossProfitRate: '0%',
+                totalServiceFee: '0',
+                totalGrossProfitRateWithoutServiceFee: '0%',
+            },
+
+            headers: [
+                { text: '单据序号', value: 'entryID', width: '140px' },
+                { text: '客户', value: 'companyAbbreviatedName', width: '200px' },
+                { text: '代号', value: 'code', width: '180px' },
+                { text: '厂牌', value: 'factoryCode', width: '65px' },
+                { text: '入库数量', value: 'quantity', width: '90px' },
+                { text: '单位', value: 'unitName', width: '60px' },
+                { text: '无税单价', value: 'unitPriceWithoutTax', width: '100px' },
+                { text: '含税单价', value: 'unitPriceWithTax', width: '100px' },
+                { text: '含税金额', value: 'totalPrice', width: '100px' },
             ],
-
-            companyID: -1,
-            companyName: '',
-            companySearchPanelOpen: false,
-
-            treeSelection: {label: '', categoryID: -1, children: []},
-            modelPanel: false,
-
-            factoryBrand: '',
-            departmentID: -1,
-            departmentOptions: [],
+            tableData: [],
         }
+    },
+    computed: {
+
     },
     methods: {
         clear() {
-            this.companyID = -1
-            this.companyName = ''
-            this.treeSelection = {label: '', categoryID: -1, children: []}
-            this.factoryBrand = ''
-            this.departmentID = -1
-        },
-        chooseDateAction(val) {
-            this.dateRange = val
-        },
-        companySearchChooseAction(val) {
-            if (val) {
-                this.companyName = val.abbreviatedName
-                this.companyID = val.companyID
-            }
-            this.companySearchPanelOpen = false
-        },
-        treeSelectionAction(val) {
-            this.treeSelection = val
+            this.tableData = []
         },
         search() {
-
+            this.$getRequest(this.$api.diffStat, {
+                companyID: this.queries.companyID,
+                startDate: this.queries.dateRange[0],
+                endDate: this.queries.dateRange[1],
+                categoryID: this.queries.treeSelection.categoryID,
+                factoryBrand: this.queries.factoryBrand,
+                departmentID: this.queries.departmentID
+            }).then(data => {
+                this.tableData = data
+                this.totalCalculation()
+            })
         },
+        totalCalculation() {
+            let totalPriceWithoutTax = 0
+            let totalPriceWithTax = 0
+            let totalGrossProfit = 0
+            // let totalServiceFee = 0
+            for (const item of this.tableData) {
+                const price = item.unitPriceWithoutTax * item.quantity
+                totalPriceWithoutTax += price
+                totalPriceWithTax += item.unitPriceWithTax * item.quantity
+                const cost = item.stockUnitPrice * item.quantity
+                totalGrossProfit += price - cost
+                // totalServiceFee += item.serviceFee
+            }
+
+            this.stat.totalPriceWithoutTax = totalPriceWithoutTax.toFixed(2)
+            this.stat.totalPriceWithTax = totalPriceWithTax.toFixed(2)
+            this.stat.totalGrossProfit = totalGrossProfit.toFixed(2)
+            this.stat.totalGrossProfitRate = (totalGrossProfit / totalPriceWithoutTax).toFixed(2)
+        }
     }
 }
 </script>

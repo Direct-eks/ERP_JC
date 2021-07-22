@@ -130,8 +130,8 @@ public class CheckoutEntryController {
         MyUtils.parseAndCheckDateString(startDateString);
         MyUtils.parseAndCheckDateString(endDateString);
 
-        return checkoutEntryService.getSummary(isInbound, companyID, startDateString, endDateString,
-                categoryID, factoryBrand, warehouseID, departmentID);
+        return checkoutEntryService.getCheckoutSummary(false, isInbound, companyID, startDateString,
+                endDateString, categoryID, factoryBrand, warehouseID, departmentID);
     }
 
     @ApiOperation(value = "", response = EntryStatO.class)
@@ -143,8 +143,8 @@ public class CheckoutEntryController {
         logger.info("GET Request to /checkoutEntry/getAuditEntries, month: {}", month);
         var pair = MyUtils.getFirstAndLastDayOfMonth(month);
 
-        return checkoutEntryService.getSummary(isInbound, -1, pair.getLeft(), pair.getRight(),
-                -1, "", -1, -1);
+        return checkoutEntryService.getCheckoutSummary(true, isInbound, -1, pair.getLeft(),
+                pair.getRight(), -1, "", -1, -1);
     }
 
     @ApiOperation(value = "", response = void.class)
@@ -169,5 +169,25 @@ public class CheckoutEntryController {
                 "value: {}", month, value);
 
         checkoutEntryService.deleteAuditMonth(month, value);
+    }
+
+    @ApiOperation(value = "", response = CheckoutSummaryO.class)
+    @RequiresAuthentication
+    @GetMapping("/diffStat")
+    public List<CheckoutSummaryO> getDiffStat(
+            @RequestParam("companyID") int companyID,
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("categoryID") int categoryID,
+            @RequestParam("factoryBrand") String factoryBrand,
+            @RequestParam("departmentID") int departmentID
+    ) throws GlobalParamException {
+        logger.info("GET Request to /checkoutEntry/diffStat");
+
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
+
+        return checkoutEntryService.getDiffStat(companyID, startDateString, endDateString,
+                categoryID, factoryBrand, departmentID);
     }
 }

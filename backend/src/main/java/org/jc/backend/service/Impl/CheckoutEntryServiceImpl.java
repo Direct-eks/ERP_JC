@@ -351,8 +351,8 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CheckoutSummaryO> getSummary(boolean isInbound, int companyID, String startDate, String endDate,
-                                             int categoryID, String factoryBrand, int warehouseID, int departmentID) {
+    public List<CheckoutSummaryO> getCheckoutSummary(boolean accurate, boolean isInbound, int companyID, String startDate, String endDate,
+                                                     int categoryID, String factoryBrand, int warehouseID, int departmentID) {
         try {
             String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
             factoryBrand = factoryBrand.isBlank() ? "" : factoryBrand;
@@ -367,10 +367,18 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 list = checkoutEntryMapper.getOutboundSummary(startDate, endDate, companyID, treeLevel,
                         factoryBrand, warehouseID, departmentID);
             }
-            list.forEach(item -> {
-                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
-                item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
-            });
+            if (accurate) {
+                list.forEach(item -> {
+                    BigDecimal unitPriceWithTax = new BigDecimal(item.getUnitPriceWithTax());
+                    item.setTotalPrice(unitPriceWithTax.multiply(BigDecimal.valueOf(item.getQuantity())).toPlainString());
+                });
+            }
+            else {
+                list.forEach(item -> {
+                    double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                    item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
+                });
+            }
             return list;
 
         } catch (PersistenceException e) {
@@ -431,6 +439,32 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Update failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CheckoutSummaryO> getDiffStat(int companyID, String startDate, String endDate,
+                                              int categoryID, String factoryBrand, int departmentID) {
+        try {
+            var list = checkoutEntryMapper.getOutboundSummary(startDate, endDate, companyID,
+                    "", factoryBrand, -1, departmentID);
+
+            list.forEach(item -> {
+                double unitPriceWithTax = Double.parseDouble(item.getUnitPriceWithTax());
+                double price = unitPriceWithTax * item.getQuantity();
+                item.setTotalPrice(Double.toString(price));
+                double stockUnitPrice = Double.parseDouble(item.getStockUnitPrice());
+                double cost = stockUnitPrice * item.getQuantity();
+                item.setGrossProfit(Double.toString(price - cost));
+                item.setGrossProfitRate((price - cost) / cost + "%");
+            });
+            return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
             throw e;
         }
     }
