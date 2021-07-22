@@ -25,8 +25,9 @@ const api = {
     returnCheckoutEntry: '/checkoutEntry/returnEntry', // POST
 
     checkoutSummary: '/checkoutEntry/summary', // GET
-    getAuditEntries: '/checkoutEntry/getAuditEntries/', // GET {month}
+    getAuditEntries: '/checkoutEntry/getAuditEntries', // GET
     auditEntries: '/checkoutEntry/auditEntries', // POST
+    deleteAuditMonth: '/checkoutEntry/deleteAuditMonth/', // DELETE
 
     /* ------ /company ------*/
     companyFuzzySearch: '/company/getCompanyByFuzzySearch', // GET name= phone=

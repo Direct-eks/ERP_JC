@@ -178,4 +178,10 @@
         </if>
     </select>
 
+    <update id="updateVerifiedEntry">
+        update m_checkout_entry
+        set is_verified = #{value}
+        where checkout_entry_serial = #{serial}
+    </update>
+
 </mapper>

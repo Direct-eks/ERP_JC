@@ -3,6 +3,7 @@ package org.jc.backend.controller.entries;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
@@ -134,15 +135,39 @@ public class CheckoutEntryController {
     }
 
     @ApiOperation(value = "", response = EntryStatO.class)
-    @GetMapping("/getAuditEntries/{month}")
-    public List<CheckoutSummaryO> getAuditEntries(@PathVariable("month") String month) {
-        return checkoutEntryService.getSummary(true, -1, "2020-01-01",
-                "2021-07-22", -1, "", -1, -1);
+    @GetMapping("/getAuditEntries")
+    public List<CheckoutSummaryO> getAuditEntries(
+            @RequestParam("month") String month,
+            @RequestParam("isInbound") boolean isInbound
+    ) throws GlobalParamException {
+        logger.info("GET Request to /checkoutEntry/getAuditEntries, month: {}", month);
+        var pair = MyUtils.getFirstAndLastDayOfMonth(month);
+
+        return checkoutEntryService.getSummary(isInbound, -1, pair.getLeft(), pair.getRight(),
+                -1, "", -1, -1);
     }
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/auditEntries")
-    public void auditEntries(@RequestParam("month") String month) {
+    public void auditEntries(
+            @RequestParam("month") String month,
+            @RequestParam("isInbound") boolean isInbound
+    ) throws GlobalParamException {
+        logger.info("GET Request to /checkoutEntry/auditEntries, month: {}", month);
 
+        checkoutEntryService.auditEntriesByMonth(isInbound, month);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @RequiresAuthentication
+    @DeleteMapping("/deleteAuditMonth")
+    public void deleteAuditMonth(
+            @RequestParam("month") String month,
+            @RequestParam("value") String value
+    ) throws GlobalParamException {
+        logger.info("DELETE Request to /checkoutEntry/deleteAuditMonth, month: {}, " +
+                "value: {}", month, value);
+
+        checkoutEntryService.deleteAuditMonth(month, value);
     }
 }

@@ -7,7 +7,7 @@
     <resultMap id="miscellaneousDataResultMap" type="org.jc.backend.entity.MiscellaneousDataO">
         <result property="propertyName" column="property_name"/>
         <result property="propertyValue" column="property_value"/>
-        <result property="propertyRemark" column="property_remark"/>
+        <result property="propertyValue2" column="property_value2"/>
     </resultMap>
 
 
@@ -54,21 +54,22 @@
             and property_value = #{username}
     </delete>
 
-
-    <select id="queryAuditMonths" resultType="java.lang.String">
-        select property_value
+    <select id="queryAuditMonths" resultMap="miscellaneousDataResultMap">
+        select property_value, property_value2
         from miscellaneous_data
         where property_name = 'audit_month'
     </select>
 
     <insert id="insertAuditMonth">
-        insert into miscellaneous_data(property_name, property_value)
-        values ('audit_month', #{month})
+        insert into miscellaneous_data(property_name, property_value, property_value2)
+        values ('audit_month', #{month}, #{value})
     </insert>
 
     <delete id="deleteAuditMonth">
         delete from miscellaneous_data
-        where property_name = 'audit_month' and property_value = #{month}
+        where property_name = 'audit_month'
+          and property_value = #{month}
+          and property_value2 = #{value}
     </delete>
 
 </mapper>

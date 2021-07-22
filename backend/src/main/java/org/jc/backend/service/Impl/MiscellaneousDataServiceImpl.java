@@ -119,7 +119,7 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<String> queryAuditMonths() {
+    public List<MiscellaneousDataO> queryAuditMonths() {
         try {
             return miscellaneousDataMapper.queryAuditMonths();
 
@@ -132,9 +132,13 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
 
     @Transactional
     @Override
-    public void addNewAuditMonth(String month) {
+    public void addNewAuditMonth(String month, String value) {
         try {
-            miscellaneousDataMapper.insertAuditMonth(month);
+            for (var item : miscellaneousDataMapper.queryAuditMonths()) {
+                if (item.getPropertyValue().equals(month) &&
+                        item.getPropertyValue2().equals(value)) return;
+            }
+            miscellaneousDataMapper.insertAuditMonth(month, value);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -145,9 +149,9 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
 
     @Transactional
     @Override
-    public void deleteAuditMonth(String month) {
+    public void deleteAuditMonth(String month, String value) {
         try {
-            miscellaneousDataMapper.deleteAuditMonth(month);
+            miscellaneousDataMapper.deleteAuditMonth(month, value);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

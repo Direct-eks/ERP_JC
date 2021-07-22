@@ -8,5 +8,5 @@ import lombok.Setter;
 public class MiscellaneousDataO {
     String propertyName;
     String propertyValue;
-    String propertyRemark;
+    String propertyValue2;
 }

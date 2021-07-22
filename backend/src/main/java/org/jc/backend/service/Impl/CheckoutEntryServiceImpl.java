@@ -379,4 +379,59 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
             throw e;
         }
     }
+
+    @Transactional
+    @Override
+    public void auditEntriesByMonth(boolean isInbound, String month) throws GlobalParamException {
+        try {
+            var pair = MyUtils.getFirstAndLastDayOfMonth(month);
+
+            List<CheckoutSummaryO> list;
+            if (isInbound) {
+                list = checkoutEntryMapper.getInboundSummary(pair.getLeft(), pair.getRight(),
+                        -1, "", "", -1, -1);
+            }
+            else {
+                list = checkoutEntryMapper.getOutboundSummary(pair.getLeft(), pair.getRight(),
+                        -1, "", "", -1, -1);
+            }
+            for (var s : list) {
+                checkoutEntryMapper.updateVerifiedEntry(s.getCheckoutEntrySerial(), 1);
+            }
+
+            miscellaneousDataService.addNewAuditMonth(month, isInbound ? "入库" : "出库");
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Update failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteAuditMonth(String month, String value) throws GlobalParamException {
+        try {
+            var pair = MyUtils.getFirstAndLastDayOfMonth(month);
+
+            List<CheckoutSummaryO> list;
+            list = checkoutEntryMapper.getInboundSummary(pair.getLeft(), pair.getRight(),
+                    -1, "", "", -1, -1);
+            for (var s : list) {
+                checkoutEntryMapper.updateVerifiedEntry(s.getCheckoutEntrySerial(), 0);
+            }
+            list = checkoutEntryMapper.getOutboundSummary(pair.getLeft(), pair.getRight(),
+                    -1, "", "", -1, -1);
+            for (var s : list) {
+                checkoutEntryMapper.updateVerifiedEntry(s.getCheckoutEntrySerial(), 0);
+            }
+
+            miscellaneousDataService.deleteAuditMonth(month, value);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Update failed");
+            throw e;
+        }
+    }
 }

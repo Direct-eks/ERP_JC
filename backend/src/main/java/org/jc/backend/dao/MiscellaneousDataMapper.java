@@ -21,7 +21,7 @@ public interface MiscellaneousDataMapper {
     void updatePermittedRoundingAmountByUser(String username, String amount);
     void deletePermittedRoundingAmountByUser(String username);
 
-    List<String> queryAuditMonths();
-    void insertAuditMonth(String month);
-    void deleteAuditMonth(String month);
+    List<MiscellaneousDataO> queryAuditMonths();
+    void insertAuditMonth(String month, String value);
+    void deleteAuditMonth(String month, String value);
 }

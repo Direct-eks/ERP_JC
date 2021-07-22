@@ -3,6 +3,7 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.jc.backend.entity.MiscellaneousDataO;
 import org.jc.backend.service.MiscellaneousDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class MiscellaneousDataController {
     @ApiOperation(value = "", response = String.class)
     @RequiresAuthentication
     @GetMapping("/getAuditMonths")
-    public List<String> getAuditMonths() {
+    public List<MiscellaneousDataO> getAuditMonths() {
         logger.info("GET Request to /miscellaneousData/getAuditMonths");
 
         return miscellaneousDataService.queryAuditMonths();

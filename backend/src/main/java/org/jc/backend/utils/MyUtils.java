@@ -1,5 +1,7 @@
 package org.jc.backend.utils;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
@@ -13,6 +15,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,6 +29,7 @@ public class MyUtils {
     public static final Logger logger = LoggerFactory.getLogger(MyUtils.class);
 
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat dateFormatNoDay = new SimpleDateFormat("yyyy-MM");
 
     /**
      * parse Date to verify passed param
@@ -40,6 +44,31 @@ public class MyUtils {
         } catch (ParseException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             String errorInfo = "Invalid date String: " + dateString;
+            logger.info(errorInfo);
+            throw new GlobalParamException(errorInfo);
+        }
+    }
+
+    public static Pair<String, String> getFirstAndLastDayOfMonth(String month) throws GlobalParamException {
+        try {
+            Calendar c = Calendar.getInstance();
+
+            c.setTime(dateFormatNoDay.parse(month));
+            c.add(Calendar.MONTH, 0);
+
+            // set to day 1 of the month
+            c.set(Calendar.DAY_OF_MONTH, 1);
+            String firstDay = dateFormat.format(c.getTime());
+
+            // set to last day of the month
+            c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+            String lastDay = dateFormat.format(c.getTime());
+
+            return ImmutablePair.of(firstDay, lastDay);
+
+        } catch (ParseException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            String errorInfo = "Invalid month String: " + month;
             logger.info(errorInfo);
             throw new GlobalParamException(errorInfo);
         }

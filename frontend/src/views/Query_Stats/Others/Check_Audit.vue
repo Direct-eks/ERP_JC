@@ -30,6 +30,7 @@
                             <v-menu :close-on-content-click="true"
                                     :nudge-right="40"
                                     transition="scale-transition"
+                                    :disabled="auditTableData.length !== 0"
                                     offset-y>
                                 <template v-slot:activator="{on}">
                                     <v-text-field v-model="month"
@@ -49,7 +50,9 @@
                             </v-menu>
                         </v-col>
                         <v-col cols="auto">
-                            <v-btn color="primary" @click="search">查询</v-btn>
+                            <v-btn color="primary" @click="search(true)">查询入库</v-btn>
+                            <v-btn color="primary" @click="search(false)">查询出库</v-btn>
+                            <v-btn color="warning" @click="clear">清空</v-btn>
                         </v-col>
                         <v-spacer></v-spacer>
                         <v-col cols="auto">
@@ -62,15 +65,15 @@
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
                                         <v-btn color="primary" @click="confirmDialog = false">取消</v-btn>
-                                        <v-btn color="primary" @click="audit">确认</v-btn>
+                                        <v-btn color="success" @click="audit">确认</v-btn>
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-data-table :headers="tableHeaders"
-                                      :items="tableData"
+                        <v-data-table :headers="auditTableHeaders"
+                                      :items="auditTableData"
                                       item-key="productID"
                                       height="75vh"
                                       calculate-widths
@@ -80,6 +83,7 @@
                                       group-by="checkoutEntrySerial"
                                       group-desc
                                       show-group-by
+                                      :loading="loading"
                                       dense
                                       locale="zh-cn">
                         </v-data-table>
@@ -88,7 +92,47 @@
             </v-tab-item>
 
             <v-tab-item key="query">
-
+                <v-container>
+                <v-row>
+                    <v-spacer></v-spacer>
+                    <v-col cols="auto">
+                        <v-btn color="primary" @click="queryAuditMonths">查询已审核月份</v-btn>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-dialog v-model="deletePopup" max-width="300px">
+                            <template v-slot:activator="{ on }">
+                                <v-btn color="warning" v-on="on">删除选择月份</v-btn>
+                            </template>
+                            <v-card>
+                                <v-card-title>确认删除？</v-card-title>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" @click="deletePopup = false">取消</v-btn>
+                                    <v-btn color="success" @click="deleteMonth">确认</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                </v-row>
+                <v-row>
+                    <v-data-table v-model="queryTableCurrentRow"
+                                  :headers="queryTableHeaders"
+                                  :items="queryTableData"
+                                  item-key="index"
+                                  height="75vh"
+                                  calculate-widths
+                                  disable-sort
+                                  fixed-header
+                                  disable-pagination
+                                  show-select
+                                  single-select
+                                  @click:row="queryTableClick"
+                                  dense
+                                  locale="zh-cn">
+                    </v-data-table>
+                </v-row>
+                </v-container>
             </v-tab-item>
 
         </v-tabs-items>
@@ -105,12 +149,15 @@ export default {
             mdiArrowLeft,
             tab: null,
 
+            /* ----- first tab data ----- */
+
             month: new Date().format('yyyy-MM'),
             allowedMaxMonth: new Date().format('yyyy-MM'),
-
+            isInbound: true,
+            loading: false,
             confirmDialog: false,
 
-            tableHeaders: [
+            auditTableHeaders: [
                 { text: '结账单号', value: 'checkoutEntrySerial', width: '140px', groupable: true },
                 { text: '代号', value: 'code', width: '180px', groupable: false },
                 { text: '厂牌', value: 'factoryCode', width: '65px', groupable: false },
@@ -125,24 +172,79 @@ export default {
                 { text: '库存数量', value: 'stockQuantity', width: '120px', groupable: false },
                 { text: '库存单价', value: 'stockUnitPrice', width: '120px', groupable: false }
             ],
-            tableData: [],
+            auditTableData: [],
+
+            /* ----- second tab data ----- */
+            deletePopup: false,
+
+            queryTableHeaders: [
+                { text: '月份', value: 'propertyValue', width: '120px' },
+                { text: '出/入', value: 'propertyValue2', width: '120px' },
+            ],
+            queryTableData: [],
+            queryTableCurrentRow: [],
+
         }
     },
     methods: {
-        search() {
-            this.$getRequest(this.$api.getAuditEntries + encodeURI(this.month)).then(data => {
-                this.tableData = data
+        search(inbound) {
+            this.isInbound = inbound
+            this.loading = true
+            this.$getRequest(this.$api.getAuditEntries, {
+                month: this.month, isInbound: inbound
+            }).then(data => {
+                this.loading = false
+                this.auditTableData = data
             }).catch(() => {})
+        },
+        clear() {
+            this.auditTableData = []
         },
         audit() {
             this.$postRequest(this.$api.auditEntries, {}, {
-                month: this.month
+                month: this.month, isInbound: this.isInbound
             }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '审核成功', color: 'success'
                 })
-                this.$router.replace('/stockManagement')
+                this.$router.replace('/query_stats')
             }).catch(() => {})
+        },
+
+        queryAuditMonths() {
+            this.$getRequest(this.$api.auditMonths).then(data => {
+                let index = 0
+                for (const item of data) {
+                    this.queryTableData.push(Object.assign({index: index++}, item))
+                }
+            }).catch(() => {})
+        },
+        queryTableClick(row) {
+            if (this.queryTableCurrentRow.includes(row)) {
+                this.queryTableCurrentRow = []
+            }
+            else {
+                this.queryTableCurrentRow = [row]
+            }
+        },
+        deleteMonth() {
+            if (this.queryTableCurrentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '未选择月份', color: 'warning'
+                })
+                return
+            }
+
+            this.$deleteRequest(this.$api.deleteAuditMonth, {
+                month: this.queryTableCurrentRow[0].propertyValue,
+                value: this.queryTableCurrentRow[0].propertyValue2
+            }).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '删除成功', color: 'success'
+                })
+                this.queryTableData.splice(this.queryTableData.indexOf(this.queryTableCurrentRow[0]), 1)
+                this.queryTableCurrentRow = []
+            })
         }
     }
 }

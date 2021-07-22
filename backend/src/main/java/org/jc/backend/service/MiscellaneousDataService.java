@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.entity.MiscellaneousDataO;
 import org.springframework.stereotype.Indexed;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface MiscellaneousDataService {
     void updatePermittedRoundingAmountByUser(String username, String amount);
     void deletePermittedRoundingAmountByUser(String username);
 
-    List<String> queryAuditMonths();
-    void addNewAuditMonth(String month);
-    void deleteAuditMonth(String month);
+    List<MiscellaneousDataO> queryAuditMonths();
+    void addNewAuditMonth(String month, String value);
+    void deleteAuditMonth(String month, String value);
 }
