@@ -41,9 +41,9 @@ springBootLauncher.on('message', (message) => {
         })
         mainWin.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
             .then(() => {
-                mainWin.maximize()
                 launchWin.destroy()
                 launchWin = null
+                mainWin.maximize()
             })
         mainWin.on('close', (e) => {
             let result = dialog.showMessageBoxSync({
@@ -89,7 +89,7 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        springBootLauncher.send('shutdown')
+        springBootLauncher.send({ msg: 'shutdown' })
     }
 })
 
