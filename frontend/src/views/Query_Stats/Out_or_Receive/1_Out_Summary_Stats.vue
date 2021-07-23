@@ -48,7 +48,8 @@
                     <v-btn color="primary" @click="search">查询</v-btn>
                 </v-col>
             </v-row>
-            <QueryConditions :queries.sync="queries">
+            <QueryConditions :queries.sync="queries"
+                             @clear="clear">
             </QueryConditions>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
@@ -57,6 +58,10 @@
                               :items="tableData"
                               :loading="loading"
                               calculate-widths
+                              disable-filtering
+                              disable-pagination
+                              hide-default-footer
+                              height="60vh"
                               fixed-header
                               locale="zh-cn"
                               dense>
@@ -68,6 +73,7 @@
                               calculate-widths
                               disable-filtering
                               disable-pagination
+                              hide-default-footer
                               height="60vh"
                               fixed-header
                               locale="zh-cn"
@@ -135,6 +141,11 @@ export default {
         }
     },
     methods: {
+        clear() {
+            this.showTable1 = true
+            this.tableData = []
+            this.tableData2 = []
+        },
         search() {
             this.loading = true
             this.showTable1 = true
