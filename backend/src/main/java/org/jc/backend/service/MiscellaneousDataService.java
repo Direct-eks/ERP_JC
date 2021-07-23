@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.MiscellaneousDataO;
 import org.springframework.stereotype.Indexed;
 
@@ -11,6 +12,7 @@ public interface MiscellaneousDataService {
 
     String getLastBackupTime();
     void updateLastBackupTime();
+    void backupDatabase() throws GlobalParamException;
 
     String getPermittedRoundingAmountByUser(String username);
     void insertPermittedRoundingAmountByUser(String username, String amount);

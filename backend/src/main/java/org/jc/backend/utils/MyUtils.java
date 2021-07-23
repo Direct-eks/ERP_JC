@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -116,6 +118,37 @@ public class MyUtils {
      */
     public final static RoundingMode myRoundingMode = RoundingMode.HALF_UP;
     public final static int myScale = 8;
+
+
+    public static void databaseBackup() throws IOException {
+        Runtime rt = Runtime.getRuntime();
+        String cmd = "sqlite3 C:\\ERP_JC\\db\\test.db \".dump\"";
+
+        Process process;
+        try {
+            process = rt.exec( cmd);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        try (InputStream inputStream = process.getInputStream();
+             InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(reader);
+             FileOutputStream outputStream = new FileOutputStream("c:\\ERP_JC\\db\\backup.sql");
+             OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                writer.write(line + "\\r\\n");
+            }
+            writer.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
     /**
      * group entries by companyID, and calculate the sum of total amounts, return VO

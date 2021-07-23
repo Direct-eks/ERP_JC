@@ -3,12 +3,14 @@ package org.jc.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.MiscellaneousDataO;
 import org.jc.backend.service.MiscellaneousDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,10 +43,19 @@ public class MiscellaneousDataController {
     @ApiOperation(value = "", response = String.class)
     @RequiresAuthentication
     @GetMapping("/getLastBackupTime")
-    public String getLastWarehouseStockUpdateTime() {
+    public String getLastBackupTime() {
         logger.info("GET Request to /miscellaneousData/getLastBackupTime");
 
         return miscellaneousDataService.getLastBackupTime();
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @RequiresAuthentication
+    @PostMapping("/backupDatabase")
+    public void backupDatabase() throws GlobalParamException {
+        logger.info("POST Request to /miscellaneousData/backupDatabase");
+
+        miscellaneousDataService.backupDatabase();
     }
 
     @ApiOperation(value = "", response = String.class)

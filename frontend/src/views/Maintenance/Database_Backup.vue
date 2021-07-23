@@ -12,7 +12,11 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <p>上次自动备份：</p>
+            <strong>{{ lastBackupTime }}</strong>
+            <v-btn color="primary" @click="backup">
+                备份
+            </v-btn>
         </v-card-text>
     </v-card>
 </template>
@@ -22,9 +26,26 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Database_Backup",
+    beforeMount() {
+        this.$getRequest(this.$api.lastBackupTime).then(data => {
+            this.lastBackupTime = data
+        }).catch(() => {})
+    },
     data() {
         return {
             mdiArrowLeft,
+
+            lastBackupTime: '',
+        }
+    },
+    methods: {
+        backup() {
+            this.$postRequest(this.$api.backupDatabase).then(() => {
+                this.$store.commit('setSnackbar', {
+                    message: '备份成功', color: 'success'
+                })
+                this.$router.replace('/maintenance')
+            }).catch(() => {})
         }
     }
 }

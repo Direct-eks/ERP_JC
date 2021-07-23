@@ -94,6 +94,7 @@ const api = {
     /* ------ /miscellaneousData ------*/
     allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
     lastBackupTime: '/miscellaneousData/getLastBackupTime', // GET
+    backupDatabase: '/miscellaneousData/backupDatabase', // POST
     auditMonths: '/miscellaneousData/getAuditMonths', // GET
 
     /* ------ /modificationRecord ------*/

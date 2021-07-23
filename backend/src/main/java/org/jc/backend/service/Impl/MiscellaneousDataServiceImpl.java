@@ -2,14 +2,17 @@ package org.jc.backend.service.Impl;
 
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.MiscellaneousDataMapper;
 import org.jc.backend.entity.MiscellaneousDataO;
 import org.jc.backend.service.MiscellaneousDataService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,8 +63,22 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
+            logger.error("update failed");
             throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void backupDatabase() throws GlobalParamException {
+        try {
+            MyUtils.databaseBackup();
+            this.updateLastBackupTime();
+
+        } catch (IOException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("backup failed");
+            throw new GlobalParamException("备份失败");
         }
     }
 
