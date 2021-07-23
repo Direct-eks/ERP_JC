@@ -91,7 +91,7 @@ export default {
     },
     computed: {
         dateRangeText() {
-            return '从 ' + this.dateRange.join(' 至 ')
+            return this.dateRange ? '从 ' + this.dateRange.join(' 至 ') : ''
         }
     },
     methods: {

@@ -103,7 +103,9 @@ export default {
     },
     methods: {
         chooseDateAction(val) {
-            this.queries.dateRange = val
+            if (val) {
+                this.queries.dateRange = val
+            }
         },
         treeSelectionAction(val) {
             this.queries.treeSelection = val
