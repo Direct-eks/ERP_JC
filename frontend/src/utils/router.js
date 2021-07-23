@@ -710,7 +710,39 @@ const routes = [
     {
         path: '/maintenance',
         name: '系统维护',
-        component: () => import('../views/12_Page_maintenance')
+        component: () => import('../views/12_Page_maintenance'),
+        children: [
+            {
+                path: 'company_info',
+                name: '本公司信息',
+                component: () => import(/* webpackChunkName: "Maintenance_Company_Info" */
+                    '../views/Maintenance/Company_Info'),
+            },
+            {
+                path: 'initial_warehouse_stock',
+                name: '期初库存录入',
+                component: () => import(/* webpackChunkName: "Maintenance_Initial_Warehouse_Stock" */
+                    '../views/Maintenance/Initial_Warehouse_Stock'),
+            },
+            {
+                path: 'initial_receivable',
+                name: '应收款期初数据录入',
+                component: () => import(/* webpackChunkName: "Maintenance_Initial_receivable" */
+                    '../views/Maintenance/Initial_receivable'),
+            },
+            {
+                path: 'initial_payable',
+                name: '应付款期初数据录入',
+                component: () => import(/* webpackChunkName: "Maintenance_Initial_Payable" */
+                    '../views/Maintenance/Initial_Payable'),
+            },
+            {
+                path: 'database_backup',
+                name: '数据库备份',
+                component: () => import(/* webpackChunkName: "Maintenance_Database_Backup" */
+                    '../views/Maintenance/Database_Backup'),
+            },
+        ]
     },
     {
         path: '/accessibility',

@@ -104,6 +104,7 @@
                     <v-tab key="query">查询统计</v-tab>
                     <v-tab key="resources">资源录入</v-tab>
                     <v-tab key="system">系统标准</v-tab>
+                    <v-tab key="maintenance">系统维护</v-tab>
 
                     <v-tabs-items v-model="tab">
                         <v-tab-item key="inboundEntry">
@@ -304,6 +305,17 @@
                                     <v-checkbox v-model="form.permissions" label="仓库" value="system:warehouses"/>
                                     <v-checkbox v-model="form.permissions" label="部门" value="system:departments"/>
                                     <v-checkbox v-model="form.permissions" label="费用收入类别" value="system:fees"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="maintenance">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="本公司信息" value="maintenance:CompanyInfo"/>
+                                    <v-checkbox v-model="form.permissions" label="期初库存录入" value="maintenance:InitialWarehouseStock"/>
+                                    <v-checkbox v-model="form.permissions" label="期初应收款" value="maintenance:InitialReceivable"/>
+                                    <v-checkbox v-model="form.permissions" label="期初应付款" value="maintenance:InitialPayable"/>
+                                    <v-checkbox v-model="form.permissions" label="数据库备份" value="maintenance:DatabaseBackup"/>
                                 </v-col>
                             </v-row>
                         </v-tab-item>

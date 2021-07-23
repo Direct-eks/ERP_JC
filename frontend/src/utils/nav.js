@@ -44,10 +44,10 @@ export default {
             name: '系统标准',
             url: '/system',
         },
-        // {
-        //     name: '系统维护',
-        //     url: '/maintenance',
-        // },
+        {
+            name: '系统维护',
+            url: '/maintenance',
+        },
         // {
         //     name: '辅助功能',
         //     url: '/accessibility',
@@ -828,36 +828,41 @@ export default {
     maintenance_nav: [
         {
             name: '本公司信息',
-            url: '/maintenance',
+            url: '/maintenance/company_info',
+            requiredPermission: 'maintenance:CompanyInfo',
         },
-        {
-            name: '国标型号维护',
-            url: '/maintenan',
-        },
+        // {
+        //     name: '国标型号维护',
+        //     url: '/international_standard_models',
+        // },
         {
             name: '期初库存录入',
-            url: '/maintena',
+            url: '/maintenance/initial_warehouse_stock',
+            requiredPermission: 'maintenance:InitialWarehouseStock',
         },
         {
             name: '应收款期初数据录入',
-            url: '/mainten',
+            url: '/maintenance/initial_receivable',
+            requiredPermission: 'maintenance:InitialReceivable',
         },
         {
             name: '应付款期初数据录入',
-            url: '/mainte',
+            url: '/maintenance/initial_payable',
+            requiredPermission: 'maintenance:InitialPayable',
         },
         {
             name: '数据库备份',
-            url: '/maint',
+            url: '/maintenance/database_backup',
+            requiredPermission: 'maintenance:DatabaseBackup',
         },
-        {
-            name: '数据库矫正',
-            url: '/main',
-        },
-        {
-            name: '用户密码更改',
-            url: '/mai',
-        },
+        // {
+        //     name: '数据库矫正',
+        //     url: '/main',
+        // },
+        // {
+        //     name: '用户密码更改',
+        //     url: '/mai',
+        // },
     ],
     accessibility_nav: [
         {
