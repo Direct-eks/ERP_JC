@@ -52,10 +52,23 @@
             </QueryConditions>
             <v-divider class="my-2"></v-divider>
             <v-card outlined>
-                <v-data-table :headers="headers"
+                <v-data-table v-if="showTable1"
+                              :headers="headers"
                               :items="tableData"
                               :loading="loading"
                               calculate-widths
+                              fixed-header
+                              locale="zh-cn"
+                              dense>
+                </v-data-table>
+                <v-data-table v-else
+                              :headers="headers2"
+                              :items="tableData2"
+                              :loading="loading"
+                              calculate-widths
+                              disable-filtering
+                              disable-pagination
+                              height="60vh"
                               fixed-header
                               locale="zh-cn"
                               dense>
@@ -77,6 +90,7 @@ export default {
         return {
             mdiArrowLeft,
             loading: false,
+            showTable1: true,
 
             queries: {
                 companyID: -1,
@@ -115,11 +129,15 @@ export default {
                 { text: '含税金额', value: 'totalPrice', width: '100px' },
             ],
             tableData: [],
+
+            headers2: [],
+            tableData2: []
         }
     },
     methods: {
         search() {
             this.loading = true
+            this.showTable1 = true
             let api = ''
             switch (this.category) {
             case '销售':
@@ -150,16 +168,24 @@ export default {
             }).then(data => {
                 this.loading = false
                 this.tableData = data
-            }).catch(() => {})
+            }).catch(() => {this.loading = false})
         },
         queryForParentCategory() {
+            this.showTable1 = false
+            this.headers2 = [
+                { text: '分类名称', value: 'categoryCode', width: '140px' },
+                { text: '总价', value: 'totalPrice', width: '140px' },
+                { text: '占比', value: 'percentage', width: '140px' },
+            ]
+            this.loading = true
             this.$getRequest(this.$api.outboundSummaryByParams, {
                 startDate: this.queries.dateRange[0],
                 endDate: this.queries.dateRange[1],
                 type: 'parentCategory'
             }).then(data => {
-
-            })
+                this.loading = false
+                this.tableData2 = data
+            }).catch(() => {this.loading = false})
         },
         queryForSubCategory() {
             if (this.queries.treeSelection.categoryID === -1 ||
@@ -169,41 +195,86 @@ export default {
                 })
                 return
             }
+            this.showTable1 = false
+            this.headers2 = [
+                { text: '分类名称', value: 'categoryCode', width: '140px' },
+                { text: '分类', value: 'categoryName', width: '140px' },
+                { text: '总价', value: 'totalPrice', width: '140px' },
+                { text: '占比', value: 'percentage', width: '140px' },
+            ]
+            this.loading = true
             this.$getRequest(this.$api.outboundSummaryByParams, {
                 startDate: this.queries.dateRange[0],
                 endDate: this.queries.dateRange[1],
                 type: 'subCategory',
                 id: this.queries.treeSelection.categoryID
             }).then(data => {
-
-            })
+                this.loading = false
+                this.tableData2 = data
+            }).catch(() => {this.loading = false})
         },
         queryForBrand() {
+            this.showTable1 = false
+            this.headers2 = [
+                { text: '厂牌', value: 'factoryBrand', width: '80px' },
+                { text: '总价', value: 'totalPrice', width: '140px' },
+                { text: '占比', value: 'percentage', width: '140px' },
+            ]
+            this.loading = true
             this.$getRequest(this.$api.outboundSummaryByParams, {
                 startDate: this.queries.dateRange[0],
                 endDate: this.queries.dateRange[1],
                 type: 'brand'
             }).then(data => {
-
-            })
+                this.loading = false
+                this.tableData2 = data
+            }).catch(() => {this.loading = false})
         },
         queryForCompany() {
+            this.showTable1 = false
+            this.headers2 = [
+                { text: '单位简称', value: 'abbreviatedName', width: '140px' },
+                { text: '总价', value: 'totalPrice', width: '140px' },
+                { text: '占比', value: 'percentage', width: '140px' },
+            ]
+            this.loading = true
             this.$getRequest(this.$api.outboundSummaryByParams, {
                 startDate: this.queries.dateRange[0],
                 endDate: this.queries.dateRange[1],
                 type: 'company'
             }).then(data => {
-
-            })
+                this.loading = false
+                this.tableData2 = data
+            }).catch(() => {this.loading = false})
         },
         queryForCompanyByMonth() {
+            this.showTable1 = false
+            this.headers2 = [
+                { text: '单位简称', value: 'abbreviatedName', width: '140px' },
+                { text: '总价', value: 'totalPrice', width: '140px' },
+                { text: '占比', value: 'percentage', width: '100px' },
+                { text: '一月', value: 'jan', width: '90px' },
+                { text: '二月', value: 'feb', width: '90px' },
+                { text: '三月', value: 'mar', width: '90px' },
+                { text: '四月', value: 'apr', width: '90px' },
+                { text: '五月', value: 'may', width: '90px' },
+                { text: '六月', value: 'jun', width: '90px' },
+                { text: '七月', value: 'jul', width: '90px' },
+                { text: '八月', value: 'aug', width: '90px' },
+                { text: '九月', value: 'sep', width: '90px' },
+                { text: '十月', value: 'oct', width: '90px' },
+                { text: '十一月', value: 'nov', width: '90px' },
+                { text: '十二月', value: 'dec', width: '90px' },
+            ]
+            this.loading = true
             this.$getRequest(this.$api.outboundSummaryByParams, {
                 startDate: this.queries.dateRange[0],
                 endDate: this.queries.dateRange[1],
                 type: 'companyByMonth'
             }).then(data => {
-
-            })
+                this.loading = false
+                this.tableData2 = data
+            }).catch(() => {this.loading = false})
         }
     }
 }

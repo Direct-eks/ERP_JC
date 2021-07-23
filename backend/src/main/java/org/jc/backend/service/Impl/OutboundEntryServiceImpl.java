@@ -778,7 +778,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             for (var c : modelService.getModelCategories()) {
                 if (c.getTreeLevel().length() == 1) {
 
-                    var list = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                    var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
                             startDate, endDate, c.getTreeLevel(), "", -1, -1);
                     double totalPrice = 0;
                     for (var item : list) {
@@ -787,14 +787,15 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
                     summaryO.setCategoryCode(c.getCode());
                     summaryO.setCategoryName(c.getName());
-                    summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                    summaryO.setTotalPrice(String.format("%.2f", totalPrice));
                     results.add(summaryO);
                     total += totalPrice;
                 }
             }
 
             for (var item : results) {
-                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
                 item.setPercentage(String.format("%.4f%%", percent));
             }
             return results;
@@ -826,7 +827,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             for (var c : categories) {
                 //todo
                 if (c.getTreeLevel().startsWith(treeLevel)) {
-                    var list = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                    var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
                             startDate, endDate, c.getTreeLevel(), "", -1, -1);
                     double totalPrice = 0;
                     for (var item : list) {
@@ -835,7 +836,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
                     summaryO.setCategoryCode(c.getCode());
                     summaryO.setCategoryName(c.getName());
-                    summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                    summaryO.setTotalPrice(String.format("%.2f", totalPrice));
                     results.add(summaryO);
                     total += totalPrice;
                 }
@@ -862,7 +863,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
             for (var brand : factoryBrandService.getAllFactoryBrands()) {
-                var list = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
                         startDate, endDate, "", brand.getCode(), -1, -1);
                 double totalPrice = 0;
                 for (var item : list) {
@@ -870,13 +871,14 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 }
                 OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
                 summaryO.setFactoryBrand(brand.getCode());
-                summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
                 results.add(summaryO);
                 total += totalPrice;
             }
 
             for (var item : results) {
-                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
                 item.setPercentage(String.format("%.4f%%", percent));
             }
             return results;
@@ -896,7 +898,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
 
-            var map = outboundEntryMapper.queryOutboundSummary("销售", -1,
+            var map = outboundEntryMapper.queryOutboundSummary("销出", -1,
                     startDate, endDate, "", "", -1, -1)
                     .stream().collect(Collectors.groupingBy(SummaryO::getCompanyAbbreviatedName));
 
@@ -907,13 +909,14 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 }
                 OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
                 summaryO.setAbbreviatedName(entry.getKey());
-                summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
                 results.add(summaryO);
                 total += totalPrice;
             }
 
             for (var item : results) {
-                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
                 item.setPercentage(String.format("%.4f%%", percent));
             }
             return results;
@@ -933,34 +936,51 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
 
-            var map = outboundEntryMapper.queryOutboundSummary("销售", -1,
+            var map = outboundEntryMapper.queryOutboundSummary("销出", -1,
                     startDate, endDate, "", "", -1, -1)
                     .stream().collect(Collectors.groupingBy(SummaryO::getCompanyAbbreviatedName));
 
             String[] months = {"-01-", "-02-", "-03-", "-04-", "-05-", "-06-",
                     "-07-", "-08-", "-09-", "-10-", "-11-", "-12-"};
-            String[] fields = {"jan", "feb", "mar", "apr", "may", "jun", "jul",
-                    "aug", "sep", "oct", "nov", "dec"};
-            // todo
+
             for (var entry : map.entrySet()) {
                 OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
                 double totalPrice = 0;
+                double[] monthlyPrices = new double[12];
                 for (var item : entry.getValue()) {
-                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                    double tempTotal = Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                    totalPrice += tempTotal;
 
                     for (int i = 0; i < months.length; ++i) {
                         if (item.getEntryDate().contains(months[i])) {
-//                            summaryO.setTotalPrice();
-                        }//todo
+                            monthlyPrices[i] += tempTotal;
+                            break;
+                        }
                     }
                 }
+                summaryO.setAbbreviatedName(entry.getKey());
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
+
+                summaryO.setJan(String.format("%.2f", monthlyPrices[0]));
+                summaryO.setFeb(String.format("%.2f", monthlyPrices[1]));
+                summaryO.setMar(String.format("%.2f", monthlyPrices[2]));
+                summaryO.setApr(String.format("%.2f", monthlyPrices[3]));
+                summaryO.setMay(String.format("%.2f", monthlyPrices[4]));
+                summaryO.setJun(String.format("%.2f", monthlyPrices[5]));
+                summaryO.setJul(String.format("%.2f", monthlyPrices[6]));
+                summaryO.setAug(String.format("%.2f", monthlyPrices[7]));
+                summaryO.setSep(String.format("%.2f", monthlyPrices[8]));
+                summaryO.setOct(String.format("%.2f", monthlyPrices[9]));
+                summaryO.setNov(String.format("%.2f", monthlyPrices[10]));
+                summaryO.setDec(String.format("%.2f", monthlyPrices[11]));
 
                 results.add(summaryO);
                 total += totalPrice;
             }
 
             for (var item : results) {
-                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
                 item.setPercentage(String.format("%.4f%%", percent));
             }
             return results;
