@@ -13,6 +13,7 @@ import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.*;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
+import org.jc.backend.service.FactoryBrandService;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.WarehouseStockService;
@@ -32,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OutboundEntryServiceImpl implements OutboundEntryService {
@@ -41,15 +43,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     private final ModificationMapper modificationMapper;
     private final WarehouseStockService warehouseStockService;
     private final ModelService modelService;
+    private final FactoryBrandService factoryBrandService;
 
     public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper,
                                     ModificationMapper modificationMapper,
                                     WarehouseStockService warehouseStockService,
-                                    ModelService modelService) {
+                                    ModelService modelService,
+                                    FactoryBrandService factoryBrandService) {
         this.outboundEntryMapper = outboundEntryMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockService = warehouseStockService;
         this.modelService = modelService;
+        this.factoryBrandService = factoryBrandService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -767,9 +772,32 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Override
     public List<OutboundSpecialSummaryO> getOutboundSummaryByParentCategory(String startDate, String endDate) {
         try {
-            var categories = modelService.getModelCategories();
-//            modelService.getTreeLevelByCategoryID();
-            return null; //todo
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+            for (var c : modelService.getModelCategories()) {
+                if (c.getTreeLevel().length() == 1) {
+
+                    var list = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                            startDate, endDate, c.getTreeLevel(), "", -1, -1);
+                    double totalPrice = 0;
+                    for (var item : list) {
+                        totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                    }
+                    OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                    summaryO.setCategoryCode(c.getCode());
+                    summaryO.setCategoryName(c.getName());
+                    summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                    results.add(summaryO);
+                    total += totalPrice;
+                }
+            }
+
+            for (var item : results) {
+                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -782,7 +810,42 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Override
     public List<OutboundSpecialSummaryO> getOutboundSummaryBySubCategory(String startDate, String endDate, int id) {
         try {
-            return null; //todo
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+            var categories = modelService.getModelCategories();
+            String treeLevel = null;
+            for (var c : categories) {
+                if (c.getModelCategoryID() == id) {
+                    treeLevel = c.getTreeLevel();
+                    break;
+                }
+            }
+
+            assert treeLevel != null;
+            for (var c : categories) {
+                //todo
+                if (c.getTreeLevel().startsWith(treeLevel)) {
+                    var list = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                            startDate, endDate, c.getTreeLevel(), "", -1, -1);
+                    double totalPrice = 0;
+                    for (var item : list) {
+                        totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                    }
+                    OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                    summaryO.setCategoryCode(c.getCode());
+                    summaryO.setCategoryName(c.getName());
+                    summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                    results.add(summaryO);
+                    total += totalPrice;
+                }
+            }
+
+            for (var item : results) {
+                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -795,7 +858,28 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Override
     public List<OutboundSpecialSummaryO> getOutboundSummaryByBrand(String startDate, String endDate) {
         try {
-            return null; //todo
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+            for (var brand : factoryBrandService.getAllFactoryBrands()) {
+                var list = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                        startDate, endDate, "", brand.getCode(), -1, -1);
+                double totalPrice = 0;
+                for (var item : list) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                }
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                summaryO.setFactoryBrand(brand.getCode());
+                summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                results.add(summaryO);
+                total += totalPrice;
+            }
+
+            for (var item : results) {
+                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -808,7 +892,31 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Override
     public List<OutboundSpecialSummaryO> getOutboundSummaryByCompany(String startDate, String endDate) {
         try {
-            return null; //todo
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+
+            var map = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                    startDate, endDate, "", "", -1, -1)
+                    .stream().collect(Collectors.groupingBy(SummaryO::getCompanyAbbreviatedName));
+
+            for (var entry : map.entrySet()) {
+                double totalPrice = 0;
+                for (var item : entry.getValue()) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                }
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                summaryO.setAbbreviatedName(entry.getKey());
+                summaryO.setTotalPrice(String.format("%.4f", totalPrice));
+                results.add(summaryO);
+                total += totalPrice;
+            }
+
+            for (var item : results) {
+                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -821,7 +929,41 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     @Override
     public List<OutboundSpecialSummaryO> getOutboundSummaryByCompanyByMonth(String startDate, String endDate) {
         try {
-            return null; //todo
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+
+            var map = outboundEntryMapper.queryOutboundSummary("销售", -1,
+                    startDate, endDate, "", "", -1, -1)
+                    .stream().collect(Collectors.groupingBy(SummaryO::getCompanyAbbreviatedName));
+
+            String[] months = {"-01-", "-02-", "-03-", "-04-", "-05-", "-06-",
+                    "-07-", "-08-", "-09-", "-10-", "-11-", "-12-"};
+            String[] fields = {"jan", "feb", "mar", "apr", "may", "jun", "jul",
+                    "aug", "sep", "oct", "nov", "dec"};
+            // todo
+            for (var entry : map.entrySet()) {
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                double totalPrice = 0;
+                for (var item : entry.getValue()) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+
+                    for (int i = 0; i < months.length; ++i) {
+                        if (item.getEntryDate().contains(months[i])) {
+//                            summaryO.setTotalPrice();
+                        }//todo
+                    }
+                }
+
+                results.add(summaryO);
+                total += totalPrice;
+            }
+
+            for (var item : results) {
+                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
