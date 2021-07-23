@@ -280,7 +280,7 @@ public class OutboundEntryController {
         logger.info("GET Request to /outboundEntry/getOutboundSummary");
 
         switch (type) {
-            case "销售":
+            case "销出":
             case "入退":
                 break;
             default: throw new GlobalParamException("invalid category");

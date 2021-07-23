@@ -29,19 +29,19 @@
                     <strong class="red--text">此处单价和总价不完全精确</strong>
                 </div>
                 <v-spacer></v-spacer>
-                <v-col v-if="category === '销售'" cols="auto">
+                <v-col v-if="category === '销出'" cols="auto">
                     <v-btn color="primary" @click="queryForParentCategory">商品大类</v-btn>
                 </v-col>
-                <v-col v-if="category === '销售'" cols="auto">
+                <v-col v-if="category === '销出'" cols="auto">
                     <v-btn color="primary" @click="queryForSubCategory">子分类</v-btn>
                 </v-col>
-                <v-col v-if="category === '销售'" cols="auto">
+                <v-col v-if="category === '销出'" cols="auto">
                     <v-btn color="primary" @click="queryForBrand">厂牌</v-btn>
                 </v-col>
-                <v-col v-if="category === '销售'" cols="auto">
+                <v-col v-if="category === '销出'" cols="auto">
                     <v-btn color="primary" @click="queryForCompany">往来单位</v-btn>
                 </v-col>
-                <v-col v-if="category === '销售'" cols="auto">
+                <v-col v-if="category === '销出'" cols="auto">
                     <v-btn color="primary" @click="queryForCompanyByMonth">往来单位按月</v-btn>
                 </v-col>
                 <v-col cols="auto">
@@ -111,9 +111,9 @@ export default {
                 warehouseID: -1,
             },
 
-            category: '销售',
+            category: '销出',
             categoryOptions: [
-                {value: '销售', label: '销售'},
+                {value: '销出', label: '销出'},
                 {value: '销订', label: '销订'},
                 {value: '入退', label: '入退'},
                 {value: '领料', label: '领料'},
@@ -151,9 +151,9 @@ export default {
             this.showTable1 = true
             let api = ''
             switch (this.category) {
-            case '销售':
+            case '销出':
             case '入退':
-                api = this.$api.purchaseSummary
+                api = this.$api.outboundSummary
                 break
             case '销订':
                 api = this.$api.salesSummary
