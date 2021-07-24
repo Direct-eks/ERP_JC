@@ -48,13 +48,20 @@
         where warehouse_stock_id = #{warehouseStockID}
     </select>
 
-
     <update id="updateStockInfo">
         update w_warehouse_stock
         set stock_quantity = #{stockQuantity},
             stock_unit_price_without_tax = #{stockUnitPriceWithoutTax}
         where warehouse_stock_id = #{warehouseStockID}
     </update>
+
+    <update id="updateInitialInfo">
+        update w_warehouse_stock
+        set initial_stock_quantity = #{initialStockQuantity},
+            initial_stock_unit_price = #{initialStockUnitPrice}
+        where warehouse_stock_id = #{warehouseStockID}
+    </update>
+
 
     <resultMap id="statResultMap" type="org.jc.backend.entity.StatO.StockStatO">
         <result property="warehouseStockID" column="warehouse_stock_id"/>

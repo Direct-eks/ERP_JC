@@ -4,11 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.entity.StatO.EntryProductVO;
 import org.jc.backend.entity.StatO.StockStatO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +46,14 @@ public class WarehouseStockController {
         logger.info("GET Request to /warehouseStock/getProductsByWarehouseStockID, id: " + id);
 
         return warehouseStockService.getProductsByWarehouseStockID(id);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateWarehouseStockInitialInfo")
+    public void updateWarehouseStockInitialInfo(@RequestBody @Validated ListUpdateVO<WarehouseStockO> updateVO) {
+        logger.info("POST Request to /warehouseStock/updateWarehouseStockInitialInfo");
+
+        warehouseStockService.updateWarehouseStockInitialInfo(updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = StockStatO.class)

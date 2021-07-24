@@ -28,6 +28,7 @@ public interface WarehouseStockService {
     void modifyStock(WarehouseProductO product, String date, boolean isInbound);
 
     List<EntryProductVO> getProductsByWarehouseStockID(int id);
+    void updateWarehouseStockInitialInfo(List<WarehouseStockO> stocks);
 
     List<StockStatO> getWarehouseStockReport(int categoryID, int warehouseID,
                                              String factoryBrand, String code);

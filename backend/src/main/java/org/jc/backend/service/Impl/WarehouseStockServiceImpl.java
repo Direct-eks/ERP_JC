@@ -540,6 +540,20 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
         }
     }
 
+    @Override
+    public void updateWarehouseStockInitialInfo(List<WarehouseStockO> stocks) {
+        try {
+            for (var stock : stocks) {
+                warehouseStockMapper.updateInitialInfo(stock);
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<StockStatO> getWarehouseStockReport(int categoryID, int warehouseID, String factoryBrand, String code) {
