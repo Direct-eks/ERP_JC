@@ -9,6 +9,7 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.*;
@@ -824,6 +825,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
             var categories = modelService.getModelCategories();
+            // extract treeLevel of the given category
             String treeLevel = null;
             for (var c : categories) {
                 if (c.getModelCategoryID() == id) {
@@ -831,24 +833,29 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                     break;
                 }
             }
-
+            // extract categories one level lower
             assert treeLevel != null;
+            int treeLevelLength = treeLevel.length() + 2;
+            List<ModelCategoryO> subCategories = new ArrayList<>();
             for (var c : categories) {
-                //todo
-                if (c.getTreeLevel().startsWith(treeLevel)) {
-                    var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
-                            startDate, endDate, c.getTreeLevel(), "", -1, -1);
-                    double totalPrice = 0;
-                    for (var item : list) {
-                        totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
-                    }
-                    OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
-                    summaryO.setCategoryCode(c.getCode());
-                    summaryO.setCategoryName(c.getName());
-                    summaryO.setTotalPrice(String.format("%.2f", totalPrice));
-                    results.add(summaryO);
-                    total += totalPrice;
+                if (c.getTreeLevel().startsWith(treeLevel) && c.getTreeLevel().length() == treeLevelLength) {
+                    subCategories.add(c);
                 }
+            }
+
+            for (var c : subCategories) {
+                var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
+                        startDate, endDate, c.getTreeLevel(), "", -1, -1);
+                double totalPrice = 0;
+                for (var item : list) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                }
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                summaryO.setCategoryCode(c.getCode());
+                summaryO.setCategoryName(c.getName());
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
+                results.add(summaryO);
+                total += totalPrice;
             }
 
             for (var item : results) {
