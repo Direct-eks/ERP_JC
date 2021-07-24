@@ -13,11 +13,11 @@ import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
-import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
 import org.jc.backend.service.*;
+import org.jc.backend.utils.CompanyClassification;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +44,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final MiscellaneousDataService miscellaneousDataService;
     private final ModelService modelService;
     private final FactoryBrandService factoryBrandService;
+    private final CompanyService companyService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     InboundEntryService inboundEntryService,
@@ -53,7 +54,8 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                                     ModificationMapper modificationMapper,
                                     MiscellaneousDataService miscellaneousDataService,
                                     ModelService modelService,
-                                    FactoryBrandService factoryBrandService) {
+                                    FactoryBrandService factoryBrandService,
+                                    CompanyService companyService) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
@@ -63,6 +65,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         this.miscellaneousDataService = miscellaneousDataService;
         this.modelService = modelService;
         this.factoryBrandService = factoryBrandService;
+        this.companyService = companyService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -552,6 +555,54 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 item.setPercentage(String.format("%.4f%%", percent));
             }
             return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CheckoutSummaryO> getReceivableSummary(int companyID) throws GlobalParamException {
+        try {
+            var company = companyService.getCompanyByID(companyID);
+            assert company != null;
+
+            switch (company.getClassification()) {
+                case CompanyClassification.CUSTOMER:
+                case CompanyClassification.OTHER_RECV:
+                    break;
+                default:
+                    throw new GlobalParamException("此公司为供应商/其他应付");
+            }
+
+            return null; // todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CheckoutSummaryO> getPayableSummary(int companyID) throws GlobalParamException {
+        try {
+            var company = companyService.getCompanyByID(companyID);
+            assert company != null;
+
+            switch (company.getClassification()) {
+                case CompanyClassification.SUPPLIER:
+                case CompanyClassification.OTHER_PAY:
+                    break;
+                default:
+                    throw new GlobalParamException("此公司为客户/其他应收");
+            }
+
+            return null; // todo
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

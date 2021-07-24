@@ -4,5 +4,49 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.InitialMoneyEntryMapper">
 
+    <insert id="insertEntry">
+        insert into m_initial_money_entry(
+            initial_money_entry_serial, partner_company_id, remark, drawer,
+            entry_date, creation_date, borrow_or_lend, balance
+        )
+        values (
+            #{initialMoneyEntrySerial}, #{partnerCompanyID}, #{remark},
+            #{drawer}, #{entryDate}, #{creationDate}, #{borrowOrLend}, #{balance}
+        )
+    </insert>
+
+
+    <resultMap id="entryResultMap" type="org.jc.backend.entity.InitialMoneyEntryO">
+        <result property="initialMoneyEntrySerial" column="initial_money_entry_serial"/>
+        <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="remark" column="remark"/>
+        <result property="drawer" column="drawer"/>
+        <result property="entryDate" column="entry_date"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="borrowOrLend" column="borrow_or_lend"/>
+        <result property="balance" column="balance"/>
+        <result property="isModified" column="is_modified"/>
+    </resultMap>
+
+
+    <select id="queryEntries" resultMap="entryResultMap">
+        select initial_money_entry_serial, partner_company_id, remark, drawer,
+               entry_date, creation_date, borrow_or_lend, balance, is_modified
+        from m_initial_money_entry
+    </select>
+
+    <update id="modifyEntry">
+        update m_initial_money_entry
+        set remark = #{remark},
+            borrow_or_lend = #{borrowOrLend},
+            balance = #{balance},
+            is_modified = 1
+        where initial_money_entry_serial = #{initialMoneyEntrySerial}
+    </update>
+
+    <delete id="deleteEntry">
+        delete from m_initial_money_entry
+        where initial_money_entry_serial = #{id}
+    </delete>
 
 </mapper>

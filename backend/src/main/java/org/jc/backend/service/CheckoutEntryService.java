@@ -25,6 +25,9 @@ public interface CheckoutEntryService {
     List<OutboundSpecialSummaryO> getCheckoutSummaryByBrand(String startDate, String endDate);
     List<OutboundSpecialSummaryO> getCheckoutSummaryByCompany(String startDate, String endDate);
 
+    List<CheckoutSummaryO> getPayableSummary(int companyID) throws GlobalParamException;
+    List<CheckoutSummaryO> getReceivableSummary(int companyID) throws GlobalParamException;
+
     void auditEntriesByMonth(boolean isInbound, String month) throws GlobalParamException;
     void deleteAuditMonth(String month, String value) throws GlobalParamException;
 

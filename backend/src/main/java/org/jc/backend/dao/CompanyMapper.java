@@ -20,6 +20,7 @@ public interface CompanyMapper {
 
     List<CompanyO> queryCompanyByFuzzySearch(String phone, String name);
     List<CompanyO> queryCompaniesByAreaID(int id);
+    CompanyO queryCompanyByID(int id);
     CompanyO querySelfCompany();
     void insertCompany(CompanyO companyO);
     void updateCompany(CompanyO companyO);

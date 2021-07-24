@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,19 @@ public class CompanyServiceImpl implements CompanyService {
     public List<CompanyO> getCompaniesByAreaID(int id) {
         try {
             return companyMapper.queryCompaniesByAreaID(id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CompanyO getCompanyByID(int id) {
+        try {
+            return companyMapper.queryCompanyByID(id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

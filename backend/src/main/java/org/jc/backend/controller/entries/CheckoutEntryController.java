@@ -6,11 +6,13 @@ import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.StatO.EntryStatO;
 import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
+import org.jc.backend.utils.CompanyClassification;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +162,16 @@ public class CheckoutEntryController {
             default:
                 throw new GlobalParamException("invalid type");
         }
+    }
+
+    @GetMapping("/getPayableSummary")
+    public List<CheckoutSummaryO> getPayableSummary() throws GlobalParamException{
+        return null; // todo
+    }
+
+    @GetMapping("/getReceivableSummary")
+    public List<CheckoutSummaryO> getReceivableSummary()  throws GlobalParamException {
+        return null; // todo
     }
 
     @ApiOperation(value = "", response = EntryStatO.class)

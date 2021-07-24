@@ -14,6 +14,7 @@ public interface CompanyService {
     List<CompanyO> getCompanyByFuzzySearch(String phone, String name);
     List<CompanyAreaO> getCompanyAreas();
     List<CompanyO> getCompaniesByAreaID(int id);
+    CompanyO getCompanyByID(int id);
 
     CompanyO getSelfCompany();
 
