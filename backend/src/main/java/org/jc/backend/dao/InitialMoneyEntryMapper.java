@@ -11,8 +11,10 @@ import java.util.List;
 @Mapper
 @Repository
 public interface InitialMoneyEntryMapper {
+    int countNumberOfEntriesOfGivenDate(String date, String prefix);
     void insertEntry(InitialMoneyEntryO o);
-    List<InitialMoneyEntryO> queryEntries();
+    List<InitialMoneyEntryO> queryEntries(String prefix);
+    InitialMoneyEntryO queryEntryByCompanyID(String prefix, int id);
     void modifyEntry(InitialMoneyEntryO o);
     void deleteEntry(String id);
 }

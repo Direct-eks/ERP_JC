@@ -4,6 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.InitialMoneyEntryMapper">
 
+    <select id="countNumberOfEntriesOfGivenDate" resultType="int">
+        select count(initial_money_entry_serial)
+        from m_initial_money_entry
+        where entry_date = #{date}
+            and initial_money_entry_serial like #{prefix}|'%'
+    </select>
+
     <insert id="insertEntry">
         insert into m_initial_money_entry(
             initial_money_entry_serial, partner_company_id, remark, drawer,
@@ -33,6 +40,14 @@
         select initial_money_entry_serial, partner_company_id, remark, drawer,
                entry_date, creation_date, borrow_or_lend, balance, is_modified
         from m_initial_money_entry
+        where initial_money_entry_serial like #{prefix}|'%'
+    </select>
+    <select id="queryEntryByCompanyID" resultMap="entryResultMap">
+        select initial_money_entry_serial, partner_company_id, remark, drawer,
+               entry_date, creation_date, borrow_or_lend, balance, is_modified
+        from m_initial_money_entry
+        where initial_money_entry_serial like #{prefix}|'%'
+            and partner_company_id = #{id}
     </select>
 
     <update id="modifyEntry">

@@ -1,12 +1,17 @@
 package org.jc.backend.controller.entries;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.jc.backend.entity.InitialMoneyEntryO;
+import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.InitialMoneyEntryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Indexed
 @Api(tags = "InitialMoneyEntry Related")
@@ -24,4 +29,37 @@ public class InitialMoneyEntryController {
     /* ------------------------------ API ------------------------------ */
 
     // isInbound = true: 付款, false: 收款
+
+    @ApiOperation(value = "", response = void.class)
+    @PutMapping("/createEntry")
+    public void createEntry(
+            @RequestBody @Validated InitialMoneyEntryO vo,
+            @RequestParam("isInbound") boolean isInbound
+    ) {
+        logger.info("GET Request to /initialMoneyEntry/createEntry, data: {}", vo);
+
+        initialMoneyEntryService.createEntry(isInbound, vo);
+    }
+
+    @ApiOperation(value = "", response = InitialMoneyEntryO.class)
+    @GetMapping("/getEntries")
+    public List<InitialMoneyEntryO> getEntries(
+            @RequestParam("isInbound") boolean isInbound
+    ) {
+        logger.info("GET Request to /initialMoneyEntry/getEntries");
+
+        return initialMoneyEntryService.getEntries(isInbound);
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/modifyEntries")
+    public void modifyEntries(
+            @RequestParam("isInbound") boolean isInbound,
+            @RequestBody @Validated ListUpdateVO<InitialMoneyEntryO> updateVO
+    ) {
+        logger.info("GET Request to /initialMoneyEntry/modifyEntries");
+
+        initialMoneyEntryService.modifyEntries(isInbound, updateVO.getElements());
+    }
+
 }
