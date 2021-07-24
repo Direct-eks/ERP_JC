@@ -8,6 +8,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.StatO.EntryStatO;
+import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.service.CheckoutEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -125,13 +126,40 @@ public class CheckoutEntryController {
             @RequestParam("warehouseID") int warehouseID,
             @RequestParam("departmentID") int departmentID
     ) throws GlobalParamException {
-        logger.info("POST Request to /checkoutEntry/returnEntry");
+        logger.info("POST Request to /checkoutEntry/summary");
 
         MyUtils.parseAndCheckDateString(startDateString);
         MyUtils.parseAndCheckDateString(endDateString);
 
         return checkoutEntryService.getCheckoutSummary(false, isInbound, companyID, startDateString,
                 endDateString, categoryID, factoryBrand, warehouseID, departmentID);
+    }
+
+    @ApiOperation(value = "", response = CheckoutSummaryO.class)
+    @GetMapping("/summaryByParams")
+    public List<OutboundSpecialSummaryO> getSummaryByParams(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam("type") String type,
+            @RequestParam(value = "id", defaultValue = "-1") int id
+    ) throws GlobalParamException {
+        logger.info("POST Request to /checkoutEntry/summaryByParams");
+
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
+
+        switch (type) {
+            case "parentCategory":
+                return checkoutEntryService.getCheckoutSummaryByParentCategory(startDateString, endDateString);
+            case "subCategory":
+                return checkoutEntryService.getCheckoutSummaryBySubCategory(startDateString, endDateString, id);
+            case "brand":
+                return checkoutEntryService.getCheckoutSummaryByBrand(startDateString, endDateString);
+            case "company":
+                return checkoutEntryService.getCheckoutSummaryByCompany(startDateString, endDateString);
+            default:
+                throw new GlobalParamException("invalid type");
+        }
     }
 
     @ApiOperation(value = "", response = EntryStatO.class)

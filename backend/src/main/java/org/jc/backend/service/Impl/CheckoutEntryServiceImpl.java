@@ -8,9 +8,12 @@ import org.jc.backend.dao.CheckoutEntryMapper;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
+import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
+import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
@@ -26,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CheckoutEntryServiceImpl implements CheckoutEntryService {
@@ -39,6 +43,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private final ModificationMapper modificationMapper;
     private final MiscellaneousDataService miscellaneousDataService;
     private final ModelService modelService;
+    private final FactoryBrandService factoryBrandService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     InboundEntryService inboundEntryService,
@@ -47,7 +52,8 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                                     InvoiceEntryService invoiceEntryService,
                                     ModificationMapper modificationMapper,
                                     MiscellaneousDataService miscellaneousDataService,
-                                    ModelService modelService) {
+                                    ModelService modelService,
+                                    FactoryBrandService factoryBrandService) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
@@ -56,6 +62,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
         this.modificationMapper = modificationMapper;
         this.miscellaneousDataService = miscellaneousDataService;
         this.modelService = modelService;
+        this.factoryBrandService = factoryBrandService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -380,6 +387,171 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 });
             }
             return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getCheckoutSummaryByParentCategory(String startDate, String endDate) {
+        try {
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+            for (var c: modelService.getModelCategories()) {
+                if (c.getTreeLevel().length() == 1) {
+                    var list = checkoutEntryMapper.getOutboundSummary(startDate, endDate,
+                            -1, c.getTreeLevel(), "", -1, -1);
+                    double totalPrice = 0;
+                    for (var item : list) {
+                        totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                    }
+                    OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                    summaryO.setCategoryCode(c.getCode());
+                    summaryO.setCategoryName(c.getName());
+                    summaryO.setTotalPrice(String.format("%.2f", totalPrice));
+                    results.add(summaryO);
+                    total += totalPrice;
+                }
+            }
+
+            for (var item : results) {
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getCheckoutSummaryBySubCategory(String startDate, String endDate, int id) {
+        try {
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+            var categories = modelService.getModelCategories();
+            // extract treeLevel of the given category
+            String treeLevel = null;
+            for (var c : categories) {
+                if (c.getModelCategoryID() == id) {
+                    treeLevel = c.getTreeLevel();
+                    break;
+                }
+            }
+            // extract categories one level lower
+            assert treeLevel != null;
+            int treeLevelLength = treeLevel.length() + 2;
+            List<ModelCategoryO> subCategories = new ArrayList<>();
+            for (var c : categories) {
+                if (c.getTreeLevel().startsWith(treeLevel) && c.getTreeLevel().length() == treeLevelLength) {
+                    subCategories.add(c);
+                }
+            }
+
+            for (var c : subCategories) {
+                var list = checkoutEntryMapper.getOutboundSummary(startDate, endDate,
+                        -1, "", c.getTreeLevel(), -1, -1);
+                double totalPrice = 0;
+                for (var item : list) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                }
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                summaryO.setCategoryCode(c.getCode());
+                summaryO.setCategoryName(c.getName());
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
+                results.add(summaryO);
+                total += totalPrice;
+            }
+
+            for (var item : results) {
+                double percent = Double.parseDouble(item.getTotalPrice()) / total;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getCheckoutSummaryByBrand(String startDate, String endDate) {
+        try {
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+            for (var brand : factoryBrandService.getAllFactoryBrands()) {
+                var list = checkoutEntryMapper.getOutboundSummary(startDate, endDate,
+                        -1, "", brand.getCode(), -1, -1);
+                double totalPrice = 0;
+                for (var item : list) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                }
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                summaryO.setFactoryBrand(brand.getCode());
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
+                results.add(summaryO);
+                total += totalPrice;
+            }
+
+            for (var item : results) {
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OutboundSpecialSummaryO> getCheckoutSummaryByCompany(String startDate, String endDate) {
+        try {
+            List<OutboundSpecialSummaryO> results = new ArrayList<>();
+            double total = 0;
+
+
+            var map = checkoutEntryMapper.getOutboundSummary(startDate, endDate,
+                    -1, "", "", -1, -1)
+                    .stream().collect(Collectors.groupingBy(CheckoutSummaryO::getCompanyAbbreviatedName));
+
+            for (var entry : map.entrySet()) {
+                double totalPrice = 0;
+                for (var item : entry.getValue()) {
+                    totalPrice += Double.parseDouble(item.getUnitPriceWithoutTax()) * item.getQuantity();
+                }
+                OutboundSpecialSummaryO summaryO = new OutboundSpecialSummaryO();
+                summaryO.setAbbreviatedName(entry.getKey());
+                summaryO.setTotalPrice(String.format("%.2f", totalPrice));
+                results.add(summaryO);
+                total += totalPrice;
+            }
+
+            for (var item : results) {
+                double percent = total != 0 ?
+                        Double.parseDouble(item.getTotalPrice()) / total * 100 : 0;
+                item.setPercentage(String.format("%.4f%%", percent));
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

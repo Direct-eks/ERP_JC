@@ -25,6 +25,7 @@ const api = {
     returnCheckoutEntry: '/checkoutEntry/returnEntry', // POST
 
     checkoutSummary: '/checkoutEntry/summary', // GET
+    checkoutSummaryByParams: '/checkoutEntry/summaryByParams', // GET
     getAuditEntries: '/checkoutEntry/getAuditEntries', // GET
     auditEntries: '/checkoutEntry/auditEntries', // POST
     deleteAuditMonth: '/checkoutEntry/deleteAuditMonth/', // DELETE

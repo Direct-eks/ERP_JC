@@ -2,6 +2,7 @@ package org.jc.backend.service;
 
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
+import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.springframework.stereotype.Indexed;
 
@@ -19,6 +20,10 @@ public interface CheckoutEntryService {
 
     List<CheckoutSummaryO> getCheckoutSummary(boolean accurate, boolean isInbound, int companyID, String startDate, String endDate,
                                               int categoryID, String factoryBrand, int warehouseID, int departmentID);
+    List<OutboundSpecialSummaryO> getCheckoutSummaryByParentCategory(String startDate, String endDate);
+    List<OutboundSpecialSummaryO> getCheckoutSummaryBySubCategory(String startDate, String endDate, int id);
+    List<OutboundSpecialSummaryO> getCheckoutSummaryByBrand(String startDate, String endDate);
+    List<OutboundSpecialSummaryO> getCheckoutSummaryByCompany(String startDate, String endDate);
 
     void auditEntriesByMonth(boolean isInbound, String month) throws GlobalParamException;
     void deleteAuditMonth(String month, String value) throws GlobalParamException;
