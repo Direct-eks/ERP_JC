@@ -7,16 +7,13 @@ import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModificationO;
-import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.ProductStatO;
+import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseStockO;
-import org.jc.backend.service.InboundEntryService;
-import org.jc.backend.service.ModelService;
-import org.jc.backend.service.OutboundEntryService;
-import org.jc.backend.service.WarehouseStockService;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -39,17 +36,20 @@ public class InboundEntryServiceImpl implements InboundEntryService {
     private final WarehouseStockService warehouseStockService;
     private final OutboundEntryService outboundEntryService;
     private final ModelService modelService;
+    private final MiscellaneousDataService miscellaneousDataService;
 
     public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper,
                                    ModificationMapper modificationMapper,
                                    WarehouseStockService warehouseStockService,
                                    OutboundEntryService outboundEntryService,
-                                   ModelService modelService) {
+                                   ModelService modelService,
+                                   MiscellaneousDataService miscellaneousDataService) {
         this.inboundEntryMapper = inboundEntryMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockService = warehouseStockService;
         this.outboundEntryService = outboundEntryService;
         this.modelService = modelService;
+        this.miscellaneousDataService = miscellaneousDataService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -67,20 +67,30 @@ public class InboundEntryServiceImpl implements InboundEntryService {
             newEntry.setShippingCost("0");
         }
 
-        try {
-            // presale checks
-            switch (warehouseStockService.passPresaleCheck(newProducts)) {
-                case -1:
-                    break;
-                case 0:
-                    // do entryDate check
-                    if (!outboundEntryService.passPresaleDateCheck(newProducts, entryWithProductsVO.getEntryDate())) {
-                        throw new GlobalParamException("入库单日期必须大于所有预销售产品出库日期");
-                    }
-                    break;
-                case 1:
-                    throw new GlobalParamException("入库单不能同时含有预销售和普通入库产品");
+        // presale checks
+        switch (warehouseStockService.passPresaleCheck(newProducts)) {
+            case -1:
+                break;
+            case 0:
+                // do entryDate check
+                if (!outboundEntryService.passPresaleDateCheck(newProducts, entryWithProductsVO.getEntryDate())) {
+                    throw new GlobalParamException("入库单日期必须大于所有预销售产品出库日期");
+                }
+                break;
+            case 1:
+                throw new GlobalParamException("入库单不能同时含有预销售和普通入库产品");
+        }
+
+        // check against audit months
+        String yearAndMonth = entryWithProductsVO.getEntryDate().substring(0, 7);
+        for (var auditMonth : miscellaneousDataService.queryAuditMonths()) {
+            if (auditMonth.getPropertyValue().equals(yearAndMonth) &&
+                    auditMonth.getPropertyValue2().equals("入库")) {
+                throw new GlobalParamException("此入库日期已被审核");
             }
+        }
+
+        try {
 
             String entryDate = newEntry.getEntryDate();
             String newSerial;
