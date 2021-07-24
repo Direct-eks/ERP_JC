@@ -13,10 +13,7 @@ import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.*;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
-import org.jc.backend.service.FactoryBrandService;
-import org.jc.backend.service.ModelService;
-import org.jc.backend.service.OutboundEntryService;
-import org.jc.backend.service.WarehouseStockService;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -44,17 +41,20 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
     private final WarehouseStockService warehouseStockService;
     private final ModelService modelService;
     private final FactoryBrandService factoryBrandService;
+    private final MiscellaneousDataService miscellaneousDataService;
 
     public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper,
                                     ModificationMapper modificationMapper,
                                     WarehouseStockService warehouseStockService,
                                     ModelService modelService,
-                                    FactoryBrandService factoryBrandService) {
+                                    FactoryBrandService factoryBrandService,
+                                    MiscellaneousDataService miscellaneousDataService) {
         this.outboundEntryMapper = outboundEntryMapper;
         this.modificationMapper = modificationMapper;
         this.warehouseStockService = warehouseStockService;
         this.modelService = modelService;
         this.factoryBrandService = factoryBrandService;
+        this.miscellaneousDataService = miscellaneousDataService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -101,6 +101,15 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         // set shipping cost to 0 if it is blank
         if (newEntry.getShippingCost().trim().equals("")) {
             newEntry.setShippingCost("0");
+        }
+
+        // check against audit months
+        String yearAndMonth = entryWithProductsVO.getShipmentDate().substring(0, 7);
+        for (var auditMonth : miscellaneousDataService.queryAuditMonths()) {
+            if (auditMonth.getPropertyValue().equals(yearAndMonth) &&
+                    auditMonth.getPropertyValue2().equals("出库")) {
+                throw new GlobalParamException("此出库日期已被审核");
+            }
         }
 
         try {
