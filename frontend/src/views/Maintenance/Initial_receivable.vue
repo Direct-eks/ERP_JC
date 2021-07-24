@@ -12,7 +12,8 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <entryComponent mode="recv">
+            </entryComponent>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +23,9 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Initial_receivable",
+    components: {
+        entryComponent: () => import('~/components/MaintenanceComponents/InitialMoneyEntryComponent')
+    },
     data() {
         return {
             mdiArrowLeft,

@@ -12,7 +12,8 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <entryComponent mode="pay">
+            </entryComponent>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +23,10 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Initial_Payable",
+    components: {
+        entryComponent: () => import(/* webpackChunkName: "InitialMoneyEntryComponent" */
+            '~/components/MaintenanceComponents/InitialMoneyEntryComponent')
+    },
     data() {
         return {
             mdiArrowLeft,

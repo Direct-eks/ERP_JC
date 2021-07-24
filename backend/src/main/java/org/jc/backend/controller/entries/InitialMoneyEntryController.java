@@ -22,4 +22,6 @@ public class InitialMoneyEntryController {
     }
 
     /* ------------------------------ API ------------------------------ */
+
+    // isInbound = true: 付款, false: 收款
 }
