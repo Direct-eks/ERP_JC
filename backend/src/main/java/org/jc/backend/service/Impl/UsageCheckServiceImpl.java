@@ -57,6 +57,11 @@ public class UsageCheckServiceImpl implements UsageCheckService {
     }
 
     @Override
+    public boolean isPartnerCompanyCategoryIDInUse(int categoryID) {
+        return usageCheckMapper.findPartnerCompanyCategoryIDInCompanies(categoryID) != null;
+    }
+
+    @Override
     public boolean isRelevantCompanyIDInUse(int companyID) {
         for (var table : eTables1) {
             if (usageCheckMapper.findRelevantCompanyIDInEntries(table, companyID) != null) {
@@ -64,6 +69,11 @@ public class UsageCheckServiceImpl implements UsageCheckService {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isRelevantCompanyCategoryIDInUse(int categoryID) {
+        return usageCheckMapper.findRelevantCompanyCategoryIDInCompanies(categoryID) != null;
     }
 
     @Override
@@ -109,6 +119,11 @@ public class UsageCheckServiceImpl implements UsageCheckService {
     @Override
     public boolean isModelIDInUse(int modelID) {
         return usageCheckMapper.findModelIDInSkus(modelID) != null;
+    }
+
+    @Override
+    public boolean isModelCategoryIDInUse(int categoryID) {
+        return usageCheckMapper.findModelCategoryIDInModels(categoryID) != null;
     }
 
     @Override

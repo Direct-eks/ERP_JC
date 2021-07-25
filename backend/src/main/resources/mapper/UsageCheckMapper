@@ -12,10 +12,24 @@
         limit 1
     </select>
 
+    <select id="findPartnerCompanyCategoryIDInCompanies" resultType="java.lang.Integer">
+        select 1
+        from c_partner_company
+        where area_id = #{id}
+        limit 1
+    </select>
+
     <select id="findRelevantCompanyIDInEntries" resultType="java.lang.Integer">
         select 1
         from ${table}
         where shipping_method_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findRelevantCompanyCategoryIDInCompanies" resultType="java.lang.Integer">
+        select 1
+        from c_relevant_company
+        where category_id = #{id}
         limit 1
     </select>
 
@@ -51,6 +65,13 @@
         select 1
         from w_sku
         where model_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findModelCategoryIDInModels" resultType="java.lang.Integer">
+        select 1
+        from w_model
+        where category_id = #{id}
         limit 1
     </select>
 
