@@ -145,7 +145,7 @@ public class InboundEntryController {
         logger.info("GET Request to /inboundEntry/getNotCheckedOutProductsByEntryID," +
                 "entryID: {}, invoice type: {}", entryID, invoiceType);
 
-        if (!MyUtils.validateSerial(entryID)) {
+        if (MyUtils.isNotValidSerial(entryID)) {
             throw new GlobalParamException("单号格式错误");
         }
 
@@ -174,7 +174,7 @@ public class InboundEntryController {
         logger.info("GET Request to /inboundEntry/getCheckoutAndNotInvoicedProductsByEntryID, " +
                 "entryID: {}, invoiceType: {}", entryID, invoiceType);
 
-        if (!MyUtils.validateSerial(entryID)) {
+        if (MyUtils.isNotValidSerial(entryID)) {
             throw new GlobalParamException("单号格式错误");
         }
 

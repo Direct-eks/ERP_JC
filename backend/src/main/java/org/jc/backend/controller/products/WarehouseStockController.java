@@ -75,7 +75,7 @@ public class WarehouseStockController {
     @ApiOperation(value = "", response = void.class)
     @GetMapping("/exportStockReport")
     public void exportStockReport(HttpServletResponse response) {
-        logger.info("GET Reqeust to /warehouseStock/exportStockReport");
+        logger.info("GET Request to /warehouseStock/exportStockReport");
 
         warehouseStockService.exportStockReport(response);
     }
