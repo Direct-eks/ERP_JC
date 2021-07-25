@@ -85,14 +85,14 @@ public class SupplierController {
             @Validated @RequestBody ListUpdateVO<SupplierResourceO> updateVO
     ) throws GlobalParamException {
         logger.info("POST Request to /supplier/createSupplierWithResources, supplier: {}, " +
-                        "remark: {}, data: {}", supplierID, remark, updateVO.toString());
+                        "remark: {}, data: {}", supplierID, remark, updateVO.getElements());
 
         var supplier = new SupplierO();
         if (supplierID < 0 || remark == null) throw new GlobalParamException("request param error");
         supplier.setSupplierID(supplierID);
         supplier.setRemark(remark);
 
-        supplierService.updateSupplierWithResources(supplier, updateVO);
+        supplierService.updateSupplierWithResources(supplier, updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = SupplierResourceO.class)

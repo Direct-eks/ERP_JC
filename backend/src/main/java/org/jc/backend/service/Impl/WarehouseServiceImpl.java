@@ -2,7 +2,6 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.WarehouseMapper;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.entity.WarehouseO;
 import org.jc.backend.service.WarehouseService;
 import org.slf4j.Logger;
@@ -41,9 +40,9 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Transactional
     @Override
-    public void updateWarehouses(ListUpdateVO<WarehouseO> updateVO) {
+    public void updateWarehouses(List<WarehouseO> updateVO) {
         try {
-            List<WarehouseO> tempWarehouses = new ArrayList<>(updateVO.getElements());
+            List<WarehouseO> tempWarehouses = new ArrayList<>(updateVO);
 
             // check for added
             tempWarehouses.removeIf(w -> w.getWarehouseID() >= 0);
@@ -51,14 +50,19 @@ public class WarehouseServiceImpl implements WarehouseService {
                 warehouseMapper.insertWarehouse(warehouse);
             }
 
-            tempWarehouses = new ArrayList<>(updateVO.getElements());
+            tempWarehouses = new ArrayList<>(updateVO);
             tempWarehouses.removeIf(w -> w.getWarehouseID() < 0);
             for (var warehouse : tempWarehouses) {
                 warehouseMapper.updateWarehouse(warehouse);
             }
 
-            // todo remove
+            // check for removed
             List<WarehouseO> oldWarehouses = warehouseMapper.queryWarehouses();
+            oldWarehouses.removeIf(oldW -> updateVO.stream()
+                    .anyMatch(w -> w.getWarehouseID() == oldW.getWarehouseID()));
+            for (var w : oldWarehouses) {
+                // todo remove
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -7,17 +7,14 @@ import org.jc.backend.entity.ModelO;
 import org.jc.backend.entity.SkuFullO;
 import org.jc.backend.entity.SkuO;
 import org.jc.backend.entity.StatO.StockLimitO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
 import org.jc.backend.service.WarehouseStockService;
-import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,9 +129,9 @@ public class SkuServiceImpl implements SkuService {
 
     @Transactional
     @Override
-    public void updateSku(int modelID, ListUpdateVO<SkuO> updateVO) {
+    public void updateSku(int modelID, List<SkuO> updateVO) {
         try {
-            List<SkuO> tempSkus = new ArrayList<>(updateVO.getElements());
+            List<SkuO> tempSkus = new ArrayList<>(updateVO);
 
             // check for added
             tempSkus.removeIf(s -> s.getSkuID() >= 0);
@@ -143,7 +140,7 @@ public class SkuServiceImpl implements SkuService {
             }
 
             // update all
-            tempSkus = new ArrayList<>(updateVO.getElements());
+            tempSkus = new ArrayList<>(updateVO);
             tempSkus.removeIf(s -> s.getSkuID() < 0);
             for (var sku : tempSkus) {
                 skuMapper.updateSku(sku);
@@ -151,10 +148,10 @@ public class SkuServiceImpl implements SkuService {
 
             // check for remove if possible
             List<SkuFullO> oldSkus = skuMapper.queryFullSkuByModel(modelID);
-            oldSkus.removeIf(oldS -> updateVO.getElements().stream()
+            oldSkus.removeIf(oldS -> updateVO.stream()
                     .anyMatch(s -> s.getSkuID().equals(oldS.getSkuID())));
             for (var sku : oldSkus) {
-                // todo remoev
+                // todo removed
             }
 
         } catch (PersistenceException e) {

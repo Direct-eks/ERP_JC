@@ -45,9 +45,9 @@ public class ModelController {
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/updateModelCategories")
     public void updateModelCategories(@RequestBody @Validated ListUpdateVO<ModelCategoryO> updateVO) {
-        logger.info("POST Request to /model/updateModelCategories, info: {}", updateVO);
+        logger.info("POST Request to /model/updateModelCategories, info: {}", updateVO.getElements());
 
-        modelService.updateModelCategories(updateVO);
+        modelService.updateModelCategories(updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = ModelO.class)
@@ -88,7 +88,7 @@ public class ModelController {
             @RequestBody @Validated ListUpdateVO<ModelO> updateVO
     ) throws GlobalParamException {
         logger.info("POST Request to /model/updateModelsWithCategory, category: {}, " +
-                "brands: {}, info: {}", categoryID, brands, updateVO);
+                "brands: {}, info: {}", categoryID, brands, updateVO.getElements());
 
         if (categoryID == -1) throw new GlobalParamException("categoryID error");
 
@@ -108,7 +108,7 @@ public class ModelController {
             }
         }
 
-        modelService.updateModelsWithCategory(categoryID, brandIDs, updateVO);
+        modelService.updateModelsWithCategory(categoryID, brandIDs, updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = void.class)

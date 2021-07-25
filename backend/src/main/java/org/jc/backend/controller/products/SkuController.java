@@ -68,9 +68,10 @@ public class SkuController {
             @RequestParam("modelID") int modelID,
             @Validated @RequestBody ListUpdateVO<SkuO> updateVO
     ) {
-        logger.info("POST Request to /sku/updateSku, modelID: {}, info {}", modelID, updateVO);
+        logger.info("POST Request to /sku/updateSku, modelID: {}, info {}",
+                modelID, updateVO.getElements());
 
-        skuService.updateSku(modelID, updateVO);
+        skuService.updateSku(modelID, updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = void.class)

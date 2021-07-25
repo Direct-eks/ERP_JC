@@ -4,7 +4,6 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.SupplierMapper;
 import org.jc.backend.entity.SupplierO;
 import org.jc.backend.entity.SupplierResourceO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.SupplierService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.slf4j.Logger;
@@ -122,9 +121,9 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Transactional
     @Override
-    public void updateSupplierWithResources(SupplierO supplierO, ListUpdateVO<SupplierResourceO> updateVO) {
+    public void updateSupplierWithResources(SupplierO supplierO, List<SupplierResourceO> updateVO) {
         try {
-            List<SupplierResourceO> newResources = new ArrayList<>(updateVO.getElements());
+            List<SupplierResourceO> newResources = new ArrayList<>(updateVO);
             List<SupplierResourceO> oldResources = supplierMapper.queryResourcesBySupplier(supplierO.getSupplierID());
             if (oldResources.isEmpty()) { // new supplier
                 supplierMapper.createSupplier(supplierO);
@@ -139,7 +138,7 @@ public class SupplierServiceImpl implements SupplierService {
                 supplierMapper.insertResource(resource);
             }
 
-            List<SupplierResourceO> updatedResources = new ArrayList<>(updateVO.getElements());
+            List<SupplierResourceO> updatedResources = new ArrayList<>(updateVO);
             updatedResources.removeAll(newResources);
             for (var resource : updatedResources) {
                 String history = null;

@@ -2,8 +2,6 @@ package org.jc.backend.service;
 
 import org.jc.backend.entity.SupplierO;
 import org.jc.backend.entity.SupplierResourceO;
-import org.jc.backend.entity.VO.ListUpdateVO;
-import org.jc.backend.entity.VO.SupplierWithResourcesVO;
 import org.springframework.stereotype.Indexed;
 
 import java.util.List;
@@ -14,7 +12,7 @@ public interface SupplierService {
     SupplierO getSupplier(int id);
 
     List<SupplierResourceO> getResourcesBySupplier(int id);
-    void updateSupplierWithResources(SupplierO supplierO, ListUpdateVO<SupplierResourceO> updateVO);
+    void updateSupplierWithResources(SupplierO supplierO, List<SupplierResourceO> updateVO);
 
     List<SupplierResourceO> getSupplierResourcesBySku(int id);
     List<SupplierResourceO> resourcesByCategoryAndFactoryBrand(int categoryID, int brandID, int supplierID);

@@ -3,7 +3,6 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.MeasurementUnitMapper;
 import org.jc.backend.entity.MeasurementUnitO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.MeasurementUnitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,25 +40,29 @@ public class MeasurementUnitServiceImpl implements MeasurementUnitService {
 
     @Transactional
     @Override
-    public void updateUnits(ListUpdateVO<MeasurementUnitO> updateVO) {
+    public void updateUnits(List<MeasurementUnitO> updateVO) {
         try {
-            List<MeasurementUnitO> oldUnits = measurementUnitMapper.queryAllUnits();
-            List<MeasurementUnitO> tempUnits = new ArrayList<>(updateVO.getElements());
-
             // check for added
+            List<MeasurementUnitO> tempUnits = new ArrayList<>(updateVO);
             tempUnits.removeIf(i -> i.getUnitID() >= 0);
             for (var unit : tempUnits) {
                 measurementUnitMapper.insertUnit(unit);
             }
 
             // update all
-            tempUnits = new ArrayList<>(updateVO.getElements());
+            tempUnits = new ArrayList<>(updateVO);
             tempUnits.removeIf(i -> i.getUnitID() < 0);
             for (var unit : tempUnits) {
                 measurementUnitMapper.updateUnit(unit);
             }
 
-            // todo remove
+            // check for removed
+            List<MeasurementUnitO> oldUnits = measurementUnitMapper.queryAllUnits();
+            oldUnits.removeIf(oldU -> updateVO.stream()
+                    .anyMatch(u -> u.getUnitID() == oldU.getUnitID()));
+            for (var u : oldUnits) {
+                // todo remove
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

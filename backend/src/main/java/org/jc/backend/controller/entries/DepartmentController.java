@@ -42,8 +42,8 @@ public class DepartmentController {
     @RequiresPermissions("system:departments")
     @PostMapping("/updateDepartments")
     public void updateDepartments(@RequestBody @Validated ListUpdateVO<DepartmentO> updateVO) {
-        logger.info("POST Request to /department/updateDepartments, info: {}", updateVO);
+        logger.info("POST Request to /department/updateDepartments, info: {}", updateVO.getElements());
 
-        departmentService.updateDepartments(updateVO);
+        departmentService.updateDepartments(updateVO.getElements());
     }
 }

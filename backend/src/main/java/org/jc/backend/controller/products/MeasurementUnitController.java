@@ -42,9 +42,9 @@ public class MeasurementUnitController {
     @RequiresPermissions("system:measurementUnits")
     @PostMapping("/updateUnits")
     public void updateUnits(@RequestBody @Validated ListUpdateVO<MeasurementUnitO> updateVO) {
-        logger.info("PATCH Request to /unit/updateUnits, info {}", updateVO);
+        logger.info("PATCH Request to /unit/updateUnits, info {}", updateVO.getElements());
 
-        measurementUnitService.updateUnits(updateVO);
+        measurementUnitService.updateUnits(updateVO.getElements());
     }
 
 }

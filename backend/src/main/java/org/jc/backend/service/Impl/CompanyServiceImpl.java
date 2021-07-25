@@ -8,14 +8,12 @@ import org.jc.backend.entity.CompanyAreaO;
 import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,11 +97,11 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     @Override
-    public void updateCompanyAreas(ListUpdateVO<CompanyAreaO> updateVO) {
+    public void updateCompanyAreas(List<CompanyAreaO> updateVO) {
         Subject subject = SecurityUtils.getSubject();
 
         try {
-            List<CompanyAreaO> tempAreas = new ArrayList<>(updateVO.getElements());
+            List<CompanyAreaO> tempAreas = new ArrayList<>(updateVO);
 
             if (subject.isPermitted("system:partnerCompanyCategories:create")) {
                 tempAreas.removeIf(a -> a.getAreaID() >= 0);
@@ -113,7 +111,7 @@ public class CompanyServiceImpl implements CompanyService {
             }
 
             if (subject.isPermitted("system:partnerCompanyCategories:update")) {
-                tempAreas = new ArrayList<>(updateVO.getElements());
+                tempAreas = new ArrayList<>(updateVO);
                 tempAreas.removeIf(a -> a.getAreaID() < 0);
                 for (var area :  tempAreas) {
                     companyMapper.updatePartnerCompanyArea(area);
@@ -123,7 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
             // check for removed
             if (subject.isPermitted("system:partnerCompanyCategories:remove")) {
                 List<CompanyAreaO> oldAreas = companyMapper.queryCompanyAreas();
-                oldAreas.removeIf(oldA -> updateVO.getElements().stream()
+                oldAreas.removeIf(oldA -> updateVO.stream()
                         .anyMatch(a -> a.getAreaID().equals(oldA.getAreaID())));
                 for (var area : oldAreas) {
                     // todo remove
@@ -139,16 +137,16 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     @Override
-    public void updatePartnerCompanyWithArea(int areaID, ListUpdateVO<CompanyO> updateVO) {
+    public void updatePartnerCompanyWithArea(int areaID, List<CompanyO> updateVO) {
         try {
-            List<CompanyO> tempCompanies = new ArrayList<>(updateVO.getElements());
+            List<CompanyO> tempCompanies = new ArrayList<>(updateVO);
 
             tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
             for (var company : tempCompanies) {
                 companyMapper.insertCompany(company);
             }
 
-            tempCompanies = new ArrayList<>(updateVO.getElements());
+            tempCompanies = new ArrayList<>(updateVO);
             tempCompanies.removeIf(c -> c.getCompanyID() < 0);
             for (var company : tempCompanies) {
                 companyMapper.updateCompany(company);
@@ -156,7 +154,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             // check for remove is possible
             List<CompanyO> oldCompanies = companyMapper.queryCompaniesByAreaID(areaID);
-            oldCompanies.removeIf(oldC -> updateVO.getElements().stream()
+            oldCompanies.removeIf(oldC -> updateVO.stream()
                     .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
             for (var company : oldCompanies) {
                 // todo remove
@@ -197,16 +195,16 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     @Override
-    public void updateRelevantCompanyCategories(ListUpdateVO<RelevantCompanyCategoryO> updateVO) {
+    public void updateRelevantCompanyCategories(List<RelevantCompanyCategoryO> updateVO) {
         try {
-            List<RelevantCompanyCategoryO> tempCategories = new ArrayList<>(updateVO.getElements());
+            List<RelevantCompanyCategoryO> tempCategories = new ArrayList<>(updateVO);
 
             tempCategories.removeIf(c -> c.getCategoryID() >= 0);
             for (var category : tempCategories) {
                 companyMapper.insertRelevantCompanyCategory(category);
             }
 
-            tempCategories = new ArrayList<>(updateVO.getElements());
+            tempCategories = new ArrayList<>(updateVO);
             tempCategories.removeIf(c -> c.getCategoryID() < 0);
             for (var category : tempCategories) {
                 companyMapper.updateRelevantCompanyCategory(category);
@@ -214,7 +212,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             // check for removed
             List<RelevantCompanyCategoryO> oldCategories = companyMapper.queryRelevantCompanyCategories();
-            oldCategories.removeIf(oldC -> updateVO.getElements().stream()
+            oldCategories.removeIf(oldC -> updateVO.stream()
                     .anyMatch(c -> c.getCategoryID().equals(oldC.getCategoryID())));
             for (var category : oldCategories) {
                 // todo remove
@@ -229,16 +227,16 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     @Override
-    public void updateRelevantCompanyWithCategory(int categoryID, ListUpdateVO<RelevantCompanyO> updateVO) {
+    public void updateRelevantCompanyWithCategory(int categoryID, List<RelevantCompanyO> updateVO) {
         try {
-            List<RelevantCompanyO> tempCompanies = new ArrayList<>(updateVO.getElements());
+            List<RelevantCompanyO> tempCompanies = new ArrayList<>(updateVO);
 
             tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
             for (var company : tempCompanies) {
                 companyMapper.insertRelevantCompany(company);
             }
 
-            tempCompanies = new ArrayList<>(updateVO.getElements());
+            tempCompanies = new ArrayList<>(updateVO);
             tempCompanies.removeIf(c -> c.getCompanyID() < 0);
             for (var company : tempCompanies) {
                 companyMapper.updateRelevantCompany(company);
@@ -246,7 +244,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             // check for remove is possible
             List<RelevantCompanyO> oldCompanies = companyMapper.queryRelevantCompaniesByCategory(categoryID);
-            oldCompanies.removeIf(oldC -> updateVO.getElements().stream()
+            oldCompanies.removeIf(oldC -> updateVO.stream()
                     .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
             for (var company : oldCompanies) {
                 // todo remove

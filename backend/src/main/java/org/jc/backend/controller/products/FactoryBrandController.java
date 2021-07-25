@@ -42,8 +42,9 @@ public class FactoryBrandController {
     @RequiresPermissions("system:factoryBrands")
     @PostMapping("/updateAllFactoryBrands")
     public void updateAllBrands(@RequestBody @Validated ListUpdateVO<FactoryBrandO> updateVO) {
-        logger.info("Post Request to /factoryBrand/updateAllFactoryBrands, info {}", updateVO);
+        logger.info("Post Request to /factoryBrand/updateAllFactoryBrands, info {}",
+                updateVO.getElements());
 
-        factoryBrandService.updateAllBrands(updateVO);
+        factoryBrandService.updateAllBrands(updateVO.getElements());
     }
 }

@@ -3,7 +3,6 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.DepartmentMapper;
 import org.jc.backend.entity.DepartmentO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.DepartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,23 +39,28 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Transactional
     @Override
-    public void updateDepartments(ListUpdateVO<DepartmentO> updateVO) {
+    public void updateDepartments(List<DepartmentO> updateVO) {
         try {
-            List<DepartmentO> tempDepartments = new ArrayList<>(updateVO.getElements());
+            List<DepartmentO> tempDepartments = new ArrayList<>(updateVO);
 
             tempDepartments.removeIf(d -> d.getDepartmentID() >= 0);
             for (var department : tempDepartments) {
                 departmentMapper.insertDepartment(department);
             }
 
-            tempDepartments = new ArrayList<>(updateVO.getElements());
+            tempDepartments = new ArrayList<>(updateVO);
             tempDepartments.removeIf(d -> d.getDepartmentID() < 0);
             for (var department : tempDepartments) {
                 departmentMapper.updateDepartment(department);
             }
 
-            // todo remove
+            // check for removed
             List<DepartmentO> oldDepartments = departmentMapper.queryDepartments();
+            oldDepartments.removeIf(oldD -> updateVO.stream()
+                    .anyMatch(d -> d.getDepartmentID() == oldD.getDepartmentID()));
+            for (var d : oldDepartments) {
+                // todo remove
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

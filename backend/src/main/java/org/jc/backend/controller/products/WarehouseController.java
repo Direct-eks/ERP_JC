@@ -42,8 +42,8 @@ public class WarehouseController {
     @RequiresPermissions("system:warehouses")
     @PostMapping("/updateWarehouses")
     public void updateWarehouses(@RequestBody @Validated ListUpdateVO<WarehouseO> updateVO) {
-        logger.info("POST Request to /warehouse/updateWarehouses, info: {}", updateVO);
+        logger.info("POST Request to /warehouse/updateWarehouses, info: {}", updateVO.getElements());
 
-        warehouseService.updateWarehouses(updateVO);
+        warehouseService.updateWarehouses(updateVO.getElements());
     }
 }

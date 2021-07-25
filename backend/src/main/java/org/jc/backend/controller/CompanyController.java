@@ -69,9 +69,9 @@ public class CompanyController {
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/updateCompanyAreas")
     public void updateCompanyAreas(@RequestBody @Validated ListUpdateVO<CompanyAreaO> updateVO) {
-        logger.info("POST Request to /company/updateCompanyAreas, info: {}", updateVO);
+        logger.info("POST Request to /company/updateCompanyAreas, info: {}", updateVO.getElements());
 
-        companyService.updateCompanyAreas(updateVO);
+        companyService.updateCompanyAreas(updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = void.class)
@@ -81,9 +81,9 @@ public class CompanyController {
             @RequestBody @Validated ListUpdateVO<CompanyO> updateVO
     ) {
         logger.info("POST Request to /company/updatePartnerCompanyWithArea, " +
-                "areaID: {}, info: {}", areaID, updateVO);
+                "areaID: {}, info: {}", areaID, updateVO.getElements());
 
-        companyService.updatePartnerCompanyWithArea(areaID, updateVO);
+        companyService.updatePartnerCompanyWithArea(areaID, updateVO.getElements());
     }
 
 
@@ -108,9 +108,10 @@ public class CompanyController {
     public void updateRelevantCompanyCategories(
             @RequestBody @Validated ListUpdateVO<RelevantCompanyCategoryO> updateVO
     ) {
-        logger.info("POST Request to /company/updateRelevantCompanyCategories, info: {}", updateVO);
+        logger.info("POST Request to /company/updateRelevantCompanyCategories, info: {}",
+                updateVO.getElements());
 
-        companyService.updateRelevantCompanyCategories(updateVO);
+        companyService.updateRelevantCompanyCategories(updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = void.class)
@@ -120,8 +121,8 @@ public class CompanyController {
             @RequestBody @Validated ListUpdateVO<RelevantCompanyO> updateVO
     ) {
         logger.info("POST Request to /company/updateRelevantCompanyWithCategory, " +
-                "categoryID: {}, info: {}", categoryID, updateVO);
+                "categoryID: {}, info: {}", categoryID, updateVO.getElements());
 
-        companyService.updateRelevantCompanyWithCategory(categoryID, updateVO);
+        companyService.updateRelevantCompanyWithCategory(categoryID, updateVO.getElements());
     }
 }

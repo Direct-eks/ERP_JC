@@ -10,7 +10,6 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.ModelMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
 import org.slf4j.Logger;
@@ -86,16 +85,16 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
-    public void updateModelCategories(ListUpdateVO<ModelCategoryO> updateVO) {
+    public void updateModelCategories(List<ModelCategoryO> updateVO) {
         try {
-            List<ModelCategoryO> tempCategories = new ArrayList<>(updateVO.getElements());
+            List<ModelCategoryO> tempCategories = new ArrayList<>(updateVO);
 
             tempCategories.removeIf(c -> c.getModelCategoryID() >= 0);
             for (var category : tempCategories) {
                 modelMapper.insertModelCategory(category);
             }
 
-            tempCategories = new ArrayList<>(updateVO.getElements());
+            tempCategories = new ArrayList<>(updateVO);
             tempCategories.removeIf(c -> c.getModelCategoryID() < 0);
             for (var category : tempCategories) {
                 modelMapper.updateModelCategory(category);
@@ -103,7 +102,7 @@ public class ModelServiceImpl implements ModelService {
 
             // check for removed
             List<ModelCategoryO> oldCategories = modelMapper.queryModelCategories();
-            oldCategories.removeIf(oldC -> updateVO.getElements().stream()
+            oldCategories.removeIf(oldC -> updateVO.stream()
                 .anyMatch(c -> c.getModelCategoryID().equals(oldC.getModelCategoryID())));
             for (var category : oldCategories) {
                 // todo remove
@@ -131,11 +130,11 @@ public class ModelServiceImpl implements ModelService {
 
     @Transactional
     @Override
-    public void updateModelsWithCategory(int categoryID, int[] brands, ListUpdateVO<ModelO> updateVO) {
+    public void updateModelsWithCategory(int categoryID, int[] brands, List<ModelO> updateVO) {
         Subject subject = SecurityUtils.getSubject();
 
         try {
-            List<ModelO> tempModels = new ArrayList<>(updateVO.getElements());
+            List<ModelO> tempModels = new ArrayList<>(updateVO);
 
             // check for added
             if (subject.isPermitted("system:models:create")) {
@@ -150,7 +149,7 @@ public class ModelServiceImpl implements ModelService {
 
             // update all
             if (subject.isPermitted("system:models:update")) {
-                tempModels = new ArrayList<>(updateVO.getElements());
+                tempModels = new ArrayList<>(updateVO);
                 tempModels.removeIf(i -> i.getModelID() < 0);
                 for (var model : tempModels) {
                     modelMapper.updateModel(model);
@@ -160,7 +159,7 @@ public class ModelServiceImpl implements ModelService {
             if (subject.isPermitted("system:models:remove")) {
                 // check for remove is possible
                 List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
-                oldModels.removeIf(oldM -> updateVO.getElements().stream()
+                oldModels.removeIf(oldM -> updateVO.stream()
                         .anyMatch(m -> m.getModelID().equals(oldM.getModelID())));
                 for (var model : oldModels) {
                     // todo remove

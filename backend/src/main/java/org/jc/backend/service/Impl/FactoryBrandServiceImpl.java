@@ -3,7 +3,6 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.FactoryBrandMapper;
 import org.jc.backend.entity.FactoryBrandO;
-import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.FactoryBrandService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +40,9 @@ public class FactoryBrandServiceImpl implements FactoryBrandService {
 
     @Transactional
     @Override
-    public void updateAllBrands(ListUpdateVO<FactoryBrandO> updateVO) {
+    public void updateAllBrands(List<FactoryBrandO> updateVO) {
         try {
-            List<FactoryBrandO> oldBrands = factoryBrandMapper.queryAllFactoryBrands();
-            List<FactoryBrandO> tempBrands = new ArrayList<>(updateVO.getElements());
+            List<FactoryBrandO> tempBrands = new ArrayList<>(updateVO);
 
             // check for added
             tempBrands.removeIf(i -> i.getFactoryBrandID() >= 0);
@@ -53,13 +51,19 @@ public class FactoryBrandServiceImpl implements FactoryBrandService {
             }
 
             // update all
-            tempBrands = new ArrayList<>(updateVO.getElements());
+            tempBrands = new ArrayList<>(updateVO);
             tempBrands.removeIf(i -> i.getFactoryBrandID() < 0);
             for (var brand : tempBrands) {
                 factoryBrandMapper.updateBrand(brand);
             }
 
-            // todo remove
+            // check for removed
+            List<FactoryBrandO> oldBrands = factoryBrandMapper.queryAllFactoryBrands();
+            oldBrands.removeIf(oldB -> updateVO.stream()
+                    .anyMatch(b -> b.getFactoryBrandID().equals(oldB.getFactoryBrandID())));
+            for (var b : oldBrands) {
+                // todo remove
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
