@@ -24,4 +24,6 @@ public interface MiscellaneousDataMapper {
     List<MiscellaneousDataO> queryAuditMonths();
     void insertAuditMonth(String month, String value);
     void deleteAuditMonth(String month, String value);
+
+    String queryInitialEntryDate();
 }

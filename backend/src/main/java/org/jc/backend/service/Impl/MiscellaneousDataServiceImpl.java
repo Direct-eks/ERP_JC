@@ -176,4 +176,16 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
             throw e;
         }
     }
+
+    @Override
+    public String getInitialEntryDate() {
+        try {
+            return miscellaneousDataMapper.queryInitialEntryDate();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
 }

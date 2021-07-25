@@ -22,4 +22,6 @@ public interface MiscellaneousDataService {
     List<MiscellaneousDataO> queryAuditMonths();
     void addNewAuditMonth(String month, String value);
     void deleteAuditMonth(String month, String value);
+
+    String getInitialEntryDate();
 }

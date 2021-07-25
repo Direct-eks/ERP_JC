@@ -72,4 +72,10 @@
           and property_value2 = #{value}
     </delete>
 
+    <select id="queryInitialEntryDate" resultType="java.lang.String">
+        select property_value
+        from miscellaneous_data
+        where property_name = 'initial_entry_date'
+    </select>
+
 </mapper>
