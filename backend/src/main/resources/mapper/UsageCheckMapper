@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.UsageCheckMapper">
+
+<!--  dynamic table name  -->
+    <select id="findPartnerCompanyIDInEntries" resultType="java.lang.Integer">
+        select 1
+        from ${table}
+        where partner_company_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findRelevantCompanyIDInEntries" resultType="java.lang.Integer">
+        select 1
+        from ${table}
+        where shipping_method_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findWarehouseIDInEntries" resultType="java.lang.Integer">
+        select 1
+        from ${table}
+        where warehouse_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findDepartmentIDInEntries" resultType="java.lang.Integer">
+        select 1
+        from ${table}
+        where department_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findBankAccountIDInEntries" resultType="java.lang.Integer">
+        select 1
+        from ${table}
+        where bank_account_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findUnitIDInModels" resultType="java.lang.Integer">
+        select 1
+        from w_model
+        where unit_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findModelIDInSkus" resultType="java.lang.Integer">
+        select 1
+        from w_sku
+        where model_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findSkuIDInProducts" resultType="java.lang.Integer">
+        select 1
+        from #{table}
+        where sku_id = #{id}
+        limit 1
+    </select>
+
+    <select id="findWarehouseStockIDInProducts" resultType="java.lang.Integer">
+        select 1
+        from #{table}
+        where warehouse_stock_id = #{id}
+        limit 1
+    </select>
+
+</mapper>
