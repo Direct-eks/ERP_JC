@@ -76,6 +76,10 @@ const api = {
     inboundNotYetInvoiceDetail: '/inboundEntry/getNotYetInvoiceDetailByCompanyID/', // GET companyID
     inboundSummary: '/inboundEntry/getInboundSummary', // GET
 
+    /* ------ /initialMoneyEntry ------*/
+    updateInitialMoneyEntries: '/initialMoneyEntry/updateEntries',
+    initialMoneyEntries: '/initialMoneyEntry/getEntries',
+
     /* ------ /invoiceEntry ------*/
     createInvoiceEntry: '/invoiceEntry/createEntry', // PUT
     // GET isInbound, startDate, endDate, companyID, invoiceDate, invoiceNumber,
