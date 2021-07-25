@@ -1,5 +1,6 @@
 package org.jc.backend.service;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InitialMoneyEntryO;
 import org.springframework.stereotype.Indexed;
 
@@ -9,5 +10,5 @@ import java.util.List;
 public interface InitialMoneyEntryService {
     List<InitialMoneyEntryO> getEntries(boolean isInbound);
     InitialMoneyEntryO getEntryByCompanyID(boolean isInbound, int id);
-    void updateEntries(boolean isInbound, List<InitialMoneyEntryO> updateVO);
+    void updateEntries(boolean isInbound, List<InitialMoneyEntryO> updateVO) throws GlobalParamException;
 }

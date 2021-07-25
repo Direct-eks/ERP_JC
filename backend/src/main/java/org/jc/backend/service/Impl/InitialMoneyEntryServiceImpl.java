@@ -1,6 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InitialMoneyEntryMapper;
 import org.jc.backend.entity.InitialMoneyEntryO;
 import org.jc.backend.service.InitialMoneyEntryService;
@@ -63,14 +64,21 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
 
     @Transactional
     @Override
-    public void updateEntries(boolean isInbound, List<InitialMoneyEntryO> updateVO) {
+    public void updateEntries(boolean isInbound, List<InitialMoneyEntryO> updateVO) throws GlobalParamException {
         try {
             var tempEntries = new ArrayList<>(updateVO);
 
             // check for new
             tempEntries.removeIf(e -> !e.getInitialMoneyEntrySerial().isBlank());
+            var tempEntries2 = new ArrayList<>(updateVO);
+            tempEntries2.removeIf(e -> e.getInitialMoneyEntrySerial().isBlank());
             String initialEntryDate = miscellaneousDataService.getInitialEntryDate();
             for (var newEntry : tempEntries) {
+                // check for repeated company
+                if (tempEntries2.stream().anyMatch(e ->
+                        e.getPartnerCompanyID().equals(newEntry.getPartnerCompanyID()))) {
+                    throw new GlobalParamException("检测到重复单位：" + newEntry.getAbbreviatedName());
+                }
                 newEntry.setEntryDate(initialEntryDate);
                 int count = initialMoneyEntryMapper.countNumberOfEntriesOfGivenDate(initialEntryDate, getPrefix(isInbound));
                 MyUtils.formNewSerial(getPrefix(isInbound), count, initialEntryDate);
@@ -78,8 +86,7 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
             }
 
             // update existing
-            tempEntries = new ArrayList<>(updateVO);
-            tempEntries.removeIf(e -> e.getInitialMoneyEntrySerial().isBlank());
+            tempEntries = tempEntries2;
             for (var entry : tempEntries) {
                 initialMoneyEntryMapper.updateEntry(entry);
             }

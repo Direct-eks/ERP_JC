@@ -2,6 +2,7 @@ package org.jc.backend.controller.entries;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.InitialMoneyEntryO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.InitialMoneyEntryService;
@@ -35,7 +36,7 @@ public class InitialMoneyEntryController {
     public void updateEntries(
             @RequestParam("isInbound") boolean isInbound,
             @RequestBody @Validated ListUpdateVO<InitialMoneyEntryO> updateVO
-    ) {
+    ) throws GlobalParamException {
         logger.info("GET Request to /initialMoneyEntry/updateEntries");
 
         initialMoneyEntryService.updateEntries(isInbound, updateVO.getElements());
