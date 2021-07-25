@@ -6,7 +6,6 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.SupplierO;
 import org.jc.backend.entity.SupplierResourceO;
 import org.jc.backend.entity.VO.ListUpdateVO;
-import org.jc.backend.entity.VO.SupplierWithResourcesVO;
 import org.jc.backend.service.SupplierService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

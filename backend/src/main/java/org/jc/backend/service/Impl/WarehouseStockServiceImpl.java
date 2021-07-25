@@ -558,30 +558,10 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     @Override
     public List<StockStatO> getWarehouseStockReport(int categoryID, int warehouseID, String factoryBrand, String code) {
         try {
-            var categories = modelService.getModelCategories();
-            String treeLevel = null;
-            for (var c : categories) {
-                if (c.getModelCategoryID() == categoryID) {
-                    treeLevel = c.getTreeLevel();
-                    break;
-                }
-            }
-            treeLevel = treeLevel == null ? "" : treeLevel;
+            String treeLevel = modelService.getTreeLevelByCategoryID(categoryID);
+            factoryBrand = factoryBrand.isBlank() ? "" : factoryBrand;
 
-            var list = warehouseStockMapper.queryWarehouseStocks(treeLevel);
-            list.removeIf(item -> {
-                if (warehouseID != -1 && item.getWarehouseID() != warehouseID) {
-                    return true;
-                }
-                if (!factoryBrand.isBlank() && !item.getFactoryCode().equals(factoryBrand)) {
-                    return true;
-                }
-                if (!code.isBlank() && !item.getCode().equals(code)) {
-                    return true;
-                }
-                return false;
-            });
-            return list;
+            return warehouseStockMapper.queryWarehouseStocks(treeLevel, warehouseID, factoryBrand, code);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -594,7 +574,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     @Override
     public void exportStockReport(HttpServletResponse response) {
         try {
-            var list = warehouseStockMapper.queryWarehouseStocks("");
+            var list = warehouseStockMapper.queryWarehouseStocks("", -1, "", "");
 
             SXSSFWorkbook workbook = new SXSSFWorkbook();
             Sheet sheet = workbook.createSheet("库存报表");

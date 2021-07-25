@@ -8,8 +8,6 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.EndUserO.EndUserLoginVO;
 import org.jc.backend.entity.EndUserO.EndUserVO;
-import org.jc.backend.entity.EndUserO.UserPermission;
-import org.jc.backend.entity.EndUserO.UserRole;
 import org.jc.backend.service.EndUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

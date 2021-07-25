@@ -20,5 +20,5 @@ public interface WarehouseStockMapper {
     void updateStockInfo(WarehouseStockO warehouseStockO);
     void updateInitialInfo(WarehouseStockO warehouseStockO);
 
-    List<StockStatO> queryWarehouseStocks(String treeLevel);
+    List<StockStatO> queryWarehouseStocks(String treeLevel, int warehouseID, String factoryBrand, String code);
 }
