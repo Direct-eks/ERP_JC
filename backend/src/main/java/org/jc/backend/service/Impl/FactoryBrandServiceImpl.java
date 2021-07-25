@@ -4,6 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.FactoryBrandMapper;
 import org.jc.backend.entity.FactoryBrandO;
 import org.jc.backend.service.FactoryBrandService;
+import org.jc.backend.service.UsageCheckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,14 @@ public class FactoryBrandServiceImpl implements FactoryBrandService {
     private static final Logger logger = LoggerFactory.getLogger(FactoryBrandServiceImpl.class);
 
     private final FactoryBrandMapper factoryBrandMapper;
+    private final UsageCheckService usageCheckService;
 
-    public FactoryBrandServiceImpl(FactoryBrandMapper factoryBrandMapper) {
+    public FactoryBrandServiceImpl(
+            FactoryBrandMapper factoryBrandMapper,
+            UsageCheckService usageCheckService
+    ) {
         this.factoryBrandMapper = factoryBrandMapper;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -62,7 +68,9 @@ public class FactoryBrandServiceImpl implements FactoryBrandService {
             oldBrands.removeIf(oldB -> updateVO.stream()
                     .anyMatch(b -> b.getFactoryBrandID().equals(oldB.getFactoryBrandID())));
             for (var b : oldBrands) {
-                // todo remove
+                if (!usageCheckService.isBrandIDInUse(b.getFactoryBrandID())) {
+                    factoryBrandMapper.deleteBrand(b.getFactoryBrandID());
+                }
             }
 
         } catch (PersistenceException e) {

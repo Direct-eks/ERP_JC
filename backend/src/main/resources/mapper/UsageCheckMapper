@@ -54,6 +54,13 @@
         limit 1
     </select>
 
+    <select id="findBrandIDInSkus" resultType="java.lang.Integer">
+        select 1
+        from w_sku
+        where factory_brand_id = #{id}
+        limit 1
+    </select>
+
     <select id="findUnitIDInModels" resultType="java.lang.Integer">
         select 1
         from w_model

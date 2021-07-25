@@ -32,4 +32,9 @@
         where factory_brand_id = #{factoryBrandID}
     </update>
 
+    <delete id="deleteBrand">
+        delete from w_factory_brand
+        where factory_brand_id = #{id}
+    </delete>
+
 </mapper>

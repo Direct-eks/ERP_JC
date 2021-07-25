@@ -15,6 +15,7 @@ public interface UsageCheckMapper {
     Integer findWarehouseIDInEntries(String table, int id);
     Integer findDepartmentIDInEntries(String table, int id);
     Integer findBankAccountIDInEntries(String table, int id);
+    Integer findBrandIDInSkus(int id);
     Integer findUnitIDInModels(int id);
     Integer findModelIDInSkus(int id);
     Integer findModelCategoryIDInModels(int id);

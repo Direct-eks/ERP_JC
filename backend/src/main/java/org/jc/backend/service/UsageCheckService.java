@@ -11,6 +11,7 @@ public interface UsageCheckService {
     boolean isWarehouseIDInUse(int warehouseID);
     boolean isDepartmentIDInUse(int departmentID);
     boolean isBankAccountIDInUse(int bankID);
+    boolean isBrandIDInUse(int brandID);
     boolean isUnitIDInUse(int unitID);
     boolean isModelIDInUse(int modelID);
     boolean isModelCategoryIDInUse(int categoryID);

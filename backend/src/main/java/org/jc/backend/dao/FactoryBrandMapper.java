@@ -14,4 +14,5 @@ public interface FactoryBrandMapper {
     List<FactoryBrandO> queryAllFactoryBrands();
     void insertBrand(FactoryBrandO factoryBrandO);
     void updateBrand(FactoryBrandO factoryBrandO);
+    void deleteBrand(int id);
 }

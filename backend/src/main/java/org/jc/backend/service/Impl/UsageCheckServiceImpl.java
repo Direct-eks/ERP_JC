@@ -112,6 +112,11 @@ public class UsageCheckServiceImpl implements UsageCheckService {
     }
 
     @Override
+    public boolean isBrandIDInUse(int brandID) {
+        return usageCheckMapper.findBrandIDInSkus(brandID) != null;
+    }
+
+    @Override
     public boolean isUnitIDInUse(int unitID) {
         return usageCheckMapper.findUnitIDInModels(unitID) != null;
     }
