@@ -26,6 +26,7 @@
     <resultMap id="entryResultMap" type="org.jc.backend.entity.InitialMoneyEntryO">
         <result property="initialMoneyEntrySerial" column="initial_money_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
+        <result property="abbreviatedName" column="abbreviated_name"/>
         <result property="remark" column="remark"/>
         <result property="drawer" column="drawer"/>
         <result property="entryDate" column="entry_date"/>
@@ -37,11 +38,14 @@
 
 
     <select id="queryEntries" resultMap="entryResultMap">
-        select initial_money_entry_serial, partner_company_id, remark, drawer,
-               entry_date, creation_date, borrow_or_lend, balance, is_modified
-        from m_initial_money_entry
+        select initial_money_entry_serial, e.partner_company_id,
+               c.abbreviated_name, e.remark, drawer, entry_date,
+               creation_date, borrow_or_lend, balance, is_modified
+        from m_initial_money_entry as e join c_partner_company as c
+            on e.partner_company_id = c.partner_company_id
         where initial_money_entry_serial like #{prefix}|'%'
     </select>
+
     <select id="queryEntryByCompanyID" resultMap="entryResultMap">
         select initial_money_entry_serial, partner_company_id, remark, drawer,
                entry_date, creation_date, borrow_or_lend, balance, is_modified
@@ -50,7 +54,7 @@
             and partner_company_id = #{id}
     </select>
 
-    <update id="modifyEntry">
+    <update id="updateEntry">
         update m_initial_money_entry
         set remark = #{remark},
             borrow_or_lend = #{borrowOrLend},

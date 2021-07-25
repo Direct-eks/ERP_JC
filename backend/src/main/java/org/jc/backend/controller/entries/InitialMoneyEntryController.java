@@ -31,14 +31,14 @@ public class InitialMoneyEntryController {
     // isInbound = true: 付款, false: 收款
 
     @ApiOperation(value = "", response = void.class)
-    @PutMapping("/createEntry")
-    public void createEntry(
-            @RequestBody @Validated InitialMoneyEntryO vo,
-            @RequestParam("isInbound") boolean isInbound
+    @PostMapping("/updateEntries")
+    public void updateEntries(
+            @RequestParam("isInbound") boolean isInbound,
+            @RequestBody @Validated ListUpdateVO<InitialMoneyEntryO> updateVO
     ) {
-        logger.info("GET Request to /initialMoneyEntry/createEntry, data: {}", vo);
+        logger.info("GET Request to /initialMoneyEntry/updateEntries");
 
-        initialMoneyEntryService.createEntry(isInbound, vo);
+        initialMoneyEntryService.updateEntries(isInbound, updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = InitialMoneyEntryO.class)
@@ -49,17 +49,6 @@ public class InitialMoneyEntryController {
         logger.info("GET Request to /initialMoneyEntry/getEntries");
 
         return initialMoneyEntryService.getEntries(isInbound);
-    }
-
-    @ApiOperation(value = "", response = void.class)
-    @PostMapping("/modifyEntries")
-    public void modifyEntries(
-            @RequestParam("isInbound") boolean isInbound,
-            @RequestBody @Validated ListUpdateVO<InitialMoneyEntryO> updateVO
-    ) {
-        logger.info("GET Request to /initialMoneyEntry/modifyEntries");
-
-        initialMoneyEntryService.modifyEntries(isInbound, updateVO.getElements());
     }
 
 }

@@ -18,6 +18,8 @@ public class InitialMoneyEntryO {
     @NotNull(message = "partnerCompanyID null error")
     @Min(value = 0, message = "partnerCompanyID value error")
     private Integer partnerCompanyID;
+    // from c_partner_company
+    private String abbreviatedName;
 
     @NotNull(message = "remark null error")
     private String remark;

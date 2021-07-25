@@ -4,12 +4,14 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.InitialMoneyEntryMapper;
 import org.jc.backend.entity.InitialMoneyEntryO;
 import org.jc.backend.service.InitialMoneyEntryService;
+import org.jc.backend.service.MiscellaneousDataService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,28 +19,17 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
     private static final Logger logger = LoggerFactory.getLogger(InitialMoneyEntryServiceImpl.class);
 
     private final InitialMoneyEntryMapper initialMoneyEntryMapper;
+    private final MiscellaneousDataService miscellaneousDataService;
 
-    public InitialMoneyEntryServiceImpl(InitialMoneyEntryMapper initialMoneyEntryMapper) {
+    public InitialMoneyEntryServiceImpl(
+            InitialMoneyEntryMapper initialMoneyEntryMapper,
+            MiscellaneousDataService miscellaneousDataService
+    ) {
         this.initialMoneyEntryMapper = initialMoneyEntryMapper;
+        this.miscellaneousDataService = miscellaneousDataService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
-
-    @Transactional
-    @Override
-    public void createEntry(boolean isInbound, InitialMoneyEntryO newEntry) {
-        try {
-
-            String entryDate = newEntry.getEntryDate();
-            int count = initialMoneyEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, getPrefix(isInbound));
-            MyUtils.formNewSerial(getPrefix(isInbound), count, entryDate);
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("Insert failed");
-            throw e;
-        }
-    }
 
     private String getPrefix(boolean isInbound) {
         return isInbound ? "初付" : "初收";
@@ -72,8 +63,34 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
 
     @Transactional
     @Override
-    public void modifyEntries(boolean isInbound, List<InitialMoneyEntryO> updateVO) {
+    public void updateEntries(boolean isInbound, List<InitialMoneyEntryO> updateVO) {
         try {
+            var tempEntries = new ArrayList<>(updateVO);
+
+            // check for new
+            tempEntries.removeIf(e -> !e.getInitialMoneyEntrySerial().isBlank());
+            String initialEntryDate = miscellaneousDataService.getInitialEntryDate();
+            for (var newEntry : tempEntries) {
+                newEntry.setEntryDate(initialEntryDate);
+                int count = initialMoneyEntryMapper.countNumberOfEntriesOfGivenDate(initialEntryDate, getPrefix(isInbound));
+                MyUtils.formNewSerial(getPrefix(isInbound), count, initialEntryDate);
+                initialMoneyEntryMapper.insertEntry(newEntry);
+            }
+
+            // update existing
+            tempEntries = new ArrayList<>(updateVO);
+            tempEntries.removeIf(e -> e.getInitialMoneyEntrySerial().isBlank());
+            for (var entry : tempEntries) {
+                initialMoneyEntryMapper.updateEntry(entry);
+            }
+
+            // check for removed
+            var originalEntries = initialMoneyEntryMapper.queryEntries(getPrefix(isInbound));
+            originalEntries.removeIf(oldE -> updateVO.stream()
+                    .anyMatch(e -> e.getInitialMoneyEntrySerial().equals(oldE.getInitialMoneyEntrySerial())));
+            for (var entry : originalEntries) {
+                initialMoneyEntryMapper.deleteEntry(entry.getInitialMoneyEntrySerial());
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
