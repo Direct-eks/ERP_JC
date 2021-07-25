@@ -15,4 +15,5 @@ public interface WarehouseMapper {
 
     void insertWarehouse(WarehouseO warehouseO);
     void updateWarehouse(WarehouseO warehouseO);
+    void deleteWarehouse(int id);
 }

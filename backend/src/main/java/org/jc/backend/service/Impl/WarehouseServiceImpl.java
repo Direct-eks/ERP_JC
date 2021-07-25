@@ -3,6 +3,7 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.WarehouseMapper;
 import org.jc.backend.entity.WarehouseO;
+import org.jc.backend.service.UsageCheckService;
 import org.jc.backend.service.WarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,14 @@ public class WarehouseServiceImpl implements WarehouseService {
     private static final Logger logger = LoggerFactory.getLogger(WarehouseServiceImpl.class);
 
     private final WarehouseMapper warehouseMapper;
+    private final UsageCheckService usageCheckService;
 
-    public WarehouseServiceImpl(WarehouseMapper warehouseMapper) {
+    public WarehouseServiceImpl(
+            WarehouseMapper warehouseMapper,
+            UsageCheckService usageCheckService
+    ) {
         this.warehouseMapper = warehouseMapper;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -61,7 +67,9 @@ public class WarehouseServiceImpl implements WarehouseService {
             oldWarehouses.removeIf(oldW -> updateVO.stream()
                     .anyMatch(w -> w.getWarehouseID() == oldW.getWarehouseID()));
             for (var w : oldWarehouses) {
-                // todo remove
+                if (!usageCheckService.isWarehouseIDInUse(w.getWarehouseID())) {
+                    warehouseMapper.deleteWarehouse(w.getWarehouseID());
+                }
             }
 
         } catch (PersistenceException e) {

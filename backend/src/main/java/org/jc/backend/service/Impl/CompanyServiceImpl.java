@@ -9,6 +9,7 @@ import org.jc.backend.entity.CompanyO;
 import org.jc.backend.entity.RelevantCompanyCategoryO;
 import org.jc.backend.entity.RelevantCompanyO;
 import org.jc.backend.service.CompanyService;
+import org.jc.backend.service.UsageCheckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,14 @@ public class CompanyServiceImpl implements CompanyService {
     private static final Logger logger = LoggerFactory.getLogger(CompanyServiceImpl.class);
 
     private final CompanyMapper companyMapper;
+    private final UsageCheckService usageCheckService;
 
-    public CompanyServiceImpl(CompanyMapper companyMapper) {
+    public CompanyServiceImpl(
+            CompanyMapper companyMapper,
+            UsageCheckService usageCheckService
+    ) {
         this.companyMapper = companyMapper;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -124,7 +130,9 @@ public class CompanyServiceImpl implements CompanyService {
                 oldAreas.removeIf(oldA -> updateVO.stream()
                         .anyMatch(a -> a.getAreaID().equals(oldA.getAreaID())));
                 for (var area : oldAreas) {
-                    // todo remove
+                    if (!usageCheckService.isPartnerCompanyCategoryIDInUse(area.getAreaID())) {
+                        companyMapper.deletePartnerCompanyArea(area.getAreaID());
+                    }
                 }
             }
 
@@ -157,7 +165,9 @@ public class CompanyServiceImpl implements CompanyService {
             oldCompanies.removeIf(oldC -> updateVO.stream()
                     .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
             for (var company : oldCompanies) {
-                // todo remove
+                if (!usageCheckService.isPartnerCompanyIDInUse(company.getCompanyID())) {
+                    companyMapper.deleteCompany(company.getCompanyID());
+                }
             }
 
         } catch (PersistenceException e) {
@@ -215,7 +225,9 @@ public class CompanyServiceImpl implements CompanyService {
             oldCategories.removeIf(oldC -> updateVO.stream()
                     .anyMatch(c -> c.getCategoryID().equals(oldC.getCategoryID())));
             for (var category : oldCategories) {
-                // todo remove
+                if (!usageCheckService.isRelevantCompanyCategoryIDInUse(category.getCategoryID())) {
+                    companyMapper.deleteRelevantCompanyCategory(category.getCategoryID());
+                }
             }
 
         } catch (PersistenceException e) {
@@ -247,7 +259,9 @@ public class CompanyServiceImpl implements CompanyService {
             oldCompanies.removeIf(oldC -> updateVO.stream()
                     .anyMatch(c -> oldC.getCompanyID().equals(c.getCompanyID())));
             for (var company : oldCompanies) {
-                // todo remove
+                if (!usageCheckService.isRelevantCompanyIDInUse(company.getCompanyID())) {
+                    companyMapper.deleteRelevantCompany(company.getCompanyID());
+                }
             }
 
         } catch (PersistenceException e) {

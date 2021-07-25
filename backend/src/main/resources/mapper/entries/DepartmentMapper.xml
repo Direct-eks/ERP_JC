@@ -30,4 +30,9 @@
         where department_id = #{departmentID}
     </update>
 
+    <delete id="deleteDepartment">
+        delete from e_department
+        where department_id = #{id}
+    </delete>
+
 </mapper>

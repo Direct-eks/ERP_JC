@@ -4,6 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.MeasurementUnitMapper;
 import org.jc.backend.entity.MeasurementUnitO;
 import org.jc.backend.service.MeasurementUnitService;
+import org.jc.backend.service.UsageCheckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,13 @@ public class MeasurementUnitServiceImpl implements MeasurementUnitService {
     private static final Logger logger = LoggerFactory.getLogger(MeasurementUnitServiceImpl.class);
 
     private final MeasurementUnitMapper measurementUnitMapper;
+    private final UsageCheckService usageCheckService;
 
-    public MeasurementUnitServiceImpl(MeasurementUnitMapper measurementUnitMapper) {
+    public MeasurementUnitServiceImpl(
+            MeasurementUnitMapper measurementUnitMapper,
+            UsageCheckService usageCheckService) {
         this.measurementUnitMapper = measurementUnitMapper;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -61,7 +66,9 @@ public class MeasurementUnitServiceImpl implements MeasurementUnitService {
             oldUnits.removeIf(oldU -> updateVO.stream()
                     .anyMatch(u -> u.getUnitID() == oldU.getUnitID()));
             for (var u : oldUnits) {
-                // todo remove
+                if (!usageCheckService.isUnitIDInUse(u.getUnitID())) {
+                    measurementUnitMapper.deleteUnit(u.getUnitID());
+                }
             }
 
         } catch (PersistenceException e) {

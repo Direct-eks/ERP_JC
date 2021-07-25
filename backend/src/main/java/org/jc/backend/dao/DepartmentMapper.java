@@ -15,4 +15,5 @@ public interface DepartmentMapper {
 
     void insertDepartment(DepartmentO departmentO);
     void updateDepartment(DepartmentO departmentO);
+    void deleteDepartment(int id);
 }

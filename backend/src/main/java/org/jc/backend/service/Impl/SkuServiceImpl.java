@@ -9,6 +9,7 @@ import org.jc.backend.entity.SkuO;
 import org.jc.backend.entity.StatO.StockLimitO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
+import org.jc.backend.service.UsageCheckService;
 import org.jc.backend.service.WarehouseStockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +27,16 @@ public class SkuServiceImpl implements SkuService {
     private final SkuMapper skuMapper;
     private final ModelService modelService;
     private final WarehouseStockService warehouseStockService;
+    private final UsageCheckService usageCheckService;
 
     public SkuServiceImpl(SkuMapper skuMapper,
                           ModelService modelService,
-                          WarehouseStockService warehouseStockService) {
+                          WarehouseStockService warehouseStockService,
+                          UsageCheckService usageCheckService) {
         this.skuMapper = skuMapper;
         this.modelService = modelService;
         this.warehouseStockService = warehouseStockService;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -151,7 +155,9 @@ public class SkuServiceImpl implements SkuService {
             oldSkus.removeIf(oldS -> updateVO.stream()
                     .anyMatch(s -> s.getSkuID().equals(oldS.getSkuID())));
             for (var sku : oldSkus) {
-                // todo removed
+                if (!usageCheckService.isSkuIDInUse(sku.getSkuID())) {
+                    skuMapper.deleteSku(sku.getSkuID());
+                }
             }
 
         } catch (PersistenceException e) {

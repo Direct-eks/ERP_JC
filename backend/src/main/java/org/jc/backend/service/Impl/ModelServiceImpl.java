@@ -12,6 +12,7 @@ import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.service.ModelService;
 import org.jc.backend.service.SkuService;
+import org.jc.backend.service.UsageCheckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -32,13 +33,16 @@ public class ModelServiceImpl implements ModelService {
 
     private final ModelMapper modelMapper;
     private final SkuService skuService;
+    private final UsageCheckService usageCheckService;
 
     public ModelServiceImpl(
             ModelMapper modelMapper,
-            @Lazy SkuService skuService
+            @Lazy SkuService skuService,
+            UsageCheckService usageCheckService
     ) {
         this.modelMapper = modelMapper;
         this.skuService = skuService;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -105,7 +109,9 @@ public class ModelServiceImpl implements ModelService {
             oldCategories.removeIf(oldC -> updateVO.stream()
                 .anyMatch(c -> c.getModelCategoryID().equals(oldC.getModelCategoryID())));
             for (var category : oldCategories) {
-                // todo remove
+                if (!usageCheckService.isModelCategoryIDInUse(category.getModelCategoryID())) {
+                    modelMapper.deleteModelCategory(category.getModelCategoryID());
+                }
             }
 
         } catch (PersistenceException e) {
@@ -162,7 +168,9 @@ public class ModelServiceImpl implements ModelService {
                 oldModels.removeIf(oldM -> updateVO.stream()
                         .anyMatch(m -> m.getModelID().equals(oldM.getModelID())));
                 for (var model : oldModels) {
-                    // todo remove
+                    if (!usageCheckService.isModelIDInUse(model.getModelID())) {
+                        modelMapper.deleteModel(model.getModelID());
+                    }
                 }
             }
 

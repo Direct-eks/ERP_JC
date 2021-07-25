@@ -33,6 +33,11 @@
         where model_category_id = #{modelCategoryID}
     </update>
 
+    <delete id="deleteModelCategory">
+        delete from w_model_category
+        where model_category_id = #{id}
+    </delete>
+
 
     <resultMap id="ModelResultMap" type="org.jc.backend.entity.ModelO">
         <result property="modelID" column="model_id"/>
@@ -77,6 +82,11 @@
             unit_id = #{unitID}
         where model_id = #{modelID}
     </update>
+
+    <delete id="deleteModel">
+        delete from w_model
+        where model_id = #{id}
+    </delete>
 
     <update id="updateCategoryOfModel">
         update w_model

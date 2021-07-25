@@ -90,6 +90,11 @@
         where sku_id = #{skuID}
     </update>
 
+    <delete id="deleteSku">
+        delete from w_sku
+        where sku_id = #{id}
+    </delete>
+
     <resultMap id="AlertResultMap" type="org.jc.backend.entity.StatO.StockLimitO">
         <result property="skuID" column="sku_id"/>
         <result property="categoryCode" column="category_code"/>

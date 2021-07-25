@@ -34,4 +34,9 @@
         where warehouse_id = #{warehouseID}
     </update>
 
+    <delete id="deleteWarehouse">
+        delete from w_warehouse
+        where warehouse_id = #{id}
+    </delete>
+
 </mapper>

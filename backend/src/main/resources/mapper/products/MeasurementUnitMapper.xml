@@ -28,4 +28,9 @@
         where measurement_unit_id = #{unitID}
     </update>
 
+    <delete id="deleteUnit">
+        delete from w_measurement_unit
+        where measurement_unit_id = #{id}
+    </delete>
+
 </mapper>

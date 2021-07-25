@@ -22,6 +22,7 @@ public interface SkuMapper {
 
     void insertSku(SkuO skuO);
     void updateSku(SkuO skuO);
+    void deleteSku(int id);
 
     List<StockLimitO> queryStockAlert();
 }

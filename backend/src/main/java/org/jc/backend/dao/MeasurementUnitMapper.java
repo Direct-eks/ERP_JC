@@ -15,4 +15,5 @@ public interface MeasurementUnitMapper {
 
     void insertUnit(MeasurementUnitO unitO);
     void updateUnit(MeasurementUnitO unitO);
+    void deleteUnit(int id);
 }

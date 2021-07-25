@@ -17,6 +17,7 @@ public interface CompanyMapper {
     List<CompanyAreaO> queryCompanyAreas();
     void insertPartnerCompanyArea(CompanyAreaO categoryO);
     void updatePartnerCompanyArea(CompanyAreaO categoryO);
+    void deletePartnerCompanyArea(int id);
 
     List<CompanyO> queryCompanyByFuzzySearch(String phone, String name);
     List<CompanyO> queryCompaniesByAreaID(int id);
@@ -24,12 +25,15 @@ public interface CompanyMapper {
     CompanyO querySelfCompany();
     void insertCompany(CompanyO companyO);
     void updateCompany(CompanyO companyO);
+    void deleteCompany(int id);
 
     List<RelevantCompanyO> queryRelevantCompaniesByCategory(int id);
     void insertRelevantCompanyCategory(RelevantCompanyCategoryO categoryO);
     void updateRelevantCompanyCategory(RelevantCompanyCategoryO categoryO);
+    void deleteRelevantCompanyCategory(int id);
 
     List<RelevantCompanyCategoryO> queryRelevantCompanyCategories();
     void insertRelevantCompany(RelevantCompanyO companyO);
     void updateRelevantCompany(RelevantCompanyO companyO);
+    void deleteRelevantCompany(int id);
 }

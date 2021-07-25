@@ -32,6 +32,10 @@
         where partner_company_area_id = #{areaID}
     </update>
 
+    <delete id="deletePartnerCompanyArea">
+        delete from c_partner_company_area
+        where partner_company_area_id = #{id}
+    </delete>
 
     <resultMap id="CompanyResultMap" type="org.jc.backend.entity.CompanyO">
         <result property="companyID" column="partner_company_id"/>
@@ -129,6 +133,10 @@
         where partner_company_id = #{companyID}
     </update>
 
+    <delete id="deleteCompany">
+        delete from c_partner_company
+        where partner_company_id = #{id}
+    </delete>
 
     <resultMap id="RelevantCompanyCategoryResultMap" type="org.jc.backend.entity.RelevantCompanyCategoryO">
         <result property="categoryID" column="relevant_company_category_id" />
@@ -153,6 +161,11 @@
             remark = #{remark}
         where relevant_company_category_id = #{categoryID}
     </update>
+
+    <delete id="deleteRelevantCompanyCategory">
+        delete from c_relevant_company_category
+        where relevant_company_category_id = #{id}
+    </delete>
 
 
     <resultMap id="RelevantCompanyResultMap" type="org.jc.backend.entity.RelevantCompanyO">
@@ -207,5 +220,10 @@
             remark = #{remark}
         where relevant_company_id = #{companyID}
     </update>
+
+    <delete id="deleteRelevantCompany">
+        delete from c_relevant_company
+        where relevant_company_id = #{id}
+    </delete>
 
 </mapper>
