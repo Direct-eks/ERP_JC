@@ -41,20 +41,20 @@
                         {{tableData.indexOf(item) + 1}}
                     </template>
                     <template v-slot:item.name="{ item }">
-                        <v-edit-dialog :return-value="item.name"
-                                       persistent large save-text="确认" cancel-text="取消">
+                        <v-edit-dialog :return-value="item.name">
                             {{item.name}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.name" single-line/>
+                                <v-text-field v-model="item.name" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
                             </template>
                         </v-edit-dialog>
                     </template>
                     <template v-slot:item.location="{ item }">
-                        <v-edit-dialog :return-value="item.location"
-                                       persistent large save-text="确认" cancel-text="取消">
+                        <v-edit-dialog :return-value="item.location">
                             {{item.location}}
                             <template v-slot:input>
-                                <v-text-field v-model="item.location" single-line/>
+                                <v-text-field v-model="item.location" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)"/>
                             </template>
                         </v-edit-dialog>
                     </template>

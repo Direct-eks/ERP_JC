@@ -38,20 +38,20 @@
                                   locale="zh-cn"
                                   dense>
                         <template v-slot:item.code="{ item }">
-                            <v-edit-dialog :return-value="item.code"
-                                           persistent large save-text="确认" cancel-text="取消">
+                            <v-edit-dialog :return-value="item.code">
                                 {{item.code}}
                                 <template v-slot:input>
-                                    <v-text-field v-model="item.code" single-line/>
+                                    <v-text-field v-model="item.code" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
                                 </template>
                             </v-edit-dialog>
                         </template>
                         <template v-slot:item.remark="{ item }">
-                            <v-edit-dialog :return-value="item.remark"
-                                           persistent large save-text="确认" cancel-text="取消">
+                            <v-edit-dialog :return-value="item.remark">
                                 {{item.remark}}
                                 <template v-slot:input>
-                                    <v-text-field v-model="item.remark" single-line/>
+                                    <v-text-field v-model="item.remark" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
                                 </template>
                             </v-edit-dialog>
                         </template>

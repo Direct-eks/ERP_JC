@@ -53,7 +53,8 @@
                             <v-edit-dialog :return-value="item.name">
                                 {{item.name}}
                                 <template v-slot:input>
-                                    <v-text-field v-model="item.name" single-line/>
+                                    <v-text-field v-model="item.name" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
                                 </template>
                             </v-edit-dialog>
                         </template>
@@ -61,7 +62,8 @@
                             <v-edit-dialog :return-value="item.remark">
                                 {{item.remark}}
                                 <template v-slot:input>
-                                    <v-text-field v-model="item.remark" single-line/>
+                                    <v-text-field v-model="item.remark" single-line
+                                                  @focus="$event.target.setSelectionRange(0, 100)"/>
                                 </template>
                             </v-edit-dialog>
                         </template>
