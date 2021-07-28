@@ -24,10 +24,10 @@ export default {
             name: '生产管理',
             url: '/production_management',
         },
-        // {
-        //     name: '账目管理',
-        //     url: '/accounts_management',
-        // },
+        {
+            name: '账目管理',
+            url: '/accounts_management',
+        },
         // {
         //     name: '固定资产管理',
         //     url: '/assets_management',
@@ -605,64 +605,63 @@ export default {
             ]
         }
     ],
-    accounts_management_nav: [
-        //todo
-        {
-            name: '进项税金',
-            url: '/accounts_management',
-        },
+    accounts_management_nav: [// todo
+        // {
+        //     name: '进项税金',
+        //     url: '/accounts_management',
+        // },
         {
             name: '收承兑汇票',
-            url: '/accounts_managemen',
+            url: '/acceptance_bill_recv',
         },
         {
             name: '付承兑汇票',
-            url: '/accounts_manageme',
+            url: '/acceptance_bill_pay',
         },
-        {
-            name: '承兑汇票解汇',
-            url: '/accounts_managem',
-        },
-        {
-            name: '应收票据',
-            url: '/accounts_manage',
-        },
-        {
-            name: '承兑汇票承付',
-            url: '/accounts_manag',
-        },
-        {
-            name: '应付票据',
-            url: '/accounts_mana',
-        },
-        {
-            name: '银行存取款',
-            url: '/accounts_man',
-        },
-        {
-            name: '其他收入',
-            url: '/accounts_ma',
-        },
-        {
-            name: '费用开支',
-            url: '/accounts_m',
-        },
-        {
-            name: '支付工资',
-            url: '/accounts_',
-        },
-        {
-            name: '现金/银行日记账',
-            url: '/accounts',
-        },
-        {
-            name: '现金/银行期初',
-            url: '/account',
-        },
-        {
-            name: '费用收入工资统计',
-            url: '/accoun',
-        },
+        // {
+        //     name: '承兑汇票解汇',
+        //     url: '/accounts_managem',
+        // },
+        // {
+        //     name: '应收票据',
+        //     url: '/accounts_manage',
+        // },
+        // {
+        //     name: '承兑汇票承付',
+        //     url: '/accounts_manag',
+        // },
+        // {
+        //     name: '应付票据',
+        //     url: '/accounts_mana',
+        // },
+        // {
+        //     name: '银行存取款',
+        //     url: '/accounts_man',
+        // },
+        // {
+        //     name: '其他收入',
+        //     url: '/accounts_ma',
+        // },
+        // {
+        //     name: '费用开支',
+        //     url: '/accounts_m',
+        // },
+        // {
+        //     name: '支付工资',
+        //     url: '/accounts_',
+        // },
+        // {
+        //     name: '现金/银行日记账',
+        //     url: '/accounts',
+        // },
+        // {
+        //     name: '现金/银行期初',
+        //     url: '/account',
+        // },
+        // {
+        //     name: '费用收入工资统计',
+        //     url: '/accoun',
+        // },
     ],
     assets_management_nav: [
         //todo

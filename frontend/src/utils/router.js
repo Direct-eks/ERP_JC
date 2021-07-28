@@ -538,7 +538,21 @@ const routes = [
     {
         path: '/accounts_management',
         name: '账目管理',
-        component: () => import('../views/7_Page_accounts_management')
+        component: () => import('../views/7_Page_accounts_management'),
+        children: [
+            {
+                path: '/acceptance_bill_recv',
+                name: '收承兑汇票',
+                component: () => import(/* webpackChunkName: "acceptance_bill_recv" */
+                    '~/views/Account_Management/Acceptance_Bill_Recv')
+            },
+            {
+                path: '/acceptance_bill_pay',
+                name: '付承兑汇票',
+                component: () => import(/* webpackChunkName: "acceptance_bill_pay" */
+                    '~/views/Account_Management/Acceptance_Bill_Pay')
+            },
+        ]
     },
     {
         path: '/assets_management',
