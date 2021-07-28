@@ -40,12 +40,12 @@ import nav from "~/utils/nav";
 export default {
     name: "Page_accounts_management",
     beforeMount() {
-        // let navItems = JSON.parse(JSON.stringify(nav.accounts_management_nav))
-        // for (const item of navItems) {
-        //     if (this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
-        //         this.navItem.push(item)
-        //     }
-        // }
+        let navItems = JSON.parse(JSON.stringify(nav.accounts_management_nav))
+        for (const item of navItems) {
+            if (this.$store.getters.currentUserIsPermitted(item.requiredPermission)) {
+                this.navItem.push(item)
+            }
+        }
 
         if (this.$route.path !== '/accounts_management') {
             this.showStatus = false

@@ -613,10 +613,12 @@ export default {
         {
             name: '收承兑汇票',
             url: '/acceptance_bill_recv',
+            requiredPermission: 'accountsManagement:AcceptanceRecv',
         },
         {
             name: '付承兑汇票',
             url: '/acceptance_bill_pay',
+            requiredPermission: 'accountsManagement:AcceptancePay',
         },
         // {
         //     name: '承兑汇票解汇',

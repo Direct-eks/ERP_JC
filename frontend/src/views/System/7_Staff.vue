@@ -101,6 +101,7 @@
                     <v-tab key="outboundCheckout">出库结账</v-tab>
                     <v-tab key="stockManagement">库存管理</v-tab>
                     <v-tab key="productionManagement">生产管理</v-tab>
+                    <v-tab key="accountsManagement">账目管理</v-tab>
                     <v-tab key="query">查询统计</v-tab>
                     <v-tab key="resources">资源录入</v-tab>
                     <v-tab key="system">系统标准</v-tab>
@@ -250,6 +251,14 @@
                                     <v-checkbox v-model="form.permissions" label="报废单录入" value="productionScrap:Creation"/>
                                     <v-checkbox v-model="form.permissions" label="报废单查询" value="productionScrap:Query"/>
                                     <v-checkbox v-model="form.permissions" label="报废单修改" value="productionScrap:Modification"/>
+                                </v-col>
+                            </v-row>
+                        </v-tab-item>
+                        <v-tab-item key="accountsManagement">
+                            <v-row class="ml-10">
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="收承兑汇票" value="accountsManagement:AcceptanceRecv"/>
+                                    <v-checkbox v-model="form.permissions" label="付承兑汇票" value="accountsManagement:AcceptancePay"/>
                                 </v-col>
                             </v-row>
                         </v-tab-item>
