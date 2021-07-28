@@ -259,6 +259,10 @@
                                 <v-col cols="auto">
                                     <v-checkbox v-model="form.permissions" label="收承兑汇票" value="accountsManagement:AcceptanceRecv"/>
                                     <v-checkbox v-model="form.permissions" label="付承兑汇票" value="accountsManagement:AcceptancePay"/>
+                                    <v-checkbox v-model="form.permissions" label="承兑汇票解汇" value="accountsManagement:AcceptanceSolutionPay"/>
+                                    <v-checkbox v-model="form.permissions" label="应收票据" value="accountsManagement:AcceptanceRecvStat"/>
+                                    <v-checkbox v-model="form.permissions" label="承兑汇票承付" value="accountsManagement:AcceptancePromissory"/>
+                                    <v-checkbox v-model="form.permissions" label="应付票据" value="accountsManagement:AcceptancePayStat"/>
                                 </v-col>
                             </v-row>
                         </v-tab-item>

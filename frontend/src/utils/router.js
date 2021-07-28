@@ -544,13 +544,37 @@ const routes = [
                 path: '/acceptance_bill_recv',
                 name: '收承兑汇票',
                 component: () => import(/* webpackChunkName: "acceptance_bill_recv" */
-                    '~/views/Account_Management/Acceptance_Bill_Recv')
+                    '~/views/Account_Management/1_Acceptance_Bill_Recv')
             },
             {
                 path: '/acceptance_bill_pay',
                 name: '付承兑汇票',
                 component: () => import(/* webpackChunkName: "acceptance_bill_pay" */
-                    '~/views/Account_Management/Acceptance_Bill_Pay')
+                    '~/views/Account_Management/2_Acceptance_Bill_Pay')
+            },
+            {
+                path: '/acceptance_bill_solution_pay',
+                name: '承兑汇票解汇',
+                component: () => import(/* webpackChunkName: "acceptance_bill_solution_pay" */
+                    '~/views/Account_Management/3_Acceptance_Bill_Solution_Pay')
+            },
+            {
+                path: '/acceptance_bill_recv_stat',
+                name: '应收票据',
+                component: () => import(/* webpackChunkName: "acceptance_bill_recv_stat" */
+                    '~/views/Account_Management/4_Acceptance_Bill_Recv_Stat')
+            },
+            {
+                path: '/acceptance_bill_promissory',
+                name: '承兑汇票承付',
+                component: () => import(/* webpackChunkName: "acceptance_bill_promissory" */
+                    '~/views/Account_Management/5_Acceptance_Bill_Promissory')
+            },
+            {
+                path: '/acceptance_bill_pay_stat',
+                name: '应付票据',
+                component: () => import(/* webpackChunkName: "acceptance_bill_pay_stat" */
+                    '~/views/Account_Management/6_Acceptance_Bill_Pay_Stat')
             },
         ]
     },

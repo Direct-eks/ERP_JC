@@ -620,22 +620,26 @@ export default {
             url: '/acceptance_bill_pay',
             requiredPermission: 'accountsManagement:AcceptancePay',
         },
-        // {
-        //     name: '承兑汇票解汇',
-        //     url: '/accounts_managem',
-        // },
-        // {
-        //     name: '应收票据',
-        //     url: '/accounts_manage',
-        // },
-        // {
-        //     name: '承兑汇票承付',
-        //     url: '/accounts_manag',
-        // },
-        // {
-        //     name: '应付票据',
-        //     url: '/accounts_mana',
-        // },
+        {
+            name: '承兑汇票解汇',
+            url: '/acceptance_bill_solution_pay',
+            requiredPermission: 'accountsManagement:AcceptanceSolutionPay',
+        },
+        {
+            name: '应收票据',
+            url: '/acceptance_bill_recv_stat',
+            requiredPermission: 'accountsManagement:AcceptanceRecvStat',
+        },
+        {
+            name: '承兑汇票承付',
+            url: '/acceptance_bill_promissory',
+            requiredPermission: 'accountsManagement:AcceptancePromissory',
+        },
+        {
+            name: '应付票据',
+            url: '/acceptance_bill_pay_stat',
+            requiredPermission: 'accountsManagement:AcceptancePayStat',
+        },
         // {
         //     name: '银行存取款',
         //     url: '/accounts_man',
