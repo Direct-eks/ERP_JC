@@ -5,6 +5,10 @@
         <v-card-title class="d-flex">
             生产厂
             <v-spacer></v-spacer>
+            <v-btn class="mr-3" color="warning"
+                   @click="deleteRow">
+                删除厂牌
+            </v-btn>
             <v-btn class="mr-3" color="primary"
                    @click="newRow">
                 新增厂牌
@@ -13,6 +17,7 @@
                    @click="saveChanges">
                 保存修改
             </v-btn>
+            <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/system">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
@@ -130,6 +135,11 @@ export default {
                 code: '',
                 remark: ''
             })
+        },
+        deleteRow() {
+            if (this.currentRow.length === 0) return
+            this.tableData.splice(this.tableData.indexOf(this.currentRow[0]), 1)
+            this.currentRow = []
         },
         moveItem(up) {
             if (this.tableData.length === 0) return

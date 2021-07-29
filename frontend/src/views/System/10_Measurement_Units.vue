@@ -5,6 +5,10 @@
         <v-card-title class="d-flex">
             计量单位
             <v-spacer></v-spacer>
+            <v-btn class="mr-3" color="warning"
+                   @click="deleteRow">
+                删除计量单位
+            </v-btn>
             <v-btn class="mr-3" color="primary"
                    @click="newRow">
                 新增计量单位
@@ -13,6 +17,7 @@
                    @click="saveChanges">
                 保存修改
             </v-btn>
+            <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/system">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
@@ -69,8 +74,8 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "MeasurementUnits",
     created() {
-        this.$store.watch(state => state.taxRateOptions, () => {
-            this.tableData = JSON.parse(JSON.stringify(this.$store.state.taxRateOptions))
+        this.$store.watch(state => state.measurementUnits, () => {
+            this.tableData = JSON.parse(JSON.stringify(this.$store.state.measurementUnits))
         })
     },
     beforeMount() {
@@ -86,7 +91,7 @@ export default {
                 { text: '描述', value: 'remark', width: '180px' },
             ],
             currentRow: [],
-            tableData: JSON.parse(JSON.stringify(this.$store.state.taxRateOptions)),
+            tableData: JSON.parse(JSON.stringify(this.$store.state.measurementUnits)),
             newRowIndex: -1
         }
     },
@@ -108,6 +113,11 @@ export default {
                 name: '',
                 remark: ''
             })
+        },
+        deleteRow() {
+            if (this.currentRow.length === 0) return
+            this.tableData.splice(this.tableData.indexOf(this.currentRow[0]), 1)
+            this.currentRow = []
         },
         saveChanges() {
             this.$postRequest(this.$api.updateUnits, {
