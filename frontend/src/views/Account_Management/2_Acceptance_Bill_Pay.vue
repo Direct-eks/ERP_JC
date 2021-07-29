@@ -11,6 +11,16 @@
                 返回
             </v-btn>
         </v-card-title>
+        <v-card-text>
+
+            <AcceptanceBillComponent :isInbound="false"
+                                     :paramForm="{}">
+            </AcceptanceBillComponent>
+
+            <AcceptanceBillQueryComponent>
+            </AcceptanceBillQueryComponent>
+
+        </v-card-text>
     </v-card>
 </template>
 
@@ -19,9 +29,13 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Acceptance_Bill_Pay",
+    components: {
+        AcceptanceBillComponent: () => import('~/components/AccountsManagementComponents/AcceptanceBillComponent'),
+        AcceptanceBillQueryComponent: () => import('~/components/AccountsManagementComponents/AcceptanceBillQueryComponent')
+    },
     data() {
         return {
-            mdiArrowLeft
+            mdiArrowLeft,
         }
     }
 }

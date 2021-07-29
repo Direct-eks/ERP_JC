@@ -11,6 +11,18 @@
                 返回
             </v-btn>
         </v-card-title>
+        <v-card-text>
+
+            <AcceptanceBillComponent :isInbound="true"
+                                     :paramForm="{}">
+            </AcceptanceBillComponent>
+
+            <v-divider class="my-2"></v-divider>
+
+            <AcceptanceBillQueryComponent>
+            </AcceptanceBillQueryComponent>
+
+        </v-card-text>
     </v-card>
 </template>
 
@@ -19,9 +31,15 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Acceptance_Bill_Recv",
+    components: {
+        AcceptanceBillComponent: () => import(/* webpackChunkName: "AcceptanceBillComponent" */
+            '~/components/AccountsManagementComponents/AcceptanceBillComponent'),
+        AcceptanceBillQueryComponent: () => import(/* webpackChunkName: "AcceptanceBillQueryComponent" */
+            '~/components/AccountsManagementComponents/AcceptanceBillQueryComponent')
+    },
     data() {
         return {
-            mdiArrowLeft
+            mdiArrowLeft,
         }
     }
 }
