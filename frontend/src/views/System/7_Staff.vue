@@ -440,7 +440,7 @@ export default {
             }
         },
         permittedRoundingAmountChange() {
-            this.form.permittedRoundingAmount = this.$validateFloat(this.form.permittedRoundingAmount)
+            this.form.permittedRoundingAmount = this.$validateFloat(this.form.permittedRoundingAmount, true)
         },
         chooseAllPermission() {
             this.form.permissions = JSON.parse(JSON.stringify(this.allPermissions))

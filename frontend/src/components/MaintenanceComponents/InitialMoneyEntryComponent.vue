@@ -162,7 +162,7 @@ export default {
             this.currentRow = []
         },
         saveBalance(item) {
-            item.balance = this.$validateFloat(item.balance)
+            item.balance = this.$validateFloat(item.balance, true)
         },
         save() {
             this.$postRequest(this.$api.updateInitialMoneyEntries, this.tableData, {

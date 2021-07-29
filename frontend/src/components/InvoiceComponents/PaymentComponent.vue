@@ -391,7 +391,7 @@ export default {
             this.fullSearchPanelOpen = false
         },
         handlePaymentAmountChange() {
-            this.form.paymentAmount = this.$validateFloat(this.form.paymentAmount.toString())
+            this.form.paymentAmount = this.$validateFloat(this.form.paymentAmount, true)
         },
         createEntry(exitBool) {
             this.submitPopup = false

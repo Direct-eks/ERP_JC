@@ -454,7 +454,7 @@ export default {
             this.fullSearchPanelOpen = false
         },
         handleInvoiceAmountChange() {
-            this.form.invoiceAmount = this.$validateFloat(this.form.invoiceAmount.toString())
+            this.form.invoiceAmount = this.$validateFloat(this.form.invoiceAmount, true)
         },
         inboundEntryChooseHandle(val) {
             if (val) {

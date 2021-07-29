@@ -53,12 +53,17 @@ Vue.prototype.$Big = Big
 Vue.prototype.$Big.DP = 8
 Vue.prototype.$Big.RM = Big.roundHalfUp
 
-function validateFloat(value) {
+function validateFloat(value, useTwoDecimal) {
     let val = value.toString()
     val = val.replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
     val = val.replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
     val = val.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".")
-    val = val.replace(/^(-)*(\d+)\.(\d{1,8}).*$/, '$1$2.$3') // 只能输入一至八个小数
+    if (useTwoDecimal) {
+        val = val.replace(/^(-)*(\d+)\.(\d{1,2}).*$/, '$1$2.$3') // 只能输入2个小数
+    }
+    else {
+        val = val.replace(/^(-)*(\d+)\.(\d{1,8}).*$/, '$1$2.$3') // 只能输入8个小数
+    }
     if (val.indexOf(".") < 0 && val !== "") { // 如果没有小数点，首位不能为0
         val = parseFloat(val)
     }

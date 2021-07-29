@@ -508,7 +508,7 @@ export default {
         },
         handleInvoiceAmountChange() {
             this.form.invoiceAmount = this.form.invoiceAmount === '' ? '0' :
-                this.$validateFloat(this.form.invoiceAmount.toString())
+                this.$validateFloat(this.form.invoiceAmount.toString(), true)
         },
         createInvoiceEntry() {
             if (this.$refs.form.validate()) {

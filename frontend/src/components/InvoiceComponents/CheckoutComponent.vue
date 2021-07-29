@@ -615,9 +615,9 @@ export default {
         },
         handlePaymentAmountChange() {
             this.form.paymentAmount = this.form.paymentAmount === '' ? '0' :
-                this.$validateFloat(this.form.paymentAmount)
+                this.$validateFloat(this.form.paymentAmount, true)
             this.form.roundedAmount = this.form.roundedAmount === '' ? '0' :
-                this.$validateFloat(this.form.roundedAmount)
+                this.$validateFloat(this.form.roundedAmount, true)
 
             if (this.form.isRounded === 1) {
                 const r = this.$Big(this.form.roundedAmount)

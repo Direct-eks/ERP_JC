@@ -331,7 +331,7 @@ export default {
             this.relativeCompanySearchPanelOpen = false
         },
         handleShippingCostChange() {
-            this.form.shippingCost = this.$validateFloat(this.form.shippingCost)
+            this.form.shippingCost = this.$validateFloat(this.form.shippingCost, true)
             this.handleTotalChange()
         },
         handleTotalChange() {
