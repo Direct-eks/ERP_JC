@@ -2,6 +2,7 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.AcceptanceMapper;
+import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.service.AcceptanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,10 @@ public class AcceptanceServiceImpl implements AcceptanceService {
 
     @Transactional
     @Override
-    public void createEntry() {
+    public void createEntry(AcceptanceEntryO entryO) {
         try {
+            // todo
+            acceptanceMapper.insertEntry(entryO);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

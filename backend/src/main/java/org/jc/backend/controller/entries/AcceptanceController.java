@@ -7,10 +7,8 @@ import org.jc.backend.service.AcceptanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,8 +30,10 @@ public class AcceptanceController {
 
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/createEntry")
-    public void createEntry() {
+    public void createEntry(@RequestBody @Validated AcceptanceEntryO entryO) {
+        logger.info("PUT Request to /acceptanceEntry/createEntry, data: {}", entryO);
 
+        acceptanceService.createEntry(entryO);
     }
 
     @ApiOperation(value = "", response = AcceptanceEntryO.class)

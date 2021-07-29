@@ -1,5 +1,19 @@
 <template>
     <div>
+        <v-row class="mb-2" dense>
+            <v-col cols="auto">
+                <DateRangePicker @chooseDate="chooseDateAction">
+                </DateRangePicker>
+            </v-col>
+            <v-col cols="auto">
+                <v-btn color="primary" @click="query">查询</v-btn>
+            </v-col>
+            <v-col cols="auto">
+                <v-btn color="accent" @click="exportEntry">查看/修改</v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
+        </v-row>
+
         <v-data-table v-model="queryTableCurrentRow"
                       :headers="queryTableHeaders"
                       :items="queryTableData"
@@ -17,37 +31,23 @@
                       locale="zh-cn"
                       dense>
         </v-data-table>
-        <v-row class="mt-2" dense>
-            <v-col cols="auto">
-                <v-btn color="primary" @click="query">查询</v-btn>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <v-dialog v-model="deletePopup" max-width="300px">
-                    <template v-slot:activator="{ on }">
-                        <v-btn color="warning" v-on="on">删除</v-btn>
-                    </template>
-                    <v-card>
-                        <v-card-title>确认提交？</v-card-title>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="primary" @click="deletePopup = false">取消</v-btn>
-                            <v-btn color="success" @click="handleDelete">确认</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-col>
-            <v-spacer></v-spacer>
-        </v-row>
     </div>
 </template>
 
 <script>
+import DateRangePicker from "~/components/DateRangePicker";
+
 export default {
     name: "AcceptanceBillQueryComponent",
+    components: {
+        DateRangePicker
+    },
     data() {
         return {
-            deletePopup: false,
+            dateRange: [
+                new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
+                new Date().format("yyyy-MM-dd").substr(0,10)
+            ],
 
             queryTableHeaders: [
                 { text: '单据号', value: 'acceptanceEntrySerial', width: '120px' },
@@ -70,13 +70,24 @@ export default {
         query() {
 
         },
+        chooseDateAction(val) {
+            this.dateRange = val
+        },
+        exportEntry() {
+            if (this.queryTableCurrentRow.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '未选择单据', color: 'warning'
+                })
+                return
+            }
+            this.$emit('entryExport', this.queryTableCurrentRow[0])
+        },
         tableClick(row) {
             if (this.queryTableCurrentRow.includes(row)) {
                 this.queryTableCurrentRow = []
             }
             else {
                 this.queryTableCurrentRow = [row]
-                this.$emit('tableClick', row)
             }
         },
         tableClick2(row) {
@@ -85,12 +96,8 @@ export default {
             }
             else {
                 this.queryTableCurrentRow = [row.item]
-                this.$emit('tableClick', row.item)
             }
         },
-        handleDelete() {
-
-        }
     }
 }
 </script>

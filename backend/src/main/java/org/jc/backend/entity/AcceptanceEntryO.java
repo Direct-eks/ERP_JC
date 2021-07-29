@@ -26,6 +26,10 @@ public class AcceptanceEntryO {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "办理日期错误")
     private String entryDate;
 
+    @NotNull(message = "creationDate null error")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "creationDate value error")
+    private String creationDate;
+
     @NotNull(message = "departmentID null error")
     @Min(value = 0, message = "部门错误")
     private Integer departmentID;
@@ -50,6 +54,7 @@ public class AcceptanceEntryO {
     private String amount;
 
     @NotNull(message = "number null error")
+    @NotBlank(message = "汇票号码不能为空")
     private String number;
 
     @NotNull(message = "issueDate null error")
@@ -69,4 +74,7 @@ public class AcceptanceEntryO {
 
     @NotNull(message = "remark null error")
     private String remark;
+
+    private String classification;
+    private int status;
 }

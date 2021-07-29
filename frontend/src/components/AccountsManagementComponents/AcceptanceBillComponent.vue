@@ -100,10 +100,12 @@
                     <v-text-field v-model="form.amount"
                                   label="金额"
                                   hide-details="auto"
+                                  type="number"
+                                  @change="handleAmountChange"
                                   outlined
                                   :rules="rules.amount"
                                   dense
-                                  style="width: 200px">
+                                  style="width: 140px">
                     </v-text-field>
                 </v-col>
                 <v-col cols="auto">
@@ -153,6 +155,21 @@
         <v-row>
             <v-spacer></v-spacer>
             <v-col cols="auto">
+                <v-dialog v-model="deletePopup" max-width="300px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="warning" v-on="on">删除</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>确认删除？</v-card-title>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" @click="deletePopup = false">取消</v-btn>
+                            <v-btn color="success" @click="handleDelete">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-col>
+            <v-col cols="auto">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
                         <v-btn color="primary" v-on="on">保存新单据</v-btn>
@@ -170,7 +187,7 @@
             <v-col cols="auto">
                 <v-dialog v-model="submitPopup2" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="primary" v-on="on">修改</v-btn>
+                        <v-btn color="accent" v-on="on">修改</v-btn>
                     </template>
                     <v-card>
                         <v-card-title>确认提交？</v-card-title>
@@ -210,6 +227,7 @@ export default {
     data() {
         return {
             fullSearchPanelOpen: false,
+            deletePopup: false,
             submitPopup: false,
             submitPopup2: false,
 
@@ -217,7 +235,7 @@ export default {
             sourceOptions: ['本单位', '外单位'],
 
             form: {
-                serial: '',
+                acceptanceEntrySerial: '',
                 partnerCompanyID: -1, companyAbbreviatedName: '',
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 departmentID: -1, departmentName: '',
@@ -241,7 +259,14 @@ export default {
     },
     computed: {
         departmentOptions() {
-            return this.$store.state.departmentOptions
+            const options = this.$store.state.departmentOptions
+            for (const item of options) {
+                if (item.isDefault === 1) {
+                    this.form.departmentID = item.departmentID
+                    break
+                }
+            }
+            return options
         },
         bankAccountOptions() {
             return this.$store.state.visibleBankAccounts
@@ -257,6 +282,12 @@ export default {
             this.fullSearchPanelOpen = false
         },
         importEntry() {
+
+        },
+        handleAmountChange(item) {
+            this.form.amount = this.$validateFloat(item, true)
+        },
+        handleDelete() {
 
         },
         saveNew() {
