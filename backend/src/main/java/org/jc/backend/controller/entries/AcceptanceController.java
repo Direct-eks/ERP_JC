@@ -2,13 +2,17 @@ package org.jc.backend.controller.entries;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.service.AcceptanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Indexed
 @Api(tags = "Acceptance Entry Related")
@@ -30,5 +34,11 @@ public class AcceptanceController {
     @PutMapping("/createEntry")
     public void createEntry() {
 
+    }
+
+    @ApiOperation(value = "", response = AcceptanceEntryO.class)
+    @GetMapping("/getEntries")
+    public List<AcceptanceEntryO> getEntries() {
+        return null;
     }
 }
