@@ -43,6 +43,11 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        allowFutureDates: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     watch: {
@@ -56,9 +61,19 @@ export default {
     data() {
         return {
             localEntryDate: this.entryDate,
-            allowedMaxDate: new Date().format('yyyy-MM-dd').substr(0, 10),
+            today: new Date().format('yyyy-MM-dd').substr(0, 10),
         }
     },
+    computed: {
+        allowedMaxDate() {
+            if (this.allowFutureDates) {
+                return undefined
+            }
+            else {
+                return this.today
+            }
+        }
+    }
 }
 </script>
 
