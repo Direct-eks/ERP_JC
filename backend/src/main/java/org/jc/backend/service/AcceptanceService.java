@@ -11,6 +11,6 @@ public interface AcceptanceService {
     void createSolutionPayEntry();
 
     AcceptanceEntryO getEntryByNumber(String number);
-    List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String classification);
+    List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String prefix);
 
 }

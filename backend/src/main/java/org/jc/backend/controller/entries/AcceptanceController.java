@@ -69,15 +69,15 @@ public class AcceptanceController {
     public List<AcceptanceEntryO> getEntriesInDateRange(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
-            @RequestParam("classification") String classification
+            @RequestParam("prefix") String prefix
     ) throws GlobalParamException {
         logger.info("GET Request to /acceptanceEntry/getEntriesInDateRange, " +
-                "startDate: {}, endDate: {}, classification: {}", startDateString,
-                endDateString, classification);
+                "startDate: {}, endDate: {}, prefix: {}", startDateString,
+                endDateString, prefix);
 
         MyUtils.parseAndCheckDateString(startDateString);
         MyUtils.parseAndCheckDateString(endDateString);
 
-        return acceptanceService.getEntriesInDateRange(startDateString, endDateString, classification);
+        return acceptanceService.getEntriesInDateRange(startDateString, endDateString, prefix);
     }
 }

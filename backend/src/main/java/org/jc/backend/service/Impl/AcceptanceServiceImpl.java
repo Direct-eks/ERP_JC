@@ -80,9 +80,9 @@ public class AcceptanceServiceImpl implements AcceptanceService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String classification) {
+    public List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String prefix) {
         try {
-            return acceptanceMapper.queryEntriesInDateRange(startDate, endDate, classification);
+            return acceptanceMapper.queryEntriesInDateRange(startDate, endDate, prefix);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

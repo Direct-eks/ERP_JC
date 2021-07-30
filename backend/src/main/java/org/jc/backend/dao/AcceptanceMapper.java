@@ -15,7 +15,7 @@ public interface AcceptanceMapper {
     void insertEntry(AcceptanceEntryO entryO);
 
     AcceptanceEntryO queryEntryByNumber(String number);
-    List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String classification);
+    List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String prefix);
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);
 }

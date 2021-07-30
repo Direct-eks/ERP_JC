@@ -70,7 +70,7 @@
             join e_department as d on a.department_id = d.department_id
             left join c_bank_account as b on a.bank_account_id = b.bank_account_id
         where (a.entry_date between #{startDate} and #{endDate})
-            and a.classification = #{classification}
+            and a.serial like #{prefix}||'%'
         order by a.serial, a.entry_date desc
     </select>
 
