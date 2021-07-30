@@ -5,11 +5,22 @@
 <mapper namespace="org.jc.backend.dao.AcceptanceMapper">
 
     <select id="countNumberOfEntriesOfGivenDate" resultType="java.lang.Integer">
-
+        select count(serial)
+        from m_acceptance_entry
+        where entry_date = #{date} and classification = #{classification}
     </select>
 
     <insert id="insertEntry">
-
+        insert into m_acceptance_entry(
+            serial, partner_company_id, entry_date, creation_date, department_id,
+            source, bank_account_id, source_serial, amount, number, issue_date,
+            expiration_date, type, drawer, remark, classification, status
+        )
+        values (
+            #{acceptanceEntrySerial}, #{partnerCompanyID}, #{entryDate}, date('now', 'localtime'),
+            #{departmentID}, #{source}, #{bankAccountID}, #{sourceSerial}, #{amount}, #{number},
+            #{issueDate}, #{expirationDate}, #{type}, #{drawer}, #{remark}, #{classification}, #{status}
+        )
     </insert>
 
 
@@ -37,12 +48,30 @@
     </resultMap>
 
 
-    <select id="queryEntryByID" resultMap="entryResultMap">
-
+    <select id="queryEntryByNumber" resultMap="entryResultMap">
+        select serial, a.partner_company_id, c.abbreviated_name, a.entry_date, a.creation_date,
+               a.department_id, d.name as department_name, a.source, a.bank_account_id,
+               b.name as bank_account_name, a.source_serial, a.amount, a.number, a.issue_date,
+               a.expiration_date, a.type, a.remark, a.drawer, a.classification, a.status
+        from m_acceptance_entry as a join c_partner_company as c
+            on a.partner_company_id = c.partner_company_id
+            join e_department as d on a.department_id = d.department_id
+            left join c_bank_account as b on a.bank_account_id = b.bank_account_id
+        where number = #{number}
     </select>
 
     <select id="queryEntriesInDateRange" resultMap="entryResultMap">
-
+        select serial, a.partner_company_id, c.abbreviated_name, a.entry_date, a.creation_date,
+               a.department_id, d.name as department_name, a.source, a.bank_account_id,
+               b.name as bank_account_name, a.source_serial, a.amount, a.number, a.issue_date,
+               a.expiration_date, a.type, a.remark, a.drawer, a.classification, a.status
+        from m_acceptance_entry as a join c_partner_company as c
+            on a.partner_company_id = c.partner_company_id
+            join e_department as d on a.department_id = d.department_id
+            left join c_bank_account as b on a.bank_account_id = b.bank_account_id
+        where (a.entry_date between #{startDate} and #{endDate})
+            and a.classification = #{classification}
+        order by a.serial, a.entry_date desc
     </select>
 
     <update id="updateEntry">

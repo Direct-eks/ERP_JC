@@ -37,7 +37,6 @@ public class AcceptanceEntryO {
     private String departmentName;
 
     @NotNull(message = "source null error")
-    @Pattern(regexp = "^(本公司|外公司)$", message = "来源错误")
     private String source;
 
     @NotNull(message = "bankAccountID null error")

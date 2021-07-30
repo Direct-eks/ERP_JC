@@ -11,11 +11,11 @@ import java.util.List;
 @Mapper
 @Repository
 public interface AcceptanceMapper {
-    int countNumberOfEntriesOfGivenDate(String date, String type);
+    int countNumberOfEntriesOfGivenDate(String date, String classification);
     void insertEntry(AcceptanceEntryO entryO);
 
-    AcceptanceEntryO queryEntryByID(String id);
-    List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String type);
+    AcceptanceEntryO queryEntryByNumber(String number);
+    List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String classification);
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);
 }
