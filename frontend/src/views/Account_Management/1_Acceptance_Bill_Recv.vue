@@ -14,12 +14,12 @@
         <v-card-text>
 
             <AcceptanceBillComponent :isInbound="true"
-                                     :paramForm="{}">
+                                     :paramForm="form">
             </AcceptanceBillComponent>
 
             <v-divider class="my-2"></v-divider>
 
-            <AcceptanceBillQueryComponent>
+            <AcceptanceBillQueryComponent @entryClick="handleTableClick">
             </AcceptanceBillQueryComponent>
 
         </v-card-text>
@@ -40,6 +40,25 @@ export default {
     data() {
         return {
             mdiArrowLeft,
+
+            form: {
+                acceptanceEntrySerial: '',
+                partnerCompanyID: -1, companyAbbreviatedName: '',
+                entryDate: '',
+                departmentID: -1, departmentName: '',
+                source: '',
+                bankAccountID: -1, bankAccountName: '',
+                sourceSerial: '',
+                amount: '', number: '',
+                issueDate: '', expirationDate: '',
+                type: '', drawer: '',
+                remark: '', classification: '', status: 0,
+            },
+        }
+    },
+    methods: {
+        handleTableClick(val) {
+            Object.assign(this.form, val)
         }
     }
 }

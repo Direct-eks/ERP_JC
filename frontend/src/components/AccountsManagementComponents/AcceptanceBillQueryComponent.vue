@@ -80,7 +80,7 @@ export default {
                 })
                 return
             }
-            this.$emit('entryExport', this.queryTableCurrentRow[0])
+            this.$emit('entryClick', this.queryTableCurrentRow[0])
         },
         tableClick(row) {
             if (this.queryTableCurrentRow.includes(row)) {

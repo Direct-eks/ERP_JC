@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-form>
+        <v-form ref="form">
             <v-row dense>
                 <v-col cols="auto">
                     <v-text-field v-model="form.companyAbbreviatedName"
@@ -220,6 +220,17 @@ export default {
             required: true
         }
     },
+    watch: {
+        paramForm: {
+            handler: function(val) {
+                if (!val.hasOwnProperty('acceptanceEntrySerial')) return
+                if (val.acceptanceEntrySerial === '') return
+                this.form = JSON.parse(JSON.stringify(val))
+            },
+            deep: true,
+            immediate: false
+        } 
+    },
     beforeMount() {
         this.$store.dispatch('getDepartmentOptions')
         this.$store.dispatch('getBankAccounts')
@@ -245,7 +256,7 @@ export default {
                 amount: '', number: '',
                 issueDate: '', expirationDate: '',
                 type: '银行', drawer: '',
-                remark: ''
+                remark: '', classification: '', status: 0,
             },
             rules: {
                 company: [v => !!v || '请选择单位'],
@@ -291,7 +302,18 @@ export default {
 
         },
         saveNew() {
+            this.submitPopup = false
 
+            if (this.form.acceptanceEntrySerial !== '') {
+                this.$store.commit('setSnackbar', {
+                    message: '不能新增', color: 'warning'
+                })
+                return
+            }
+
+            if (this.$refs.form.validate()) {
+
+            }
         },
         saveChange() {
 
