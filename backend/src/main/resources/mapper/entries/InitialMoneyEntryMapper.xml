@@ -8,7 +8,7 @@
         select count(initial_money_entry_serial)
         from m_initial_money_entry
         where entry_date = #{date}
-            and initial_money_entry_serial like #{prefix}|'%'
+            and initial_money_entry_serial like #{prefix}||'%'
     </select>
 
     <insert id="insertEntry">
@@ -43,14 +43,14 @@
                creation_date, borrow_or_lend, balance, is_modified
         from m_initial_money_entry as e join c_partner_company as c
             on e.partner_company_id = c.partner_company_id
-        where initial_money_entry_serial like #{prefix}|'%'
+        where initial_money_entry_serial like #{prefix}||'%'
     </select>
 
     <select id="queryEntryByCompanyID" resultMap="entryResultMap">
         select initial_money_entry_serial, partner_company_id, remark, drawer,
                entry_date, creation_date, borrow_or_lend, balance, is_modified
         from m_initial_money_entry
-        where initial_money_entry_serial like #{prefix}|'%'
+        where initial_money_entry_serial like #{prefix}||'%'
             and partner_company_id = #{id}
     </select>
 
