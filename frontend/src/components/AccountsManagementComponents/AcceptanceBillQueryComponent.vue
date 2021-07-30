@@ -42,6 +42,12 @@ export default {
     components: {
         DateRangePicker
     },
+    props: {
+        prefix: {
+            type: String,
+            required: true
+        }
+    },
     data() {
         return {
             dateRange: [
@@ -68,7 +74,13 @@ export default {
     },
     methods: {
         query() {
-
+            this.$getRequest(this.$api.getAcceptanceEntryInDateRange, {
+                startDate: this.dateRange[0],
+                endDate: this.dateRange[1],
+                prefix: this.prefix
+            }).then(data => {
+                this.queryTableData = data
+            }).catch(() => {})
         },
         chooseDateAction(val) {
             this.dateRange = val

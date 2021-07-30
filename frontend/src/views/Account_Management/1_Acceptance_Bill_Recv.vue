@@ -19,7 +19,8 @@
 
             <v-divider class="my-2"></v-divider>
 
-            <AcceptanceBillQueryComponent @entryClick="handleTableClick">
+            <AcceptanceBillQueryComponent prefix="承收"
+                                          @entryClick="handleTableClick">
             </AcceptanceBillQueryComponent>
 
         </v-card-text>

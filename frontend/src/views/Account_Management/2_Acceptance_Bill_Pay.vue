@@ -17,7 +17,8 @@
                                      :paramForm="{}">
             </AcceptanceBillComponent>
 
-            <AcceptanceBillQueryComponent>
+            <AcceptanceBillQueryComponent prefix="承付"
+                                          @entryClick="handleTableClick">
             </AcceptanceBillQueryComponent>
 
         </v-card-text>
@@ -36,6 +37,11 @@ export default {
     data() {
         return {
             mdiArrowLeft,
+        }
+    },
+    methods: {
+        handleTableClick() {
+
         }
     }
 }

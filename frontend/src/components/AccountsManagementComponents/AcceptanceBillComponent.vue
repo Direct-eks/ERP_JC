@@ -4,7 +4,7 @@
             <v-row dense>
                 <v-col cols="auto">
                     <v-text-field v-model="form.companyAbbreviatedName"
-                                  label="收款单位简称"
+                                  label="单位简称"
                                   hide-details="auto"
                                   outlined
                                   :rules="rules.company"
@@ -124,7 +124,8 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="到期日期"
-                                v-model="form.expirationDate">
+                                v-model="form.expirationDate"
+                                :allowFutureDates="true">
                     </DatePicker>
                 </v-col>
             </v-row>
@@ -229,7 +230,7 @@ export default {
             },
             deep: true,
             immediate: false
-        } 
+        }
     },
     beforeMount() {
         this.$store.dispatch('getDepartmentOptions')
@@ -249,13 +250,14 @@ export default {
                 acceptanceEntrySerial: '',
                 partnerCompanyID: -1, companyAbbreviatedName: '',
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
+                creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 departmentID: -1, departmentName: '',
                 source: '',
                 bankAccountID: -1, bankAccountName: '',
                 sourceSerial: '',
                 amount: '', number: '',
                 issueDate: '', expirationDate: '',
-                type: '银行', drawer: '',
+                type: '银行', drawer: this.$store.getters.currentUser,
                 remark: '', classification: '', status: 0,
             },
             rules: {
@@ -312,7 +314,13 @@ export default {
             }
 
             if (this.$refs.form.validate()) {
-
+                this.$putRequest(this.$api.createAcceptanceEntry, this.form, {
+                    isInbound: this.isInbound
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '保存成功', color: 'success'
+                    })
+                }).catch(() => {})
             }
         },
         saveChange() {
