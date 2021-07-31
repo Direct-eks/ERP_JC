@@ -23,6 +23,19 @@
         )
     </insert>
 
+    <select id="queryEntryBySerial" resultMap="entryResultMap">
+        select serial, partner_company_id, entry_date, creation_date, department_id, source, bank_account_id,
+               source_serial, amount, number, issue_date, expiration_date, type, drawer, remark, classification, status
+        from m_acceptance_entry
+        where serial = #{serial}
+    </select>
+
+    <update id="updateClassification">
+        update m_acceptance_entry
+        set classification = #{classification}
+        where serial = #{serial}
+    </update>
+
 
     <resultMap id="entryResultMap" type="org.jc.backend.entity.AcceptanceEntryO">
         <result property="acceptanceEntrySerial" column="serial"/>

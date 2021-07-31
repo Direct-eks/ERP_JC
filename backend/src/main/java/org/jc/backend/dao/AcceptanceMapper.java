@@ -14,7 +14,10 @@ public interface AcceptanceMapper {
     int countNumberOfEntriesOfGivenDate(String date, String classification);
     void insertEntry(AcceptanceEntryO entryO);
 
-    AcceptanceEntryO queryEntryByNumber(String number);
+    AcceptanceEntryO queryEntryBySerial(String serial);
+    void updateClassification(String serial, String classification);
+
+    List<AcceptanceEntryO> queryEntryByNumber(String number);
     List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String prefix);
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);

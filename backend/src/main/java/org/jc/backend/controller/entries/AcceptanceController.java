@@ -60,7 +60,7 @@ public class AcceptanceController {
 
     @ApiOperation(value = "", response = AcceptanceEntryO.class)
     @GetMapping("/getEntriesByNumber")
-    public AcceptanceEntryO getEntriesByNumber(
+    public List<AcceptanceEntryO> getEntriesByNumber(
             @RequestParam("number") String number
     ) {
         logger.info("GET Request to /acceptanceEntry/getEntriesByNumber, " +

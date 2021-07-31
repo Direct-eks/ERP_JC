@@ -1,6 +1,7 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.service.AcceptanceService;
@@ -28,7 +29,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
 
     @Transactional
     @Override
-    public void createEntry(boolean isInbound, AcceptanceEntryO entryO) {
+    public void createEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException {
         try {
             String entryDate = entryO.getEntryDate();
             String newSerial;
@@ -36,14 +37,28 @@ public class AcceptanceServiceImpl implements AcceptanceService {
                 String base = AcceptanceBillClassification.ACCEPTANCE_RECV;
                 int count = acceptanceMapper.countNumberOfEntriesOfGivenDate(entryDate, base);
                 newSerial = MyUtils.formNewSerial(base, count, entryDate);
+                entryO.setClassification(AcceptanceBillClassification.HOLD);
             }
             else {
                 String base = AcceptanceBillClassification.ACCEPTANCE_PAY;
                 int count = acceptanceMapper.countNumberOfEntriesOfGivenDate(entryDate, base);
                 newSerial = MyUtils.formNewSerial(base, count, entryDate);
+                if (entryO.getSource().equals("本公司")) {
+                    entryO.setClassification(AcceptanceBillClassification.SELF_PAY);
+                }
+                else {
+                    entryO.setClassification(AcceptanceBillClassification.TRANSFER_PAY);
+                    // update corresponding acceptance entry
+                    var inboundEntry = acceptanceMapper.queryEntryBySerial(entryO.getSourceSerial());
+                    if (inboundEntry == null ||
+                            !inboundEntry.getClassification().equals(AcceptanceBillClassification.HOLD)) {
+                        throw new GlobalParamException("承兑来源单据错误");
+                    }
+                    acceptanceMapper.updateClassification(inboundEntry.getAcceptanceEntrySerial(),
+                            AcceptanceBillClassification.TRANSFERRED);
+                }
             }
             entryO.setAcceptanceEntrySerial(newSerial);
-            entryO.setClassification(AcceptanceBillClassification.HOLD);
             acceptanceMapper.insertEntry(entryO);
 
         } catch (PersistenceException e) {
@@ -67,7 +82,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
 
     @Transactional(readOnly = true)
     @Override
-    public AcceptanceEntryO getEntryByNumber(String number) {
+    public List<AcceptanceEntryO> getEntryByNumber(String number) {
         try {
             return acceptanceMapper.queryEntryByNumber(number);
 
