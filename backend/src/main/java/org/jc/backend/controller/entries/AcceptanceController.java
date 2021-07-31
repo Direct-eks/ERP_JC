@@ -85,4 +85,18 @@ public class AcceptanceController {
 
         return acceptanceService.getEntriesInDateRange(startDateString, endDateString, prefix);
     }
+
+    @PatchMapping("/updateEntry")
+    public void updateEntry(
+            @RequestBody @Validated AcceptanceEntryO entryO,
+            @RequestParam("isInbound") boolean isInbound
+    ) throws GlobalParamException {
+        logger.info("PATCH Request to /acceptanceEntry/updateEntry, data: {}", entryO);
+
+        if (MyUtils.isNotValidSerial(entryO.getAcceptanceEntrySerial())) {
+            throw new GlobalParamException("invalid serial");
+        }
+
+        acceptanceService.updateEntry(isInbound, entryO);
+    }
 }

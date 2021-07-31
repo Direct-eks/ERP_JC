@@ -105,4 +105,17 @@ public class AcceptanceServiceImpl implements AcceptanceService {
             throw e;
         }
     }
+
+    @Transactional
+    @Override
+    public void updateEntry(boolean isInbound, AcceptanceEntryO entryO) {
+        try {
+
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
 }
