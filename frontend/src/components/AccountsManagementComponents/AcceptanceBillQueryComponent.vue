@@ -56,7 +56,7 @@ export default {
             ],
 
             queryTableHeaders: [
-                { text: '单据号', value: 'acceptanceEntrySerial', width: '120px' },
+                { text: '单据号', value: 'acceptanceEntrySerial', width: '140px' },
                 { text: this.isInbound ? '付款单位' : '收款单位', value: 'companyAbbreviatedName', width: '140px' },
                 { text: '总金额', value: 'amount', width: '110px' },
                 { text: '承兑票号', value: 'number', width: '140px' },

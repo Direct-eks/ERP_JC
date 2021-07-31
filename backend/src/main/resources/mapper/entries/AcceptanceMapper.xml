@@ -57,7 +57,7 @@
             on a.partner_company_id = c.partner_company_id
             join e_department as d on a.department_id = d.department_id
             left join c_bank_account as b on a.bank_account_id = b.bank_account_id
-        where number = #{number}
+        where number like #{number}||'%'
     </select>
 
     <select id="queryEntriesInDateRange" resultMap="entryResultMap">

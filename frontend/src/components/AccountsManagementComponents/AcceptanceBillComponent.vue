@@ -90,9 +90,15 @@
                     </v-text-field>
                 </v-col>
                 <v-col v-if="!isInbound && form.source === '外单位'" cols="auto">
-                    <v-btn color="accent" @click="importEntry">
-                        导入
-                    </v-btn>
+                    <v-dialog v-model="importPopup" max-width="300px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="accent" v-on="on" @keyup.enter="">检索</v-btn>
+                        </template>
+                        <EntryImport :number="form.number"
+                                     :triggerSearch="triggerSearch"
+                                     @importEntry="importEntry">
+                        </EntryImport>
+                    </v-dialog>
                 </v-col>
             </v-row>
             <v-row dense>
@@ -205,11 +211,14 @@
 </template>
 
 <script>
+import {mdiClose} from '@mdi/js'
+
 export default {
     name: "AcceptanceBillComponent",
     components: {
         DatePicker: () => import("~/components/DatePicker"),
         CompanySearch: () => import("~/components/CompanySearch"),
+        EntryImport: () => import("~/components/AccountsManagementComponents/AcceptanceImportByNumberComponent")
     },
     props: {
         isInbound: {
@@ -238,7 +247,9 @@ export default {
     },
     data() {
         return {
+            mdiClose,
             fullSearchPanelOpen: false,
+            triggerSearch: false,
             deletePopup: false,
             submitPopup: false,
             submitPopup2: false,
@@ -294,8 +305,11 @@ export default {
             }
             this.fullSearchPanelOpen = false
         },
-        importEntry() {
+        importEntry(val) {
+            if (val) {
 
+            }
+            this.importPopup = false
         },
         handleAmountChange(item) {
             this.form.amount = this.$validateFloat(item, true)
