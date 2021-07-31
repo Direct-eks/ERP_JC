@@ -80,11 +80,12 @@
                     </v-select>
                 </v-col>
                 <v-col v-if="!isInbound && form.source === '外单位'" cols="auto">
-                    <v-text-field v-model="form.amount"
+                    <v-text-field v-model="form.number"
                                   label="单号"
                                   hide-details="auto"
                                   outlined
-                                  :rules="rules.amount"
+                                  :rules="rules.number"
+                                  @keyup.enter="trigger"
                                   dense
                                   style="width: 200px">
                     </v-text-field>
@@ -92,10 +93,10 @@
                 <v-col v-if="!isInbound && form.source === '外单位'" cols="auto">
                     <v-dialog v-model="importPopup" max-width="300px">
                         <template v-slot:activator="{ on }">
-                            <v-btn color="accent" v-on="on" @keyup.enter="">检索</v-btn>
+                            <v-btn color="accent" v-on="on" @click="trigger">检索</v-btn>
                         </template>
                         <EntryImport :number="form.number"
-                                     :triggerSearch="triggerSearch"
+                                     :trigger="triggerSearch"
                                      @importEntry="importEntry">
                         </EntryImport>
                     </v-dialog>
@@ -211,8 +212,6 @@
 </template>
 
 <script>
-import {mdiClose} from '@mdi/js'
-
 export default {
     name: "AcceptanceBillComponent",
     components: {
@@ -247,8 +246,8 @@ export default {
     },
     data() {
         return {
-            mdiClose,
             fullSearchPanelOpen: false,
+            importPopup: false,
             triggerSearch: false,
             deletePopup: false,
             submitPopup: false,
@@ -305,10 +304,15 @@ export default {
             }
             this.fullSearchPanelOpen = false
         },
+        trigger() {
+            this.triggerSearch = true
+            this.importPopup = true
+        },
         importEntry(val) {
             if (val) {
 
             }
+            this.triggerSearch = false
             this.importPopup = false
         },
         handleAmountChange(item) {
