@@ -189,6 +189,12 @@ export default {
             this.warehouseStockTableData = []
             this.resourceTableData = []
 
+            if (this.modelSearchName === '') {
+                this.$store.commit('setSnackbar', {
+                    message: '搜索型号不能为空', color: 'warning'
+                })
+                return
+            }
             this.$getRequest(this.$api.modelsByName, {
                 name: this.modelSearchName,
                 method: this.modelSearchMethod
