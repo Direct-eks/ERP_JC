@@ -18,6 +18,7 @@ const api = {
     createSolutionPayEntry: '/acceptanceEntry/createSolutionPayEntry', // PUT
     getAcceptanceEntryByNumber: '/acceptanceEntry/getEntriesByNumber', // GET
     getAcceptanceEntryInDateRange: '/acceptanceEntry/getEntriesInDateRange', // GET
+    updateAcceptanceEntry: '/acceptanceEntry/updateEntry', // PATCH
 
     /* ------ /bankAccount ------*/
     allBankAccounts: '/bankAccount/getAllAccounts', // GET
