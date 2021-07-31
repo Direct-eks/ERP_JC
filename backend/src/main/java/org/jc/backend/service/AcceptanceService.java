@@ -14,5 +14,5 @@ public interface AcceptanceService {
     List<AcceptanceEntryO> getEntryByNumber(String number);
     List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String prefix);
 
-    void updateEntry(boolean isInbound, AcceptanceEntryO entryO);
+    void updateEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException;
 }

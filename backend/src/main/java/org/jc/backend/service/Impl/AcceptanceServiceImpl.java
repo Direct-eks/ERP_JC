@@ -108,9 +108,23 @@ public class AcceptanceServiceImpl implements AcceptanceService {
 
     @Transactional
     @Override
-    public void updateEntry(boolean isInbound, AcceptanceEntryO entryO) {
+    public void updateEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException {
         try {
+            var oldEntry = acceptanceMapper.queryEntryBySerial(entryO.getAcceptanceEntrySerial());
 
+            if (isInbound) {
+                if (oldEntry.getClassification().equals(AcceptanceBillClassification.TRANSFERRED)) {
+                    throw new GlobalParamException("此单据已付出，不能修改");
+                }
+            }
+            else {
+                if (oldEntry.getClassification().equals(AcceptanceBillClassification.SELF_PAY) &&
+                        !oldEntry.getSourceSerial().isBlank()) {
+                    throw new GlobalParamException("此单据已承付，不能修改");
+                }
+            }
+
+            // todo
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
