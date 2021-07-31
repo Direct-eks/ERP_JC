@@ -53,6 +53,7 @@
                               :items="typeOptions"
                               label="汇票类型"
                               hide-details="auto"
+                              :readonly="disableFields"
                               outlined dense
                               style="width: 100px">
                     </v-select>
@@ -63,6 +64,7 @@
                               :items="sourceOptions"
                               label="汇票来源"
                               hide-details="auto"
+                              @change="handleSourceChange"
                               outlined dense
                               style="width: 120px">
                     </v-select>
@@ -80,22 +82,21 @@
                     </v-select>
                 </v-col>
                 <v-col v-if="!isInbound && form.source === '外单位'" cols="auto">
-                    <v-text-field v-model="form.number"
+                    <v-text-field v-model="searchNumber"
                                   label="单号"
                                   hide-details="auto"
                                   outlined
-                                  :rules="rules.number"
                                   @keyup.enter="trigger"
                                   dense
                                   style="width: 200px">
                     </v-text-field>
                 </v-col>
                 <v-col v-if="!isInbound && form.source === '外单位'" cols="auto">
-                    <v-dialog v-model="importPopup" max-width="300px">
+                    <v-dialog v-model="importPopup" :eager="true">
                         <template v-slot:activator="{ on }">
                             <v-btn color="accent" v-on="on" @click="trigger">检索</v-btn>
                         </template>
-                        <EntryImport :number="form.number"
+                        <EntryImport :number="searchNumber"
                                      :trigger="triggerSearch"
                                      @importEntry="importEntry">
                         </EntryImport>
@@ -111,6 +112,7 @@
                                   @change="handleAmountChange"
                                   outlined
                                   :rules="rules.amount"
+                                  :readonly="disableFields"
                                   dense
                                   style="width: 140px">
                     </v-text-field>
@@ -119,6 +121,7 @@
                     <v-text-field v-model="form.number"
                                   label="承兑票号"
                                   hide-details="auto"
+                                  :readonly="disableFields"
                                   outlined
                                   dense
                                   style="width: 200px">
@@ -126,11 +129,13 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="出票日期"
+                                :disabled="disableFields"
                                 v-model="form.issueDate">
                     </DatePicker>
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="到期日期"
+                                :disabled="disableFields"
                                 v-model="form.expirationDate"
                                 :allowFutureDates="true">
                     </DatePicker>
@@ -256,6 +261,8 @@ export default {
             typeOptions: ['银行', '商业'],
             sourceOptions: ['本单位', '外单位'],
 
+            searchNumber: '',
+
             form: {
                 acceptanceEntrySerial: '',
                 partnerCompanyID: -1, companyAbbreviatedName: '',
@@ -275,7 +282,7 @@ export default {
                 departmentID: [v => v !== -1 || '请选择部门'],
                 type: [v => !!v || '请选择类型'],
                 source: [v => !!v || '请选择来源'],
-                bankAccountID: [v => !!v && this.form.source === '本公司' || '请选择银行'],
+                bankAccountID: [v => (this.form.source === '本公司' ? v !== -1 : true) || '请选择银行'],
                 amount: [v => v !== '' || '金额不正确'],
             },
         }
@@ -294,6 +301,9 @@ export default {
         bankAccountOptions() {
             return this.$store.state.visibleBankAccounts
         },
+        disableFields() {
+            return !this.isInbound && this.form.source === '外单位'
+        }
     },
     methods: {
         /* ------- full name company search -------*/
@@ -304,13 +314,27 @@ export default {
             }
             this.fullSearchPanelOpen = false
         },
+        handleSourceChange() {
+            this.form.sourceSerial = ''
+            this.form.amount = ''
+            this.form.number = ''
+            this.form.issueDate = ''
+            this.form.expirationDate = ''
+        },
         trigger() {
             this.triggerSearch = true
             this.importPopup = true
         },
         importEntry(val) {
             if (val) {
-
+                this.searchNumber = ''
+                // fill in fields
+                this.form.sourceSerial = val.acceptanceEntrySerial
+                this.form.amount = val.amount
+                this.form.number = val.number
+                this.form.issueDate = val.issueDate
+                this.form.expirationDate = val.expirationDate
+                this.form.type = val.type
             }
             this.triggerSearch = false
             this.importPopup = false
