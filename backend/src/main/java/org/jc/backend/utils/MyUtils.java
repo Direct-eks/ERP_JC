@@ -3,6 +3,11 @@ package org.jc.backend.utils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.AcceptanceEntryO;
+import org.jc.backend.entity.DO.CheckoutEntryDO;
+import org.jc.backend.entity.DO.ShippingCostEntryDO;
+import org.jc.backend.entity.InitialMoneyEntryO;
+import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.slf4j.Logger;
@@ -23,6 +28,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.jc.backend.utils.EntryClassification.*;
 
 @Indexed
 @Component
@@ -93,7 +100,7 @@ public class MyUtils {
     }
 
     public static boolean isNotValidSerial(String entryID) {
-        Pattern pattern = Pattern.compile("^(购入|销出|入结|出退|出结|入退)\\d{6}-\\d{3}$");
+        Pattern pattern = Pattern.compile("^(购入|销出|入结|出退|出结|入退|承收|承付)\\d{6}-\\d{3}$");
         Matcher matcher = pattern.matcher(entryID);
         return !matcher.matches();
     }
@@ -177,4 +184,47 @@ public class MyUtils {
         return statVOs;
     }
 
+    public static String getExplanationFromEntry(InitialMoneyEntryO entry) {
+        return entry.getEntryDate() + " 转结";
+    }
+
+    public static String getExplanationFromEntry(CheckoutEntryDO entry) {
+        StringBuilder explanation = new StringBuilder();
+        if (entry.getCheckoutEntrySerial().startsWith(INBOUND_CHECKOUT)) {
+            explanation.append("入库结账，");
+        }
+        else {
+            explanation.append("出库结账，");
+        }
+        explanation.append(entry.getInvoiceType());
+        explanation.append("：");
+        explanation.append(entry.getInvoiceEntrySerial());
+
+        return explanation.toString();
+    }
+
+    public static String getExplanationFromEntry(MoneyEntryO entry) {
+        StringBuilder explanation = new StringBuilder();
+        if (entry.getMoneyEntrySerial().startsWith(INBOUND_PAYABLE)) {
+            explanation.append("付款，");
+        }
+        else { // OUTBOUND_RECEIVABLE
+            explanation.append("收款，");
+        }
+        explanation.append(entry.getPaymentMethod());
+        explanation.append("：");
+        explanation.append(entry.getCheckoutSerial());
+
+        return explanation.toString();
+    }
+
+    public static String getExplanationFromEntry(AcceptanceEntryO entry) {
+        return entry.getAcceptanceEntrySerial().startsWith(AcceptanceBillClassification.ACCEPTANCE_PAY) ?
+                "付承兑汇票：" : "收承兑汇票：" + entry.getNumber();
+    }
+
+    public static String getExplanationFromEntry(ShippingCostEntryDO entry) {
+        return entry.getShippingCostEntrySerial().startsWith(SHIPPING_COST_PAY) ?
+                "付运费" : "收运费";
+    }
 }
