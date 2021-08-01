@@ -162,16 +162,6 @@ public class CheckoutEntryController {
         }
     }
 
-    @GetMapping("/getPayableSummary")
-    public List<CheckoutSummaryO> getPayableSummary() throws GlobalParamException{
-        return null; // todo
-    }
-
-    @GetMapping("/getReceivableSummary")
-    public List<CheckoutSummaryO> getReceivableSummary()  throws GlobalParamException {
-        return null; // todo
-    }
-
     @ApiOperation(value = "", response = EntryStatO.class)
     @GetMapping("/getAuditEntries")
     public List<CheckoutSummaryO> getAuditEntries(

@@ -13,6 +13,7 @@ public class MoneyEntryDetailO {
     private String explanation;
     private String debtorAmount;
     private String creditorAmount;
+    private String auditAmount;
     private String debitOrCredit;
     private String balance;
 }

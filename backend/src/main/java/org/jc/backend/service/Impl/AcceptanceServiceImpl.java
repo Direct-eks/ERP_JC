@@ -6,17 +6,20 @@ import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.jc.backend.service.AcceptanceService;
-import org.jc.backend.utils.AcceptanceBillClassification;
+import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.jc.backend.utils.AcceptanceBillClassification.*;
+
 @Service
-public class AcceptanceServiceImpl implements AcceptanceService {
+public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatService {
 
     private static final Logger logger = LoggerFactory.getLogger(AcceptanceServiceImpl.class);
 
@@ -35,28 +38,28 @@ public class AcceptanceServiceImpl implements AcceptanceService {
             String entryDate = entryO.getEntryDate();
             String newSerial;
             if (isInbound) {
-                String base = AcceptanceBillClassification.ACCEPTANCE_RECV;
+                String base = ACCEPTANCE_RECV;
                 int count = acceptanceMapper.countNumberOfEntriesOfGivenDate(entryDate, base);
                 newSerial = MyUtils.formNewSerial(base, count, entryDate);
-                entryO.setClassification(AcceptanceBillClassification.HOLD);
+                entryO.setClassification(HOLD);
             }
             else {
-                String base = AcceptanceBillClassification.ACCEPTANCE_PAY;
+                String base = ACCEPTANCE_PAY;
                 int count = acceptanceMapper.countNumberOfEntriesOfGivenDate(entryDate, base);
                 newSerial = MyUtils.formNewSerial(base, count, entryDate);
                 if (entryO.getSource().equals("本公司")) {
-                    entryO.setClassification(AcceptanceBillClassification.SELF_PAY);
+                    entryO.setClassification(SELF_PAY);
                 }
                 else {
-                    entryO.setClassification(AcceptanceBillClassification.TRANSFER_PAY);
+                    entryO.setClassification(TRANSFER_PAY);
                     // update corresponding acceptance entry
                     var inboundEntry = acceptanceMapper.queryEntryBySerial(entryO.getSourceSerial());
                     if (inboundEntry == null ||
-                            !inboundEntry.getClassification().equals(AcceptanceBillClassification.HOLD)) {
+                            !inboundEntry.getClassification().equals(HOLD)) {
                         throw new GlobalParamException("承兑来源单据错误");
                     }
                     acceptanceMapper.updateClassification(inboundEntry.getAcceptanceEntrySerial(),
-                            AcceptanceBillClassification.TRANSFERRED);
+                            TRANSFERRED);
                 }
             }
             entryO.setAcceptanceEntrySerial(newSerial);
@@ -114,12 +117,12 @@ public class AcceptanceServiceImpl implements AcceptanceService {
             var oldEntry = acceptanceMapper.queryEntryBySerial(entryO.getAcceptanceEntrySerial());
 
             if (isInbound) {
-                if (oldEntry.getClassification().equals(AcceptanceBillClassification.TRANSFERRED)) {
+                if (oldEntry.getClassification().equals(TRANSFERRED)) {
                     throw new GlobalParamException("此单据已付出，不能修改");
                 }
             }
             else {
-                if (oldEntry.getClassification().equals(AcceptanceBillClassification.SELF_PAY) &&
+                if (oldEntry.getClassification().equals(SELF_PAY) &&
                         !oldEntry.getSourceSerial().isBlank()) {
                     throw new GlobalParamException("此单据已承付，不能修改");
                 }
@@ -134,25 +137,28 @@ public class AcceptanceServiceImpl implements AcceptanceService {
         }
     }
 
+    /* -------------------------- Accounts Stat Service -------------------------- */
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getInboundEntryDetails() {
+    public List<MoneyEntryDetailO> getEntryDetails(boolean isInbound) {
         try {
-            return null; //todo
+            var results = new ArrayList<MoneyEntryDetailO>();
+            var list = acceptanceMapper.queryAllEntriesByPrefix(isInbound ?
+                    ACCEPTANCE_RECV : ACCEPTANCE_PAY);
+            for (var item : list) {
+                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                detailO.setEntryID(item.getAcceptanceEntrySerial());
+                detailO.setEntryDate(item.getEntryDate());
+                detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
+                detailO.setDebtorAmount("");
+                detailO.setCreditorAmount("");
+                detailO.setAuditAmount(""); // todo
+                detailO.setDebitOrCredit(item.getDebitOrCredit());
+                results.add(detailO);
+            }
 
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
-            throw e;
-        }
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<MoneyEntryDetailO> getOutboundEntryDetails() {
-        try {
-            return null; //todo
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -7,7 +7,9 @@ import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.ShippingCostEntryDO;
 import org.jc.backend.entity.ModificationO;
+import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
+import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.service.ShippingCostEntryService;
@@ -27,7 +29,7 @@ import static org.jc.backend.utils.EntryClassification.SHIPPING_COST_PAY;
 import static org.jc.backend.utils.EntryClassification.SHIPPING_COST_RECV;
 
 @Service
-public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
+public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, AccountsStatService {
     private static final Logger logger = LoggerFactory.getLogger(ShippingCostEntryServiceImpl.class);
 
     private final ShippingCostEntryMapper shippingCostEntryMapper;
@@ -243,6 +245,14 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
         }
 
         return bool;
+    }
+
+    /* -------------------------- Accounts Stat Service -------------------------- */
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MoneyEntryDetailO> getEntryDetails(boolean isInbound) {
+        return null;
     }
 
 }

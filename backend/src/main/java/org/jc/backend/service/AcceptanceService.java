@@ -2,7 +2,6 @@ package org.jc.backend.service;
 
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.AcceptanceEntryO;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.springframework.stereotype.Indexed;
 
 import java.util.List;
@@ -16,7 +15,4 @@ public interface AcceptanceService {
     List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String prefix);
 
     void updateEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException;
-
-    List<MoneyEntryDetailO> getInboundEntryDetails();
-    List<MoneyEntryDetailO> getOutboundEntryDetails();
 }

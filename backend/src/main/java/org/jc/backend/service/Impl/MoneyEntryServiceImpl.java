@@ -6,6 +6,8 @@ import org.jc.backend.dao.MoneyEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.MoneyEntryO;
+import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ import static org.jc.backend.utils.EntryClassification.INBOUND_PAYABLE;
 import static org.jc.backend.utils.EntryClassification.OUTBOUND_RECEIVABLE;
 
 @Service
-public class MoneyEntryServiceImpl implements MoneyEntryService {
+public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatService {
     private static final Logger logger = LoggerFactory.getLogger(MoneyEntryServiceImpl.class);
 
     private final MoneyEntryMapper moneyEntryMapper;
@@ -233,4 +235,11 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
         }
     }
 
+    /* -------------------------- Accounts Stat Service -------------------------- */
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MoneyEntryDetailO> getEntryDetails(boolean isInbound) {
+        return null;
+    }
 }

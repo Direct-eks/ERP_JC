@@ -22,5 +22,5 @@ public interface AcceptanceMapper {
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);
 
-    List<AcceptanceEntryO> queryAllEntriesByPrefix();
+    List<AcceptanceEntryO> queryAllEntriesByPrefix(String prefix);
 }

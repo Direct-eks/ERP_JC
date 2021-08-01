@@ -4,6 +4,8 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InitialMoneyEntryMapper;
 import org.jc.backend.entity.InitialMoneyEntryO;
+import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.InitialMoneyEntryService;
 import org.jc.backend.service.MiscellaneousDataService;
 import org.jc.backend.utils.MyUtils;
@@ -19,7 +21,7 @@ import static org.jc.backend.utils.EntryClassification.INITIAL_PAYABLE;
 import static org.jc.backend.utils.EntryClassification.INITIAL_RECEIVABLE;
 
 @Service
-public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
+public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, AccountsStatService {
     private static final Logger logger = LoggerFactory.getLogger(InitialMoneyEntryServiceImpl.class);
 
     private final InitialMoneyEntryMapper initialMoneyEntryMapper;
@@ -107,5 +109,13 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
             logger.error("update failed");
             throw e;
         }
+    }
+
+    /* -------------------------- Accounts Stat Service -------------------------- */
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MoneyEntryDetailO> getEntryDetails(boolean isInbound) {
+        return null;
     }
 }
