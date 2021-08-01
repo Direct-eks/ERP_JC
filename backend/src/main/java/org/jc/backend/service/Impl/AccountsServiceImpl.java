@@ -3,6 +3,7 @@ package org.jc.backend.service.Impl;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
+import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.jc.backend.service.AccountsService;
@@ -98,6 +99,16 @@ public class AccountsServiceImpl implements AccountsService {
         }
     }
 
+    private void calculateBalance(CheckoutEntryDO entry, boolean isCustomer) {
+        var triple = generateEntryMaps(entry.getPartnerCompanyID(), isCustomer);
+        var inboundMap = triple.getLeft();
+        var outboundMap = triple.getMiddle();
+        var entryMap = triple.getRight();
+
+        MoneyEntryDetailO lastEntry;
+        List<MoneyEntryDetailO> affectedEntries = new ArrayList<>();
+    }
+
     private boolean isDebit(String debitOrCredit) {
         return debitOrCredit.equals("借");
     }
@@ -171,4 +182,6 @@ public class AccountsServiceImpl implements AccountsService {
             }
         }
     }
+
+
 }
