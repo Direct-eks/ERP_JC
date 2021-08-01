@@ -33,6 +33,8 @@ public class InitialMoneyEntryO {
     @NotNull(message = "creationDate null error")
     private String creationDate;
 
+    private int isModified;
+
     @NotNull(message = "debitOrCredit null error")
     @Pattern(regexp = "^[借贷]$", message = "debitOrCredit value error")
     private String debitOrCredit;
@@ -41,6 +43,4 @@ public class InitialMoneyEntryO {
     @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_8,
             message = "数值错误")
     private String balance;
-
-    private int isModified;
 }

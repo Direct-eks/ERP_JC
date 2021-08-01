@@ -57,8 +57,6 @@ public class MoneyEntryO {
     @NotBlank(message = "paymentDate blank error")
     private String paymentDate;
 
-    private String debitOrCredit;
-
     private String checkoutSerial;
 
     @NotNull(message = "departmentID null error")
@@ -67,4 +65,7 @@ public class MoneyEntryO {
     private String departmentName;
 
     private int isModified;
+
+    private String debitOrCredit;
+    private String balance;
 }

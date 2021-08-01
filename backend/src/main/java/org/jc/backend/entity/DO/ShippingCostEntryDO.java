@@ -25,7 +25,9 @@ public class ShippingCostEntryDO {
     private String creationDate;
     private String checkoutDate;
     private int inOrOut;
-    private String debitOrCredit;
     private String invoiceDate;
     private int isModified;
+
+    private String debitOrCredit;
+    private String balance;
 }

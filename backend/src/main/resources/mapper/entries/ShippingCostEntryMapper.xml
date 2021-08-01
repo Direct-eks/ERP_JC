@@ -40,9 +40,10 @@
         <result property="creationDate" column="creation_date"/>
         <result property="checkoutDate" column="checkout_date"/>
         <result property="inOrOut" column="in_or_out"/>
-        <result property="debitOrCredit" column="debit_or_credit"/>
         <result property="invoiceDate" column="invoice_date"/>
         <result property="isModified" column="is_modified"/>
+        <result property="debitOrCredit" column="debit_or_credit"/>
+        <result property="balance" column="balance"/>
     </resultMap>
 
     <select id="getEntriesInDateRangeAndParams" resultMap="entryResultMap">

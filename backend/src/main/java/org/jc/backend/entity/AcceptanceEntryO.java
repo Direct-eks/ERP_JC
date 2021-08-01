@@ -78,4 +78,5 @@ public class AcceptanceEntryO {
     private int status;
 
     private String debitOrCredit;
+    private String balance;
 }

@@ -60,6 +60,7 @@
         <result property="classification" column="classification"/>
         <result property="status" column="status"/>
         <result property="debitOrCredit" column="debit_or_credit"/>
+        <result property="balance" column="balance"/>
     </resultMap>
 
 
