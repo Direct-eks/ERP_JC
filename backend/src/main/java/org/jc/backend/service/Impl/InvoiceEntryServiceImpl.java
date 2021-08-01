@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.*;
+
 @Service
 public class InvoiceEntryServiceImpl implements InvoiceEntryService {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceEntryServiceImpl.class);
@@ -47,8 +49,8 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
     private static String getEntryPrefix(boolean isInbound, String invoiceType) {
         return isInbound ?
-                (invoiceType.equals("增值税票") ? "入增" : "入普") :
-                (invoiceType.equals("增值税票") ? "出增" : "出普");
+                (invoiceType.equals("增值税票") ? INBOUND_INVOICE_VAT : INBOUND_INVOICE_NOR) :
+                (invoiceType.equals("增值税票") ? OUTBOUND_INVOICE_VAT : OUTBOUND_INVOICE_NOR);
     }
 
     @Transactional
@@ -92,13 +94,11 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         try {
             String prefix1, prefix2;
             if (invoiceType.equals("")) {
-                prefix1 = isInbound ? "入增" : "出增";
-                prefix2 = isInbound ? "入普" : "出普";
+                prefix1 = isInbound ? INBOUND_INVOICE_VAT : OUTBOUND_INVOICE_VAT;
+                prefix2 = isInbound ? INBOUND_INVOICE_NOR : OUTBOUND_INVOICE_NOR;
             }
             else {
-                prefix1 = isInbound ?
-                        (invoiceType.equals("增值税票") ? "入增" : "入普") :
-                        (invoiceType.equals("增值税票") ? "出增" : "出普");
+                prefix1 = getEntryPrefix(isInbound, invoiceType);
                 prefix2 = "x";
             }
 

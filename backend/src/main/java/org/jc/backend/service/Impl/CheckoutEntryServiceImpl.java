@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.jc.backend.utils.EntryClassification.*;
+
 @Service
 public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     private static final Logger logger = LoggerFactory.getLogger(CheckoutEntryServiceImpl.class);
@@ -87,7 +89,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 throw new GlobalParamException("抹零值超出限定");
             }
 
-            String prefix = isInbound ? "入结" : "出结";
+            String prefix = isInbound ? INBOUND_CHECKOUT : OUTBOUND_CHECKOUT;
             int count = checkoutEntryMapper.countNumberOfEntriesOfToday(checkoutEntry.getCheckoutDate(), prefix);
             String newCheckoutSerial = MyUtils.formNewSerial(prefix, count, checkoutEntry.getCheckoutDate());
 
@@ -139,13 +141,12 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
     public List<CheckoutEntryWithProductsVO> getEntriesInDateRange(boolean isInbound, Date startDate, Date endDate,
                                                                    int companyID, String invoiceType) {
         try {
-            String prefix1 = isInbound ? "出退" : "入退";
-            String prefix2 = isInbound ? "入结" : "出结";
+            String prefix = isInbound ? INBOUND_CHECKOUT : OUTBOUND_CHECKOUT;
 
             List<CheckoutEntryDO> entriesFromDatabase = checkoutEntryMapper
                     .getEntriesInDateRangeByInvoiceTypeAndCompanyID(
                             MyUtils.dateFormat.format(startDate), MyUtils.dateFormat.format(endDate), companyID,
-                            invoiceType, prefix1, prefix2);
+                            invoiceType, prefix);
 
             List<CheckoutEntryWithProductsVO> entries = new ArrayList<>();
             for (var entryFromDatabase : entriesFromDatabase) {
@@ -277,7 +278,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 outVO.setDepartmentID(returnVO.getDepartmentID());
                 outVO.setWarehouseID(-1); // todo
                 outVO.setRemark(outVO.getRemark());
-                outVO.setClassification("入退");
+                outVO.setClassification(INBOUND_RETURN);
                 outVO.setShippingCost("0");
                 outVO.setShippingCostType("无");
                 outVO.setShippingQuantity(0);
@@ -308,7 +309,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                 inVO.setPartnerCompanyID(returnVO.getPartnerCompanyID());
                 inVO.setDepartmentID(returnVO.getDepartmentID());
                 inVO.setRemark(returnVO.getRemark());
-                inVO.setClassification("出退");
+                inVO.setClassification(OUTBOUND_RETURN);
                 inVO.setShippingCost("0");
                 inVO.setShippingCostType("无");
                 inVO.setShippingQuantity(0);

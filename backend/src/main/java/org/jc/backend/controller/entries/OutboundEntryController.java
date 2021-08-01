@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_ENTRY;
+import static org.jc.backend.utils.EntryClassification.INBOUND_RETURN;
+
 @Indexed
 @Api(tags = "OutboundEntry Related")
 @RestController
@@ -72,8 +75,8 @@ public class OutboundEntryController {
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
         switch (type) {
-            case "销出":
-            case "入退":
+            case OUTBOUND_ENTRY:
+            case INBOUND_RETURN:
                 break;
             default:
                 throw new GlobalParamException("Invalid type error");
@@ -280,8 +283,8 @@ public class OutboundEntryController {
         logger.info("GET Request to /outboundEntry/getOutboundSummary");
 
         switch (type) {
-            case "销出":
-            case "入退":
+            case OUTBOUND_ENTRY:
+            case INBOUND_RETURN:
                 break;
             default: throw new GlobalParamException("invalid category");
         }

@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.INBOUND_ENTRY;
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_RETURN;
+
 @Service
 public class InboundEntryServiceImpl implements InboundEntryService {
     private static final Logger logger = LoggerFactory.getLogger(InboundEntryServiceImpl.class);
@@ -94,13 +97,13 @@ public class InboundEntryServiceImpl implements InboundEntryService {
 
             String entryDate = newEntry.getEntryDate();
             String newSerial;
-            if (newEntry.getClassification().equals("购入")) {
-                int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, "购入");
-                newSerial = MyUtils.formNewSerial("购入", count, entryDate);
+            if (newEntry.getClassification().equals(INBOUND_ENTRY)) {
+                int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, INBOUND_ENTRY);
+                newSerial = MyUtils.formNewSerial(INBOUND_ENTRY, count, entryDate);
             }
-            else if (newEntry.getClassification().equals("出退")) {
-                int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, "出退");
-                newSerial = MyUtils.formNewSerial("出退", count, entryDate);
+            else if (newEntry.getClassification().equals(OUTBOUND_RETURN)) {
+                int count = inboundEntryMapper.countNumberOfEntriesOfGivenDate(entryDate, OUTBOUND_RETURN);
+                newSerial = MyUtils.formNewSerial(OUTBOUND_RETURN, count, entryDate);
             }
             else {
                 throw new GlobalParamException("incorrect classification");

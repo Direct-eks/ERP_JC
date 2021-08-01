@@ -33,6 +33,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_ENTRY;
+import static org.jc.backend.utils.EntryClassification.INBOUND_RETURN;
+
 @Service
 public class OutboundEntryServiceImpl implements OutboundEntryService {
     private static final Logger logger = LoggerFactory.getLogger(OutboundEntryServiceImpl.class);
@@ -116,13 +119,13 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
         try {
             String shipmentDate = newEntry.getShipmentDate();
             String newSerial;
-            if (newEntry.getClassification().equals("销出")) {
-                int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate, "销出");
-                newSerial = MyUtils.formNewSerial("销出", count, shipmentDate);
+            if (newEntry.getClassification().equals(OUTBOUND_ENTRY)) {
+                int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate, OUTBOUND_ENTRY);
+                newSerial = MyUtils.formNewSerial(OUTBOUND_ENTRY, count, shipmentDate);
             }
-            else if (newEntry.getClassification().equals("入退")) {
-                int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate, "入退");
-                newSerial = MyUtils.formNewSerial("入退", count, shipmentDate);
+            else if (newEntry.getClassification().equals(INBOUND_RETURN)) {
+                int count = outboundEntryMapper.countNumberOfEntriesOfGivenDate(shipmentDate, INBOUND_RETURN);
+                newSerial = MyUtils.formNewSerial(INBOUND_RETURN, count, shipmentDate);
             }
             else {
                 throw new GlobalParamException("incorrect classification");
@@ -788,7 +791,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             for (var c : modelService.getModelCategories()) {
                 if (c.getTreeLevel().length() == 1) {
 
-                    var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
+                    var list = outboundEntryMapper.queryOutboundSummary(OUTBOUND_ENTRY, -1,
                             startDate, endDate, c.getTreeLevel(), "", -1, -1);
                     double totalPrice = 0;
                     for (var item : list) {
@@ -844,7 +847,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             }
 
             for (var c : subCategories) {
-                var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
+                var list = outboundEntryMapper.queryOutboundSummary(OUTBOUND_ENTRY, -1,
                         startDate, endDate, c.getTreeLevel(), "", -1, -1);
                 double totalPrice = 0;
                 for (var item : list) {
@@ -879,7 +882,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
             for (var brand : factoryBrandService.getAllFactoryBrands()) {
-                var list = outboundEntryMapper.queryOutboundSummary("销出", -1,
+                var list = outboundEntryMapper.queryOutboundSummary(OUTBOUND_ENTRY, -1,
                         startDate, endDate, "", brand.getCode(), -1, -1);
                 double totalPrice = 0;
                 for (var item : list) {
@@ -914,7 +917,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
 
-            var map = outboundEntryMapper.queryOutboundSummary("销出", -1,
+            var map = outboundEntryMapper.queryOutboundSummary(OUTBOUND_ENTRY, -1,
                     startDate, endDate, "", "", -1, -1)
                     .stream().collect(Collectors.groupingBy(SummaryO::getCompanyAbbreviatedName));
 
@@ -952,7 +955,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
             double total = 0;
 
 
-            var map = outboundEntryMapper.queryOutboundSummary("销出", -1,
+            var map = outboundEntryMapper.queryOutboundSummary(OUTBOUND_ENTRY, -1,
                     startDate, endDate, "", "", -1, -1)
                     .stream().collect(Collectors.groupingBy(SummaryO::getCompanyAbbreviatedName));
 

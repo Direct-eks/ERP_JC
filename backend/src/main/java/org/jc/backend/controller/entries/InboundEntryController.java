@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.INBOUND_ENTRY;
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_RETURN;
+
 @Indexed
 @Api(tags = "InboundEntry Related")
 @RestController
@@ -71,8 +74,8 @@ public class InboundEntryController {
         Date endDate = MyUtils.parseAndCheckDateString(endDateString);
 
         switch (type) {
-            case "购入":
-            case "出退":
+            case INBOUND_ENTRY:
+            case OUTBOUND_RETURN:
                 break;
             default:
                 throw new GlobalParamException("Invalid type param");
@@ -266,8 +269,8 @@ public class InboundEntryController {
         logger.info("GET Request to /inboundEntry/getInboundSummary");
 
         switch (type) {
-            case "购入":
-            case "出退":
+            case INBOUND_ENTRY:
+            case OUTBOUND_RETURN:
                 break;
             default: throw new GlobalParamException("invalid category");
         }

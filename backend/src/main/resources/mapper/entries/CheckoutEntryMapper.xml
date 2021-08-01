@@ -68,7 +68,7 @@
         from ((m_checkout_entry as c left join c_bank_account as b on c.bank_account_id = b.bank_account_id)
             join e_department as d on c.department_id = d.department_id)
             join c_partner_company as p on c.partner_company_id = p.partner_company_id
-        where (checkout_entry_serial like #{prefix1}||'%' or checkout_entry_serial like #{prefix2}||'%')
+        where checkout_entry_serial like #{prefix}||'%'
             and (c.checkout_date between #{startDate} and #{endDate})
         <if test="companyID != -1">
             and c.partner_company_id = #{companyID}

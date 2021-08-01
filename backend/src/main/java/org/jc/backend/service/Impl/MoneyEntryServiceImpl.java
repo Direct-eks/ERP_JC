@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.INBOUND_PAYABLE;
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_RECEIVABLE;
+
 @Service
 public class MoneyEntryServiceImpl implements MoneyEntryService {
     private static final Logger logger = LoggerFactory.getLogger(MoneyEntryServiceImpl.class);
@@ -35,7 +38,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     private static String getPrefix (boolean isInbound) {
-        return isInbound ? "付款" : "收款";
+        return isInbound ? INBOUND_PAYABLE : OUTBOUND_RECEIVABLE;
     }
 
     @Transactional
@@ -206,7 +209,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService {
             MoneyEntryO originEntry = moneyEntryMapper.selectEntryBySerial(modifiedEntry.getMoneyEntrySerial());
 
             StringBuilder record = new StringBuilder("修改者: " + modifiedEntry.getDrawer() + "; ");
-            //since only payment fields are needed to be compare, copy fields from originEntry
+            //since only payment fields are needed to be compared, copy fields from originEntry
             // in case of unwanted changes being output to modification record
             modifiedEntry.setPaymentIndication(originEntry.getPaymentIndication());
             modifiedEntry.setRemark(originEntry.getRemark());
