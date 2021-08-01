@@ -13,19 +13,20 @@
 
     <insert id="insertEntry">
         insert into m_invoice_entry(
-            invoice_entry_serial, partner_company_id, invoice_type, invoice_number, total_amount, invoice_amount,
-            invoice_indication, is_follow_up_indication, remark, drawer, creation_date, checkout_date, in_or_out,
-            invoice_date, invoice_number_date
+            invoice_entry_serial, checkout_entry_serial, partner_company_id, invoice_type, invoice_number, total_amount,
+            invoice_amount, invoice_indication, is_follow_up_indication, remark, drawer, creation_date, checkout_date,
+            in_or_out, invoice_date, invoice_number_date
         )
         values (
-            #{invoiceEntrySerial}, #{partnerCompanyID}, #{invoiceType}, #{invoiceNumber}, #{totalAmount},
-            #{invoiceAmount}, #{invoiceIndication}, #{isFollowUpIndication}, #{remark}, #{drawer},
+            #{invoiceEntrySerial},#{checkoutEntrySerial}, #{partnerCompanyID}, #{invoiceType}, #{invoiceNumber},
+            #{totalAmount}, #{invoiceAmount}, #{invoiceIndication}, #{isFollowUpIndication}, #{remark}, #{drawer},
             date('now', 'localtime'), #{checkoutDate}, #{inOrOut}, #{invoiceDate}, #{invoiceNumberDate}
         )
     </insert>
 
     <resultMap id="InvoiceEntryResultMap" type="org.jc.backend.entity.InvoiceEntryO">
         <result property="invoiceEntrySerial" column="invoice_entry_serial"/>
+        <result property="checkoutEntrySerial" column="checkout_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="company_abbreviated_name"/>
         <result property="companyRemark" column="company_remark"/>
@@ -69,6 +70,15 @@
             and i.invoice_type = #{invoiceType}
         </if>
         order by creation_date desc
+    </select>
+
+    <select id="getEntryByCheckoutSerial" resultMap="InvoiceEntryResultMap">
+        select invoice_entry_serial, i.partner_company_id, c.abbreviated_name as company_abbreviated_name,
+               c.remark as company_remark, invoice_type, invoice_number, total_amount, invoice_amount,
+               invoice_indication, is_follow_up_indication, i.remark, drawer, creation_date,
+               checkout_date, in_or_out, invoice_date, invoice_number_date, is_modified
+        from m_invoice_entry as i join c_partner_company as c on i.partner_company_id = c.partner_company_id
+        where checkout_entry_serial = #{serial}
     </select>
 
     <select id="selectEntryBySerialForCompare" resultMap="InvoiceEntryResultMap">

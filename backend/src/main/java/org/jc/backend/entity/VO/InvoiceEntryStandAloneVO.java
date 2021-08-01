@@ -16,6 +16,8 @@ import java.util.List;
 public class InvoiceEntryStandAloneVO {
     private String invoiceEntrySerial;
 
+    private String checkoutEntrySerial;
+
     @NotNull(message = "partnerCompanyID null error")
     private Integer partnerCompanyID;
     // from c_partner_company

@@ -207,6 +207,8 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         InvoiceEntryO invoiceEntry = new InvoiceEntryO();
         BeanUtils.copyProperties(checkoutEntryWithProductsVO.getInvoiceEntry(), invoiceEntry);
 
+        invoiceEntry.setCheckoutEntrySerial(checkoutEntryWithProductsVO.getCheckoutEntrySerial());
+
         try {
             String prefix = getEntryPrefix(isInbound, checkoutEntryWithProductsVO.getInvoiceType());
 
@@ -223,6 +225,19 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public InvoiceEntryO getInvoiceEntryByCheckoutSerial(String serial) {
+        try {
+            return invoiceEntryMapper.getEntryByCheckoutSerial(serial);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

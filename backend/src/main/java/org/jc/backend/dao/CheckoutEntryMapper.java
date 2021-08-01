@@ -15,6 +15,7 @@ import java.util.List;
 public interface CheckoutEntryMapper {
     int countNumberOfEntriesOfToday(String date, String prefix);
     void insertEntry(CheckoutEntryDO checkoutEntryDO);
+    void updateEntryWithInvoice(String serial, String invoiceSerial);
 
     List<CheckoutEntryDO> getEntriesInDateRangeByInvoiceTypeAndCompanyID(
             String startDate, String endDate, int companyID, String invoiceType, String prefix);

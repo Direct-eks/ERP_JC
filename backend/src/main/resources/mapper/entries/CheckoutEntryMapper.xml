@@ -25,6 +25,12 @@
         )
     </insert>
 
+    <update id="updateEntryWithInvoice">
+        update m_checkout_entry
+        set invoice_entry_serial = #{invoiceSerial}
+        where checkout_entry_serial = #{serial}
+    </update>
+
     <resultMap id="checkoutEntryResultMap" type="org.jc.backend.entity.DO.CheckoutEntryDO">
         <result property="checkoutEntrySerial" column="checkout_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
@@ -50,6 +56,7 @@
         <result property="checkoutDate" column="checkout_date"/>
         <result property="debitOrCredit" column="debit_or_credit"/>
         <result property="moneyEntrySerial" column="money_entry_serial"/>
+        <result property="invoiceEntrySerial" column="invoice_entry_serial"/>
         <result property="returnSerial" column="return_serial"/>
         <result property="departmentID" column="department_id"/>
         <result property="departmentName" column="department_name"/>
@@ -63,8 +70,8 @@
                p.full_name as company_full_name, p.phone as company_phone, p.remark as company_remark,
                invoice_type, payment_method, payment_number, payment_amount, c.bank_account_id,
                b.name as bank_account_name, total_amount, is_rounded, rounded_amount, debt, service_fee,
-               c.remark, drawer, creation_date, checkout_date, money_entry_serial, return_serial,
-               c.department_id, d.name as department_name, is_verified, is_modified
+               c.remark, drawer, creation_date, checkout_date, money_entry_serial, invoice_entry_serial,
+               return_serial, c.department_id, d.name as department_name, is_verified, is_modified
         from ((m_checkout_entry as c left join c_bank_account as b on c.bank_account_id = b.bank_account_id)
             join e_department as d on c.department_id = d.department_id)
             join c_partner_company as p on c.partner_company_id = p.partner_company_id

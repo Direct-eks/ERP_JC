@@ -13,10 +13,13 @@ import java.util.List;
 public interface InvoiceEntryMapper {
     int countNumberOfEntriesOfToday(String date, String prefix);
     void insertEntry(InvoiceEntryO invoiceEntryO);
+
     List<InvoiceEntryO> getEntriesInDateRangeAndParams(String startDate, String endDate, String invoiceNumberDate,
                                                        int companyID, int isFollowUpIndication,
                                                        String invoiceNumber, String invoiceType,
                                                        String prefix1, String prefix2);
+    InvoiceEntryO getEntryByCheckoutSerial(String serial);
+
     InvoiceEntryO selectEntryBySerialForCompare(String serial);
     void updateEntry(InvoiceEntryO invoiceEntryO);
 }

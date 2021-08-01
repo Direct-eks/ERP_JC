@@ -35,6 +35,7 @@ public class CheckoutEntryDO {
     private String checkoutDate;
     private String debitOrCredit;
     private String moneyEntrySerial;
+    private String invoiceEntrySerial;
     private String returnSerial;
 
     private int departmentID;

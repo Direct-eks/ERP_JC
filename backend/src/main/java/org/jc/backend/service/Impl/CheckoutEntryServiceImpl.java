@@ -115,8 +115,13 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
 
             //check if it is needed to create invoiceEntry
             if (checkoutEntryWithProductsVO.getInvoiceEntry() != null) {
+                // fill in checkout entry serial
+                checkoutEntryWithProductsVO.setCheckoutEntrySerial(newCheckoutSerial);
                 String newInvoiceSerial = invoiceEntryService.createEntryForCheckout(
                         checkoutEntryWithProductsVO, true);
+
+                // update checkout entry
+                checkoutEntryMapper.updateEntryWithInvoice(newCheckoutSerial, newInvoiceSerial);
 
                 //update product invoiceSerial
                 if (isInbound) {
@@ -165,6 +170,10 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService {
                     tempEntry.setOutboundCheckoutProducts(products);
                     tempEntry.setInboundCheckoutProducts(new ArrayList<>());
                 }
+
+                // query related invoice
+                tempEntry.setInvoiceEntry(invoiceEntryService.getInvoiceEntryByCheckoutSerial(
+                        entryFromDatabase.getCheckoutEntrySerial()));
 
                 entries.add(tempEntry);
             }

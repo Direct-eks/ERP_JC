@@ -12,6 +12,8 @@ import javax.validation.constraints.*;
 public class InvoiceEntryO {
     private String invoiceEntrySerial;
 
+    private String checkoutEntrySerial;
+
     @NotNull(message = "partnerCompanyID null error")
     private Integer partnerCompanyID;
     // from c_partner_company

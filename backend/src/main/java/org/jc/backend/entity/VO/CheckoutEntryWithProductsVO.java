@@ -87,6 +87,7 @@ public class CheckoutEntryWithProductsVO {
     private String checkoutDate;
 
     private String moneyEntrySerial;
+    private String invoiceEntrySerial;
     private String returnSerial;
 
     @NotNull(message = "departmentID null error")
