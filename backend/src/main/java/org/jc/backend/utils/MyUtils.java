@@ -147,7 +147,8 @@ public class MyUtils {
 
             String line;
             while ((line = br.readLine()) != null) {
-                writer.write(line + "\\r\\n");
+                writer.write(line);
+                writer.write(System.getProperty("line.separator"));
             }
             writer.flush();
 
