@@ -141,7 +141,7 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(boolean isInbound) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = acceptanceMapper.queryAllEntriesByPrefix(isInbound ?

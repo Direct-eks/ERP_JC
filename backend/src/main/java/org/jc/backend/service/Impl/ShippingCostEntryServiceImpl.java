@@ -251,7 +251,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(boolean isInbound) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         return null;
     }
 
