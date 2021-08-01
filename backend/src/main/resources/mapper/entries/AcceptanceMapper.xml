@@ -98,4 +98,15 @@
         where acceptance_entry_serial = #{id}
     </delete>
 
+
+    <select id="queryAllEntriesByPrefix" resultMap="entryResultMap">
+        select acceptance_entry_serial, partner_company_id, entry_date, creation_date,
+               department_id, source, bank_account_id, source_serial, amount, number,
+               issue_date, expiration_date, type, drawer, remark, classification,
+               status, debit_or_credit
+        from m_acceptance_entry
+        where acceptance_entry_serial like #{prefix}||'%'
+    </select>
+
+
 </mapper>

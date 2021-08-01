@@ -4,6 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
+import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.jc.backend.service.AcceptanceService;
 import org.jc.backend.utils.AcceptanceBillClassification;
 import org.jc.backend.utils.MyUtils;
@@ -129,6 +130,33 @@ public class AcceptanceServiceImpl implements AcceptanceService {
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
+            throw e;
+        }
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MoneyEntryDetailO> getInboundEntryDetails() {
+        try {
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MoneyEntryDetailO> getOutboundEntryDetails() {
+        try {
+            return null; //todo
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

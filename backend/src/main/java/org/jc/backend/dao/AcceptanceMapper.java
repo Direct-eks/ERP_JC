@@ -21,4 +21,6 @@ public interface AcceptanceMapper {
     List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String prefix);
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);
+
+    List<AcceptanceEntryO> queryAllEntriesByPrefix();
 }
