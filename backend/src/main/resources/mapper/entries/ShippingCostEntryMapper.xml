@@ -14,12 +14,12 @@
         insert into m_shipping_cost_entry(
             shipping_cost_entry_serial, partner_company_id, is_tax_deduction, invoice_number,
             total_amount, invoice_amount, shipping_cost_type, remark, drawer, creation_date,
-            checkout_date, in_or_out, invoice_date
+            checkout_date, in_or_out, debit_or_credit, invoice_date
         )
         values (
             #{shippingCostEntrySerial}, #{partnerCompanyID}, #{isTaxDeduction}, #{invoiceNumber},
             #{totalAmount}, #{invoiceAmount}, #{shippingCostType}, #{remark}, #{drawer},
-            #{creationDate}, #{checkoutDate}, #{inOrOut}, #{invoiceDate}
+            #{creationDate}, #{checkoutDate}, #{inOrOut}, #{debitOrCredit}, #{invoiceDate}
         )
     </insert>
 
@@ -40,6 +40,7 @@
         <result property="creationDate" column="creation_date"/>
         <result property="checkoutDate" column="checkout_date"/>
         <result property="inOrOut" column="in_or_out"/>
+        <result property="debitOrCredit" column="debit_or_credit"/>
         <result property="invoiceDate" column="invoice_date"/>
         <result property="isModified" column="is_modified"/>
     </resultMap>

@@ -5,35 +5,36 @@
 <mapper namespace="org.jc.backend.dao.AcceptanceMapper">
 
     <select id="countNumberOfEntriesOfGivenDate" resultType="java.lang.Integer">
-        select count(serial)
+        select count(acceptance_entry_serial)
         from m_acceptance_entry
         where entry_date = #{date} and classification = #{classification}
     </select>
 
     <insert id="insertEntry">
         insert into m_acceptance_entry(
-            serial, partner_company_id, entry_date, creation_date, department_id,
+            acceptance_entry_serial, partner_company_id, entry_date, creation_date, department_id,
             source, bank_account_id, source_serial, amount, number, issue_date,
-            expiration_date, type, drawer, remark, classification, status
+            expiration_date, type, drawer, remark, classification, status, debit_or_credit
         )
         values (
             #{acceptanceEntrySerial}, #{partnerCompanyID}, #{entryDate}, date('now', 'localtime'),
             #{departmentID}, #{source}, #{bankAccountID}, #{sourceSerial}, #{amount}, #{number},
-            #{issueDate}, #{expirationDate}, #{type}, #{drawer}, #{remark}, #{classification}, #{status}
+            #{issueDate}, #{expirationDate}, #{type}, #{drawer}, #{remark}, #{classification},
+            #{status}, #{debitOrCredit}
         )
     </insert>
 
     <select id="queryEntryBySerial" resultMap="entryResultMap">
-        select serial, partner_company_id, entry_date, creation_date, department_id, source, bank_account_id,
+        select acceptance_entry_serial, partner_company_id, entry_date, creation_date, department_id, source, bank_account_id,
                source_serial, amount, number, issue_date, expiration_date, type, drawer, remark, classification, status
         from m_acceptance_entry
-        where serial = #{serial}
+        where acceptance_entry_serial = #{serial}
     </select>
 
     <update id="updateClassification">
         update m_acceptance_entry
         set classification = #{classification}
-        where serial = #{serial}
+        where acceptance_entry_serial = #{serial}
     </update>
 
 
@@ -58,12 +59,13 @@
         <result property="drawer" column="drawer"/>
         <result property="classification" column="classification"/>
         <result property="status" column="status"/>
+        <result property="debitOrCredit" column="debit_or_credit"/>
     </resultMap>
 
 
     <select id="queryEntryByNumber" resultMap="entryResultMap">
-        select serial, a.partner_company_id, c.abbreviated_name, a.entry_date, a.creation_date,
-               a.department_id, d.name as department_name, a.source, a.bank_account_id,
+        select acceptance_entry_serial, a.partner_company_id, c.abbreviated_name, a.entry_date,
+               a.creation_date, a.department_id, d.name as department_name, a.source, a.bank_account_id,
                b.name as bank_account_name, a.source_serial, a.amount, a.number, a.issue_date,
                a.expiration_date, a.type, a.remark, a.drawer, a.classification, a.status
         from m_acceptance_entry as a join c_partner_company as c
@@ -74,8 +76,8 @@
     </select>
 
     <select id="queryEntriesInDateRange" resultMap="entryResultMap">
-        select serial, a.partner_company_id, c.abbreviated_name, a.entry_date, a.creation_date,
-               a.department_id, d.name as department_name, a.source, a.bank_account_id,
+        select acceptance_entry_serial, a.partner_company_id, c.abbreviated_name, a.entry_date,
+               a.creation_date, a.department_id, d.name as department_name, a.source, a.bank_account_id,
                b.name as bank_account_name, a.source_serial, a.amount, a.number, a.issue_date,
                a.expiration_date, a.type, a.remark, a.drawer, a.classification, a.status
         from m_acceptance_entry as a join c_partner_company as c
@@ -83,8 +85,8 @@
             join e_department as d on a.department_id = d.department_id
             left join c_bank_account as b on a.bank_account_id = b.bank_account_id
         where (a.entry_date between #{startDate} and #{endDate})
-            and a.serial like #{prefix}||'%'
-        order by a.serial, a.entry_date desc
+            and a.acceptance_entry_serial like #{prefix}||'%'
+        order by a.acceptance_entry_serial, a.entry_date desc
     </select>
 
     <update id="updateEntry">
@@ -93,7 +95,7 @@
 
     <delete id="deleteEntry">
         delete from m_acceptance_entry
-        where serial = #{id}
+        where acceptance_entry_serial = #{id}
     </delete>
 
 </mapper>

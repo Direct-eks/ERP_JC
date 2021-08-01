@@ -76,4 +76,6 @@ public class AcceptanceEntryO {
 
     private String classification;
     private int status;
+
+    private String debitOrCredit;
 }

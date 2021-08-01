@@ -33,9 +33,9 @@ public class InitialMoneyEntryO {
     @NotNull(message = "creationDate null error")
     private String creationDate;
 
-    @NotNull(message = "borrowOrLend null error")
-    @Pattern(regexp = "^[借贷]$", message = "borrowOrLend value error")
-    private String borrowOrLend;
+    @NotNull(message = "debitOrCredit null error")
+    @Pattern(regexp = "^[借贷]$", message = "debitOrCredit value error")
+    private String debitOrCredit;
 
     @NotNull(message = "balance null error")
     @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_8,

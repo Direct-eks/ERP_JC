@@ -14,11 +14,11 @@
     <insert id="insertEntry">
         insert into m_initial_money_entry(
             initial_money_entry_serial, partner_company_id, remark, drawer,
-            entry_date, creation_date, borrow_or_lend, balance
+            entry_date, creation_date, debit_or_credit, balance
         )
         values (
             #{initialMoneyEntrySerial}, #{partnerCompanyID}, #{remark},
-            #{drawer}, #{entryDate}, #{creationDate}, #{borrowOrLend}, #{balance}
+            #{drawer}, #{entryDate}, #{creationDate}, #{debitOrCredit}, #{balance}
         )
     </insert>
 
@@ -31,7 +31,7 @@
         <result property="drawer" column="drawer"/>
         <result property="entryDate" column="entry_date"/>
         <result property="creationDate" column="creation_date"/>
-        <result property="borrowOrLend" column="borrow_or_lend"/>
+        <result property="debitOrCredit" column="debit_or_credit"/>
         <result property="balance" column="balance"/>
         <result property="isModified" column="is_modified"/>
     </resultMap>
@@ -40,7 +40,7 @@
     <select id="queryEntries" resultMap="entryResultMap">
         select initial_money_entry_serial, e.partner_company_id,
                c.abbreviated_name, e.remark, drawer, entry_date,
-               creation_date, borrow_or_lend, balance, is_modified
+               creation_date, debit_or_credit, balance, is_modified
         from m_initial_money_entry as e join c_partner_company as c
             on e.partner_company_id = c.partner_company_id
         where initial_money_entry_serial like #{prefix}||'%'
@@ -48,7 +48,7 @@
 
     <select id="queryEntryByCompanyID" resultMap="entryResultMap">
         select initial_money_entry_serial, partner_company_id, remark, drawer,
-               entry_date, creation_date, borrow_or_lend, balance, is_modified
+               entry_date, creation_date, debit_or_credit, balance, is_modified
         from m_initial_money_entry
         where initial_money_entry_serial like #{prefix}||'%'
             and partner_company_id = #{id}
@@ -57,7 +57,7 @@
     <update id="updateEntry">
         update m_initial_money_entry
         set remark = #{remark},
-            borrow_or_lend = #{borrowOrLend},
+            debit_or_credit = #{debitOrCredit},
             balance = #{balance},
             is_modified = 1
         where initial_money_entry_serial = #{initialMoneyEntrySerial}

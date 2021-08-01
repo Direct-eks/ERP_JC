@@ -33,6 +33,7 @@ public class CheckoutEntryDO {
     private String drawer;
     private String creationDate;
     private String checkoutDate;
+    private String debitOrCredit;
     private String moneyEntrySerial;
     private String returnSerial;
 
