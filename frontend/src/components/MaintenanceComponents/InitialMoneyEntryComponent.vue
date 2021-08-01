@@ -42,8 +42,8 @@
                       hide-default-footer
                       locale="zh-cn"
                       dense>
-            <template v-slot:item.borrowOrLend="{ item }">
-                <v-select v-model="item.borrowOrLend"
+            <template v-slot:item.debitOrCredit="{ item }">
+                <v-select v-model="item.debitOrCredit"
                           :items="options"
                           hide-details="auto"
                           dense/>
@@ -112,7 +112,7 @@ export default {
                 { text: '单据号', value: 'initialMoneyEntrySerial', width: '140px' },
                 { text: '开单人', value: 'drawer', width: '90px' },
                 { text: '单位简称', value: 'abbreviatedName', width: '180px' },
-                { text: '借贷', value: 'borrowOrLend', width: '70px' },
+                { text: '借贷', value: 'debitOrCredit', width: '70px' },
                 { text: '余额', value: 'balance', width: '100px' },
                 { text: '说明', value: 'remark', width: '180px' },
             ],
@@ -149,7 +149,7 @@ export default {
                 drawer: this.$store.getters.currentUser,
                 companyID: this.queries.companyID,
                 abbreviatedName: this.queries.companyName,
-                borrowOrLend: '',
+                debitOrCredit: '',
                 balance: '',
                 remark: '',
             }
