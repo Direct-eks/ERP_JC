@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.INITIAL_PAYABLE;
+import static org.jc.backend.utils.EntryClassification.INITIAL_RECEIVABLE;
+
 @Service
 public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
     private static final Logger logger = LoggerFactory.getLogger(InitialMoneyEntryServiceImpl.class);
@@ -33,7 +36,7 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     private String getPrefix(boolean isInbound) {
-        return isInbound ? "初付" : "初收";
+        return isInbound ? INITIAL_PAYABLE : INITIAL_RECEIVABLE;
     }
 
     @Transactional(readOnly = true)

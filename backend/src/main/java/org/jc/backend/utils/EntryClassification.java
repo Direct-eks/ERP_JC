@@ -17,4 +17,10 @@ public class EntryClassification {
 
     public final static String INBOUND_PAYABLE = "付款";
     public final static String OUTBOUND_RECEIVABLE = "收款";
+
+    public final static String SHIPPING_COST_PAY = "付运";
+    public final static String SHIPPING_COST_RECV = "收运";
+
+    public final static String INITIAL_PAYABLE = "初付";
+    public final static String INITIAL_RECEIVABLE = "初收";
 }

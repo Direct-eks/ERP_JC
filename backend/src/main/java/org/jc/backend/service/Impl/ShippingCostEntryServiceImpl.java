@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.EntryClassification.SHIPPING_COST_PAY;
+import static org.jc.backend.utils.EntryClassification.SHIPPING_COST_RECV;
+
 @Service
 public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
     private static final Logger logger = LoggerFactory.getLogger(ShippingCostEntryServiceImpl.class);
@@ -45,7 +48,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService {
     /* ------------------------------ SERVICE ------------------------------ */
 
     private static String getPrefix(boolean isInbound) {
-        return isInbound ? "付运" : "收运";
+        return isInbound ? SHIPPING_COST_PAY : SHIPPING_COST_RECV;
     }
 
     @Transactional
