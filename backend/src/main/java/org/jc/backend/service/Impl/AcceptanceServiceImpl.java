@@ -154,6 +154,7 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
                 detailO.setDebtorAmount("");
                 detailO.setCreditorAmount("");
                 detailO.setAuditAmount(""); // todo
+                detailO.setAmount(item.getAmount());
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
                 results.add(detailO);
             }
