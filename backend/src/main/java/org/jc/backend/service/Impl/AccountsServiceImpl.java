@@ -68,7 +68,7 @@ public class AccountsServiceImpl implements AccountsService {
                     throw new GlobalParamException("此公司为供应商/其他应付");
             }
 
-            return calculateBalance(companyID, true); // todo
+            return generateEntryList(companyID, true);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -92,7 +92,7 @@ public class AccountsServiceImpl implements AccountsService {
                     throw new GlobalParamException("此公司为客户/其他应收");
             }
 
-            return calculateBalance(companyID, false); // todo
+            return generateEntryList(companyID, false);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -112,7 +112,7 @@ public class AccountsServiceImpl implements AccountsService {
 
     // 客户：customer
 
-    private List<MoneyEntryDetailO> calculateBalance(int partnerCompanyID, boolean isCustomer) {
+    private void calculateBalance(int partnerCompanyID, boolean isCustomer) {
         var allEntries = generateEntryList(partnerCompanyID, isCustomer);
 
         String lastBalance = "";
@@ -122,7 +122,10 @@ public class AccountsServiceImpl implements AccountsService {
             lastBalance = entry.getBalance();
             isLastDebit = entry.getDebitOrCredit().equals("借");
         }
-        return allEntries;
+
+        for (var entry : allEntries) {
+
+        }
     }
 
     private void doCalculation(MoneyEntryDetailO entry, String lastBalance, boolean isDebit) {

@@ -118,4 +118,16 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
     public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         return null;
     }
+
+    @Transactional
+    @Override
+    public void updateEntryDetail(MoneyEntryDetailO entry) {
+        try {
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
 }

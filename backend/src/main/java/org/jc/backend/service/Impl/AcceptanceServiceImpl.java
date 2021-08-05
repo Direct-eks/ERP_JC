@@ -144,8 +144,8 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
     public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
-            var list = acceptanceMapper.queryAllEntriesByPrefix(isInbound ?
-                    ACCEPTANCE_RECV : ACCEPTANCE_PAY);
+            var list = acceptanceMapper.queryAllEntriesByPrefixAndCompany(isInbound ?
+                    ACCEPTANCE_RECV : ACCEPTANCE_PAY, companyID);
             for (var item : list) {
                 MoneyEntryDetailO detailO = new MoneyEntryDetailO();
                 detailO.setEntryID(item.getAcceptanceEntrySerial());
@@ -164,6 +164,18 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateEntryDetail(MoneyEntryDetailO entry) {
+        try {
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
             throw e;
         }
     }
