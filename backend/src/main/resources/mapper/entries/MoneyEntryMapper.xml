@@ -94,4 +94,14 @@
         where money_entry_serial = #{moneyEntrySerial}
     </update>
 
+
+    <select id="queryAllEntriesByPrefixAndCompany" resultMap="moneyEntryResultMap">
+        select money_entry_serial, partner_company_id, payment_method, payment_number,
+               payment_amount, bank_account_id, remark, drawer, creation_date,
+               payment_date, checkout_serial, debit_or_credit, balance
+        from m_money_entry
+        where money_entry_serial like #{prefix}||'%'
+          and partner_company_id = #{id}
+    </select>
+
 </mapper>

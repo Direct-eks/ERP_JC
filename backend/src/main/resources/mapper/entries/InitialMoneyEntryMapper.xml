@@ -68,4 +68,13 @@
         where initial_money_entry_serial = #{id}
     </delete>
 
+
+    <select id="queryAllEntriesByPrefixAndCompany" resultMap="entryResultMap">
+        select initial_money_entry_serial, partner_company_id, entry_date, creation_date,
+               debit_or_credit, balance
+        from m_initial_money_entry
+        where initial_money_entry_serial like #{prefix}||'%'
+          and partner_company_id = #{id}
+    </select>
+
 </mapper>

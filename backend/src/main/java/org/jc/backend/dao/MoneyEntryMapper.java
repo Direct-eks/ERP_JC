@@ -17,4 +17,6 @@ public interface MoneyEntryMapper {
                                                      String paymentMethod, int bankAccountID, String prefix);
     MoneyEntryO selectEntryBySerial(String serial);
     void modifyEntry(MoneyEntryO moneyEntryO);
+
+    List<MoneyEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
 }

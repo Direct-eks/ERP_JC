@@ -193,4 +193,14 @@
         where checkout_entry_serial = #{serial}
     </update>
 
+
+    <select id="queryAllEntriesByPrefixAndCompany" resultMap="checkoutEntryResultMap">
+        select checkout_entry_serial, partner_company_id, invoice_type, payment_method,
+               payment_number, payment_amount, bank_account_id, total_amount, creation_date,
+               checkout_date, invoice_entry_serial, debit_or_credit, balance
+        from m_checkout_entry
+        where checkout_entry_serial like #{prefix}||'%'
+          and partner_company_id = #{id}
+    </select>
+
 </mapper>

@@ -17,4 +17,6 @@ public interface ShippingCostEntryMapper {
                                                      int companyID, String prefix);
     ShippingCostEntryDO selectEntryBySerialForCompare(String serial);
     void modifyEntry(ShippingCostEntryDO shippingCostEntryDO);
+
+    List<ShippingCostEntryDO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
 }

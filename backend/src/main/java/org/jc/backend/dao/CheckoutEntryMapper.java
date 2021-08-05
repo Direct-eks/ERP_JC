@@ -30,4 +30,6 @@ public interface CheckoutEntryMapper {
                                               String factoryBrand, int warehouseID, int departmentID);
 
     void updateVerifiedEntry(String serial, int value);
+
+    List<CheckoutEntryDO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
 }

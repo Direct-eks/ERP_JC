@@ -86,4 +86,13 @@
         where shipping_cost_entry_serial = #{shippingCostEntrySerial}
     </update>
 
+
+    <select id="queryAllEntriesByPrefixAndCompany" resultMap="entryResultMap">
+        select shipping_cost_entry_serial, partner_company_id, total_amount,
+               remark, drawer, creation_date, checkout_date, debit_or_credit, balance
+        from m_shipping_cost_entry
+        where shipping_cost_entry_serial like #{prefix}||'%'
+          and partner_company_id = #{id}
+    </select>
+
 </mapper>
