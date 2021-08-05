@@ -663,6 +663,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
     @Override
     public void updateEntryDetail(MoneyEntryDetailO entry) {
         try {
+            checkoutEntryMapper.updateEntryDetailBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

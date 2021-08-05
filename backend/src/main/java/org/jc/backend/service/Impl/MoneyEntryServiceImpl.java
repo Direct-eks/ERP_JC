@@ -247,6 +247,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
     @Override
     public void updateEntryDetail(MoneyEntryDetailO entry) {
         try {
+            moneyEntryMapper.updateEntryDetailBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

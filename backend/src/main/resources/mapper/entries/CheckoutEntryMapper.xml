@@ -203,4 +203,11 @@
           and partner_company_id = #{id}
     </select>
 
+    <update id="updateEntryDetailBySerial">
+        update m_checkout_entry
+        set debit_or_credit = #{debitOrCredit},
+            balance = #{balance}
+        where checkout_entry_serial = #{checkoutEntrySerial}
+    </update>
+
 </mapper>

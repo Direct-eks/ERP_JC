@@ -77,4 +77,11 @@
           and partner_company_id = #{id}
     </select>
 
+    <update id="updateEntryDetailBySerial">
+        update m_initial_money_entry
+        set debit_or_credit = #{debitOrCredit},
+            balance = #{balance}
+        where initial_money_entry_serial = #{initialMoneyEntrySerial}
+    </update>
+
 </mapper>

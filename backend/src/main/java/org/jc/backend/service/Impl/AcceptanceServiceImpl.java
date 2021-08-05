@@ -172,6 +172,7 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
     @Override
     public void updateEntryDetail(MoneyEntryDetailO entry) {
         try {
+            acceptanceMapper.updateEntryDetailBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

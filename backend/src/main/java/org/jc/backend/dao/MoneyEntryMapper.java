@@ -2,6 +2,7 @@ package org.jc.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.jc.backend.entity.MoneyEntryO;
+import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,5 @@ public interface MoneyEntryMapper {
     void modifyEntry(MoneyEntryO moneyEntryO);
 
     List<MoneyEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
+    void updateEntryDetailBySerial(MoneyEntryDetailO entry);
 }

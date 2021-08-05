@@ -259,6 +259,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
     @Override
     public void updateEntryDetail(MoneyEntryDetailO entry) {
         try {
+            shippingCostEntryMapper.updateEntryDetailBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

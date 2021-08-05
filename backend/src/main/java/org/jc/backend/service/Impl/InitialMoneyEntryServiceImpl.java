@@ -123,6 +123,7 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
     @Override
     public void updateEntryDetail(MoneyEntryDetailO entry) {
         try {
+            initialMoneyEntryMapper.updateEntryDetailBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
