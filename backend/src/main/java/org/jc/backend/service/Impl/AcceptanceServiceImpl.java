@@ -144,8 +144,8 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
     public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
-            var list = acceptanceMapper.queryAllEntriesByPrefixAndCompany(isInbound ?
-                    ACCEPTANCE_RECV : ACCEPTANCE_PAY, companyID);
+            var list = acceptanceMapper.queryAllEntriesByPrefixAndCompany(
+                    isInbound ? ACCEPTANCE_RECV : ACCEPTANCE_PAY, companyID);
             for (var item : list) {
                 MoneyEntryDetailO detailO = new MoneyEntryDetailO();
                 detailO.setEntryID(item.getAcceptanceEntrySerial());
@@ -158,7 +158,6 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
                 results.add(detailO);
             }
-
             return results;
 
         } catch (PersistenceException e) {

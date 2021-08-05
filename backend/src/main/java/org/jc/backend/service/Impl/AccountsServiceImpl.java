@@ -7,6 +7,7 @@ import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.CompanyService;
 import org.jc.backend.utils.CompanyClassification;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -119,12 +120,35 @@ public class AccountsServiceImpl implements AccountsService {
         boolean isLastDebit = true;
         for (var entry : allEntries) {
             doCalculation(entry, lastBalance, isLastDebit);
+            updateEntryDetail(entry);
+
             lastBalance = entry.getBalance();
             isLastDebit = entry.getDebitOrCredit().equals("借");
         }
 
-        for (var entry : allEntries) {
+    }
 
+    private void updateEntryDetail(MoneyEntryDetailO entry) {
+        switch (entry.getEntryID().substring(0,2)) {
+            case INITIAL_PAYABLE:
+            case INITIAL_RECEIVABLE:
+                break;
+            case INBOUND_CHECKOUT:
+            case OUTBOUND_CHECKOUT:
+                checkoutEntryService.updateEntryDetail(entry);
+                break;
+            case INBOUND_PAYABLE:
+            case OUTBOUND_RECEIVABLE:
+                moneyEntryService.updateEntryDetail(entry);
+                break;
+            case SHIPPING_COST_PAY:
+            case SHIPPING_COST_RECV:
+                shippingCostEntryService.updateEntryDetail(entry);
+                break;
+            case ACCEPTANCE_RECV:
+            case ACCEPTANCE_PAY:
+                acceptanceService.updateEntryDetail(entry);
+                break;
         }
     }
 

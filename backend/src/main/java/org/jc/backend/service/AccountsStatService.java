@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface AccountsStatService {
     List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound);
-    void updateEntryDetail(MoneyEntryDetailO entry);
+    default void updateEntryDetail(MoneyEntryDetailO entry) {}
 }

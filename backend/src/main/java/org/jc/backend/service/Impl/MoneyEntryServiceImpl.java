@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.jc.backend.utils.EntryClassification.INBOUND_PAYABLE;
-import static org.jc.backend.utils.EntryClassification.OUTBOUND_RECEIVABLE;
+import static org.jc.backend.utils.EntryClassification.*;
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_CHECKOUT;
 
 @Service
 public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatService {
@@ -240,7 +240,25 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
     @Transactional(readOnly = true)
     @Override
     public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
-        return null;
+        try {
+            var results = new ArrayList<MoneyEntryDetailO>();
+            var list = moneyEntryMapper.queryAllEntriesByPrefixAndCompany(
+                    isInbound ? INBOUND_PAYABLE : OUTBOUND_RECEIVABLE, companyID);
+            for (var item : list) {
+                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                detailO.setEntryID(item.getMoneyEntrySerial());
+                detailO.setEntryDate(item.getPaymentDate());
+                detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
+                // todo
+                results.add(detailO);
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
     }
 
     @Transactional

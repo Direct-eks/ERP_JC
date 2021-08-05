@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jc.backend.utils.EntryClassification.INITIAL_PAYABLE;
-import static org.jc.backend.utils.EntryClassification.INITIAL_RECEIVABLE;
+import static org.jc.backend.utils.EntryClassification.*;
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_CHECKOUT;
 
 @Service
 public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, AccountsStatService {
@@ -116,19 +116,25 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
     @Transactional(readOnly = true)
     @Override
     public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
-        return null;
-    }
-
-    @Transactional
-    @Override
-    public void updateEntryDetail(MoneyEntryDetailO entry) {
         try {
-            initialMoneyEntryMapper.updateEntryDetailBySerial(entry);
+            var results = new ArrayList<MoneyEntryDetailO>();
+            var list = initialMoneyEntryMapper.queryAllEntriesByPrefixAndCompany(
+                    isInbound ? INITIAL_PAYABLE : INITIAL_RECEIVABLE, companyID);
+            for (var item : list) {
+                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                detailO.setEntryID(item.getInitialMoneyEntrySerial());
+                detailO.setEntryDate(item.getEntryDate());
+                detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
+                // todo
+                results.add(detailO);
+            }
+            return results;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("update failed");
+            logger.error("Query failed");
             throw e;
         }
     }
+
 }

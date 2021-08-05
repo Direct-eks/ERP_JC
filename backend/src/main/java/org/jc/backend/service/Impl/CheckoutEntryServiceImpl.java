@@ -656,7 +656,25 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
     @Transactional(readOnly = true)
     @Override
     public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
-        return null;
+        try {
+            var results = new ArrayList<MoneyEntryDetailO>();
+            var list = checkoutEntryMapper.queryAllEntriesByPrefixAndCompany(
+                    isInbound ? INBOUND_CHECKOUT : OUTBOUND_CHECKOUT, companyID);
+            for (var item : list) {
+                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                detailO.setEntryID(item.getCheckoutEntrySerial());
+                detailO.setEntryDate(item.getCheckoutDate());
+                detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
+                // todo
+                results.add(detailO);
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
     }
 
     @Transactional

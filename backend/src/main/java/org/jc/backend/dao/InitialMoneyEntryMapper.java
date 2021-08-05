@@ -20,5 +20,4 @@ public interface InitialMoneyEntryMapper {
     void deleteEntry(String id);
 
     List<InitialMoneyEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
-    void updateEntryDetailBySerial(MoneyEntryDetailO entry);
 }
