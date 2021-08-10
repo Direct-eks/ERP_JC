@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jc.backend.utils.EntryClassification.*;
-import static org.jc.backend.utils.EntryClassification.OUTBOUND_CHECKOUT;
+import static org.jc.backend.utils.EntryClassification.INITIAL_PAYABLE;
+import static org.jc.backend.utils.EntryClassification.INITIAL_RECEIVABLE;
 
 @Service
 public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, AccountsStatService {
@@ -115,7 +115,7 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = initialMoneyEntryMapper.queryAllEntriesByPrefixAndCompany(
@@ -126,6 +126,10 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
                 detailO.setEntryDate(item.getEntryDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
                 // todo
+                detailO.setDebtorAmount("");
+                detailO.setCreditorAmount("");
+                detailO.setAuditAmount(""); // todo
+                detailO.setDebitOrCredit(item.getDebitOrCredit());
                 results.add(detailO);
             }
             return results;

@@ -16,6 +16,4 @@ public class MoneyEntryDetailO {
     private String auditAmount;
     private String debitOrCredit;
     private String balance;
-    // for temp value storage
-    private String amount;
 }

@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.jc.backend.utils.EntryClassification.*;
-import static org.jc.backend.utils.EntryClassification.OUTBOUND_CHECKOUT;
+import static org.jc.backend.utils.EntryClassification.SHIPPING_COST_PAY;
+import static org.jc.backend.utils.EntryClassification.SHIPPING_COST_RECV;
 
 @Service
 public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, AccountsStatService {
@@ -251,7 +251,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = shippingCostEntryMapper.queryAllEntriesByPrefixAndCompany(
@@ -262,6 +262,10 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
                 detailO.setEntryDate(item.getCheckoutDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
                 // todo
+                detailO.setDebtorAmount("");
+                detailO.setCreditorAmount("");
+                detailO.setAuditAmount(""); // todo
+                detailO.setDebitOrCredit(item.getDebitOrCredit());
                 results.add(detailO);
             }
             return results;

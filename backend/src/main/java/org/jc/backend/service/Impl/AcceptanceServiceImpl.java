@@ -141,7 +141,7 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = acceptanceMapper.queryAllEntriesByPrefixAndCompany(
@@ -151,10 +151,10 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
                 detailO.setEntryID(item.getAcceptanceEntrySerial());
                 detailO.setEntryDate(item.getEntryDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
+                // todo
                 detailO.setDebtorAmount("");
                 detailO.setCreditorAmount("");
                 detailO.setAuditAmount(""); // todo
-                detailO.setAmount(item.getAmount());
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
                 results.add(detailO);
             }
