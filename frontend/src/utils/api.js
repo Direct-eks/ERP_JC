@@ -13,6 +13,10 @@ const api = {
     createNewUser: '/user/createNewUser', // PUT
     deleteUser: '/user/deleteUser', // DELETE
 
+    /* ------ /accounts ------*/
+    payableSummary: '/accounts/getPayableSummary',
+    receivableSummary: 'accounts/getReceivableSummary',
+
     /* ------ /acceptanceEntry ------*/
     createAcceptanceEntry: '/acceptanceEntry/createEntry', // PUT
     createSolutionPayEntry: '/acceptanceEntry/createSolutionPayEntry', // PUT
