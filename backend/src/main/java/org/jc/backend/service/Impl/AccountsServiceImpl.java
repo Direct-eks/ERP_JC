@@ -68,7 +68,7 @@ public class AccountsServiceImpl implements AccountsService {
                     throw new GlobalParamException("此公司为供应商/其他应付");
             }
 
-            return generateEntryList(companyID, true);
+            return generateEntryList(companyID);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -92,7 +92,7 @@ public class AccountsServiceImpl implements AccountsService {
                     throw new GlobalParamException("此公司为客户/其他应收");
             }
 
-            return generateEntryList(companyID, false);
+            return generateEntryList(companyID);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -115,15 +115,12 @@ public class AccountsServiceImpl implements AccountsService {
     //「贷」一族增加就是记贷方，减少就是记借方。
 
     // 供应商：supplier
-    // 借方 debtor: 出结，付款，付运，承付
-    // 贷方 creditor: 入结，收款，收运，承收
-
     // 客户：customer
     // 借方 debtor: 出结，付款，付运，承付
     // 贷方 creditor: 入结，收款，收运，承收
 
-    private void calculateBalance(int partnerCompanyID, boolean isCustomer) {
-        var allEntries = generateEntryList(partnerCompanyID, isCustomer);
+    private void calculateBalance(int partnerCompanyID) {
+        var allEntries = generateEntryList(partnerCompanyID);
 
         String lastBalance = "";
         boolean isLastDebit = true;
@@ -135,6 +132,52 @@ public class AccountsServiceImpl implements AccountsService {
             isLastDebit = entry.getDebitOrCredit().equals("借");
         }
 
+    }
+
+    private void doCalculation(MoneyEntryDetailO entry, String lastBalance, boolean isLastDebit) {
+        BigDecimal balance = new BigDecimal(lastBalance);
+
+        switch (entry.getEntryID().substring(0,2)) {
+            case INITIAL_PAYABLE:
+            case INITIAL_RECEIVABLE:
+                return; // todo
+            case OUTBOUND_CHECKOUT:
+            case INBOUND_PAYABLE:
+            case SHIPPING_COST_PAY:
+            case ACCEPTANCE_PAY: // debtor
+                if (isLastDebit) {
+                    balance = balance.subtract(new BigDecimal(entry.getDebtorAmount()));
+                }
+                else {
+                    balance = balance.add(new BigDecimal(entry.getDebtorAmount()));
+                }
+                break;
+            case INBOUND_CHECKOUT:
+            case OUTBOUND_RECEIVABLE:
+            case SHIPPING_COST_RECV:
+            case ACCEPTANCE_RECV: // creditor
+                if (isLastDebit) {
+                    balance = balance.subtract(new BigDecimal(entry.getCreditorAmount()));
+                }
+                else {
+                    balance = balance.add(new BigDecimal(entry.getCreditorAmount()));
+                }
+                break;
+        }
+        int r = balance.compareTo(BigDecimal.ZERO);
+        if (r > 0) {
+            entry.setDebitOrCredit("借");
+            entry.setBalance(balance.toPlainString());
+        }
+        else if (r < 0) {
+            entry.setDebitOrCredit("贷");
+            balance = balance.negate();
+            entry.setBalance(balance.toPlainString());
+        }
+        else {
+            entry.setDebitOrCredit("");
+            entry.setBalance("0");
+        }
     }
 
     private void updateEntryDetail(MoneyEntryDetailO entry) {
@@ -161,88 +204,43 @@ public class AccountsServiceImpl implements AccountsService {
         }
     }
 
-    private void doCalculation(MoneyEntryDetailO entry, String lastBalance, boolean isDebit) {
-        switch (entry.getEntryID().substring(0,2)) {
-            case INITIAL_PAYABLE:
-            case INITIAL_RECEIVABLE:
-                break;
-            case INBOUND_CHECKOUT:
-            case OUTBOUND_RECEIVABLE:
-            case SHIPPING_COST_RECV:
-            case ACCEPTANCE_RECV: // todo, draft, not verified
-                entry.setDebtorAmount("");
-                BigDecimal balance = new BigDecimal(lastBalance);
-                if (isDebit) {
-                    balance = balance.subtract(new BigDecimal(""));
-                }
-                else {
-                    balance = balance.add(new BigDecimal(""));
-                }
-                entry.setBalance(balance.toPlainString());
-                int r = balance.compareTo(new BigDecimal(0));
-                if (r > 0) {
-                    entry.setDebitOrCredit("借");
-                }
-                else if (r < 0) {
-                    entry.setDebitOrCredit("贷");
-                }
-                else {
-                    entry.setDebitOrCredit("");
-                }
-                break;
-            case OUTBOUND_CHECKOUT:
-            case INBOUND_PAYABLE:
-            case SHIPPING_COST_PAY:
-            case ACCEPTANCE_PAY:
-                break;
-        }
-    }
+    private List<MoneyEntryDetailO> generateEntryList(int companyID) {
+        var initialEntries = initialMoneyEntryService.getEntryDetails(companyID, true);
 
-    private List<MoneyEntryDetailO> generateEntryList(int companyID, boolean isCustomer) {
-        var initialEntries = initialMoneyEntryService.getEntryDetails(companyID, true, isCustomer);
+        var inboundCheckoutEntries = checkoutEntryService.getEntryDetails(companyID, true);
+        var outboundCheckoutEntries = checkoutEntryService.getEntryDetails(companyID, false);
 
-        var inboundCheckoutEntries = checkoutEntryService.getEntryDetails(companyID, true, isCustomer);
-        var outboundCheckoutEntries = checkoutEntryService.getEntryDetails(companyID, false, isCustomer);
+        var inboundMoneyEntries = moneyEntryService.getEntryDetails(companyID, true);
+        var outboundMoneyEntries = moneyEntryService.getEntryDetails(companyID, false);
 
-        var inboundMoneyEntries = moneyEntryService.getEntryDetails(companyID, true, isCustomer);
-        var outboundMoneyEntries = moneyEntryService.getEntryDetails(companyID, false, isCustomer);
+        var inboundShippingCostEntries = shippingCostEntryService.getEntryDetails(companyID, true);
+        var outboundShippingCostEntries = shippingCostEntryService.getEntryDetails(companyID, false);
 
-        var inboundShippingCostEntries = shippingCostEntryService.getEntryDetails(companyID, true, isCustomer);
-        var outboundShippingCostEntries = shippingCostEntryService.getEntryDetails(companyID, false, isCustomer);
+        var inboundAcceptanceEntries = acceptanceService.getEntryDetails(companyID, true);
+        var outboundAcceptanceEntries = acceptanceService.getEntryDetails(companyID, false);
 
-        var inboundAcceptanceEntries = acceptanceService.getEntryDetails(companyID, true, isCustomer);
-        var outboundAcceptanceEntries = acceptanceService.getEntryDetails(companyID, false, isCustomer);
-
-        var inboundMap = new TreeMap<String, List<MoneyEntryDetailO>>();
-        var outboundMap = new TreeMap<String, List<MoneyEntryDetailO>>();
+        var entryMap = new TreeMap<String, List<MoneyEntryDetailO>>();
 
         if (initialEntries.size() != 0) {
             var list = new ArrayList<MoneyEntryDetailO>();
             list.add(initialEntries.get(0));
-            if (isCustomer) {
-                inboundMap.put(initialEntries.get(0).getEntryID(), list);
-            }
-            else {
-                outboundMap.put(initialEntries.get(0).getEntryID(), list);
-            }
+            entryMap.put(initialEntries.get(0).getEntryID(), list);
         }
 
-        mergeMaps(inboundMap, transformIntoMapAndSort(inboundCheckoutEntries));
-        mergeMaps(outboundMap, transformIntoMapAndSort(outboundCheckoutEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(inboundCheckoutEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(outboundCheckoutEntries));
 
-        mergeMaps(inboundMap, transformIntoMapAndSort(inboundMoneyEntries));
-        mergeMaps(outboundMap, transformIntoMapAndSort(outboundMoneyEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(inboundMoneyEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(outboundMoneyEntries));
 
-        mergeMaps(inboundMap, transformIntoMapAndSort(inboundShippingCostEntries));
-        mergeMaps(outboundMap, transformIntoMapAndSort(outboundShippingCostEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(inboundShippingCostEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(outboundShippingCostEntries));
 
-        mergeMaps(inboundMap, transformIntoMapAndSort(inboundAcceptanceEntries));
-        mergeMaps(outboundMap, transformIntoMapAndSort(outboundAcceptanceEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(inboundAcceptanceEntries));
+        mergeMaps(entryMap, transformIntoMapAndSort(outboundAcceptanceEntries));
 
-        mergeMaps(inboundMap, outboundMap);
-
-        var list = new ArrayList<MoneyEntryDetailO>(inboundMap.size());
-        for (var entry : inboundMap.entrySet()) {
+        var list = new ArrayList<MoneyEntryDetailO>(entryMap.size());
+        for (var entry : entryMap.entrySet()) {
             list.addAll(entry.getValue());
         }
         return list;

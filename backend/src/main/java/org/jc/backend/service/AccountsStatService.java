@@ -5,6 +5,6 @@ import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import java.util.List;
 
 public interface AccountsStatService {
-    List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer);
+    List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound);
     default void updateEntryDetail(MoneyEntryDetailO entry) {}
 }

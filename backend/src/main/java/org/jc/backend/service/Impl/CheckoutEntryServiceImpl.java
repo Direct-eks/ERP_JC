@@ -655,7 +655,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = checkoutEntryMapper.queryAllEntriesByPrefixAndCompany(
@@ -665,11 +665,17 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                 detailO.setEntryID(item.getCheckoutEntrySerial());
                 detailO.setEntryDate(item.getCheckoutDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
-                // todo
-                detailO.setDebtorAmount("");
-                detailO.setCreditorAmount("");
-                detailO.setAuditAmount(""); // todo
+                if (isInbound) { // 入结
+                    detailO.setDebtorAmount("");
+                    detailO.setCreditorAmount(item.getTotalAmount());
+                }
+                else { // 出结
+                    detailO.setDebtorAmount(item.getTotalAmount());
+                    detailO.setCreditorAmount("");
+                }
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
+                detailO.setBalance(item.getBalance());
+                detailO.setAuditAmount(""); // todo
                 results.add(detailO);
             }
             return results;

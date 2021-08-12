@@ -251,7 +251,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = shippingCostEntryMapper.queryAllEntriesByPrefixAndCompany(
@@ -261,11 +261,17 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
                 detailO.setEntryID(item.getShippingCostEntrySerial());
                 detailO.setEntryDate(item.getCheckoutDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
-                // todo
-                detailO.setDebtorAmount("");
-                detailO.setCreditorAmount("");
-                detailO.setAuditAmount(""); // todo
+                if (isInbound) { // 付运
+                    detailO.setDebtorAmount(item.getTotalAmount());
+                    detailO.setCreditorAmount("");
+                }
+                else { // 收运
+                    detailO.setDebtorAmount("");
+                    detailO.setCreditorAmount(item.getTotalAmount());
+                }
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
+                detailO.setBalance(item.getBalance());
+                detailO.setAuditAmount(""); // todo
                 results.add(detailO);
             }
             return results;

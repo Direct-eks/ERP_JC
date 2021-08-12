@@ -115,7 +115,7 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = initialMoneyEntryMapper.queryAllEntriesByPrefixAndCompany(
@@ -125,11 +125,17 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
                 detailO.setEntryID(item.getInitialMoneyEntrySerial());
                 detailO.setEntryDate(item.getEntryDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
-                // todo
-                detailO.setDebtorAmount("");
-                detailO.setCreditorAmount("");
-                detailO.setAuditAmount(""); // todo
+                if (isInbound) { // 初付
+                    detailO.setDebtorAmount(item.getBalance());
+                    detailO.setCreditorAmount("");
+                }
+                else { // 初收
+                    detailO.setDebtorAmount("");
+                    detailO.setCreditorAmount(item.getBalance());
+                }
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
+                detailO.setBalance(item.getBalance());
+                detailO.setAuditAmount(""); // todo
                 results.add(detailO);
             }
             return results;

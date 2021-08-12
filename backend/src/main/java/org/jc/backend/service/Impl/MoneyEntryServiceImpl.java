@@ -239,7 +239,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound, boolean isCustomer) {
+    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<MoneyEntryDetailO>();
             var list = moneyEntryMapper.queryAllEntriesByPrefixAndCompany(
@@ -249,11 +249,17 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
                 detailO.setEntryID(item.getMoneyEntrySerial());
                 detailO.setEntryDate(item.getPaymentDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
-                // todo
-                detailO.setDebtorAmount("");
-                detailO.setCreditorAmount("");
-                detailO.setAuditAmount(""); // todo
+                if (isInbound) { // 付款
+                    detailO.setDebtorAmount(item.getPaymentAmount());
+                    detailO.setCreditorAmount("");
+                }
+                else { // 收款
+                    detailO.setDebtorAmount("");
+                    detailO.setCreditorAmount(item.getPaymentAmount());
+                }
                 detailO.setDebitOrCredit(item.getDebitOrCredit());
+                detailO.setBalance(item.getBalance());
+                detailO.setAuditAmount(""); // todo
                 results.add(detailO);
             }
             return results;
