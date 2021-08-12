@@ -10,6 +10,7 @@ import org.jc.backend.utils.CompanyClassification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +38,11 @@ public class AccountsServiceImpl implements AccountsService {
 
     public AccountsServiceImpl(
             CompanyService companyService,
-            @Qualifier("initialMoneyEntryServiceImpl") AccountsStatService initialMoneyEntryService,
-            @Qualifier("checkoutEntryServiceImpl") AccountsStatService checkoutEntryService,
-            @Qualifier("moneyEntryServiceImpl") AccountsStatService moneyEntryService,
-            @Qualifier("shippingCostEntryServiceImpl") AccountsStatService shippingCostEntryService,
-            @Qualifier("acceptanceServiceImpl") AccountsStatService acceptanceService
+            @Lazy @Qualifier("initialMoneyEntryServiceImpl") AccountsStatService initialMoneyEntryService,
+            @Lazy @Qualifier("checkoutEntryServiceImpl") AccountsStatService checkoutEntryService,
+            @Lazy @Qualifier("moneyEntryServiceImpl") AccountsStatService moneyEntryService,
+            @Lazy @Qualifier("shippingCostEntryServiceImpl") AccountsStatService shippingCostEntryService,
+            @Lazy @Qualifier("acceptanceServiceImpl") AccountsStatService acceptanceService
     ) {
         this.companyService = companyService;
         this.initialMoneyEntryService = initialMoneyEntryService;
@@ -101,6 +102,8 @@ public class AccountsServiceImpl implements AccountsService {
         }
     }
 
+
+
     // balance and debitOrCredit indicator are only calculated when needed, e.g. here
 
     // 入结 出结
@@ -119,7 +122,9 @@ public class AccountsServiceImpl implements AccountsService {
     // 借方 debtor: 出结，付款，付运，承付
     // 贷方 creditor: 入结，收款，收运，承收
 
-    private void calculateBalance(int partnerCompanyID) {
+    @Transactional
+    @Override
+    public void calculateBalance(int partnerCompanyID) {
         var allEntries = generateEntryList(partnerCompanyID);
 
         String lastBalance = "";

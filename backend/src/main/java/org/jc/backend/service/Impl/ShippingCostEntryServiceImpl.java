@@ -9,10 +9,7 @@ import org.jc.backend.entity.DO.ShippingCostEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
-import org.jc.backend.service.AccountsStatService;
-import org.jc.backend.service.InboundEntryService;
-import org.jc.backend.service.OutboundEntryService;
-import org.jc.backend.service.ShippingCostEntryService;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +33,19 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
     private final InboundEntryService inboundEntryService;
     private final OutboundEntryService outboundEntryService;
     private final ModificationMapper modificationMapper;
+    private final AccountsService accountsService;
 
     public ShippingCostEntryServiceImpl(ShippingCostEntryMapper shippingCostEntryMapper,
                                         InboundEntryService inboundEntryService,
                                         OutboundEntryService outboundEntryService,
-                                        ModificationMapper modificationMapper) {
+                                        ModificationMapper modificationMapper,
+                                        AccountsService accountsService
+    ) {
         this.shippingCostEntryMapper = shippingCostEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
         this.modificationMapper = modificationMapper;
+        this.accountsService = accountsService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -80,6 +81,9 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
                 entry.setShippingCostSerial(newSerial);
                 outboundEntryService.updateEntryWithShippingCostSerial(entry);
             });
+
+            // calculate balance
+            accountsService.calculateBalance(shippingCostEntryDO.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -190,6 +194,9 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
             else {
                 logger.warn("nothing changed");
             }
+
+            // calculate balance
+            accountsService.calculateBalance(shippingCostEntryVO.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

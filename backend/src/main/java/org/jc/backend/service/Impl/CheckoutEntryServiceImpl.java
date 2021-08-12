@@ -46,6 +46,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
     private final MiscellaneousDataService miscellaneousDataService;
     private final ModelService modelService;
     private final FactoryBrandService factoryBrandService;
+    private final AccountsService accountsService;
 
     public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
                                     InboundEntryService inboundEntryService,
@@ -55,7 +56,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                                     ModificationMapper modificationMapper,
                                     MiscellaneousDataService miscellaneousDataService,
                                     ModelService modelService,
-                                    FactoryBrandService factoryBrandService) {
+                                    FactoryBrandService factoryBrandService,
+                                    AccountsService accountsService
+    ) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
@@ -65,6 +68,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
         this.miscellaneousDataService = miscellaneousDataService;
         this.modelService = modelService;
         this.factoryBrandService = factoryBrandService;
+        this.accountsService = accountsService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -130,6 +134,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                             checkoutEntryWithProductsVO.getOutboundCheckoutProducts(), newInvoiceSerial);
                 }
             }
+
+            // calculate balance
+            accountsService.calculateBalance(checkoutEntry.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -209,6 +216,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                 logger.warn("nothing modified, begin rolling back");
                 throw new RuntimeException();
             }
+
+            // calculate balance
+            accountsService.calculateBalance(originDO.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

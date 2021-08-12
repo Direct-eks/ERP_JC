@@ -5,6 +5,7 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InitialMoneyEntryMapper;
 import org.jc.backend.entity.InitialMoneyEntryO;
 import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.InitialMoneyEntryService;
 import org.jc.backend.service.MiscellaneousDataService;
@@ -26,13 +27,16 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
 
     private final InitialMoneyEntryMapper initialMoneyEntryMapper;
     private final MiscellaneousDataService miscellaneousDataService;
+    private final AccountsService accountsService;
 
     public InitialMoneyEntryServiceImpl(
             InitialMoneyEntryMapper initialMoneyEntryMapper,
-            MiscellaneousDataService miscellaneousDataService
+            MiscellaneousDataService miscellaneousDataService,
+            AccountsService accountsService
     ) {
         this.initialMoneyEntryMapper = initialMoneyEntryMapper;
         this.miscellaneousDataService = miscellaneousDataService;
+        this.accountsService = accountsService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -88,12 +92,18 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
                 int count = initialMoneyEntryMapper.countNumberOfEntriesOfGivenDate(initialEntryDate, getPrefix(isInbound));
                 MyUtils.formNewSerial(getPrefix(isInbound), count, initialEntryDate);
                 initialMoneyEntryMapper.insertEntry(newEntry);
+
+                // calculate balance
+                accountsService.calculateBalance(newEntry.getPartnerCompanyID());
             }
 
             // update existing
             tempEntries = tempEntries2;
             for (var entry : tempEntries) {
                 initialMoneyEntryMapper.updateEntry(entry);
+
+                // calculate balance
+                accountsService.calculateBalance(entry.getPartnerCompanyID());
             }
 
             // check for removed
@@ -102,6 +112,9 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
                     .anyMatch(e -> e.getInitialMoneyEntrySerial().equals(oldE.getInitialMoneyEntrySerial())));
             for (var entry : originalEntries) {
                 initialMoneyEntryMapper.deleteEntry(entry.getInitialMoneyEntrySerial());
+
+                // calculate balance
+                accountsService.calculateBalance(entry.getPartnerCompanyID());
             }
 
         } catch (PersistenceException e) {

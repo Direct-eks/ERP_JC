@@ -7,6 +7,7 @@ import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
@@ -30,11 +31,15 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
     private final MoneyEntryMapper moneyEntryMapper;
     private final ModificationMapper modificationMapper;
+    private final AccountsService accountsService;
 
     public MoneyEntryServiceImpl(MoneyEntryMapper moneyEntryMapper,
-                                 ModificationMapper modificationMapper) {
+                                 ModificationMapper modificationMapper,
+                                 AccountsService accountsService
+    ) {
         this.moneyEntryMapper = moneyEntryMapper;
         this.modificationMapper = modificationMapper;
+        this.accountsService = accountsService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -53,6 +58,9 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
             moneyEntryMapper.insertEntry(moneyEntryO);
+
+            // calculate balance
+            accountsService.calculateBalance(moneyEntryO.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -112,6 +120,9 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
                 logger.warn("nothing modified, begin rolling back");
                 throw new RuntimeException();
             }
+
+            // calculate balance
+            accountsService.calculateBalance(originEntry.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

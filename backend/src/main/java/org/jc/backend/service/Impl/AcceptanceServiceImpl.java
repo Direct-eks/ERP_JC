@@ -6,6 +6,7 @@ import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.entity.StatO.MoneyEntryDetailO;
 import org.jc.backend.service.AcceptanceService;
+import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -24,9 +25,14 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
     private static final Logger logger = LoggerFactory.getLogger(AcceptanceServiceImpl.class);
 
     private final AcceptanceMapper acceptanceMapper;
+    private final AccountsService accountsService;
 
-    public AcceptanceServiceImpl(AcceptanceMapper acceptanceMapper) {
+    public AcceptanceServiceImpl(
+            AcceptanceMapper acceptanceMapper,
+            AccountsService accountsService
+    ) {
         this.acceptanceMapper = acceptanceMapper;
+        this.accountsService = accountsService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -64,6 +70,9 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
             }
             entryO.setAcceptanceEntrySerial(newSerial);
             acceptanceMapper.insertEntry(entryO);
+
+            // calculate balance
+            accountsService.calculateBalance(entryO.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -129,6 +138,9 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
             }
 
             // todo
+
+            // calculate balance
+            accountsService.calculateBalance(entryO.getPartnerCompanyID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -10,4 +10,5 @@ import java.util.List;
 public interface AccountsService {
     List<MoneyEntryDetailO> getPayableSummary(int companyID) throws GlobalParamException;
     List<MoneyEntryDetailO> getReceivableSummary(int companyID) throws GlobalParamException;
+    void calculateBalance(int companyID);
 }
