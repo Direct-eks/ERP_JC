@@ -5,6 +5,10 @@
         <v-toolbar flat>
             <v-toolbar-title>应付款查询</v-toolbar-title>
             <v-spacer></v-spacer>
+            <QueryConditions :queries.sync="queries"
+                             @clear="clear">
+            </QueryConditions>
+            <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/query_stats">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
@@ -23,16 +27,19 @@
         <v-card-text>
             <v-tabs-items v-model="tab">
 
-                <v-tab-item key="summary">
-                    <PaymentSummary mode="in"></PaymentSummary>
+                <v-tab-item key="summary" :eager="true">
+                    <PaymentSummary mode="supplier"
+                                    @changeCompany="changeCompany"
+                                    @changeCompanyAndSwitch="changeCompanyAndSwitch">
+                    </PaymentSummary>
                 </v-tab-item>
 
-                <v-tab-item>
-                    <PaymentDetail mode="in"></PaymentDetail>
+                <v-tab-item key="detail" :eager="true">
+                    <PaymentDetail mode="supplier" :companyID="queries.companyID"/>
                 </v-tab-item>
 
-                <v-tab-item>
-                    <PaymentLedger mode="in"></PaymentLedger>
+                <v-tab-item key="ledger" :eager="true">
+                    <PaymentLedger mode="supplier"/>
                 </v-tab-item>
 
             </v-tabs-items>
@@ -46,6 +53,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "Pay_summary",
     components: {
+        QueryConditions: () => import('~/components/QueryComponents/QueryConditions'),
         PaymentSummary: () => import(/* webpackChunkName: "Payment_Summary_Component" */
             '~/components/QueryComponents/PaymentSummaryComponent'),
         PaymentDetail: () => import(/* webpackChunkName: "Payment_Detail_Component" */
@@ -57,11 +65,33 @@ export default {
         return {
             mdiArrowLeft,
 
-            tab: null
+            tab: null,
+
+            queries: {
+                companyID: -1,
+                companyName: '',
+            },
         }
     },
     methods: {
-
+        clear() {
+            this.queries.companyID = -1
+            this.queries.companyName = ''
+        },
+        changeCompany(item) {
+            if (item !== null) {
+                this.queries.companyID = item.companyID
+                this.queries.companyName = item.companyName
+            }
+            else {
+                this.clear()
+            }
+        },
+        changeCompanyAndSwitch(item) {
+            this.queries.companyID = item.companyID
+            this.queries.companyName = item.companyName
+            this.tab = 1
+        }
     }
 }
 </script>

@@ -1,10 +1,6 @@
 <template>
     <v-card>
-        <QueryConditions :queries.sync="queries"
-                         @clear="clear">
-        </QueryConditions>
-
-        <v-data-table :headers="inboundMode ? tableHeaders1 : tableHeaders2"
+        <v-data-table :headers="customerMode ? tableHeaders1 : tableHeaders2"
                       :items="tableData"
                       item-key="entryID"
                       height="65vh"
@@ -16,13 +12,13 @@
                       locale="zh-cn"
                       dense>
             <template v-slot:header.debtorAmount="{ header }">
-                <v-sheet :color="inboundMode ? 'green lighten-3':'blue lighten-2'"
+                <v-sheet :color="customerMode ? 'green lighten-3':'blue lighten-2'"
                          min-height="100%" min-width="100%">
                     {{ header.text }}
                 </v-sheet>
             </template>
             <template v-slot:header.creditorAmount="{ header }">
-                <v-sheet :color="inboundMode ? 'blue lighten-2':'green lighten-3'"
+                <v-sheet :color="customerMode ? 'blue lighten-2':'green lighten-3'"
                          min-height="100%" min-width="100%">
                     {{ header.text }}
                 </v-sheet>
@@ -54,34 +50,41 @@
 <script>
 export default {
     name: "PaymentDetailComponent",
-    components: {
-        QueryConditions: () => import('~/components/QueryComponents/QueryConditions')
-    },
     props: {
         mode: {
             type: String,
             required: true
+        },
+        companyID: {
+            type: Number,
+            required: true
+        },
+    },
+    watch: {
+        companyID (val) {
+            if (val === -1) return
+            this.$getRequest(this.customerMode ? this.$api.receivableDetail :
+                this.$api.payableDetail, {
+                companyID: val
+            }).then(data => {
+                this.tableData = data
+            })
         }
     },
     beforeMount() {
-        if (this.mode === 'in')
-            this.inboundMode = true
-        else if (this.mode === 'out')
-            this.inboundMode = false
+        if (this.mode === 'supplier')
+            this.customerMode = false
+        else if (this.mode === 'customer')
+            this.customerMode = true
     },
     data() {
         return {
-            inboundMode: true,
-
-            queries: {
-                companyID: -1,
-                companyName: '',
-            },
+            customerMode: true,
 
             tableHeaders1: [
                 { text: '日期', value: 'entryDate', width: '110px' },
                 { text: '单据号码', value: 'entryID', width: '140px' },
-                { text: '摘要', value: 'explanation', width: '140px' },
+                { text: '摘要', value: 'explanation', width: '200px' },
                 { text: '借方金额', value: 'debtorAmount', width: '140px' },
                 { text: '贷方金额', value: 'creditorAmount', width: '110px' },
                 { text: '核对金额', value: 'auditAmount', width: '110px' },
@@ -91,7 +94,7 @@ export default {
             tableHeaders2: [
                 { text: '日期', value: 'entryDate', width: '110px' },
                 { text: '单据号码', value: 'entryID', width: '140px' },
-                { text: '摘要', value: 'explanation', width: '140px' },
+                { text: '摘要', value: 'explanation', width: '200px' },
                 { text: '借方金额', value: 'debtorAmount', width: '140px' },
                 { text: '核对金额', value: 'auditAmount', width: '110px' },
                 { text: '贷方金额', value: 'creditorAmount', width: '110px' },
@@ -102,9 +105,7 @@ export default {
         }
     },
     methods: {
-        clear() {
 
-        }
     }
 }
 </script>

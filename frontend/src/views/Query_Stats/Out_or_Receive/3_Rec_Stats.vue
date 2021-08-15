@@ -5,6 +5,10 @@
         <v-toolbar flat>
             <v-toolbar-title>应收款查询</v-toolbar-title>
             <v-spacer></v-spacer>
+            <QueryConditions :queries.sync="queries"
+                             @clear="clear">
+            </QueryConditions>
+            <v-spacer></v-spacer>
             <v-btn color="accent"
                    to="/query_stats">
                 <v-icon>{{ mdiArrowLeft }}</v-icon>
@@ -23,16 +27,16 @@
         <v-card-text>
             <v-tabs-items v-model="tab">
 
-                <v-tab-item key="summary">
-                    <PaymentSummary mode="out"></PaymentSummary>
+                <v-tab-item key="summary" :eager="true">
+                    <PaymentSummary mode="customer"/>
                 </v-tab-item>
 
-                <v-tab-item>
-                    <PaymentDetail mode="out"></PaymentDetail>
+                <v-tab-item key="detail" :eager="true">
+                    <PaymentDetail mode="customer" :companyID="queries.companyID"/>
                 </v-tab-item>
 
-                <v-tab-item>
-                    <PaymentLedger mode="out"></PaymentLedger>
+                <v-tab-item key="ledger" :eager="true">
+                    <PaymentLedger mode="customer"></PaymentLedger>
                 </v-tab-item>
 
             </v-tabs-items>
@@ -46,6 +50,7 @@ import {mdiArrowLeft} from "@mdi/js";
 export default {
     name: "Rec_Summary_Stats",
     components: {
+        QueryConditions: () => import('~/components/QueryComponents/QueryConditions'),
         PaymentSummary: () => import('~/components/QueryComponents/PaymentSummaryComponent'),
         PaymentDetail: () => import('~/components/QueryComponents/PaymentDetailComponent'),
         PaymentLedger: () => import('~/components/QueryComponents/PaymentLedgerComponent')
@@ -54,11 +59,18 @@ export default {
         return {
             mdiArrowLeft,
 
-            tab: null
+            tab: null,
+
+            queries: {
+                companyID: -1,
+                companyName: '',
+            },
         }
     },
     methods: {
+        clear() {
 
+        }
     }
 }
 </script>

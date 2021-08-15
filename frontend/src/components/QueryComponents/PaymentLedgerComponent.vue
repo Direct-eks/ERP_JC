@@ -1,8 +1,5 @@
 <template>
     <v-card>
-        <QueryConditions :queries.sync="queries"
-                         @clear="clear">
-        </QueryConditions>
 
     </v-card>
 </template>
@@ -10,9 +7,6 @@
 <script>
 export default {
     name: "PaymentLedgerComponent",
-    components: {
-        QueryConditions: () => import('~/components/QueryComponents/QueryConditions')
-    },
     props: {
         mode: {
             type: String,
@@ -20,26 +14,20 @@ export default {
         }
     },
     beforeMount() {
-        if (this.mode === 'in')
-            this.inboundMode = true
-        else if (this.mode === 'out')
-            this.inboundMode = false
+        if (this.mode === 'supplier')
+            this.customerMode = false
+        else if (this.mode === 'customer')
+            this.customerMode = true
 
     },
     data() {
         return {
-            inboundMode: true,
+            customerMode: true,
 
-            queries: {
-                companyID: -1,
-                companyName: '',
-            },
         }
     },
     methods: {
-        clear() {
 
-        }
     }
 }
 </script>
