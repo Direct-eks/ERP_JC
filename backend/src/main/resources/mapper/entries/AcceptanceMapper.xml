@@ -39,7 +39,7 @@
 
 
     <resultMap id="entryResultMap" type="org.jc.backend.entity.AcceptanceEntryO">
-        <result property="acceptanceEntrySerial" column="serial"/>
+        <result property="acceptanceEntrySerial" column="acceptance_entry_serial"/>
         <result property="partnerCompanyID" column="partner_company_id"/>
         <result property="companyAbbreviatedName" column="abbreviated_name"/>
         <result property="entryDate" column="entry_date"/>
