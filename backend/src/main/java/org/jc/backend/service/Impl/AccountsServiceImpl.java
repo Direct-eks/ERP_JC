@@ -2,7 +2,7 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.CompanyService;
@@ -56,7 +56,7 @@ public class AccountsServiceImpl implements AccountsService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getReceivableSummary(int companyID) throws GlobalParamException {
+    public List<AccountsDetailO> getReceivableDetail(int companyID) throws GlobalParamException {
         try {
             var company = companyService.getCompanyByID(companyID);
             assert company != null;
@@ -80,7 +80,7 @@ public class AccountsServiceImpl implements AccountsService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getPayableSummary(int companyID) throws GlobalParamException {
+    public List<AccountsDetailO> getPayableDetail(int companyID) throws GlobalParamException {
         try {
             var company = companyService.getCompanyByID(companyID);
             assert company != null;
@@ -139,7 +139,7 @@ public class AccountsServiceImpl implements AccountsService {
 
     }
 
-    private void doCalculation(MoneyEntryDetailO entry, String lastBalance, boolean isLastDebit) {
+    private void doCalculation(AccountsDetailO entry, String lastBalance, boolean isLastDebit) {
         BigDecimal balance = new BigDecimal(lastBalance);
 
         switch (entry.getEntryID().substring(0,2)) {
@@ -185,7 +185,7 @@ public class AccountsServiceImpl implements AccountsService {
         }
     }
 
-    private void updateEntryDetail(MoneyEntryDetailO entry) {
+    private void updateEntryDetail(AccountsDetailO entry) {
         switch (entry.getEntryID().substring(0,2)) {
             case INITIAL_PAYABLE:
             case INITIAL_RECEIVABLE:
@@ -209,7 +209,7 @@ public class AccountsServiceImpl implements AccountsService {
         }
     }
 
-    private List<MoneyEntryDetailO> generateEntryList(int companyID) {
+    private List<AccountsDetailO> generateEntryList(int companyID) {
         var initialEntries = initialMoneyEntryService.getEntryDetails(companyID, true);
 
         var inboundCheckoutEntries = checkoutEntryService.getEntryDetails(companyID, true);
@@ -224,10 +224,10 @@ public class AccountsServiceImpl implements AccountsService {
         var inboundAcceptanceEntries = acceptanceService.getEntryDetails(companyID, true);
         var outboundAcceptanceEntries = acceptanceService.getEntryDetails(companyID, false);
 
-        var entryMap = new TreeMap<String, List<MoneyEntryDetailO>>();
+        var entryMap = new TreeMap<String, List<AccountsDetailO>>();
 
         if (initialEntries.size() != 0) {
-            var list = new ArrayList<MoneyEntryDetailO>();
+            var list = new ArrayList<AccountsDetailO>();
             list.add(initialEntries.get(0));
             entryMap.put(initialEntries.get(0).getEntryID(), list);
         }
@@ -244,22 +244,22 @@ public class AccountsServiceImpl implements AccountsService {
         mergeMaps(entryMap, transformIntoMapAndSort(inboundAcceptanceEntries));
         mergeMaps(entryMap, transformIntoMapAndSort(outboundAcceptanceEntries));
 
-        var list = new ArrayList<MoneyEntryDetailO>(entryMap.size());
+        var list = new ArrayList<AccountsDetailO>(entryMap.size());
         for (var entry : entryMap.entrySet()) {
             list.addAll(entry.getValue());
         }
         return list;
     }
 
-    private TreeMap<String, List<MoneyEntryDetailO>> transformIntoMapAndSort(List<MoneyEntryDetailO> list) {
+    private TreeMap<String, List<AccountsDetailO>> transformIntoMapAndSort(List<AccountsDetailO> list) {
         return list.parallelStream().collect(
-                Collectors.groupingBy(MoneyEntryDetailO::getEntryID, TreeMap::new, Collectors.toList()));
+                Collectors.groupingBy(AccountsDetailO::getEntryID, TreeMap::new, Collectors.toList()));
     }
 
-    private void mergeMaps(TreeMap<String, List<MoneyEntryDetailO>> parentMap,
-                           TreeMap<String, List<MoneyEntryDetailO>> subMap) {
+    private void mergeMaps(TreeMap<String, List<AccountsDetailO>> parentMap,
+                           TreeMap<String, List<AccountsDetailO>> subMap) {
         for (var entry : subMap.entrySet()) {
-            entry.getValue().sort(Comparator.comparing(MoneyEntryDetailO::getEntryID));
+            entry.getValue().sort(Comparator.comparing(AccountsDetailO::getEntryID));
             String key = entry.getKey();
             var value = entry.getValue();
             if (parentMap.containsKey(key)) {

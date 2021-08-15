@@ -1,10 +1,10 @@
 package org.jc.backend.service;
 
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 
 import java.util.List;
 
 public interface AccountsStatService {
-    List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound);
-    default void updateEntryDetail(MoneyEntryDetailO entry) {}
+    List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound);
+    default void updateEntryDetail(AccountsDetailO entry) {}
 }

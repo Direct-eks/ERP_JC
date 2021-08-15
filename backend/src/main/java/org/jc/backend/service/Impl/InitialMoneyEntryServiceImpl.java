@@ -4,7 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InitialMoneyEntryMapper;
 import org.jc.backend.entity.InitialMoneyEntryO;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.InitialMoneyEntryService;
@@ -128,13 +128,13 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
-            var results = new ArrayList<MoneyEntryDetailO>();
+            var results = new ArrayList<AccountsDetailO>();
             var list = initialMoneyEntryMapper.queryAllEntriesByPrefixAndCompany(
                     isInbound ? INITIAL_PAYABLE : INITIAL_RECEIVABLE, companyID);
             for (var item : list) {
-                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                AccountsDetailO detailO = new AccountsDetailO();
                 detailO.setEntryID(item.getInitialMoneyEntrySerial());
                 detailO.setEntryDate(item.getEntryDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));

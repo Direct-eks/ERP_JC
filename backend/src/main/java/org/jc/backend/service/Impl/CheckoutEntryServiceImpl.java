@@ -12,7 +12,7 @@ import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.CheckoutSummaryO;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
@@ -665,13 +665,13 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
-            var results = new ArrayList<MoneyEntryDetailO>();
+            var results = new ArrayList<AccountsDetailO>();
             var list = checkoutEntryMapper.queryAllEntriesByPrefixAndCompany(
                     isInbound ? INBOUND_CHECKOUT : OUTBOUND_CHECKOUT, companyID);
             for (var item : list) {
-                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                AccountsDetailO detailO = new AccountsDetailO();
                 detailO.setEntryID(item.getCheckoutEntrySerial());
                 detailO.setEntryDate(item.getCheckoutDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
@@ -699,7 +699,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
 
     @Transactional
     @Override
-    public void updateEntryDetail(MoneyEntryDetailO entry) {
+    public void updateEntryDetail(AccountsDetailO entry) {
         try {
             checkoutEntryMapper.updateEntryDetailBySerial(entry);
 

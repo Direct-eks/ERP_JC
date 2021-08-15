@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class MoneyEntryDetailO {
+public class AccountsDetailO {
     private String entryID;
     private String entryDate;
     private String explanation;

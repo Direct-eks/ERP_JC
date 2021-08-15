@@ -2,7 +2,7 @@ package org.jc.backend.controller.entries;
 
 import io.swagger.annotations.Api;
 import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.service.AccountsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,22 +29,22 @@ public class AccountsController {
 
     /* ------------------------------ API ------------------------------ */
 
-    @GetMapping("/getPayableSummary")
-    public List<MoneyEntryDetailO> getPayableSummary(
+    @GetMapping("/getPayableDetail")
+    public List<AccountsDetailO> getPayableDetail(
             @RequestParam("companyID") int companyID
     ) throws GlobalParamException {
-        logger.info("GET Request to /accounts/getPayableSummary");
+        logger.info("GET Request to /accounts/getPayableDetail, id: {}", companyID);
 
-        return accountsService.getPayableSummary(companyID);
+        return accountsService.getPayableDetail(companyID);
     }
 
-    @GetMapping("/getReceivableSummary")
-    public List<MoneyEntryDetailO> getReceivableSummary(
+    @GetMapping("/getReceivableDetail")
+    public List<AccountsDetailO> getReceivableDetail(
             @RequestParam("companyID") int companyID
     )  throws GlobalParamException {
-        logger.info("GET Request to /accounts/getReceivableSummary");
+        logger.info("GET Request to /accounts/getReceivableDetail, id: {}", companyID);
 
-        return accountsService.getReceivableSummary(companyID);
+        return accountsService.getReceivableDetail(companyID);
     }
 
 }

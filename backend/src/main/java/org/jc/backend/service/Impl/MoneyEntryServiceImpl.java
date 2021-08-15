@@ -6,7 +6,7 @@ import org.jc.backend.dao.MoneyEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.MoneyEntryO;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.MoneyEntryService;
@@ -250,13 +250,13 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
-            var results = new ArrayList<MoneyEntryDetailO>();
+            var results = new ArrayList<AccountsDetailO>();
             var list = moneyEntryMapper.queryAllEntriesByPrefixAndCompany(
                     isInbound ? INBOUND_PAYABLE : OUTBOUND_RECEIVABLE, companyID);
             for (var item : list) {
-                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                AccountsDetailO detailO = new AccountsDetailO();
                 detailO.setEntryID(item.getMoneyEntrySerial());
                 detailO.setEntryDate(item.getPaymentDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
@@ -284,7 +284,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
     @Transactional
     @Override
-    public void updateEntryDetail(MoneyEntryDetailO entry) {
+    public void updateEntryDetail(AccountsDetailO entry) {
         try {
             moneyEntryMapper.updateEntryDetailBySerial(entry);
 

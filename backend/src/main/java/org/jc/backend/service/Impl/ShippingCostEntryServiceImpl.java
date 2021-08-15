@@ -7,7 +7,7 @@ import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.ShippingCostEntryDO;
 import org.jc.backend.entity.ModificationO;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
 import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
@@ -258,13 +258,13 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
-            var results = new ArrayList<MoneyEntryDetailO>();
+            var results = new ArrayList<AccountsDetailO>();
             var list = shippingCostEntryMapper.queryAllEntriesByPrefixAndCompany(
                     isInbound ? SHIPPING_COST_PAY : SHIPPING_COST_RECV, companyID);
             for (var item : list) {
-                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                AccountsDetailO detailO = new AccountsDetailO();
                 detailO.setEntryID(item.getShippingCostEntrySerial());
                 detailO.setEntryDate(item.getCheckoutDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
@@ -292,7 +292,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional
     @Override
-    public void updateEntryDetail(MoneyEntryDetailO entry) {
+    public void updateEntryDetail(AccountsDetailO entry) {
         try {
             shippingCostEntryMapper.updateEntryDetailBySerial(entry);
 

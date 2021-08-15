@@ -4,7 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
-import org.jc.backend.entity.StatO.MoneyEntryDetailO;
+import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.service.AcceptanceService;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
@@ -153,13 +153,13 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional(readOnly = true)
     @Override
-    public List<MoneyEntryDetailO> getEntryDetails(int companyID, boolean isInbound) {
+    public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
-            var results = new ArrayList<MoneyEntryDetailO>();
+            var results = new ArrayList<AccountsDetailO>();
             var list = acceptanceMapper.queryAllEntriesByPrefixAndCompany(
                     isInbound ? ACCEPTANCE_RECV : ACCEPTANCE_PAY, companyID);
             for (var item : list) {
-                MoneyEntryDetailO detailO = new MoneyEntryDetailO();
+                AccountsDetailO detailO = new AccountsDetailO();
                 detailO.setEntryID(item.getAcceptanceEntrySerial());
                 detailO.setEntryDate(item.getEntryDate());
                 detailO.setExplanation(MyUtils.getExplanationFromEntry(item));
@@ -187,7 +187,7 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional
     @Override
-    public void updateEntryDetail(MoneyEntryDetailO entry) {
+    public void updateEntryDetail(AccountsDetailO entry) {
         try {
             acceptanceMapper.updateEntryDetailBySerial(entry);
 
