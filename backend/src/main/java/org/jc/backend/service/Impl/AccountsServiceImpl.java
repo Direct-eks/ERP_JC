@@ -3,6 +3,8 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.AccountsDetailO;
+import org.jc.backend.entity.StatO.AccountsLedgerO;
+import org.jc.backend.entity.StatO.AccountsSummaryO;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.CompanyService;
@@ -53,6 +55,18 @@ public class AccountsServiceImpl implements AccountsService {
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<AccountsSummaryO> getPayableSummary() {
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<AccountsSummaryO> getReceivableSummary() {
+        return null;
+    }
 
     @Transactional(readOnly = true)
     @Override
@@ -271,5 +285,15 @@ public class AccountsServiceImpl implements AccountsService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<AccountsLedgerO> getPayableLedger() {
+        return null;
+    }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<AccountsLedgerO> getReceivableLedger() {
+        return null;
+    }
 }

@@ -3,6 +3,7 @@ package org.jc.backend.controller.entries;
 import io.swagger.annotations.Api;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.AccountsDetailO;
+import org.jc.backend.entity.StatO.AccountsSummaryO;
 import org.jc.backend.service.AccountsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,16 @@ public class AccountsController {
 
     /* ------------------------------ API ------------------------------ */
 
+    @GetMapping("/getPayableSummary")
+    public List<AccountsSummaryO> getPayableSummary() {
+        return null;
+    }
+
+    @GetMapping("/getReceivableSummary")
+    public List<AccountsSummaryO> getReceivableSummary() {
+        return null;
+    }
+
     @GetMapping("/getPayableDetail")
     public List<AccountsDetailO> getPayableDetail(
             @RequestParam("companyID") int companyID
@@ -47,4 +58,13 @@ public class AccountsController {
         return accountsService.getReceivableDetail(companyID);
     }
 
+    @GetMapping("/getPayableLedger")
+    public List<AccountsSummaryO> getPayableLedger() {
+        return null;
+    }
+
+    @GetMapping("/getReceivableLedger")
+    public List<AccountsSummaryO> getReceivableLedger() {
+        return null;
+    }
 }
