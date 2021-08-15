@@ -246,17 +246,17 @@ public class AccountsServiceImpl implements AccountsService {
             entryMap.put(initialEntries.get(0).getEntryID(), list);
         }
 
-        mergeMaps(entryMap, transformIntoMapAndSort(inboundCheckoutEntries));
-        mergeMaps(entryMap, transformIntoMapAndSort(outboundCheckoutEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(inboundCheckoutEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(outboundCheckoutEntries));
 
-        mergeMaps(entryMap, transformIntoMapAndSort(inboundMoneyEntries));
-        mergeMaps(entryMap, transformIntoMapAndSort(outboundMoneyEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(inboundMoneyEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(outboundMoneyEntries));
 
-        mergeMaps(entryMap, transformIntoMapAndSort(inboundShippingCostEntries));
-        mergeMaps(entryMap, transformIntoMapAndSort(outboundShippingCostEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(inboundShippingCostEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(outboundShippingCostEntries));
 
-        mergeMaps(entryMap, transformIntoMapAndSort(inboundAcceptanceEntries));
-        mergeMaps(entryMap, transformIntoMapAndSort(outboundAcceptanceEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(inboundAcceptanceEntries));
+        mergeMapsAndSort(entryMap, transformIntoMap(outboundAcceptanceEntries));
 
         var list = new ArrayList<AccountsDetailO>(entryMap.size());
         for (var entry : entryMap.entrySet()) {
@@ -265,17 +265,18 @@ public class AccountsServiceImpl implements AccountsService {
         return list;
     }
 
-    private TreeMap<String, List<AccountsDetailO>> transformIntoMapAndSort(List<AccountsDetailO> list) {
+    private TreeMap<String, List<AccountsDetailO>> transformIntoMap(List<AccountsDetailO> list) {
         return list.parallelStream().collect(
-                Collectors.groupingBy(AccountsDetailO::getEntryID, TreeMap::new, Collectors.toList()));
+                Collectors.groupingBy(AccountsDetailO::getEntryDate, TreeMap::new, Collectors.toList()));
     }
 
-    private void mergeMaps(TreeMap<String, List<AccountsDetailO>> parentMap,
-                           TreeMap<String, List<AccountsDetailO>> subMap) {
+    private void mergeMapsAndSort(TreeMap<String, List<AccountsDetailO>> parentMap,
+                                  TreeMap<String, List<AccountsDetailO>> subMap) {
         for (var entry : subMap.entrySet()) {
-            entry.getValue().sort(Comparator.comparing(AccountsDetailO::getEntryID));
             String key = entry.getKey();
             var value = entry.getValue();
+            value.sort(Comparator.comparing(AccountsDetailO::getEntryID));
+            value.sort(Comparator.comparing(AccountsDetailO::getEntryDate));
             if (parentMap.containsKey(key)) {
                 parentMap.get(key).addAll(value);
             }
