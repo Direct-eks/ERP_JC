@@ -37,7 +37,10 @@ export default {
         else if (this.mode === 'customer')
             this.customerMode = true
 
-        // todo query
+        this.$getRequest(this.customerMode ? this.$api.receivableSummary :
+            this.$api.payableSummary).then(data => {
+            this.tableData = data
+        })
     },
     data() {
         return {

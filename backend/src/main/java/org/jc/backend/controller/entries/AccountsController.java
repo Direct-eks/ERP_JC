@@ -32,12 +32,16 @@ public class AccountsController {
 
     @GetMapping("/getPayableSummary")
     public List<AccountsSummaryO> getPayableSummary() {
-        return null;
+        logger.info("GET Request to /accounts/getPayableSummary");
+
+        return accountsService.getPayableSummary();
     }
 
     @GetMapping("/getReceivableSummary")
     public List<AccountsSummaryO> getReceivableSummary() {
-        return null;
+        logger.info("GET Request to /accounts/getReceivableSummary");
+
+        return accountsService.getReceivableSummary();
     }
 
     @GetMapping("/getPayableDetail")
