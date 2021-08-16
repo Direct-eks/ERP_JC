@@ -69,7 +69,22 @@ export default {
     },
     methods: {
         clear() {
-
+            this.queries.companyID = -1
+            this.queries.companyName = ''
+        },
+        changeCompany(item) {
+            if (item !== null) {
+                this.queries.companyID = item.companyID
+                this.queries.companyName = item.companyName
+            }
+            else {
+                this.clear()
+            }
+        },
+        changeCompanyAndSwitch(item) {
+            this.queries.companyID = item.companyID
+            this.queries.companyName = item.companyName
+            this.tab = 1
         }
     }
 }

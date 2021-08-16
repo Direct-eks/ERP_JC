@@ -31,6 +31,10 @@ export default {
         else if (this.mode === 'customer')
             this.customerMode = true
 
+        this.$getRequest(this.customerMode ? this.$api.receivableLedger :
+            this.$api.payableLedger).then(data => {
+            this.tableData = data
+        })
     },
     data() {
         return {
