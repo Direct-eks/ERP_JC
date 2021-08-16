@@ -33,11 +33,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.jc.backend.utils.EntryClassification.OUTBOUND_ENTRY;
 import static org.jc.backend.utils.EntryClassification.INBOUND_RETURN;
+import static org.jc.backend.utils.EntryClassification.OUTBOUND_ENTRY;
 
 @Service
-public class OutboundEntryServiceImpl implements OutboundEntryService {
+public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsIOEntryStatService {
     private static final Logger logger = LoggerFactory.getLogger(OutboundEntryServiceImpl.class);
 
     private final OutboundEntryMapper outboundEntryMapper;
@@ -1003,6 +1003,27 @@ public class OutboundEntryServiceImpl implements OutboundEntryService {
                 item.setPercentage(String.format("%.4f%%", percent));
             }
             return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    /* ---------------------- Accounts IO Entry Stat Service ---------------------- */
+
+    @Transactional(readOnly = true)
+    @Override
+    public String getNotCheckoutEntrySummary(int companyID) {
+        try {
+            var list = outboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
+            BigDecimal total = new BigDecimal(0);
+            for (var item : list) {
+                // todo with/out tax?
+                total = total.add(new BigDecimal(item.getUnitPriceWithTax()));
+            }
+            return total.toPlainString();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

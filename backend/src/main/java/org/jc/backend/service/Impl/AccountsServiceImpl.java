@@ -5,6 +5,7 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.entity.StatO.AccountsLedgerO;
 import org.jc.backend.entity.StatO.AccountsSummaryO;
+import org.jc.backend.service.AccountsIOEntryStatService;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
 import org.jc.backend.service.CompanyService;
@@ -29,6 +30,10 @@ public class AccountsServiceImpl implements AccountsService {
     private static final Logger logger = LoggerFactory.getLogger(AccountsServiceImpl.class);
 
     private final CompanyService companyService;
+
+    private final AccountsIOEntryStatService inboundEntryService;
+    private final AccountsIOEntryStatService outboundEntryService;
+
     private final AccountsStatService initialMoneyEntryService;
     private final AccountsStatService checkoutEntryService;
     private final AccountsStatService moneyEntryService;
@@ -37,6 +42,8 @@ public class AccountsServiceImpl implements AccountsService {
 
     public AccountsServiceImpl(
             CompanyService companyService,
+            @Qualifier("inboundEntryServiceImpl") AccountsIOEntryStatService inboundEntryService,
+            @Qualifier("outboundEntryServiceImpl") AccountsIOEntryStatService outboundEntryService,
             @Lazy @Qualifier("initialMoneyEntryServiceImpl") AccountsStatService initialMoneyEntryService,
             @Lazy @Qualifier("checkoutEntryServiceImpl") AccountsStatService checkoutEntryService,
             @Lazy @Qualifier("moneyEntryServiceImpl") AccountsStatService moneyEntryService,
@@ -44,6 +51,10 @@ public class AccountsServiceImpl implements AccountsService {
             @Lazy @Qualifier("acceptanceServiceImpl") AccountsStatService acceptanceService
     ) {
         this.companyService = companyService;
+
+        this.inboundEntryService = inboundEntryService;
+        this.outboundEntryService = outboundEntryService;
+
         this.initialMoneyEntryService = initialMoneyEntryService;
         this.checkoutEntryService = checkoutEntryService;
         this.moneyEntryService = moneyEntryService;
@@ -80,6 +91,8 @@ public class AccountsServiceImpl implements AccountsService {
     }
 
     private List<AccountsSummaryO> getSummary(boolean isPayable) {
+
+        // get payable/receivable summary
         Set<Integer> distinctCompanies = new HashSet<>();
 
         distinctCompanies.addAll(initialMoneyEntryService.getDistinctCompaniesInvolvedInEntries());
@@ -140,9 +153,18 @@ public class AccountsServiceImpl implements AccountsService {
                 summary.setReceivableAmount(amount.toPlainString());
             }
 
-            // todo notCheckoutAmount
-            BigDecimal notInvoicedAmount = new BigDecimal(summary.getNotCheckoutAmount());
-            summary.setSubtotal(amount.add(notInvoicedAmount).toPlainString());
+            // get not checkout summary
+            var notCheckoutInboundAmount = new BigDecimal(inboundEntryService.getNotCheckoutEntrySummary(companyID));
+            var notCheckoutOutboundAmount = new BigDecimal(outboundEntryService.getNotCheckoutEntrySummary(companyID));
+            BigDecimal notCheckoutAmount;
+            if (isPayable) {
+                notCheckoutAmount = notCheckoutInboundAmount.subtract(notCheckoutOutboundAmount);
+            }
+            else {
+                notCheckoutAmount = notCheckoutOutboundAmount.subtract(notCheckoutInboundAmount);
+            }
+            summary.setNotCheckoutAmount(notCheckoutAmount.toPlainString());
+            summary.setSubtotal(amount.add(notCheckoutAmount).toPlainString());
 
             summaries.add(summary);
         }

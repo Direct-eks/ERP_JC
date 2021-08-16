@@ -31,7 +31,7 @@ import static org.jc.backend.utils.EntryClassification.INBOUND_ENTRY;
 import static org.jc.backend.utils.EntryClassification.OUTBOUND_RETURN;
 
 @Service
-public class InboundEntryServiceImpl implements InboundEntryService {
+public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOEntryStatService {
     private static final Logger logger = LoggerFactory.getLogger(InboundEntryServiceImpl.class);
 
     private final InboundEntryMapper inboundEntryMapper;
@@ -700,6 +700,27 @@ public class InboundEntryServiceImpl implements InboundEntryService {
                 item.setTotalPrice(Double.toString(unitPriceWithTax * item.getQuantity()));
             });
             return list;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    /* ---------------------- Accounts IO Entry Stat Service ---------------------- */
+
+    @Transactional(readOnly = true)
+    @Override
+    public String getNotCheckoutEntrySummary(int companyID) {
+        try {
+            var list = inboundEntryMapper.queryNotYetCheckoutDetailByCompanyID(companyID);
+            BigDecimal total = new BigDecimal(0);
+            for (var item : list) {
+                // todo with/out tax?
+                total = total.add(new BigDecimal(item.getUnitPriceWithTax()));
+            }
+            return total.toPlainString();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
