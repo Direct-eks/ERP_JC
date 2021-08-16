@@ -1,5 +1,6 @@
 package org.jc.backend.service.Impl;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -1024,6 +1025,19 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
                 total = total.add(new BigDecimal(item.getUnitPriceWithTax()));
             }
             return total.toPlainString();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Override
+    public Pair<String, String> getLedgerSummary(int companyID) {
+        try {
+            // todo
+            return null;
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -8,6 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class AccountsLedgerO {
+    private int companyID;
     private String companyAbbreviatedName;
     private String companyFullName;
     private String debitOrCredit;

@@ -93,16 +93,8 @@ public class AccountsServiceImpl implements AccountsService {
     private List<AccountsSummaryO> getSummary(boolean isPayable) {
 
         // get payable/receivable summary
-        Set<Integer> distinctCompanies = new HashSet<>();
-
-        distinctCompanies.addAll(initialMoneyEntryService.getDistinctCompaniesInvolvedInEntries());
-        distinctCompanies.addAll(checkoutEntryService.getDistinctCompaniesInvolvedInEntries());
-        distinctCompanies.addAll(moneyEntryService.getDistinctCompaniesInvolvedInEntries());
-        distinctCompanies.addAll(shippingCostEntryService.getDistinctCompaniesInvolvedInEntries());
-        distinctCompanies.addAll(acceptanceService.getDistinctCompaniesInvolvedInEntries());
-
         List<AccountsSummaryO> summaries = new ArrayList<>();
-        for (var companyID : distinctCompanies) {
+        for (var companyID : this.getDistinctCompaniesInAllEntries()) {
             AccountsSummaryO summary = new AccountsSummaryO();
 
             var company = companyService.getCompanyByID(companyID);
@@ -170,6 +162,18 @@ public class AccountsServiceImpl implements AccountsService {
         }
 
         return summaries;
+    }
+
+    private Set<Integer> getDistinctCompaniesInAllEntries() {
+        Set<Integer> distinctCompanies = new HashSet<>();
+
+        distinctCompanies.addAll(initialMoneyEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(checkoutEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(moneyEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(shippingCostEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(acceptanceService.getDistinctCompaniesInvolvedInEntries());
+
+        return distinctCompanies;
     }
 
     @Transactional(readOnly = true)
@@ -393,12 +397,58 @@ public class AccountsServiceImpl implements AccountsService {
     @Transactional(readOnly = true)
     @Override
     public List<AccountsLedgerO> getPayableLedger() {
-        return null;
+        try {
+            return this.getLedger(true);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<AccountsLedgerO> getReceivableLedger() {
-        return null;
+        try {
+            return this.getLedger(false);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    private List<AccountsLedgerO> getLedger(boolean isPayable) {
+        List<AccountsLedgerO> allLedgers = new ArrayList<>();
+
+        for (var companyID : this.getDistinctCompaniesInAllEntries()) {
+            AccountsLedgerO ledger = new AccountsLedgerO();
+
+            var company = companyService.getCompanyByID(companyID);
+            assert company != null;
+
+            ledger.setCompanyID(companyID);
+            ledger.setCompanyAbbreviatedName(company.getAbbreviatedName());
+            ledger.setCompanyFullName(company.getFullName());
+
+            switch (company.getClassification()) {
+                case CompanyClassification.SUPPLIER:
+                case CompanyClassification.OTHER_PAY:
+                    if (!isPayable) continue;
+                    // todo
+                    break;
+                case CompanyClassification.CUSTOMER:
+                case CompanyClassification.OTHER_RECV:
+                    if (isPayable) continue;
+                    // todo
+                    break;
+            }
+
+            allLedgers.add(ledger);
+        }
+
+        return allLedgers;
     }
 }

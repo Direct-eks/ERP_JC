@@ -1,6 +1,18 @@
 <template>
     <v-card>
-
+        <v-data-table v-model="tableCurrentRow"
+                      :headers="tableHeaders"
+                      :items="tableData"
+                      item-key="companyID"
+                      height="65vh"
+                      calculate-widths
+                      disable-sort
+                      disable-pagination
+                      hide-default-footer
+                      fixed-header
+                      locale="zh-cn"
+                      dense>
+        </v-data-table>
     </v-card>
 </template>
 
@@ -31,6 +43,8 @@ export default {
                 { text: '结账金额', value: 'checkoutAmount', width: '110px' },
                 { text: '开票金额', value: 'invoicedAmount', width: '110px' },
             ],
+            tableData: [],
+            tableCurrentRow: [],
         }
     },
     methods: {
