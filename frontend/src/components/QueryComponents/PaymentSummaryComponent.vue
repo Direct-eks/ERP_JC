@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <v-data-table v-model="tableCurrentRow"
-                      :headers="customerMode ? tableHeaders2 : tableHeaders1"
+                      :headers="tableHeaders"
                       :items="tableData"
                       item-key="companyID"
                       height="65vh"
@@ -43,11 +43,13 @@ export default {
         return {
             customerMode: true,
 
-            tableHeaders1: [
-                { text: '日期', value: 'entryDate', width: '110px' },
-            ],
-            tableHeaders2: [
-                { text: '日期', value: 'entryDate', width: '110px' },
+            tableHeaders: [
+                { text: '单位简称', value: 'companyName', width: '140px' },
+                this.customerMode ?
+                    { text: '应收款', value: 'receivableAmount', width: '110px' } :
+                    { text: '应付款', value: 'payableAmount', width: '110px' },
+                { text: '未结账金额', value: 'notCheckoutAmount', width: '110px' },
+                { text: '小计', value: 'subtotal', width: '110px' },
             ],
             tableData: [],
             tableCurrentRow: [],
@@ -60,7 +62,7 @@ export default {
         chooseCompany(item) {
             this.$emit('changeCompany', {
                 companyID: item.companyID,
-                companyName: item.abbreviatedName
+                companyName: item.companyName
             })
         },
         tableClick(row) {
@@ -86,7 +88,7 @@ export default {
         doubleClick(_, row) {
             this.$emit('changeCompanyAndSwitch', {
                 companyID: row.item.companyID,
-                companyName: row.item.abbreviatedName
+                companyName: row.item.companyName
             })
         }
     }
