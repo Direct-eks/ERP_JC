@@ -100,6 +100,11 @@
     </delete>
 
 
+    <select id="queryDistinctCompanyIDs" resultType="java.lang.Integer">
+        select distinct partner_company_id
+        from m_acceptance_entry
+    </select>
+
     <select id="queryAllEntriesByPrefixAndCompany" resultMap="entryResultMap">
         select acceptance_entry_serial, partner_company_id, entry_date, creation_date,
                department_id, source, bank_account_id, source_serial, amount, number,

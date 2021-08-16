@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jc.backend.utils.AcceptanceBillClassification.ACCEPTANCE_PAY;
@@ -59,13 +56,98 @@ public class AccountsServiceImpl implements AccountsService {
     @Transactional(readOnly = true)
     @Override
     public List<AccountsSummaryO> getPayableSummary() {
-        return null;
+        try {
+            return this.getSummary(true);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<AccountsSummaryO> getReceivableSummary() {
-        return null;
+        try {
+            return this.getSummary(false);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    private List<AccountsSummaryO> getSummary(boolean isPayable) {
+        Set<Integer> distinctCompanies = new HashSet<>();
+
+        distinctCompanies.addAll(initialMoneyEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(checkoutEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(moneyEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(shippingCostEntryService.getDistinctCompaniesInvolvedInEntries());
+        distinctCompanies.addAll(acceptanceService.getDistinctCompaniesInvolvedInEntries());
+
+        List<AccountsSummaryO> summaries = new ArrayList<>();
+        for (var companyID : distinctCompanies) {
+            AccountsSummaryO summary = new AccountsSummaryO();
+
+            var company = companyService.getCompanyByID(companyID);
+            assert company != null;
+
+            summary.setCompanyID(companyID);
+            summary.setCompanyName(company.getAbbreviatedName());
+
+            List<AccountsDetailO> entryList;
+            AccountsDetailO lastEntry = null;
+            try {
+                switch (company.getClassification()) {
+                    case CompanyClassification.SUPPLIER:
+                    case CompanyClassification.OTHER_PAY:
+                        if (!isPayable) continue;
+                        entryList = this.getPayableDetail(companyID);
+                        lastEntry = entryList.get(entryList.size() - 1);
+                        break;
+                    case CompanyClassification.CUSTOMER:
+                    case CompanyClassification.OTHER_RECV:
+                        if (isPayable) continue;
+                        entryList = this.getReceivableDetail(companyID);
+                        lastEntry = entryList.get(entryList.size() - 1);
+                        break;
+                }
+            } catch (GlobalParamException ignored) {}
+
+            BigDecimal amount;
+            assert lastEntry != null;
+            if (isPayable) {
+                if (lastEntry.getDebitOrCredit().equals("借")) {
+                    amount = new BigDecimal(lastEntry.getDebtorAmount());
+                    amount = amount.negate();
+                }
+                else {
+                    amount = new BigDecimal(lastEntry.getCreditorAmount());
+                }
+                summary.setPayableAmount(amount.toPlainString());
+            }
+            else {
+                if (lastEntry.getDebitOrCredit().equals("借")) {
+                    amount = new BigDecimal(lastEntry.getDebtorAmount());
+                }
+                else {
+                    amount = new BigDecimal(lastEntry.getCreditorAmount());
+                    amount = amount.negate();
+                }
+                summary.setReceivableAmount(amount.toPlainString());
+            }
+
+            // todo notCheckoutAmount
+            BigDecimal notInvoicedAmount = new BigDecimal(summary.getNotCheckoutAmount());
+            summary.setSubtotal(amount.add(notInvoicedAmount).toPlainString());
+
+            summaries.add(summary);
+        }
+
+        return summaries;
     }
 
     @Transactional(readOnly = true)

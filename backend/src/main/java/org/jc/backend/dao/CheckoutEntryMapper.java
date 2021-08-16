@@ -32,6 +32,8 @@ public interface CheckoutEntryMapper {
 
     void updateVerifiedEntry(String serial, int value);
 
+    // for accounts service
+    List<Integer> queryDistinctCompanyIDs();
     List<CheckoutEntryDO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
     void updateEntryDetailBySerial(AccountsDetailO entry);
 }

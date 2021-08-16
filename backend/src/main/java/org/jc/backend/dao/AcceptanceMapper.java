@@ -23,6 +23,8 @@ public interface AcceptanceMapper {
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);
 
+    // for accounts service
+    List<Integer> queryDistinctCompanyIDs();
     List<AcceptanceEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
     void updateEntryDetailBySerial(AccountsDetailO entry);
 }

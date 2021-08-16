@@ -5,6 +5,9 @@ import org.jc.backend.entity.StatO.AccountsDetailO;
 import java.util.List;
 
 public interface AccountsStatService {
+    // summary
+    List<Integer> getDistinctCompaniesInvolvedInEntries();
+    // detail
     List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound);
-    default void updateEntryDetail(AccountsDetailO entry) {}
+    default void updateEntryDetail(AccountsDetailO entry) {} // no implementation for initialMoneyEntry
 }

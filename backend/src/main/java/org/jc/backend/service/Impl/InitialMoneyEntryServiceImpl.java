@@ -128,6 +128,19 @@ public class InitialMoneyEntryServiceImpl implements InitialMoneyEntryService, A
 
     @Transactional(readOnly = true)
     @Override
+    public List<Integer> getDistinctCompaniesInvolvedInEntries() {
+        try {
+            return initialMoneyEntryMapper.queryDistinctCompanyIDs();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<AccountsDetailO>();

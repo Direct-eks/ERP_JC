@@ -258,6 +258,19 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional(readOnly = true)
     @Override
+    public List<Integer> getDistinctCompaniesInvolvedInEntries() {
+        try {
+            return shippingCostEntryMapper.queryDistinctCompanyIDs();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<AccountsDetailO>();

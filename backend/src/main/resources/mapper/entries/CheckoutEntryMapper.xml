@@ -194,6 +194,11 @@
     </update>
 
 
+    <select id="queryDistinctCompanyIDs" resultType="java.lang.Integer">
+        select distinct partner_company_id
+        from m_checkout_entry
+    </select>
+
     <select id="queryAllEntriesByPrefixAndCompany" resultMap="checkoutEntryResultMap">
         select checkout_entry_serial, partner_company_id, invoice_type, payment_method,
                payment_number, payment_amount, bank_account_id, total_amount, creation_date,

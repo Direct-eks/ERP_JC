@@ -95,6 +95,11 @@
     </update>
 
 
+    <select id="queryDistinctCompanyIDs" resultType="java.lang.Integer">
+        select distinct partner_company_id
+        from m_money_entry
+    </select>
+
     <select id="queryAllEntriesByPrefixAndCompany" resultMap="moneyEntryResultMap">
         select money_entry_serial, partner_company_id, payment_method, payment_number,
                payment_amount, bank_account_id, remark, drawer, creation_date,

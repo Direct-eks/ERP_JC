@@ -8,4 +8,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class AccountsSummaryO {
+    private int companyID;
+    private String companyName;
+
+    private String receivableAmount;
+    private String payableAmount;
+
+    private String notCheckoutAmount;
+
+    private String subtotal;
 }

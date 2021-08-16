@@ -665,6 +665,19 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
 
     @Transactional(readOnly = true)
     @Override
+    public List<Integer> getDistinctCompaniesInvolvedInEntries() {
+        try {
+            return checkoutEntryMapper.queryDistinctCompanyIDs();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound) {
         try {
             var results = new ArrayList<AccountsDetailO>();

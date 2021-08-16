@@ -18,5 +18,7 @@ public interface InitialMoneyEntryMapper {
     void updateEntry(InitialMoneyEntryO o);
     void deleteEntry(String id);
 
+    // for accounts service
+    List<Integer> queryDistinctCompanyIDs();
     List<InitialMoneyEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
 }
