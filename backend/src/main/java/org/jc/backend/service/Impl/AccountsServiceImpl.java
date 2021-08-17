@@ -433,18 +433,29 @@ public class AccountsServiceImpl implements AccountsService {
             ledger.setCompanyAbbreviatedName(company.getAbbreviatedName());
             ledger.setCompanyFullName(company.getFullName());
 
-            switch (company.getClassification()) {
-                case CompanyClassification.SUPPLIER:
-                case CompanyClassification.OTHER_PAY:
-                    if (!isPayable) continue;
-                    // todo
-                    break;
-                case CompanyClassification.CUSTOMER:
-                case CompanyClassification.OTHER_RECV:
-                    if (isPayable) continue;
-                    // todo
-                    break;
-            }
+            List<AccountsDetailO> entryList;
+            AccountsDetailO lastEntry = null;
+            try {
+                switch (company.getClassification()) {
+                    case CompanyClassification.SUPPLIER:
+                    case CompanyClassification.OTHER_PAY:
+                        if (!isPayable) continue;
+                        entryList = this.getPayableDetail(companyID);
+                        lastEntry = entryList.get(entryList.size() - 1);
+                        break;
+                    case CompanyClassification.CUSTOMER:
+                    case CompanyClassification.OTHER_RECV:
+                        if (isPayable) continue;
+                        entryList = this.getReceivableDetail(companyID);
+                        lastEntry = entryList.get(entryList.size() - 1);
+                        break;
+                }
+            } catch (GlobalParamException ignored) {}
+
+            assert lastEntry != null;
+            ledger.setDebitOrCredit(lastEntry.getDebitOrCredit());
+
+            // todo checkout amount & invoice amount
 
             allLedgers.add(ledger);
         }

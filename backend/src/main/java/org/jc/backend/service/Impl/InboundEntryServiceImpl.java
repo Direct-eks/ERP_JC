@@ -729,17 +729,4 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             throw e;
         }
     }
-
-    @Override
-    public Pair<String, String> getLedgerSummary(int companyID) {
-        try {
-            // todo
-            return null;
-
-        } catch (PersistenceException e) {
-            if (logger.isDebugEnabled()) e.printStackTrace();
-            logger.error("query failed");
-            throw e;
-        }
-    }
 }
