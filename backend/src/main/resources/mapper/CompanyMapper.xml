@@ -86,7 +86,8 @@
     </select>
 
     <select id="queryCompanyByID" resultMap="CompanyResultMap">
-        select partner_company_id, abbreviated_name, area_id, classification, is_active
+        select partner_company_id, abbreviated_name, full_name, area_id,
+               classification, is_active
         from c_partner_company
         where partner_company_id = #{id}
     </select>

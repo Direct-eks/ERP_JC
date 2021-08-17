@@ -35,7 +35,7 @@
                     <PaymentDetail mode="customer" :companyID="queries.companyID"/>
                 </v-tab-item>
 
-                <v-tab-item key="ledger" :eager="true">
+                <v-tab-item key="ledger">
                     <PaymentLedger mode="customer"></PaymentLedger>
                 </v-tab-item>
 
