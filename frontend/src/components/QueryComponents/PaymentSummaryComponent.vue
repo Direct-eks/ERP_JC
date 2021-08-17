@@ -3,6 +3,7 @@
         <v-data-table v-model="tableCurrentRow"
                       :headers="tableHeaders"
                       :items="tableData"
+                      :loading="loading"
                       item-key="companyID"
                       height="65vh"
                       calculate-widths
@@ -40,11 +41,13 @@ export default {
         this.$getRequest(this.customerMode ? this.$api.receivableSummary :
             this.$api.payableSummary).then(data => {
             this.tableData = data
-        })
+            this.loading = false
+        }).catch(() => { this.loading = false })
     },
     data() {
         return {
             customerMode: true,
+            loading: true,
 
             tableHeaders: [
                 { text: '单位简称', value: 'companyName', width: '140px' },

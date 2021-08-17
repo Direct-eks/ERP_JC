@@ -62,13 +62,20 @@ export default {
     },
     watch: {
         companyID (val) {
-            if (val === -1) return
+            if (val === -1) {
+                if (this.tableData.length === 0) return
+                // clear existing data
+                this.tableData = []
+                return
+            }
+            this.loading = true
             this.$getRequest(this.customerMode ? this.$api.receivableDetail :
                 this.$api.payableDetail, {
                 companyID: val
             }).then(data => {
                 this.tableData = data
-            })
+                this.loading = false
+            }).catch(() => { this.loading = false })
         }
     },
     beforeMount() {
@@ -80,6 +87,7 @@ export default {
     data() {
         return {
             customerMode: true,
+            loading: false,
 
             tableHeaders1: [
                 { text: '日期', value: 'entryDate', width: '110px' },
