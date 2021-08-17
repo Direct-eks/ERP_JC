@@ -28,7 +28,10 @@
             <v-tabs-items v-model="tab">
 
                 <v-tab-item key="summary" :eager="true">
-                    <PaymentSummary mode="customer"/>
+                    <PaymentSummary mode="customer"
+                                    @changeCompany="changeCompany"
+                                    @changeCompanyAndSwitch="changeCompanyAndSwitch">
+                    </PaymentSummary>
                 </v-tab-item>
 
                 <v-tab-item key="detail" :eager="true">
