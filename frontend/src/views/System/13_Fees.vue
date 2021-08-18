@@ -168,7 +168,10 @@ export default {
             treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.feeCategoryList)), 'fee'),
             treeSelection: [],
             headers: [
-                { text: '', value: '', width: '' },
+                { text: '名称', value: 'name', width: '180px' },
+                { text: '说明', value: 'remark', width: '220px' },
+                { text: '类别', value: 'classification', width: '80px' },
+                { text: '层级', value: 'treeLevel', width: '80px' },
             ],
             tableData: JSON.parse(JSON.stringify(this.$store.state.feeCategoryList)),
             currRow: [],

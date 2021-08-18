@@ -152,4 +152,9 @@ public class UsageCheckServiceImpl implements UsageCheckService {
         }
         return false;
     }
+
+    @Override
+    public boolean isFeeCategoryIDInUse(int categoryID) {
+        return usageCheckMapper.findFeeCategoryIDInEntries(categoryID) != null;
+    }
 }

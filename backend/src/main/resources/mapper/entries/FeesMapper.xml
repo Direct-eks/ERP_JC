@@ -17,4 +17,24 @@
         from f_fee_category
     </select>
 
+    <insert id="insertCategory">
+        insert into f_fee_category (name, remark, classification, tree_level)
+        values (#{name}, #{remark}, #{classification}, #{treeLevel})
+    </insert>
+
+    <update id="updateCategory">
+        update f_fee_category
+        set name = #{name},
+            remark = #{remark},
+            classification = #{classification},
+            tree_level = #{treeLevel}
+        where fee_category_id = #{feeCategoryID}
+    </update>
+
+    <delete id="deleteCategory">
+        delete from f_fee_category
+        where fee_category_id = #{id}
+    </delete>
+
+
 </mapper>

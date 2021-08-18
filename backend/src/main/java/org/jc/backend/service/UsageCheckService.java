@@ -17,4 +17,5 @@ public interface UsageCheckService {
     boolean isModelCategoryIDInUse(int categoryID);
     boolean isSkuIDInUse(int skuID);
     boolean isWarehouseStockIDInUse(int warehouseStockID);
+    boolean isFeeCategoryIDInUse(int categoryID);
 }

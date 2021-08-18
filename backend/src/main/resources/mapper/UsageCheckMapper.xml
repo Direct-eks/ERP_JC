@@ -96,4 +96,11 @@
         limit 1
     </select>
 
+    <select id="findFeeCategoryIDInEntries" resultType="java.lang.Integer">
+        select 1
+        from f_fee_detail_entry
+        where category_id = #{categoryID}
+        limit 1
+    </select>
+
 </mapper>

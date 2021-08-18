@@ -12,4 +12,7 @@ import java.util.List;
 @Repository
 public interface FeesMapper {
     List<FeeCategoryO> queryAllCategories();
+    void insertCategory(FeeCategoryO categoryO);
+    void updateCategory(FeeCategoryO categoryO);
+    void deleteCategory(int id);
 }
