@@ -168,7 +168,7 @@ export default {
     created() {
         this.$store.watch(state => state.modelCategoryList, () => {
             this.tableData = JSON.parse(JSON.stringify(this.$store.state.modelCategoryList))
-            this.treeData = this.$createTree(this.tableData, true)
+            this.treeData = this.$createTree(this.tableData, 'model')
         })
     },
     beforeMount() {
@@ -183,7 +183,7 @@ export default {
             newName: '',
             newRemark: '',
 
-            treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.modelCategoryList)), true),
+            treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.modelCategoryList)), 'model'),
             treeSelection: [],
 
             headers: [
@@ -240,7 +240,7 @@ export default {
             })
         },
         previewChanges() {
-            this.treeData = this.$createTree(this.tableData, true)
+            this.treeData = this.$createTree(this.tableData, 'model')
         },
         removeItem() {
             if (this.treeSelection.length === 0) return

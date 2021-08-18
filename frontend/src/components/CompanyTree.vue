@@ -61,7 +61,7 @@ export default {
     computed: {
         treeData() {
             const data = this.$store.state.companyCategoryList
-            return this.$createTree(data, false)
+            return this.$createTree(data, 'company')
         }
     },
     methods: {

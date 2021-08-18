@@ -149,7 +149,7 @@ export default {
         this.$store.watch(state => state.companyCategoryList, () => {
             const data = this.$store.state.companyCategoryList
             this.tableData = JSON.parse(JSON.stringify(data))
-            this.treeData = this.$createTree(this.tableData, false)
+            this.treeData = this.$createTree(this.tableData, 'company')
         })
     },
     beforeMount() {
@@ -170,7 +170,7 @@ export default {
             newName: '',
             newRemark: '',
 
-            treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.companyCategoryList)), false),
+            treeData: this.$createTree(JSON.parse(JSON.stringify(this.$store.state.companyCategoryList)), 'company'),
             treeSelection: [],
             headers: [
                 { text: '区划名称', value: 'name', width: '160px' },
@@ -223,7 +223,7 @@ export default {
             })
         },
         previewChanges() {
-            this.treeData = this.$createTree(this.tableData, false)
+            this.treeData = this.$createTree(this.tableData, 'company')
         },
         removeItem() {
             if (this.treeSelection.length === 0) return

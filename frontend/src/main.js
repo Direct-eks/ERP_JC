@@ -85,21 +85,30 @@ function validateNumber(value) {
 }
 Vue.prototype.$validateNumber = validateNumber
 
-function createTree(data, modelSearch) {
+function createTree(data, mode) {
+    let id
+    switch (mode) {
+        case 'company':
+            id = 'areaID'
+            break
+        case 'model':
+            id = 'modelCategoryID'
+            break
+        case 'fee':
+            id = 'feeCategoryID'
+            break
+        default: return
+    }
+
     function createTreeHelper (tree, lastLevelIndex, data, prefix) {
         let count = 0;
         for (let item of data) {
             if (item.treeLevel.startsWith(prefix + '-') && // no children
                 item.treeLevel.lastIndexOf('-') ===
                     item.treeLevel.indexOf('-', prefix.length)) {
-                tree[lastLevelIndex].children.push(modelSearch ? {
+                tree[lastLevelIndex].children.push({
                     label: item.code,
-                    categoryID: item.modelCategoryID,
-                    treeLevel: item.treeLevel,
-                    children: []
-                } : {
-                    label: item.name,
-                    areaID: item.areaID,
+                    categoryID: item[id],
                     treeLevel: item.treeLevel,
                     children: []
                 })
@@ -117,14 +126,9 @@ function createTree(data, modelSearch) {
     const tree = [];
     for (const item of data) {
         if (item.treeLevel.indexOf('-') === -1) { // first level object
-            tree.push(modelSearch ? {
+            tree.push({
                 label: item.code,
-                categoryID: item.modelCategoryID,
-                treeLevel: item.treeLevel,
-                children: []
-            } : {
-                label: item.name,
-                areaID: item.areaID,
+                categoryID: item[id],
                 treeLevel: item.treeLevel,
                 children: []
             })
