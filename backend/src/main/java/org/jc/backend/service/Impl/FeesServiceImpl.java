@@ -1,10 +1,9 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.controller.entries.AccountsController;
-import org.jc.backend.dao.FeeEntryMapper;
+import org.jc.backend.dao.FeesMapper;
 import org.jc.backend.entity.FeeCategoryO;
-import org.jc.backend.service.FeeEntryService;
+import org.jc.backend.service.FeesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class FeeEntryServiceImpl implements FeeEntryService {
-    private static final Logger logger = LoggerFactory.getLogger(FeeEntryServiceImpl.class);
+public class FeesServiceImpl implements FeesService {
+    private static final Logger logger = LoggerFactory.getLogger(FeesServiceImpl.class);
 
-    private final FeeEntryMapper feeEntryMapper;
+    private final FeesMapper feesMapper;
 
-    public FeeEntryServiceImpl(FeeEntryMapper feeEntryMapper) {
-        this.feeEntryMapper = feeEntryMapper;
+    public FeesServiceImpl(FeesMapper feesMapper) {
+        this.feesMapper = feesMapper;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -28,7 +27,7 @@ public class FeeEntryServiceImpl implements FeeEntryService {
     @Override
     public List<FeeCategoryO> getFeeCategories() {
         try {
-            return feeEntryMapper.queryAllCategories();
+            return feesMapper.queryAllCategories();
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

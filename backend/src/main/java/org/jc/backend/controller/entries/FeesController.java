@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jc.backend.entity.FeeCategoryO;
 import org.jc.backend.entity.VO.ListUpdateVO;
-import org.jc.backend.service.FeeEntryService;
+import org.jc.backend.service.FeesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Indexed
-@Api(tags = "Fees Entry Related")
+@Api(tags = "Fees Related")
 @RestController
-@RequestMapping("/feeEntry")
-public class FeeEntryController {
-    private static final Logger logger = LoggerFactory.getLogger(FeeEntryController.class);
+@RequestMapping("/fees")
+public class FeesController {
+    private static final Logger logger = LoggerFactory.getLogger(FeesController.class);
 
-    private final FeeEntryService feeEntryService;
+    private final FeesService feesService;
 
-    public FeeEntryController(FeeEntryService feeEntryService) {
-        this.feeEntryService = feeEntryService;
+    public FeesController(FeesService feesService) {
+        this.feesService = feesService;
     }
 
     /* ------------------------------ API ------------------------------ */
@@ -31,18 +31,18 @@ public class FeeEntryController {
     @ApiOperation(value = "", response = FeeCategoryO.class)
     @GetMapping("/getFeeCategories")
     public List<FeeCategoryO> getFeeCategories() {
-        logger.info("/feeEntry/getFeeCategories");
+        logger.info("/fees/getFeeCategories");
 
-        return feeEntryService.getFeeCategories();
+        return feesService.getFeeCategories();
     }
 
     @ApiOperation(value = "", response = void.class)
     @PostMapping("/updateFeeCategories")
     public void updateFeeCategories(
             @RequestBody @Validated ListUpdateVO<FeeCategoryO> updateVO) {
-        logger.info("/feeEntry/updateFeeCategories");
+        logger.info("/fees/updateFeeCategories");
 
-        feeEntryService.updateFeeCategories(updateVO.getElements());
+        feesService.updateFeeCategories(updateVO.getElements());
     }
 
     @ApiOperation(value = "", response = void.class)

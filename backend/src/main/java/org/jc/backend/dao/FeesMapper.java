@@ -10,6 +10,6 @@ import java.util.List;
 @Indexed
 @Mapper
 @Repository
-public interface FeeEntryMapper {
+public interface FeesMapper {
     List<FeeCategoryO> queryAllCategories();
 }
