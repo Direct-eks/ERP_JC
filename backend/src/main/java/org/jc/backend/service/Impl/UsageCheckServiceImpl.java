@@ -155,6 +155,7 @@ public class UsageCheckServiceImpl implements UsageCheckService {
 
     @Override
     public boolean isFeeCategoryIDInUse(int categoryID) {
+        // todo, finish mapper sql
         return usageCheckMapper.findFeeCategoryIDInEntries(categoryID) != null;
     }
 }
