@@ -86,16 +86,19 @@ function validateNumber(value) {
 Vue.prototype.$validateNumber = validateNumber
 
 function createTree(data, mode) {
-    let id
+    let id, code
     switch (mode) {
         case 'company':
             id = 'areaID'
+            code = 'name'
             break
         case 'model':
             id = 'modelCategoryID'
+            code = 'code'
             break
         case 'fee':
             id = 'feeCategoryID'
+            code = 'name'
             break
         default: return
     }
@@ -107,7 +110,7 @@ function createTree(data, mode) {
                 item.treeLevel.lastIndexOf('-') ===
                     item.treeLevel.indexOf('-', prefix.length)) {
                 tree[lastLevelIndex].children.push({
-                    label: item.code,
+                    label: item[code],
                     categoryID: item[id],
                     treeLevel: item.treeLevel,
                     children: []
@@ -127,7 +130,7 @@ function createTree(data, mode) {
     for (const item of data) {
         if (item.treeLevel.indexOf('-') === -1) { // first level object
             tree.push({
-                label: item.code,
+                label: item[code],
                 categoryID: item[id],
                 treeLevel: item.treeLevel,
                 children: []

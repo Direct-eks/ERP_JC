@@ -18,7 +18,7 @@
                     <v-treeview v-model="treeSelection"
                                 :items="treeData"
                                 item-text="label"
-                                item-key="areaID"
+                                item-key="categoryID"
                                 selectable
                                 selection-type="independent"
                                 activatable
@@ -188,8 +188,8 @@ export default {
             let val = data[data.length - 1]
             this.treeSelection = [val]
             this.tableData.forEach(item => {
-                if (item.areaID === val.areaID) {
-                    this.currRow = [val]
+                if (item.areaID === val.categoryID) {
+                    this.currRow = [item]
                 }
             })
         },
