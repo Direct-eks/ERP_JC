@@ -71,6 +71,10 @@ const api = {
     allFactoryBrands: '/factoryBrand/allFactoryBrands', // GET
     updateFactoryBrands: '/factoryBrand/updateAllFactoryBrands',
 
+    /* ------ /fees ------*/
+    allFeeCategories: '/fees/getFeeCategories', // GET
+    updateFeeCategories: '/fees/updateFeeCategories', // POST
+
     /* ------ /inboundEntry ------*/
     completeInboundEntry: '/inboundEntry/completeEntry', // PATCH
     createInboundEntry: '/inboundEntry/createEntry', // PUT

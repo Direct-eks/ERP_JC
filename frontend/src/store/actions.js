@@ -41,6 +41,15 @@ const actions = {
             context.commit('modifyBankAccounts', data)
         }).catch(() => {})
     },
+    /* ------ /fees ------*/
+    getFeeCategoryList(context) {
+        if (context.state.feeCategoryList.length !== 0) {
+            return
+        }
+        VueMain.$getRequest(VueMain.$api.allFeeCategories).then(data => {
+            context.commit('modifyFeeCategories', data)
+        }).catch(() => {})
+    },
     /* ------- company data -------*/
     getCompanyList(context) {
         if (context.state.companyCategoryList.length !== 0) {

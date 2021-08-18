@@ -27,6 +27,8 @@ const state = {
     /* ------ /bankAccount ------*/
     allBankAccounts: [],
     visibleBankAccounts: [],
+    /* ------ /fees data ------*/
+    feeCategoryList: [],
     /* ------- company data -------*/
     companyCategoryList: [], // stores the tree structure of company category
     companies: new Map(), // key: categoryID, value: companies

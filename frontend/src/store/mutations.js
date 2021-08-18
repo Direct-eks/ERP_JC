@@ -69,6 +69,13 @@ const mutations = {
         state.allBankAccounts = []
         state.visibleBankAccounts = []
     },
+    /* ------ /fees ------*/
+    modifyFeeCategories(state, list) {
+        state.feeCategoryList = list
+    },
+    clearFeeCategories(state) {
+        state.feeCategoryList = []
+    },
     /*----------- company data ------------*/
     modifyCompanyList(state, list) {
         state.companyCategoryList = list
