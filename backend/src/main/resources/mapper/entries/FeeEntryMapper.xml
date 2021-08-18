@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jc.backend.dao.FeeEntryMapper">
+
+    <resultMap id="categoryResultMap" type="org.jc.backend.entity.FeeCategoryO">
+        <result property="feeCategoryID" column="fee_category_id"/>
+        <result property="name" column="name"/>
+        <result property="remark" column="remark"/>
+        <result property="classification" column="classification"/>
+        <result property="treeLevel" column="tree_level"/>
+    </resultMap>
+
+    <select id="queryAllCategories" resultMap="categoryResultMap">
+        select fee_category_id, name, remark, classification, tree_level
+        from f_fee_category
+    </select>
+
+</mapper>
