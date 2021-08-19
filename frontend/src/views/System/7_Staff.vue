@@ -264,6 +264,15 @@
                                     <v-checkbox v-model="form.permissions" label="承兑汇票承付" value="accountsManagement:AcceptancePromissory"/>
                                     <v-checkbox v-model="form.permissions" label="应付票据" value="accountsManagement:AcceptancePayStat"/>
                                 </v-col>
+                                <v-col cols="auto">
+                                    <v-checkbox v-model="form.permissions" label="银行存取款" value="accountsManagement:BankDrawAndDeposit"/>
+                                    <v-checkbox v-model="form.permissions" label="其他收入" value="accountsManagement:OtherIncome"/>
+                                    <v-checkbox v-model="form.permissions" label="费用开支" value="accountsManagement:Expenditure"/>
+                                    <v-checkbox v-model="form.permissions" label="支付工资" value="accountsManagement:SalaryPayment"/>
+                                    <v-checkbox v-model="form.permissions" label="现金/银行日记账" value="accountsManagement:DailyStatement"/>
+                                    <v-checkbox v-model="form.permissions" label="现金/银行期初" value="accountsManagement:InitialBankBalance"/>
+                                    <v-checkbox v-model="form.permissions" label="费用收入工资统计" value="accountsManagement:Statistics"/>
+                                </v-col>
                             </v-row>
                         </v-tab-item>
                         <v-tab-item key="resources">
@@ -465,6 +474,7 @@ export default {
                     // refresh curr user permissions
                     if (this.form.username === this.$store.getters.currentUser) {
                         this.$store.commit('modifyCurrentUser', {
+                            updateAll: false,
                             username: this.form.username,
                             userRole: this.form.role,
                             userPermissions: this.form.permissions,

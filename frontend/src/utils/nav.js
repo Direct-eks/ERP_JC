@@ -611,63 +611,82 @@ export default {
         //     url: '/accounts_management',
         // },
         {
-            name: '收承兑汇票',
-            url: '/acceptance_bill_recv',
-            requiredPermission: 'accountsManagement:AcceptanceRecv',
+            name: '承兑',
+            url: '/acceptance',
+            children: [
+                {
+                    name: '收承兑汇票',
+                    url: '/acceptance_bill_recv',
+                    requiredPermission: 'accountsManagement:AcceptanceRecv',
+                },
+                {
+                    name: '付承兑汇票',
+                    url: '/acceptance_bill_pay',
+                    requiredPermission: 'accountsManagement:AcceptancePay',
+                },
+                {
+                    name: '承兑汇票解汇',
+                    url: '/acceptance_bill_solution_pay',
+                    requiredPermission: 'accountsManagement:AcceptanceSolutionPay',
+                },
+                {
+                    name: '应收票据',
+                    url: '/acceptance_bill_recv_stat',
+                    requiredPermission: 'accountsManagement:AcceptanceRecvStat',
+                },
+                {
+                    name: '承兑汇票承付',
+                    url: '/acceptance_bill_promissory',
+                    requiredPermission: 'accountsManagement:AcceptancePromissory',
+                },
+                {
+                    name: '应付票据',
+                    url: '/acceptance_bill_pay_stat',
+                    requiredPermission: 'accountsManagement:AcceptancePayStat',
+                },
+            ]
         },
         {
-            name: '付承兑汇票',
-            url: '/acceptance_bill_pay',
-            requiredPermission: 'accountsManagement:AcceptancePay',
+            name: '费用',
+            url: '/fees',
+            children: [
+                {
+                    name: '银行存取款',
+                    url: '/bank_draw_and_deposit',
+                    requiredPermission: 'accountsManagement:BankDrawAndDeposit',
+                },
+                {
+                    name: '其他收入',
+                    url: '/other_income',
+                    requiredPermission: 'accountsManagement:OtherIncome',
+                },
+                {
+                    name: '费用开支',
+                    url: '/expenditure',
+                    requiredPermission: 'accountsManagement:Expenditure',
+                },
+                {
+                    name: '支付工资',
+                    url: '/salary_payment',
+                    requiredPermission: 'accountsManagement:SalaryPayment',
+                },
+                {
+                    name: '现金/银行日记账',
+                    url: '/daily_statement',
+                    requiredPermission: 'accountsManagement:DailyStatement',
+                },
+                {
+                    name: '现金/银行期初',
+                    url: '/initial_bank_balance',
+                    requiredPermission: 'accountsManagement:InitialBankBalance',
+                },
+                {
+                    name: '费用收入工资统计',
+                    url: '/statistics',
+                    requiredPermission: 'accountsManagement:Statistics',
+                },
+            ]
         },
-        {
-            name: '承兑汇票解汇',
-            url: '/acceptance_bill_solution_pay',
-            requiredPermission: 'accountsManagement:AcceptanceSolutionPay',
-        },
-        {
-            name: '应收票据',
-            url: '/acceptance_bill_recv_stat',
-            requiredPermission: 'accountsManagement:AcceptanceRecvStat',
-        },
-        {
-            name: '承兑汇票承付',
-            url: '/acceptance_bill_promissory',
-            requiredPermission: 'accountsManagement:AcceptancePromissory',
-        },
-        {
-            name: '应付票据',
-            url: '/acceptance_bill_pay_stat',
-            requiredPermission: 'accountsManagement:AcceptancePayStat',
-        },
-        // {
-        //     name: '银行存取款',
-        //     url: '/accounts_man',
-        // },
-        // {
-        //     name: '其他收入',
-        //     url: '/accounts_ma',
-        // },
-        // {
-        //     name: '费用开支',
-        //     url: '/accounts_m',
-        // },
-        // {
-        //     name: '支付工资',
-        //     url: '/accounts_',
-        // },
-        // {
-        //     name: '现金/银行日记账',
-        //     url: '/accounts',
-        // },
-        // {
-        //     name: '现金/银行期初',
-        //     url: '/account',
-        // },
-        // {
-        //     name: '费用收入工资统计',
-        //     url: '/accoun',
-        // },
     ],
     assets_management_nav: [
         //todo
