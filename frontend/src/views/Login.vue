@@ -95,6 +95,7 @@ export default {
 
                     // use vuex to store user information
                     this.$store.commit('modifyCurrentUser', {
+                        updateAll: true,
                         username: data.username,
                         userRole: data.role,
                         userPermissions: data.permissions,

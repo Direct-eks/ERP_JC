@@ -7,11 +7,13 @@ const mutations = {
             state.permittedRoundingAmount = user.amount
             // use sessionStorage to store user information
             sessionStorage.setItem('userName', user.username)
-            sessionStorage.setItem('userToken', user.sessionID)
             sessionStorage.setItem('userRole', user.userRole)
             sessionStorage.setItem('userPermissions', JSON.stringify(user.userPermissions))
             sessionStorage.setItem('permittedRoundingAmount', user.amount)
-            sessionStorage.setItem('isAuthenticated', 'true')
+            if (user.updateAll) {
+                sessionStorage.setItem('userToken', user.sessionID)
+                sessionStorage.setItem('isAuthenticated', 'true')
+            }
         }
         else { // if is null, then logout
             state.currentUser = null
