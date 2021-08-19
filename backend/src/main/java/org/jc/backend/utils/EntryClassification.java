@@ -23,4 +23,10 @@ public class EntryClassification {
 
     public final static String INITIAL_PAYABLE = "初付";
     public final static String INITIAL_RECEIVABLE = "初收";
+
+    public final static String FEE_INCOME = "其收";
+    public final static String FEE_EXPENDITURE = "费支";
+    public final static String FEE_BANK = "银行";
+    public final static String FEE_SALARY = "工资";
+    public final static String FEE_AUDIT = "结账";
 }
