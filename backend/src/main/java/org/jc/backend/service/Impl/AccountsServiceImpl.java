@@ -124,34 +124,16 @@ public class AccountsServiceImpl implements AccountsService {
 
             BigDecimal amount;
             assert lastEntry != null;
+
+            amount = new BigDecimal(lastEntry.getBalance());
             if (isPayable) {
                 if (lastEntry.getDebitOrCredit().equals("借")) {
-                    if (lastEntry.getDebtorAmount().isBlank()) {
-                        lastEntry.setDebtorAmount("0");// todo remove in production
-                    }
-                    amount = new BigDecimal(lastEntry.getDebtorAmount());
                     amount = amount.negate();
-                }
-                else {
-                    if (lastEntry.getCreditorAmount().isBlank()) {
-                        lastEntry.setCreditorAmount("0");// todo remove in production
-                    }
-                    amount = new BigDecimal(lastEntry.getCreditorAmount());
                 }
                 summary.setPayableAmount(amount.toPlainString());
             }
             else {
-                if (lastEntry.getDebitOrCredit().equals("借")) {
-                    if (lastEntry.getDebtorAmount().isBlank()) {
-                        lastEntry.setDebtorAmount("0");// todo remove in production
-                    }
-                    amount = new BigDecimal(lastEntry.getDebtorAmount());
-                }
-                else {
-                    if (lastEntry.getCreditorAmount().isBlank()) {
-                        lastEntry.setCreditorAmount("0");// todo remove in production
-                    }
-                    amount = new BigDecimal(lastEntry.getCreditorAmount());
+                if (lastEntry.getDebitOrCredit().equals("贷")) {
                     amount = amount.negate();
                 }
                 summary.setReceivableAmount(amount.toPlainString());
