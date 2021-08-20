@@ -712,9 +712,9 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
 
     @Transactional
     @Override
-    public void updateEntryDetail(AccountsDetailO entry) {
+    public void updateEntryBalance(AccountsDetailO entry) {
         try {
-            checkoutEntryMapper.updateEntryDetailBySerial(entry);
+            checkoutEntryMapper.updateEntryBalanceBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

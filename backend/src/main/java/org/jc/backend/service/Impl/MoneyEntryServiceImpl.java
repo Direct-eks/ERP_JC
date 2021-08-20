@@ -297,9 +297,9 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
     @Transactional
     @Override
-    public void updateEntryDetail(AccountsDetailO entry) {
+    public void updateEntryBalance(AccountsDetailO entry) {
         try {
-            moneyEntryMapper.updateEntryDetailBySerial(entry);
+            moneyEntryMapper.updateEntryBalanceBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

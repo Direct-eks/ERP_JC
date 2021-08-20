@@ -14,13 +14,13 @@
         insert into m_acceptance_entry(
             acceptance_entry_serial, partner_company_id, entry_date, creation_date, department_id,
             source, bank_account_id, source_serial, amount, number, issue_date,
-            expiration_date, type, drawer, remark, classification, status, debit_or_credit
+            expiration_date, type, drawer, remark, classification, status
         )
         values (
             #{acceptanceEntrySerial}, #{partnerCompanyID}, #{entryDate}, date('now', 'localtime'),
             #{departmentID}, #{source}, #{bankAccountID}, #{sourceSerial}, #{amount}, #{number},
             #{issueDate}, #{expirationDate}, #{type}, #{drawer}, #{remark}, #{classification},
-            #{status}, #{debitOrCredit}
+            #{status}
         )
     </insert>
 
@@ -115,11 +115,11 @@
           and partner_company_id = #{id}
     </select>
 
-    <update id="updateEntryDetailBySerial">
+    <update id="updateEntryBalanceBySerial">
         update m_acceptance_entry
         set debit_or_credit = #{debitOrCredit},
             balance = #{balance}
-        where acceptance_entry_serial = #{acceptanceEntrySerial}
+        where acceptance_entry_serial = #{entryID}
     </update>
 
 </mapper>

@@ -22,5 +22,5 @@ public interface MoneyEntryMapper {
     // for accounts service
     List<Integer> queryDistinctCompanyIDs();
     List<MoneyEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
-    void updateEntryDetailBySerial(AccountsDetailO entry);
+    void updateEntryBalanceBySerial(AccountsDetailO entry);
 }

@@ -11,5 +11,5 @@ public interface AccountsStatService {
     List<Integer> getDistinctCompaniesInvolvedInEntries();
     // detail
     List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound);
-    default void updateEntryDetail(AccountsDetailO entry) {} // no implementation for initialMoneyEntry
+    default void updateEntryBalance(AccountsDetailO entry) {} // no implementation for initialMoneyEntry
 }

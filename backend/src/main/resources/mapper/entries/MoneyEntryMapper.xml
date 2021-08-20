@@ -14,13 +14,13 @@
     <insert id="insertEntry">
         insert into m_money_entry(
             money_entry_serial, partner_company_id, payment_indication, payment_method, payment_number,
-            payment_amount, bank_account_id, remark, drawer, creation_date, payment_date, debit_or_credit,
-            checkout_serial, department_id
+            payment_amount, bank_account_id, remark, drawer, creation_date, payment_date, checkout_serial,
+            department_id
         )
         values (
             #{moneyEntrySerial}, #{partnerCompanyID}, #{paymentIndication}, #{paymentMethod}, #{paymentNumber},
             #{paymentAmount}, #{bankAccountID}, #{remark}, #{drawer}, date('now', 'localtime'), #{paymentDate},
-            #{debitOrCredit}, #{checkoutSerial}, #{departmentID}
+            #{checkoutSerial}, #{departmentID}
         )
     </insert>
 
@@ -109,11 +109,11 @@
           and partner_company_id = #{id}
     </select>
 
-    <update id="updateEntryDetailBySerial">
+    <update id="updateEntryBalanceBySerial">
         update m_money_entry
         set debit_or_credit = #{debitOrCredit},
             balance = #{balance}
-        where money_entry_serial = #{moneyEntrySerial}
+        where money_entry_serial = #{entryID}
     </update>
 
 </mapper>

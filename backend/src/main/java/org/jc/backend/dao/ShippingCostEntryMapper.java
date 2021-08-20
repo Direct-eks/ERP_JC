@@ -22,5 +22,5 @@ public interface ShippingCostEntryMapper {
     // for accounts service
     List<Integer> queryDistinctCompanyIDs();
     List<ShippingCostEntryDO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
-    void updateEntryDetailBySerial(AccountsDetailO entry);
+    void updateEntryBalanceBySerial(AccountsDetailO entry);
 }

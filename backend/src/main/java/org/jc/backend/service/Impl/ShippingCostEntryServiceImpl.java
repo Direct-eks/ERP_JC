@@ -305,9 +305,9 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
     @Transactional
     @Override
-    public void updateEntryDetail(AccountsDetailO entry) {
+    public void updateEntryBalance(AccountsDetailO entry) {
         try {
-            shippingCostEntryMapper.updateEntryDetailBySerial(entry);
+            shippingCostEntryMapper.updateEntryBalanceBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -200,9 +200,9 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional
     @Override
-    public void updateEntryDetail(AccountsDetailO entry) {
+    public void updateEntryBalance(AccountsDetailO entry) {
         try {
-            acceptanceMapper.updateEntryDetailBySerial(entry);
+            acceptanceMapper.updateEntryBalanceBySerial(entry);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

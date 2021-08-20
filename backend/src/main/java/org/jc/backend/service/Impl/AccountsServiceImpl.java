@@ -261,7 +261,7 @@ public class AccountsServiceImpl implements AccountsService {
     public void calculateBalance(int partnerCompanyID) {
         var allEntries = generateEntryList(partnerCompanyID);
 
-        String lastBalance = "";
+        String lastBalance = "0";
         boolean isLastDebit = true;
         for (var entry : allEntries) {
             doCalculation(entry, lastBalance, isLastDebit);
@@ -326,19 +326,19 @@ public class AccountsServiceImpl implements AccountsService {
                 break;
             case INBOUND_CHECKOUT:
             case OUTBOUND_CHECKOUT:
-                checkoutEntryService.updateEntryDetail(entry);
+                checkoutEntryService.updateEntryBalance(entry);
                 break;
             case INBOUND_PAYABLE:
             case OUTBOUND_RECEIVABLE:
-                moneyEntryService.updateEntryDetail(entry);
+                moneyEntryService.updateEntryBalance(entry);
                 break;
             case SHIPPING_COST_PAY:
             case SHIPPING_COST_RECV:
-                shippingCostEntryService.updateEntryDetail(entry);
+                shippingCostEntryService.updateEntryBalance(entry);
                 break;
             case ACCEPTANCE_RECV:
             case ACCEPTANCE_PAY:
-                acceptanceService.updateEntryDetail(entry);
+                acceptanceService.updateEntryBalance(entry);
                 break;
         }
     }

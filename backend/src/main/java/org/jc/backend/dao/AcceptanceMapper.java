@@ -26,5 +26,5 @@ public interface AcceptanceMapper {
     // for accounts service
     List<Integer> queryDistinctCompanyIDs();
     List<AcceptanceEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
-    void updateEntryDetailBySerial(AccountsDetailO entry);
+    void updateEntryBalanceBySerial(AccountsDetailO entry);
 }
