@@ -544,37 +544,79 @@ const routes = [
                 path: '/acceptance_bill_recv',
                 name: '收承兑汇票',
                 component: () => import(/* webpackChunkName: "acceptance_bill_recv" */
-                    '~/views/Account_Management/1_Acceptance_Bill_Recv')
+                    '~/views/Accounts_Management/Acceptance/1_Acceptance_Bill_Recv')
             },
             {
                 path: '/acceptance_bill_pay',
                 name: '付承兑汇票',
                 component: () => import(/* webpackChunkName: "acceptance_bill_pay" */
-                    '~/views/Account_Management/2_Acceptance_Bill_Pay')
+                    '~/views/Accounts_Management/Acceptance/2_Acceptance_Bill_Pay')
             },
             {
                 path: '/acceptance_bill_solution_pay',
                 name: '承兑汇票解汇',
                 component: () => import(/* webpackChunkName: "acceptance_bill_solution_pay" */
-                    '~/views/Account_Management/3_Acceptance_Bill_Solution_Pay')
+                    '~/views/Accounts_Management/Acceptance/3_Acceptance_Bill_Solution_Pay')
             },
             {
                 path: '/acceptance_bill_recv_stat',
                 name: '应收票据',
                 component: () => import(/* webpackChunkName: "acceptance_bill_recv_stat" */
-                    '~/views/Account_Management/4_Acceptance_Bill_Recv_Stat')
+                    '~/views/Accounts_Management/Acceptance/4_Acceptance_Bill_Recv_Stat')
             },
             {
                 path: '/acceptance_bill_promissory',
                 name: '承兑汇票承付',
                 component: () => import(/* webpackChunkName: "acceptance_bill_promissory" */
-                    '~/views/Account_Management/5_Acceptance_Bill_Promissory')
+                    '~/views/Accounts_Management/Acceptance/5_Acceptance_Bill_Promissory')
             },
             {
                 path: '/acceptance_bill_pay_stat',
                 name: '应付票据',
                 component: () => import(/* webpackChunkName: "acceptance_bill_pay_stat" */
-                    '~/views/Account_Management/6_Acceptance_Bill_Pay_Stat')
+                    '~/views/Accounts_Management/Acceptance/6_Acceptance_Bill_Pay_Stat')
+            },
+            {
+                path: '/bank_draw_and_deposit',
+                name: '银行存取款',
+                component: () => import(/* webpackChunkName: "fee_bank_draw_and_deposit" */
+                    '~/views/Accounts_Management/Fees/1_Bank_Draw_And_Deposit')
+            },
+            {
+                path: '/other_income',
+                name: '其他收入',
+                component: () => import(/* webpackChunkName: "fee_other_income" */
+                    '~/views/Accounts_Management/Fees/2_Other_Income')
+            },
+            {
+                path: '/expenditure',
+                name: '费用开支',
+                component: () => import(/* webpackChunkName: "fee_expenditure" */
+                    '~/views/Accounts_Management/Fees/3_Expenditure')
+            },
+            {
+                path: '/salary_payment',
+                name: '支付工资',
+                component: () => import(/* webpackChunkName: "fee_salary_payment" */
+                    '~/views/Accounts_Management/Fees/4_Salary_Payment')
+            },
+            {
+                path: '/daily_statement',
+                name: '现金/银行日记账',
+                component: () => import(/* webpackChunkName: "fee_daily_statement" */
+                    '~/views/Accounts_Management/Fees/5_Daily_Statement')
+            },
+            {
+                path: '/initial_bank_balance',
+                name: '现金/银行期初',
+                component: () => import(/* webpackChunkName: "fee_initial_bank_balance" */
+                    '~/views/Accounts_Management/Fees/6_Initial_Bank_Balance')
+            },
+            {
+                path: '/statistics',
+                name: '费用收入工资统计',
+                component: () => import(/* webpackChunkName: "fee_statistics" */
+                    '~/views/Accounts_Management/Fees/7_Statistics')
             },
         ]
     },
