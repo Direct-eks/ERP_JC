@@ -38,6 +38,10 @@ public class AcceptanceController {
     ) throws GlobalParamException {
         logger.info("PUT Request to /acceptanceEntry/createEntry, data: {}", entryO);
 
+        if (!entryO.getAcceptanceEntrySerial().isBlank()) {
+            throw new GlobalParamException("此单据已存在");
+        }
+
         if (!isInbound) {
             switch (entryO.getSource()) {
                 case "本公司":
@@ -93,6 +97,9 @@ public class AcceptanceController {
     ) throws GlobalParamException {
         logger.info("PATCH Request to /acceptanceEntry/updateEntry, data: {}", entryO);
 
+        if (entryO.getAcceptanceEntrySerial().isBlank()) {
+            throw new GlobalParamException("不能修改新增单据");
+        }
         if (MyUtils.isNotValidSerial(entryO.getAcceptanceEntrySerial())) {
             throw new GlobalParamException("invalid serial");
         }

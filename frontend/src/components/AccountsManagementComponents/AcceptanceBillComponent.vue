@@ -185,7 +185,9 @@
             <v-col cols="auto">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="primary" v-on="on">保存新单据</v-btn>
+                        <v-btn :disabled="form.acceptanceEntrySerial !== ''" color="primary" v-on="on">
+                            保存新单据
+                        </v-btn>
                     </template>
                     <v-card>
                         <v-card-title>确认提交？</v-card-title>
@@ -200,7 +202,9 @@
             <v-col cols="auto">
                 <v-dialog v-model="submitPopup2" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="accent" v-on="on">修改</v-btn>
+                        <v-btn :disabled="form.acceptanceEntrySerial === ''" color="accent" v-on="on">
+                            修改
+                        </v-btn>
                     </template>
                     <v-card>
                         <v-card-title>确认提交？</v-card-title>
