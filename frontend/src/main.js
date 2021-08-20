@@ -88,19 +88,19 @@ Vue.prototype.$validateNumber = validateNumber
 function createTree(data, mode) {
     let id, code
     switch (mode) {
-        case 'company':
-            id = 'areaID'
-            code = 'name'
-            break
-        case 'model':
-            id = 'modelCategoryID'
-            code = 'code'
-            break
-        case 'fee':
-            id = 'feeCategoryID'
-            code = 'name'
-            break
-        default: return
+    case 'company':
+        id = 'areaID'
+        code = 'name'
+        break
+    case 'model':
+        id = 'modelCategoryID'
+        code = 'code'
+        break
+    case 'fee':
+        id = 'feeCategoryID'
+        code = 'name'
+        break
+    default: return
     }
 
     function createTreeHelper (tree, lastLevelIndex, data, prefix) {

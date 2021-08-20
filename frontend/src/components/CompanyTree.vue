@@ -5,7 +5,7 @@
         <v-treeview v-model="treeSelection"
                     :items="treeData"
                     item-text="label"
-                    item-key="areaID"
+                    item-key="categoryID"
                     activatable
                     :open-on-click="!showSelect"
                     :selectable="showSelect"
@@ -69,7 +69,7 @@ export default {
             if (data.length === 0) {
                 this.treeSelection = []
                 if (this.selectForLevel) {
-                    this.$emit('treeSelectionObject', {label: '', areaID: -1, children: []})
+                    this.$emit('treeSelectionObject', {label: '', categoryID: -1, children: []})
                 }
                 if (this.selectForSearch) {
                     this.$emit('treeSelectionResult', [])
@@ -93,9 +93,9 @@ export default {
                     return
                 }
                 this.$getRequest(this.$api.companiesByAreaID
-                    + encodeURI(val.areaID)).then((data) => {
+                    + encodeURI(val.categoryID)).then((data) => {
                     this.sendResult(data)
-                    this.$store.commit('modifyCompanies', { key: val.areaID, value: data })
+                    this.$store.commit('modifyCompanies', { key: val.categoryID, value: data })
                 }).catch(() => {})
             }
         },
