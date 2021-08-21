@@ -53,7 +53,7 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
                 String base = ACCEPTANCE_PAY;
                 int count = acceptanceMapper.countNumberOfEntriesOfGivenDate(entryDate, base);
                 newSerial = MyUtils.formNewSerial(base, count, entryDate);
-                if (entryO.getSource().equals("本公司")) {
+                if (entryO.getSource().equals("本单位")) {
                     entryO.setClassification(SELF_PAY);
                 }
                 else {

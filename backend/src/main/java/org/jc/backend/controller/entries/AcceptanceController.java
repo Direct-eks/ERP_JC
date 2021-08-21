@@ -44,8 +44,8 @@ public class AcceptanceController {
 
         if (!isInbound) {
             switch (entryO.getSource()) {
-                case "本公司":
-                case "外公司":
+                case "本单位":
+                case "外单位":
                     break;
                 default:
                     throw new GlobalParamException("来源错误");
