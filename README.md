@@ -2,23 +2,23 @@
 Customized stock management & partial ERP functionality.
 
 ## Technology Stack
-1. Backend server: Spring Boot
-    - Springboot starter
-    - Apache Shiro, authentication service
-    - Apache Mybatis, ORM framwork
-    - Undertow, server
-    - Log4j2 logging
+1. Backend: Spring
+    - Framework: Spring boot
+    - Security Service: Apache Shiro
+    - ORM framwork: Apache Mybatis
+    - Server: Undertow
+    - Logging: Log4j2
 ---
-2. Database: Sqlite
+1. Database: Sqlite
     - jdbc
 ---
-3. Frontend web pages: Vue.js 2.0
-    - Vuetify UI components
-    - Vue router
-    - Vuex
-    - Axios, ajax
-    - Big.js, float number calculation
-    - Webpack, dev & packing & distribution
+3. Frontend web pages: Vue.js 2
+    - UI components: Vuetify
+    - SPA Support: Vue router
+    - State Management: Vuex
+    - Ajax: Axios
+    - Decimal Number: Big.js
+    - Dev & Packing & Distribution: Webpack 5
 ---
-4. Wrapping: Electron
+1. Wrapping: Electron
     - Node.js support

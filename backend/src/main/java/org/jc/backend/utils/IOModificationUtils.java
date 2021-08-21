@@ -17,7 +17,7 @@ public class IOModificationUtils {
     /**
      * compare shipping info fields and form modification record,
      * since inbound and outbound entry share the same shipping info fields,
-     * T will be always treated as InboundEntryDO.
+     * T will always be treated as InboundEntryDO.
      * @param record the StringBuilder where the modification record is appended
      * @param modifiedInfo the modified shippingInfo object to be compared with @originEntry
      * @param originInfo the original shippingInfo object to be compared with @originEntry

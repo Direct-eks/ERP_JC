@@ -152,7 +152,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
             ProductStatO lastEntry;
             List<ProductStatO> affectedProducts = new ArrayList<>();
 
-            // find nearest inbound record
+            // find the nearest inbound record
             var entry = inboundProductMap.floorEntry(date);
             if (entry == null) { // first inbound record, extract initial value from stock record
                 product.setStockQuantity(stock.getInitialStockQuantity());
