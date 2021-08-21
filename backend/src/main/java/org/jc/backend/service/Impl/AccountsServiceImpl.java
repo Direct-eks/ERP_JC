@@ -256,6 +256,7 @@ public class AccountsServiceImpl implements AccountsService {
     }
 
     private void doCalculation(AccountsDetailO entry, String lastBalance, boolean isLastDebit) {
+        BigDecimal amount;
         BigDecimal balance = new BigDecimal(lastBalance);
 
         switch (entry.getEntryID().substring(0,2)) {
@@ -266,32 +267,24 @@ public class AccountsServiceImpl implements AccountsService {
             case INBOUND_PAYABLE:
             case SHIPPING_COST_PAY:
             case ACCEPTANCE_PAY: // debtor
-                if (isLastDebit) {
-                    balance = balance.subtract(new BigDecimal(entry.getDebtorAmount()));
-                }
-                else {
-                    balance = balance.add(new BigDecimal(entry.getDebtorAmount()));
-                }
+                amount = new BigDecimal(entry.getDebtorAmount());
+                balance = isLastDebit ? balance.add(amount) : balance.subtract(amount);
                 break;
             case INBOUND_CHECKOUT:
             case OUTBOUND_RECEIVABLE:
             case SHIPPING_COST_RECV:
             case ACCEPTANCE_RECV: // creditor
-                if (isLastDebit) {
-                    balance = balance.subtract(new BigDecimal(entry.getCreditorAmount()));
-                }
-                else {
-                    balance = balance.add(new BigDecimal(entry.getCreditorAmount()));
-                }
+                amount = new BigDecimal(entry.getCreditorAmount());
+                balance = isLastDebit ? balance.subtract(amount) : balance.add(amount);
                 break;
         }
         int r = balance.compareTo(BigDecimal.ZERO);
         if (r > 0) {
-            entry.setDebitOrCredit("借");
+            entry.setDebitOrCredit(isLastDebit ? "借" : "贷");
             entry.setBalance(balance.toPlainString());
         }
         else if (r < 0) {
-            entry.setDebitOrCredit("贷");
+            entry.setDebitOrCredit(isLastDebit ? "贷" : "借");
             balance = balance.negate();
             entry.setBalance(balance.toPlainString());
         }
