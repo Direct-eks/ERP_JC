@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface BankAccountMapper {
+    void insertAccount(BankAccountO bankAccountO);
     List<BankAccountO> queryAllAccounts();
     List<BankAccountO> queryVisibleAccounts();
 }

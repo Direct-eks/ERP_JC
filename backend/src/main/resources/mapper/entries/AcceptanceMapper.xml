@@ -72,7 +72,7 @@
         from m_acceptance_entry as a join c_partner_company as c
             on a.partner_company_id = c.partner_company_id
             join e_department as d on a.department_id = d.department_id
-            left join c_bank_account as b on a.bank_account_id = b.bank_account_id
+            left join f_bank_account as b on a.bank_account_id = b.bank_account_id
         where number like #{number}||'%'
     </select>
 
@@ -84,7 +84,7 @@
         from m_acceptance_entry as a join c_partner_company as c
             on a.partner_company_id = c.partner_company_id
             join e_department as d on a.department_id = d.department_id
-            left join c_bank_account as b on a.bank_account_id = b.bank_account_id
+            left join f_bank_account as b on a.bank_account_id = b.bank_account_id
         where (a.entry_date between #{startDate} and #{endDate})
             and a.acceptance_entry_serial like #{prefix}||'%'
         order by a.acceptance_entry_serial, a.entry_date desc

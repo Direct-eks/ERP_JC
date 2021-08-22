@@ -4,6 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.BankAccountMapper">
 
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="bankAccountID"
+            keyColumn="bank_account_id">
+        insert into f_bank_account(name, account_number, remark, is_visible, in_use, initial_balance)
+        values(#{name}, #{accountNumber}, #{remark}, #{isVisible}, #{inUse}, #{initialBalance})
+    </insert>
+
+
     <resultMap id="bankAccountResultMap" type="org.jc.backend.entity.BankAccountO">
         <result property="bankAccountID" column="bank_account_id"/>
         <result property="name" column="name"/>
@@ -11,18 +18,19 @@
         <result property="remark" column="remark"/>
         <result property="isVisible" column="is_visible"/>
         <result property="inUse" column="in_use"/>
+        <result property="initialBalance" column="initial_balance"/>
     </resultMap>
 
 
     <select id="queryAllAccounts" resultMap="bankAccountResultMap">
-        select bank_account_id, name, account_number, remark, is_visible, in_use
-        from c_bank_account;
+        select bank_account_id, name, account_number, remark, is_visible, in_use, initial_balance
+        from f_bank_account;
     </select>
 
     <select id="queryVisibleAccounts" resultMap="bankAccountResultMap">
-        select bank_account_id, name, account_number, remark, is_visible, in_use
-        from c_bank_account
-        where is_visible != 0
+        select bank_account_id, name, account_number, remark, is_visible, in_use, initial_balance
+        from f_bank_account
+        where is_visible = 1
     </select>
 
 </mapper>
