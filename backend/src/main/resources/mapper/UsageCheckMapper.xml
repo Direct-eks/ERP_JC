@@ -54,6 +54,12 @@
         limit 1
     </select>
 
+    <select id="findBankAccountIDInFeeEntries" resultType="java.lang.Integer">
+        select 1
+        from f_fee_entry
+        where source_account_id = #{id} or destination_account_id = #{id}
+    </select>
+
     <select id="findBrandIDInSkus" resultType="java.lang.Integer">
         select 1
         from w_sku
