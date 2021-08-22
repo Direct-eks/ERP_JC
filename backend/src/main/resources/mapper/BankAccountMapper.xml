@@ -10,6 +10,21 @@
         values(#{name}, #{accountNumber}, #{remark}, #{isVisible}, #{inUse}, #{initialBalance})
     </insert>
 
+    <update id="updateAccount">
+        update f_bank_account
+        set name = #{name},
+            account_number = #{accountNumber},
+            remark = #{remark},
+            is_visible = #{isVisible},
+            in_use = #{inUse},
+            initial_balance = #{initialBalance}
+        where bank_account_id = #{bankAccountID}
+    </update>
+
+    <delete id="deleteAccount">
+        delete from f_bank_account
+        where bank_account_id = #{id}
+    </delete>
 
     <resultMap id="bankAccountResultMap" type="org.jc.backend.entity.BankAccountO">
         <result property="bankAccountID" column="bank_account_id"/>

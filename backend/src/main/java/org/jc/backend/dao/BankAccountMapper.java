@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface BankAccountMapper {
     void insertAccount(BankAccountO bankAccountO);
+    void updateAccount(BankAccountO bankAccountO);
+    void deleteAccount(int id);
     List<BankAccountO> queryAllAccounts();
     List<BankAccountO> queryVisibleAccounts();
 }

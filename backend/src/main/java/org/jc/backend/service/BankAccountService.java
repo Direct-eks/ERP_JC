@@ -9,4 +9,5 @@ import java.util.List;
 public interface BankAccountService {
     List<BankAccountO> getAllAccounts();
     List<BankAccountO> getVisibleAccounts();
+    void updateAccounts(List<BankAccountO> accountsVO);
 }

@@ -9,6 +9,5 @@ import java.util.List;
 @Data
 public class ListUpdateVO<T> {
     @Valid
-    @NotEmpty(message = "list cannot be empty")
-    private List<T> elements;
+    private List<T> elements; // todo verify if list can be empty
 }
