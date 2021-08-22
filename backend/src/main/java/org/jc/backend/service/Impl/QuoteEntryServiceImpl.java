@@ -1,12 +1,12 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.QuoteEntryMapper;
 import org.jc.backend.entity.DO.QuoteEntryDO;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.QuoteProductO;
 import org.jc.backend.entity.VO.QuoteEntryWithProductsVO;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.QuoteEntryService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -26,12 +26,12 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
     private static final Logger logger = LoggerFactory.getLogger(QuoteEntryServiceImpl.class);
 
     private final QuoteEntryMapper quoteEntryMapper;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
 
     public QuoteEntryServiceImpl(QuoteEntryMapper quoteEntryMapper,
-                                 ModificationMapper modificationMapper) {
+                                 ModificationRecordService modificationRecordService) {
         this.quoteEntryMapper = quoteEntryMapper;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -51,12 +51,13 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
             newEntry.setQuoteEntryID(newSerial);
             quoteEntryMapper.insertNewOrderEntry(newEntry);
+            logger.info("Inserted new quote entry: {}", newSerial);
 
             for (var product : newProducts) {
                 product.setQuoteEntryID(newSerial);
                 quoteEntryMapper.insertNewOrderProduct(product);
                 int id = product.getQuoteProductID();
-                logger.info("Insert new purchase product id: " + id);
+                logger.info("Insert new purchase product: {}", id);
             }
 
         } catch (PersistenceException e) {
@@ -125,50 +126,49 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
 
         QuoteEntryDO currentEntry = new QuoteEntryDO();
         BeanUtils.copyProperties(quoteEntryWithProductsVO, currentEntry);
-
         List<QuoteProductO> currentProducts = quoteEntryWithProductsVO.getQuoteProducts();
 
         try {
-            //query database for compare
+            // query database for compare
             String id = currentEntry.getQuoteEntryID();
-            logger.info("Serial to be changed: " + id);
 
             QuoteEntryDO originEntry = quoteEntryMapper.selectEntryForCompare(id);
             List<QuoteProductO> originProducts = quoteEntryMapper.selectProductsForCompare(id);
 
-            //compare entry
+            // compare entry
             StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            boolean entryChanged = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
-            if (bool1) {
+            if (entryChanged) {
                 quoteEntryMapper.updateOrderEntry(currentEntry);
+                logger.info("Updated quote entry: {}", id);
             }
 
-            boolean bool2 = false; //bool to indicate changes to products
+            boolean productsChanged = false; // bool to indicate changes to products
             for (var originProduct : originProducts) {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getQuoteProductID() == originProduct.getQuoteProductID()) {
-                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
+                        boolean productChanged = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
-                        if (bool3) {
-                            bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
+                        if (productChanged) {
+                            productsChanged = true; //productsChanged here in case only one product is changed and productsChanged will be overwritten
                             quoteEntryMapper.updateOrderProduct(currentProduct);
+                            logger.info("Updated quote product: {}", originProduct.getQuoteProductID());
                         }
                         found = true;
                         break;
                     }
                 }
-                if (!found) { //entry is removed
+                if (!found) { // product is removed
                     quoteEntryMapper.deleteOrderProductByID(originProduct.getQuoteProductID());
+                    logger.info("Deleted quote product: {}", originProduct.getQuoteProductID());
                 }
             }
 
-            if (bool1 || bool2) {
-                logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getQuoteEntryID(), record.toString()));
+            if (entryChanged || productsChanged) {
+                modificationRecordService.insertRecord(originEntry.getQuoteEntryID(), record);
             }
             else {
                 logger.warn("Nothing changed, begin rolling back");
@@ -187,7 +187,10 @@ public class QuoteEntryServiceImpl implements QuoteEntryService {
     public void deleteQuote(String id) {
         try {
             quoteEntryMapper.deleteOrderProductsByEntryID(id);
+            logger.info("Deleted quote entry: {}", id);
             quoteEntryMapper.deleteOrderEntry(id);
+            logger.info("Deleted quote product with serial {}", id);
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Delete error");

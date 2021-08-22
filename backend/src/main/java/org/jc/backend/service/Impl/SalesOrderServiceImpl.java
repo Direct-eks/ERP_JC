@@ -1,17 +1,15 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.SalesOrderMapper;
-import org.jc.backend.dao.WarehouseStockMapper;
 import org.jc.backend.entity.DO.SalesOrderEntryDO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.SalesOrderProductO;
 import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.SalesOrderEntryWithProductsVO;
-import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.ModelService;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.SalesOrderService;
+import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -29,17 +27,17 @@ public class SalesOrderServiceImpl implements SalesOrderService {
     private static final Logger logger = LoggerFactory.getLogger(SalesOrderServiceImpl.class);
 
     private final SalesOrderMapper salesOrderMapper;
-    private final ModificationMapper modificationMapper;
-    private final WarehouseStockMapper warehouseStockMapper;
+    private final ModificationRecordService modificationRecordService;
+    private final WarehouseStockService warehouseStockService;
     private final ModelService modelService;
 
     public SalesOrderServiceImpl(SalesOrderMapper salesOrderMapper,
-                                 ModificationMapper modificationMapper,
-                                 WarehouseStockMapper warehouseStockMapper,
+                                 ModificationRecordService modificationRecordService,
+                                 WarehouseStockService warehouseStockService,
                                  ModelService modelService) {
         this.salesOrderMapper = salesOrderMapper;
-        this.modificationMapper = modificationMapper;
-        this.warehouseStockMapper = warehouseStockMapper;
+        this.modificationRecordService = modificationRecordService;
+        this.warehouseStockService = warehouseStockService;
         this.modelService = modelService;
     }
 
@@ -59,12 +57,13 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
             newEntry.setSalesOrderEntryID(newSerial);
             salesOrderMapper.insertNewOrderEntry(newEntry);
+            logger.info("Inserted new sales order entry: {}", newSerial);
 
             for (var product : newProducts) {
                 product.setSalesOrderEntryID(newSerial);
                 salesOrderMapper.insertNewOrderProduct(product);
                 int id = product.getSalesOrderProductID();
-                logger.info("Insert new sales product id: " + id);
+                logger.info("Insert new sales product: {}", id);
             }
 
         } catch (PersistenceException e) {
@@ -138,64 +137,62 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         try {
             //query database for compare
             String id = currentEntry.getSalesOrderEntryID();
-            logger.info("Serial to be changed: " + id);
 
             SalesOrderEntryDO originEntry = salesOrderMapper.selectEntryForCompare(id);
             List<SalesOrderProductO> originProducts = salesOrderMapper.selectProductsForCompare(id);
 
-            //first check if warehouse is changed, if so, check warehouse_stock and update all products
+            // first check if warehouse is changed, if so, check warehouse_stock and update all products
             if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
                 for (var product : currentProducts) {
-                    WarehouseStockO warehouseStock = warehouseStockMapper.queryWarehouseStockByWarehouseAndSku(
+                    var s = warehouseStockService.getWarehouseStockByWarehouseAndSku(
                             product.getWarehouseID(), product.getSkuID());
-                    int newWarehouseStockID;
-                    if (warehouseStock == null) {
-                        WarehouseStockO newWarehouseStock = new WarehouseStockO();
-                        newWarehouseStock.setSkuID(product.getSkuID());
-                        newWarehouseStock.setWarehouseID(currentEntry.getWarehouseID());
-                        warehouseStockMapper.insertNewWarehouseStock(newWarehouseStock);
-                        newWarehouseStockID = newWarehouseStock.getWarehouseStockID();
+                    if (s == null) {
+                        logger.info("Changed sales product warehouse stock ID from {} to {}",
+                                product.getWarehouseStockID(), -1);
+                        product.setWarehouseStockID(-1);
                     }
                     else {
-                        newWarehouseStockID = warehouseStock.getWarehouseStockID();
+                        logger.info("Changed sales product warehouse stock ID from {} to {}",
+                                product.getWarehouseStockID(), s.getWarehouseStockID());
+                        product.setWarehouseStockID(s.getWarehouseStockID());
                     }
                     product.setWarehouseID(currentEntry.getWarehouseID());
-                    product.setWarehouseStockID(newWarehouseStockID);
                 }
             }
 
-            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
-            boolean bool1 = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
+            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
+            boolean entryChanged = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
-            if (bool1) {
+            if (entryChanged) {
                 salesOrderMapper.updateOrderEntry(currentEntry);
+                logger.info("Updated sales order: {}", id);
             }
 
-            boolean bool2 = false; //bool to indicate changes to products
+            boolean productsChanged = false; //bool to indicate changes to products
             for (var originProduct : originProducts) {
                 boolean found = false;
                 for (var currentProduct : currentProducts) {
                     if (currentProduct.getSalesOrderProductID() == originProduct.getSalesOrderProductID()) {
-                        boolean bool3 = IOModificationUtils.productCompareAndFormModificationRecord(
+                        boolean productChanged = IOModificationUtils.productCompareAndFormModificationRecord(
                                 record, currentProduct, originProduct);
 
-                        if (bool3) {
-                            bool2 = true; //bool2 here in case only one product is changed and bool2 will be overwritten
+                        if (productChanged) {
+                            productsChanged = true; //productsChanged here in case only one product is changed and productsChanged will be overwritten
                             salesOrderMapper.updateOrderProduct(currentProduct);
+                            logger.info("Updated sales product: {}", originProduct.getSalesOrderProductID());
                         }
                         found = true;
                         break;
                     }
                 }
-                if (!found) { //entry is removed
+                if (!found) { // product is removed
                     salesOrderMapper.deleteOrderProductByID(originProduct.getSalesOrderProductID());
+                    logger.info("Deleted sales product: {}", originProduct.getSalesOrderProductID());
                 }
             }
 
-            if (bool1 || bool2) {
-                logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getSalesOrderEntryID(), record.toString()));
+            if (entryChanged || productsChanged) {
+                modificationRecordService.insertRecord(originEntry.getSalesOrderEntryID(), record);
             }
             else {
                 logger.warn("Nothing changed, begin rolling back");
@@ -214,7 +211,10 @@ public class SalesOrderServiceImpl implements SalesOrderService {
     public void deleteOrder(String id) {
         try {
             salesOrderMapper.deleteOrderProductsByEntryID(id);
+            logger.info("Deleted sales entry: {}", id);
             salesOrderMapper.deleteOrderEntry(id);
+            logger.info("Deleted sales product with serial {}", id);
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Query error");

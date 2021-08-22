@@ -1,14 +1,13 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.PurchaseOrderMapper;
 import org.jc.backend.entity.DO.PurchaseOrderEntryDO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.PurchaseOrderProductO;
 import org.jc.backend.entity.StatO.SummaryO;
 import org.jc.backend.entity.VO.PurchaseOrderEntryWithProductsVO;
 import org.jc.backend.service.ModelService;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.PurchaseOrderService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -29,16 +28,16 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private static final Logger logger = LoggerFactory.getLogger(PurchaseOrderServiceImpl.class);
 
     private final PurchaseOrderMapper purchaseOrderMapper;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final WarehouseStockService warehouseStockService;
     private final ModelService modelService;
 
     public PurchaseOrderServiceImpl(PurchaseOrderMapper purchaseOrderMapper,
-                                    ModificationMapper modificationMapper,
+                                    ModificationRecordService modificationRecordService,
                                     WarehouseStockService warehouseStockService,
                                     ModelService modelService) {
         this.purchaseOrderMapper = purchaseOrderMapper;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.warehouseStockService = warehouseStockService;
         this.modelService = modelService;
     }
@@ -60,6 +59,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
             newEntry.setPurchaseOrderEntryID(newSerial);
             purchaseOrderMapper.insertNewOrderEntry(newEntry);
+            logger.info("Inserted new purchase order entry: {}", newSerial);
 
             for (var product : newProducts) {
                 product.setPurchaseOrderEntryID(newSerial);
@@ -73,7 +73,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
                 purchaseOrderMapper.insertNewOrderProduct(product);
                 int id = product.getPurchaseOrderProductID();
-                logger.info("Insert new purchase product id: " + id);
+                logger.info("Insert new purchase product: {}", id);
             }
 
         } catch (PersistenceException e) {
@@ -150,32 +150,36 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         try {
             //query database for compare
             String id = currentEntry.getPurchaseOrderEntryID();
-            logger.info("Serial to be changed: " + id);
 
             PurchaseOrderEntryDO originEntry = purchaseOrderMapper.selectEntryForCompare(id);
             List<PurchaseOrderProductO> originProducts = purchaseOrderMapper.selectProductsForCompare(id);
 
-            //first check if warehouse is changed, if so, check warehouse_stock and update all products
+            // first check if warehouse is changed, if so, check warehouse_stock and update all products
             if (currentEntry.getWarehouseID() != originEntry.getWarehouseID()) {
                 for (var product : currentProducts) {
                     var s = warehouseStockService.getWarehouseStockByWarehouseAndSku(
                             product.getWarehouseID(), product.getSkuID());
                     if (s == null) {
+                        logger.info("Changed purchase product warehouse stock ID from {} to {}",
+                                product.getWarehouseStockID(), -1);
                         product.setWarehouseStockID(-1);
                     }
                     else {
+                        logger.info("Changed purchase product warehouse stock ID from {} to {}",
+                                product.getWarehouseStockID(), s.getWarehouseStockID());
                         product.setWarehouseStockID(s.getWarehouseStockID());
                     }
                     product.setWarehouseID(currentEntry.getWarehouseID());
                 }
             }
 
-            //compare entry
-            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; "); //modification_record
+            // compare entry
+            StringBuilder record = new StringBuilder("修改者: " + currentEntry.getDrawer() + "; ");
             boolean entryChanged = IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry);
 
             if (entryChanged) {
                 purchaseOrderMapper.updateOrderEntry(currentEntry);
+                logger.info("Updated purchase order: {}", id);
             }
 
             boolean productsChanged = false;
@@ -189,20 +193,20 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                         if (productChanged) {
                             productsChanged = true; //productsChanged here in case only one product is changed and productsChanged will be overwritten
                             purchaseOrderMapper.updateOrderProduct(currentProduct);
+                            logger.info("Updated purchase product: {}", originProduct.getPurchaseOrderProductID());
                         }
                         found = true;
                         break;
                     }
                 }
-                if (!found) { //entry is removed
+                if (!found) { // product is removed
                     purchaseOrderMapper.deleteOrderProductByID(originProduct.getPurchaseOrderProductID());
+                    logger.info("Deleted purchase product: {}", originProduct.getPurchaseOrderProductID());
                 }
             }
 
             if (entryChanged || productsChanged) {
-                logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getPurchaseOrderEntryID(), record.toString()));
+                modificationRecordService.insertRecord(originEntry.getPurchaseOrderEntryID(), record);
             }
             else {
                 logger.warn("Nothing changed, begin rolling back");
@@ -221,7 +225,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     public void deleteOrder(String id) {
         try {
             purchaseOrderMapper.deleteOrderProductsByEntryID(id);
+            logger.info("Deleted purchase entry: {}", id);
             purchaseOrderMapper.deleteOrderEntry(id);
+            logger.info("Deleted purchase product with serial {}", id);
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Delete error");
