@@ -4,26 +4,44 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jc.backend.dao.ModificationMapper">
 
-    <insert id="insertModificationRecord" useGeneratedKeys="true" keyProperty="modificationRecordID">
-        insert into modification_record(
-            record_serial, record_content, modification_date
+    <insert id="insertEntryModificationRecord" useGeneratedKeys="true" keyProperty="modificationRecordID"
+            keyColumn="modification_record_id">
+        insert into entry_modification_record(
+            record_serial, record_content, modification_time
         )
         values (
             #{recordSerial}, #{recordContent}, datetime('now', 'localtime')
         )
     </insert>
 
+    <insert id="insertMiscModificationRecord" useGeneratedKeys="true" keyProperty="modificationRecordID">
+        insert into misc_modification_record(
+            record_category, record_id, record_content, modification_time
+        )
+        values (
+            #{recordCategory}, #{recordID}, #{recordContent}, datetime('now', 'localtime')
+        )
+    </insert>
+
     <resultMap id="ModificationRecordResultMap" type="org.jc.backend.entity.ModificationO">
         <result property="modificationRecordID" column="modification_record_id"/>
         <result property="recordSerial" column="record_serial"/>
+        <result property="recordCategory" column="record_category"/>
+        <result property="recordID" column="record_id"/>
         <result property="recordContent" column="record_content"/>
-        <result property="modificationDate" column="modification_date"/>
+        <result property="modificationTime" column="modification_date"/>
     </resultMap>
 
-    <select id="getRecordsBySerial" resultMap="ModificationRecordResultMap">
-        select modification_record_id, record_serial, record_content, modification_date
-        from modification_record
+    <select id="getEntryRecordsBySerial" resultMap="ModificationRecordResultMap">
+        select modification_record_id, record_serial, record_content, modification_time
+        from entry_modification_record
         where record_serial = #{serial}
+    </select>
+
+    <select id="getMiscRecordsBySerial" resultMap="ModificationRecordResultMap">
+        select modification_record_id, record_category, record_id, record_content, modification_time
+        from misc_modification_record
+        where record_category = #{category} and record_id = #{id}
     </select>
 
 </mapper>

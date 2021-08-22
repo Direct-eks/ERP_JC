@@ -1,5 +1,6 @@
 package org.jc.backend.service.Impl;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.ModificationO;
 import org.jc.backend.service.ModificationRecordService;
@@ -23,8 +24,71 @@ public class ModificationRecordServiceImpl implements ModificationRecordService 
 
     /* ------------------------------ SERVICE ------------------------------ */
 
+    @Transactional
+    @Override
+    public void insertRecord(String serial, String content) {
+        try {
+            ModificationO record = new ModificationO(serial, content);
+            modificationMapper.insertEntryModificationRecord(record);
+            logger.info("New Entry Modification Record Created: {}", record);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Insert failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void insertRecord(String serial, StringBuilder content) {
+        insertRecord(serial, content.toString());
+    }
+
+    @Transactional
+    @Override
+    public void insertRecord(String category, int id, String content) {
+        try {
+            ModificationO record = new ModificationO(category, id, content);
+            modificationMapper.insertMiscModificationRecord(record);
+            logger.info("New Misc Modification Record Created: {}", record);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Insert failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void insertRecord(String category, int id, StringBuilder content) {
+        insertRecord(category, id, content.toString());
+    }
+
     @Transactional(readOnly = true)
-    public List<ModificationO> getRecordsBySerial(String serial) {
-        return modificationMapper.getRecordsBySerial(serial);
+    @Override
+    public List<ModificationO> getEntryRecordsBySerial(String serial) {
+        try {
+            return modificationMapper.getEntryRecordsBySerial(serial);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ModificationO> getMiscRecordsBySerial(String category, int id) {
+        try {
+            return modificationMapper.getMiscRecordsBySerial(category, id);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("Query failed");
+            throw e;
+        }
     }
 }

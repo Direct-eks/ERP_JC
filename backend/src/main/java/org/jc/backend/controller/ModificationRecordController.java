@@ -32,6 +32,6 @@ public class ModificationRecordController {
     public List<ModificationO> getRecordsBySerial(@PathVariable("serial") String serial) {
         logger.info("GET Request to /modificationRecord/getRecordsBySerial, serial: " + serial);
 
-        return modificationRecordService.getRecordsBySerial(serial);
+        return modificationRecordService.getEntryRecordsBySerial(serial);
     }
 }

@@ -11,6 +11,8 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ModificationMapper {
-    void insertModificationRecord(ModificationO modificationO);
-    List<ModificationO> getRecordsBySerial(String serial);
+    void insertEntryModificationRecord(ModificationO modificationO);
+    void insertMiscModificationRecord(ModificationO modificationO);
+    List<ModificationO> getEntryRecordsBySerial(String serial);
+    List<ModificationO> getMiscRecordsBySerial(String category, int id);
 }
