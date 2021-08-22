@@ -3,10 +3,8 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.InboundEntryMapper;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.InvoiceStatDO;
 import org.jc.backend.entity.StatO.InvoiceStatVO;
 import org.jc.backend.entity.StatO.ProductStatO;
@@ -35,20 +33,20 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
     private static final Logger logger = LoggerFactory.getLogger(InboundEntryServiceImpl.class);
 
     private final InboundEntryMapper inboundEntryMapper;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final WarehouseStockService warehouseStockService;
     private final OutboundEntryService outboundEntryService;
     private final ModelService modelService;
     private final MiscellaneousDataService miscellaneousDataService;
 
     public InboundEntryServiceImpl(InboundEntryMapper inboundEntryMapper,
-                                   ModificationMapper modificationMapper,
+                                   ModificationRecordService modificationRecordService,
                                    WarehouseStockService warehouseStockService,
                                    OutboundEntryService outboundEntryService,
                                    ModelService modelService,
                                    MiscellaneousDataService miscellaneousDataService) {
         this.inboundEntryMapper = inboundEntryMapper;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.warehouseStockService = warehouseStockService;
         this.outboundEntryService = outboundEntryService;
         this.modelService = modelService;
@@ -94,7 +92,6 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
         }
 
         try {
-
             String entryDate = newEntry.getEntryDate();
             String newSerial;
             if (newEntry.getClassification().equals(INBOUND_ENTRY)) {
@@ -112,6 +109,7 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             // set new inbound entry serial, and insert
             newEntry.setInboundEntryID(newSerial);
             inboundEntryMapper.insertNewEntry(newEntry);
+            logger.info("Inserted new inbound entry: {}", newSerial);
 
             // set inbound entry serial for products, and insert
             int warehouseID = entryWithProductsVO.getWarehouseID();
@@ -136,7 +134,7 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
                 // insert
                 inboundEntryMapper.insertNewProduct(product);
                 int id = product.getInboundProductID();
-                logger.info("Insert new inbound product id: {}", id);
+                logger.info("Insert new inbound product: {}", id);
             }
             return newSerial;
 
@@ -194,15 +192,13 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
 
             // check changes to shipping info
             StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
-            boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
+            boolean changed = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
                     record, currentInfo, originInfo);
 
-            if (bool) {
+            if (changed) {
                 inboundEntryMapper.updateShippingInfo(currentInfo);
-
-                logger.info("Completion: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originInfo.getInboundEntryID(), record.toString()));
+                logger.info("Updated inbound entry for completion, serial: {}", currentInfo.getInboundEntryID());
+                modificationRecordService.insertRecord(originInfo.getInboundEntryID(), record);
             }
             else {
                 logger.warn("nothing changed, begin rolling back");
@@ -229,7 +225,6 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
 
         try {
             String id = currentEntry.getInboundEntryID();
-            logger.info("Serial to be changed: " + id);
 
             // query database for compare
             InboundEntryDO originalEntry = inboundEntryMapper.selectEntryForCompare(id);
@@ -243,6 +238,7 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             if (IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originalEntry)) {
                 entryChanged = true;
                 inboundEntryMapper.updateEntry(currentEntry);
+                logger.info("Updated inbound entry: {}", id);
             }
 
             for (var originalProduct : originalProducts) {
@@ -253,6 +249,7 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
                                 record, currentProduct, originalProduct)) {
                             productsChanged = true;
                             inboundEntryMapper.updateProduct(currentProduct);
+                            logger.info("Updated inbound product: {}", currentProduct.getInboundProductID());
                             warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate());
                         }
                         found = true;
@@ -261,15 +258,13 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
                 }
                 if (!found) {
                     // todo optimize to adapt to delete
-                    logger.error("deleted product found");
+                    logger.error("deleted product found, currently not supported");
                     throw new RuntimeException();
                 }
             }
 
             if (entryChanged || productsChanged) {
-                logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originalEntry.getInboundEntryID(), record.toString()));
+                modificationRecordService.insertRecord(originalEntry.getInboundEntryID(), record);
             }
             else {
                 logger.warn("nothing changed, begin rolling back");
@@ -281,7 +276,6 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             logger.error("Modify failed");
             throw e;
         }
-
     }
 
     @Transactional
@@ -289,14 +283,18 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
     public void deleteEntry(String id) {
         try {
             inboundEntryMapper.deleteProductsByEntryID(id);
+            logger.info("Deleted inbound entry: {}", id);
             inboundEntryMapper.deleteEntryByID(id);
+            logger.info("Deleted inbound products with entry serial: {}", id);
+
+            // todo: deduct stock
+            throw new RuntimeException(); // not implemented
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Deletion failed");
             throw e;
         }
-
-        //todo: deduct stock
     }
 
     @Transactional
@@ -312,23 +310,24 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             InboundEntryDO originEntry = inboundEntryMapper.selectEntryForCompare(id);
 
             StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
-            boolean bool = false;
+            boolean entryChanged = false;
             if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
-                bool = true;
+                entryChanged = true;
                 record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(),
                         modifiedEntry.getRemark()));
             }
             if (new BigDecimal(originEntry.getTotalCost())
                     .compareTo(new BigDecimal(modifiedEntry.getTotalCost())) != 0) {
-                bool = true;
+                entryChanged = true;
                 record.append(String.format("总金额: %s -> %s; ", originEntry.getTotalCost(),
                         modifiedEntry.getTotalCost()));
             }
-            if (bool) {
+            if (entryChanged) {
                 inboundEntryMapper.updateEntry(modifiedEntry);
+                logger.info("Updated inbound entry: {}", modifiedEntry.getInboundEntryID());
             }
 
-            boolean bool2 = false;
+            boolean productsChanged = false;
             List<InboundProductO> originProducts = inboundEntryMapper.selectProductsForCompare(id);
             for (var modifiedProduct : modifiedProducts) {
                 String modelCode = modifiedProduct.getCode();
@@ -336,10 +335,11 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
                 for (var originProduct : originProducts) {
                     if (originProduct.getInboundProductID() == modifiedProduct.getInboundProductID()) {
                         if (!modifiedProduct.getQuantity().equals(originProduct.getQuantity())) {
-                            bool2 = true;
+                            productsChanged = true;
                             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
                             inboundEntryMapper.returnProductByID(modifiedProduct);
+                            logger.info("Updated inbound product: {}", modifiedProduct.getInboundProductID());
                             warehouseStockService.modifyStock(modifiedProduct, originEntry.getEntryDate());
                         }
                         break;
@@ -347,8 +347,8 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
                 }
             }
 
-            if (bool || bool2) {
-                modificationMapper.insertModificationRecord(new ModificationO(id, record.toString()));
+            if (entryChanged || productsChanged) {
+                modificationRecordService.insertRecord(id, record);
             }
             else {
                 logger.warn("nothing changed, begin rolling back");
@@ -486,6 +486,8 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             for (var product : products) {
                 product.setCheckoutSerial(checkoutSerial);
                 inboundEntryMapper.updateProductsWithCheckoutSerial(product);
+                logger.info("Updated inbound product {} with checkout serial: {}",
+                        product.getInboundProductID(), checkoutSerial);
             }
 
         } catch (PersistenceException e) {
@@ -502,6 +504,8 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
             for (var product : products) {
                 product.setInvoiceSerial(invoiceSerial);
                 inboundEntryMapper.updateProductsWithInvoiceSerial(product);
+                logger.info("Updated inbound product {} with invoice serial: {}",
+                        product.getInboundProductID(), invoiceSerial);
             }
 
         } catch (PersistenceException e) {
@@ -542,6 +546,8 @@ public class InboundEntryServiceImpl implements InboundEntryService, AccountsIOE
     public void updateEntryWithShippingCostSerial(InboundEntryDO inboundEntryDO) {
         try {
             inboundEntryMapper.updateEntryWithShippingCostSerial(inboundEntryDO);
+            logger.info("Updated inbound entry {} with shipping cost serial: {}",
+                    inboundEntryDO.getInboundEntryID(), inboundEntryDO.getShippingCostSerial());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

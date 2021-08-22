@@ -5,15 +5,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jc.backend.config.exception.GlobalParamException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.OutboundEntryMapper;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModelCategoryO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.StatO.*;
 import org.jc.backend.entity.VO.OutboundEntryWithProductsVO;
+import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.*;
 import org.jc.backend.utils.IOModificationUtils;
 import org.jc.backend.utils.MyUtils;
@@ -41,20 +40,20 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
     private static final Logger logger = LoggerFactory.getLogger(OutboundEntryServiceImpl.class);
 
     private final OutboundEntryMapper outboundEntryMapper;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final WarehouseStockService warehouseStockService;
     private final ModelService modelService;
     private final FactoryBrandService factoryBrandService;
     private final MiscellaneousDataService miscellaneousDataService;
 
     public OutboundEntryServiceImpl(OutboundEntryMapper outboundEntryMapper,
-                                    ModificationMapper modificationMapper,
+                                    ModificationRecordService modificationRecordService,
                                     WarehouseStockService warehouseStockService,
                                     ModelService modelService,
                                     FactoryBrandService factoryBrandService,
                                     MiscellaneousDataService miscellaneousDataService) {
         this.outboundEntryMapper = outboundEntryMapper;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.warehouseStockService = warehouseStockService;
         this.modelService = modelService;
         this.factoryBrandService = factoryBrandService;
@@ -133,16 +132,30 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
 
             newEntry.setOutboundEntryID(newSerial);
             outboundEntryMapper.insertNewEntry(newEntry);
+            logger.info("Inserted new outbound entry: {}", newSerial);
 
+            int warehouseID = entryWithProductsVO.getWarehouseID();
             for (var product : newProducts) {
                 product.setOutboundEntryID(newSerial);
+
+                // check warehouseStock for existence, if not, create new one
+                int skuID = product.getSkuID();
+                if (product.getWarehouseStockID() == -1
+                        || warehouseStockService.getWarehouseStockByWarehouseAndSku(warehouseID, skuID) == null) {
+                    WarehouseStockO newWarehouseStock = new WarehouseStockO();
+                    newWarehouseStock.setSkuID(skuID);
+                    newWarehouseStock.setWarehouseID(warehouseID);
+                    int newID = warehouseStockService.insertNewWarehouseStock(newWarehouseStock);
+                    product.setWarehouseStockID(newID);
+                }
+
                 // mark if exists presale
                 if (product.getStockQuantity() - product.getQuantity() < 0) {
                     product.setIsPresale(1);
                 }
                 outboundEntryMapper.insertNewProduct(product);
                 int id = product.getOutboundProductID();
-                logger.info("Insert new outbound product id: " + id);
+                logger.info("Insert new outbound product: {}", id);
 
                 // does not support presale on product that does not have warehouseStock record
                 warehouseStockService.decreaseStock(product, shipmentDate);
@@ -199,18 +212,16 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
             OutboundEntryDO originInfo = outboundEntryMapper.selectEntryShippingInfoForCompare(id);
 
             StringBuilder record = new StringBuilder("修改者: " + currentInfo.getDrawer() + "; ");
-            boolean bool = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
+            boolean changed = IOModificationUtils.shippingInfoCompareAndFormModificationRecord(
                     record, currentInfo, originInfo);
 
-            if (bool) {
+            if (changed) {
                 outboundEntryMapper.updateShippingInfo(currentInfo);
-
-                logger.info("Completion: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originInfo.getOutboundEntryID(), record.toString()));
+                logger.info("Updated outbound entry for completion, serial: {}", currentInfo.getOutboundEntryID());
+                modificationRecordService.insertRecord(originInfo.getOutboundEntryID(), record);
             }
             else {
-                logger.warn("Nothing changed!");
+                logger.warn("nothing changed, begin rolling back");
                 throw new RuntimeException();
             }
 
@@ -232,7 +243,6 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
 
         try {
             String id = currentEntry.getOutboundEntryID();
-            logger.info("Serial to be changed: " + id);
 
             OutboundEntryDO originEntry = outboundEntryMapper.selectEntryForCompare(id);
             List<OutboundProductO> originalProducts = outboundEntryMapper.selectProductsForCompare(id);
@@ -243,6 +253,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
             if (IOModificationUtils.entryCompareAndFormModificationRecord(record, currentEntry, originEntry)) {
                 entryChanged = true;
                 outboundEntryMapper.updateEntry(currentEntry);
+                logger.info("Updated outbound entry: {}", id);
             }
 
             for (var originalProduct : originalProducts) {
@@ -253,6 +264,7 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
                                 record, currentProduct, originalProduct)) {
                             productsChanged = true;
                             outboundEntryMapper.updateProduct(currentProduct);
+                            logger.info("Updated outbound product: {}", currentProduct.getOutboundProductID());
                             warehouseStockService.modifyStock(currentProduct, currentEntry.getShipmentDate());
                         }
                         found = true;
@@ -261,15 +273,13 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
                 }
                 if (!found) {
                     // todo optimize to adapt to delete
-                    logger.error("deleted product found");
+                    logger.error("deleted product found, currently not supported");
                     throw new RuntimeException();
                 }
             }
 
             if (entryChanged || productsChanged) {
-                logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getOutboundEntryID(), record.toString()));
+                modificationRecordService.insertRecord(originEntry.getOutboundEntryID(), record);
             }
             else {
                 logger.warn("nothing changed, begin rolling back");
@@ -281,7 +291,6 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
             logger.error("update failed");
             throw e;
         }
-
     }
 
     @Transactional
@@ -289,14 +298,18 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
     public void deleteEntry(String id) {
         try {
             outboundEntryMapper.deleteProductsByEntryID(id);
+            logger.info("Deleted outbound entry: {}", id);
             outboundEntryMapper.deleteEntryByID(id);
+            logger.info("Deleted outbound products with entry serial: {}", id);
+
+            // todo: add stock
+            throw new RuntimeException(); // not implemented
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("Deletion failed");
             throw e;
         }
-
-        //todo: add stock
     }
 
     @Transactional
@@ -312,23 +325,24 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
             OutboundEntryDO originEntry = outboundEntryMapper.selectEntryForCompare(id);
 
             StringBuilder record = new StringBuilder("退货记录: 修改者: " + modifiedEntry.getDrawer() + "; ");
-            boolean bool = false;
+            boolean entryChanged = false;
             if (!originEntry.getRemark().equals(modifiedEntry.getRemark())) {
-                bool = true;
+                entryChanged = true;
                 record.append(String.format("备注: %s -> %s; ", originEntry.getRemark(),
                         modifiedEntry.getRemark()));
             }
             if (new BigDecimal(originEntry.getTotalAmount())
                     .compareTo(new BigDecimal(modifiedEntry.getTotalAmount())) != 0) {
-                bool = true;
+                entryChanged = true;
                 record.append(String.format("总金额: %s -> %s; ", originEntry.getTotalAmount(),
                         modifiedEntry.getTotalAmount()));
             }
-            if (bool) {
+            if (entryChanged) {
                 outboundEntryMapper.updateEntry(modifiedEntry);
+                logger.info("Updated outbound entry: {}", modifiedEntry.getOutboundEntryID());
             }
 
-            boolean bool2 = false;
+            boolean productsChanged = false;
             List<OutboundProductO> originProducts = outboundEntryMapper.selectProductsForCompare(id);
             for (var modifiedProduct : modifiedProducts) {
                 String modelCode = modifiedProduct.getCode();
@@ -336,10 +350,11 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
                 for (var originProduct : originProducts) {
                     if (originProduct.getOutboundProductID() == modifiedProduct.getOutboundProductID()) {
                         if (!modifiedProduct.getQuantity().equals(originProduct.getQuantity())) {
-                            bool2 = true;
+                            productsChanged = true;
                             record.append(String.format("型号(%s) 数量: %d -> %d; ", modelCode,
                                     originProduct.getQuantity(), modifiedProduct.getQuantity()));
                             outboundEntryMapper.returnProductByID(modifiedProduct);
+                            logger.info("Updated outbound product: {}", modifiedProduct.getOutboundEntryID());
                             warehouseStockService.modifyStock(modifiedProduct, originEntry.getShipmentDate());
                         }
                         break;
@@ -347,8 +362,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
                 }
             }
 
-            if (bool || bool2) {
-                modificationMapper.insertModificationRecord(new ModificationO(id, record.toString()));
+            if (entryChanged || productsChanged) {
+                modificationRecordService.insertRecord(id, record);
             }
             else {
                 logger.warn("nothing changed begin rolling back");
@@ -484,6 +499,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
             for (var product : products) {
                 product.setCheckoutSerial(checkoutSerial);
                 outboundEntryMapper.updateProductsWithCheckoutSerial(product);
+                logger.info("Updated outbound product {} with checkout serial: {}",
+                        product.getOutboundEntryID(), checkoutSerial);
             }
 
         } catch (PersistenceException e) {
@@ -500,6 +517,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
             for (var product : products) {
                 product.setInvoiceSerial(invoiceSerial);
                 outboundEntryMapper.updateProductsWithInvoiceSerial(product);
+                logger.info("Updated outbound product {} with invoice serial: {}",
+                        product.getOutboundEntryID(), invoiceSerial);
             }
 
         } catch (PersistenceException e) {
@@ -540,6 +559,8 @@ public class OutboundEntryServiceImpl implements OutboundEntryService, AccountsI
     public void updateEntryWithShippingCostSerial(OutboundEntryDO outboundEntryDO) {
         try {
             outboundEntryMapper.updateEntryWithShippingCostSerial(outboundEntryDO);
+            logger.info("Updated inbound entry {} with shipping cost serial: {}",
+                    outboundEntryDO.getOutboundEntryID(), outboundEntryDO.getShippingCostSerial());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
