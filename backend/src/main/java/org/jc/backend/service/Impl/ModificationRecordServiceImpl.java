@@ -18,6 +18,18 @@ public class ModificationRecordServiceImpl implements ModificationRecordService 
 
     private final ModificationMapper modificationMapper;
 
+    public static String[] categories = {
+            "partnerCompanyCategory", "partnerCompany",
+            "relevantCompanyCategory", "relevantCompany",
+            "department",
+            "bankAccount", "feeCategory",
+            "factoryBrand", "measurementUnit",
+            "model", "modelCategory",
+            "sku", "storagePlace",
+            "supplier", "supplierResource",
+            "warehouse", "warehouseStock"
+    };
+
     public ModificationRecordServiceImpl(ModificationMapper modificationMapper) {
         this.modificationMapper = modificationMapper;
     }
@@ -81,7 +93,7 @@ public class ModificationRecordServiceImpl implements ModificationRecordService 
 
     @Transactional(readOnly = true)
     @Override
-    public List<ModificationO> getMiscRecordsBySerial(String category, int id) {
+    public List<ModificationO> getMiscRecordsByCategoryAndID(String category, int id) {
         try {
             return modificationMapper.getMiscRecordsBySerial(category, id);
 

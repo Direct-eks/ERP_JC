@@ -12,5 +12,5 @@ public interface ModificationRecordService {
     void insertRecord(String category, int id, String content);
     void insertRecord(String category, int id, StringBuilder content);
     List<ModificationO> getEntryRecordsBySerial(String serial);
-    List<ModificationO> getMiscRecordsBySerial(String category, int id);
+    List<ModificationO> getMiscRecordsByCategoryAndID(String category, int id);
 }
