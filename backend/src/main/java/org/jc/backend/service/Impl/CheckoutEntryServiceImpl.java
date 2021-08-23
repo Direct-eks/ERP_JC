@@ -5,14 +5,12 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.CheckoutEntryMapper;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.ModelCategoryO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
-import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.StatO.AccountsDetailO;
+import org.jc.backend.entity.StatO.CheckoutSummaryO;
 import org.jc.backend.entity.StatO.OutboundSpecialSummaryO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InboundEntryWithProductsVO;
@@ -42,29 +40,30 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
     private final OutboundEntryService outboundEntryService;
     private final MoneyEntryService moneyEntryService;
     private final InvoiceEntryService invoiceEntryService;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final MiscellaneousDataService miscellaneousDataService;
     private final ModelService modelService;
     private final FactoryBrandService factoryBrandService;
     private final AccountsService accountsService;
 
-    public CheckoutEntryServiceImpl(CheckoutEntryMapper checkoutEntryMapper,
-                                    InboundEntryService inboundEntryService,
-                                    OutboundEntryService outboundEntryService,
-                                    MoneyEntryService moneyEntryService,
-                                    InvoiceEntryService invoiceEntryService,
-                                    ModificationMapper modificationMapper,
-                                    MiscellaneousDataService miscellaneousDataService,
-                                    ModelService modelService,
-                                    FactoryBrandService factoryBrandService,
-                                    AccountsService accountsService
+    public CheckoutEntryServiceImpl(
+            CheckoutEntryMapper checkoutEntryMapper,
+            InboundEntryService inboundEntryService,
+            OutboundEntryService outboundEntryService,
+            MoneyEntryService moneyEntryService,
+            InvoiceEntryService invoiceEntryService,
+            ModificationRecordService modificationRecordService,
+            MiscellaneousDataService miscellaneousDataService,
+            ModelService modelService,
+            FactoryBrandService factoryBrandService,
+            AccountsService accountsService
     ) {
         this.checkoutEntryMapper = checkoutEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
         this.moneyEntryService = moneyEntryService;
         this.invoiceEntryService = invoiceEntryService;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.miscellaneousDataService = miscellaneousDataService;
         this.modelService = modelService;
         this.factoryBrandService = factoryBrandService;
@@ -96,15 +95,16 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
 
             checkoutEntry.setCheckoutEntrySerial(newCheckoutSerial);
 
-            //first create a new moneyEntry
+            // first create a new moneyEntry
             String newMoneySerial = moneyEntryService.createEntryForCheckout(
                     checkoutEntry,newCheckoutSerial, isInbound);
 
-            //then create a new checkoutEntry
+            // then create a new checkoutEntry
             checkoutEntry.setMoneyEntrySerial(newMoneySerial);
             checkoutEntryMapper.insertEntry(checkoutEntry);
+            logger.info("Inserted new checkout entry: {}", newCheckoutSerial);
 
-            //update product checkoutSerial
+            // update product with checkoutSerial
             if (isInbound) {
                 inboundEntryService.updateProductsWithCheckoutSerial(
                         checkoutEntryWithProductsVO.getInboundCheckoutProducts(), newCheckoutSerial);
@@ -114,12 +114,12 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                         checkoutEntryWithProductsVO.getOutboundCheckoutProducts(), newCheckoutSerial);
             }
 
-            //check if it is needed to create invoiceEntry
+            // check if it is needed to create invoiceEntry
             if (checkoutEntryWithProductsVO.getInvoiceEntry() != null) {
                 // fill in checkout entry serial
                 checkoutEntryWithProductsVO.setCheckoutEntrySerial(newCheckoutSerial);
                 String newInvoiceSerial = invoiceEntryService.createEntryForCheckout(
-                        checkoutEntryWithProductsVO, true);
+                        checkoutEntryWithProductsVO, isInbound);
 
                 // update checkout entry
                 checkoutEntryMapper.updateEntryWithInvoice(newCheckoutSerial, newInvoiceSerial);
@@ -201,13 +201,12 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                             modifyDO.getCheckoutEntrySerial());
 
             StringBuilder record = new StringBuilder("修改者: " + modifyDO.getDrawer() + "; ");
-            boolean bool = compareEntryAndFormModificationRecord(record, modifyDO, originDO);
+            boolean entryChanged = compareEntryAndFormModificationRecord(record, modifyDO, originDO);
 
-            if (bool) {
+            if (entryChanged) {
                 checkoutEntryMapper.modifyEntry(modifyDO);
-
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originDO.getCheckoutEntrySerial(), record.toString()));
+                logger.info("Updated checkout entry: {}", originDO.getCheckoutEntrySerial());
+                modificationRecordService.insertRecord(originDO.getCheckoutEntrySerial(), record);
 
                 // check and update corresponding moneyEntry
                 moneyEntryService.modifyEntryForCheckout(modifyDO);
@@ -358,6 +357,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
             // update return serial for current checkout serial
             returnVO.setReturnSerial(returnSerial);
             checkoutEntryMapper.returnEntry(returnVO);
+            logger.info("Inserted new return checkout entry: {}", returnSerial);
 
             // create new checkout entry for newly created inbound/outbound entry
             if (isInbound) { // refill outbound products for inbound return
@@ -367,7 +367,6 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                 returnVO.setInboundCheckoutProducts(inboundEntryService.getProductsWithEntryID(returnSerial));
             }
             this.createEntry(returnVO, !isInbound, true); // inverse isInbound
-
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -597,6 +596,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
             }
             for (var s : list) {
                 checkoutEntryMapper.updateVerifiedEntry(s.getCheckoutEntrySerial(), 1);
+                logger.info("Updated checkout product {} verification status to 1", s.getProductID());
             }
 
             miscellaneousDataService.addNewAuditMonth(month, isInbound ? "入库" : "出库");
@@ -624,6 +624,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
                     -1, "", "", -1, -1);
             for (var s : list) {
                 checkoutEntryMapper.updateVerifiedEntry(s.getCheckoutEntrySerial(), 0);
+                logger.info("Updated checkout product {} verification status to 0", s.getProductID());
             }
 
             miscellaneousDataService.deleteAuditMonth(month, value);
@@ -715,6 +716,7 @@ public class CheckoutEntryServiceImpl implements CheckoutEntryService, AccountsS
     public void updateEntryBalance(AccountsDetailO entry) {
         try {
             checkoutEntryMapper.updateEntryBalanceBySerial(entry);
+            logger.info("Updated checkout entry with balance, {}", entry.getEntryID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

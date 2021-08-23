@@ -2,15 +2,14 @@ package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.InvoiceEntryMapper;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.entity.InboundProductO;
 import org.jc.backend.entity.InvoiceEntryO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.OutboundProductO;
 import org.jc.backend.entity.VO.CheckoutEntryWithProductsVO;
 import org.jc.backend.entity.VO.InvoiceEntryStandAloneVO;
 import org.jc.backend.service.InboundEntryService;
 import org.jc.backend.service.InvoiceEntryService;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.OutboundEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -31,16 +30,16 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceEntryServiceImpl.class);
 
     private final InvoiceEntryMapper invoiceEntryMapper;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final InboundEntryService inboundEntryService;
     private final OutboundEntryService outboundEntryService;
 
     public InvoiceEntryServiceImpl(InvoiceEntryMapper invoiceEntryMapper,
-                                   ModificationMapper modificationMapper,
+                                   ModificationRecordService modificationRecordService,
                                    InboundEntryService inboundEntryService,
                                    OutboundEntryService outboundEntryService) {
         this.invoiceEntryMapper = invoiceEntryMapper;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
     }
@@ -68,6 +67,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
             invoiceEntryO.setInvoiceEntrySerial(newSerial);
             invoiceEntryMapper.insertEntry(invoiceEntryO);
+            logger.info("Inserted new invoice entry, {}", invoiceEntryO.getInvoiceEntrySerial());
 
             if (isInbound) {
                 inboundEntryService.updateProductsWithInvoiceSerial(
@@ -150,12 +150,12 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
 
             if (bool) {
                 invoiceEntryMapper.updateEntry(modifiedEntry);
-
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originEntry.getInvoiceEntrySerial(), record.toString()));
+                logger.info("Updated invoice entry, {}", modifiedEntry.getInvoiceEntrySerial());
+                modificationRecordService.insertRecord(originEntry.getInvoiceEntrySerial(), record);
             }
             else {
-                logger.warn("nothing modified");
+                logger.warn("Nothing modified, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
@@ -219,6 +219,7 @@ public class InvoiceEntryServiceImpl implements InvoiceEntryService {
             invoiceEntry.setCheckoutDate(checkoutEntryWithProductsVO.getCheckoutDate());
 
             invoiceEntryMapper.insertEntry(invoiceEntry);
+            logger.info("Inserted new invoice entry for checkout: {}", newSerial);
 
             return newSerial;
 

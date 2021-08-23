@@ -78,7 +78,9 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     public int insertNewWarehouseStock(WarehouseStockO warehouseStockO) {
         try {
             warehouseStockMapper.insertNewWarehouseStock(warehouseStockO);
+            logger.info("Inserted new warehouse stock {}", warehouseStockO);
             return warehouseStockO.getWarehouseStockID();
+
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");

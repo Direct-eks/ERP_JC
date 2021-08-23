@@ -1,14 +1,13 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.MoneyEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.MoneyEntryService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
@@ -30,15 +29,15 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
     private static final Logger logger = LoggerFactory.getLogger(MoneyEntryServiceImpl.class);
 
     private final MoneyEntryMapper moneyEntryMapper;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final AccountsService accountsService;
 
     public MoneyEntryServiceImpl(MoneyEntryMapper moneyEntryMapper,
-                                 ModificationMapper modificationMapper,
+                                 ModificationRecordService modificationRecordService,
                                  AccountsService accountsService
     ) {
         this.moneyEntryMapper = moneyEntryMapper;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.accountsService = accountsService;
     }
 
@@ -58,6 +57,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
             moneyEntryMapper.insertEntry(moneyEntryO);
+            logger.info("Inserted new money entry, {}", newMoneySerial);
 
             // calculate balance
             accountsService.calculateBalance(moneyEntryO.getPartnerCompanyID());
@@ -112,9 +112,8 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
 
             if (bool) {
                 moneyEntryMapper.modifyEntry(modifiedEntry);
-
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        modifiedEntry.getMoneyEntrySerial(), record.toString()));
+                logger.info("Updated money entry, {}", modifiedEntry.getMoneyEntrySerial());
+                modificationRecordService.insertRecord(modifiedEntry.getMoneyEntrySerial(), record);
             }
             else {
                 logger.warn("nothing modified, begin rolling back");
@@ -200,6 +199,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
             moneyEntryO.setMoneyEntrySerial(newMoneySerial);
 
             moneyEntryMapper.insertEntry(moneyEntryO);
+            logger.info("Inserted new money entry for checkout, {}", newMoneySerial);
 
             return newMoneySerial;
 
@@ -222,17 +222,16 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
             MoneyEntryO originEntry = moneyEntryMapper.selectEntryBySerial(modifiedEntry.getMoneyEntrySerial());
 
             StringBuilder record = new StringBuilder("修改者: " + modifiedEntry.getDrawer() + "; ");
-            //since only payment fields are needed to be compared, copy fields from originEntry
+            // since only payment fields are needed to be compared, copy fields from originEntry
             // in case of unwanted changes being output to modification record
             modifiedEntry.setPaymentIndication(originEntry.getPaymentIndication());
             modifiedEntry.setRemark(originEntry.getRemark());
-            boolean bool = compareEntryAndFormModificationRecord(record, originEntry, modifiedEntry);
+            boolean entryChanged = compareEntryAndFormModificationRecord(record, originEntry, modifiedEntry);
 
-            if (bool) {
+            if (entryChanged) {
                 moneyEntryMapper.modifyEntry(modifiedEntry);
-
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        modifiedEntry.getMoneyEntrySerial(), record.toString()));
+                logger.info("Updated money entry for checkout entry modification: {}", originEntry.getMoneyEntrySerial());
+                modificationRecordService.insertRecord(modifiedEntry.getMoneyEntrySerial(), record);
             }
             else {
                 logger.warn("nothing modified, begin rolling back");
@@ -300,6 +299,7 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
     public void updateEntryBalance(AccountsDetailO entry) {
         try {
             moneyEntryMapper.updateEntryBalanceBySerial(entry);
+            logger.info("Updated money entry with balance, {}", entry.getEntryID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

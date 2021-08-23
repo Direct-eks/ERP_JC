@@ -3,7 +3,6 @@ package org.jc.backend.service.Impl;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.QuoteEntryMapper;
 import org.jc.backend.entity.DO.QuoteEntryDO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.QuoteProductO;
 import org.jc.backend.entity.VO.QuoteEntryWithProductsVO;
 import org.jc.backend.service.ModificationRecordService;

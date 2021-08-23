@@ -1,12 +1,10 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.ShippingCostEntryMapper;
 import org.jc.backend.entity.DO.InboundEntryDO;
 import org.jc.backend.entity.DO.OutboundEntryDO;
 import org.jc.backend.entity.DO.ShippingCostEntryDO;
-import org.jc.backend.entity.ModificationO;
 import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.entity.VO.ShippingCostEntryVO;
 import org.jc.backend.service.*;
@@ -32,19 +30,19 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
     private final ShippingCostEntryMapper shippingCostEntryMapper;
     private final InboundEntryService inboundEntryService;
     private final OutboundEntryService outboundEntryService;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final AccountsService accountsService;
 
     public ShippingCostEntryServiceImpl(ShippingCostEntryMapper shippingCostEntryMapper,
                                         InboundEntryService inboundEntryService,
                                         OutboundEntryService outboundEntryService,
-                                        ModificationMapper modificationMapper,
+                                        ModificationRecordService modificationRecordService,
                                         AccountsService accountsService
     ) {
         this.shippingCostEntryMapper = shippingCostEntryMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.accountsService = accountsService;
     }
 
@@ -71,6 +69,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
 
             shippingCostEntryDO.setShippingCostEntrySerial(newSerial);
             shippingCostEntryMapper.insertEntry(shippingCostEntryDO);
+            logger.info("Inserted new shipping cost entry, {}", newSerial);
 
             inboundEntries.forEach(entry -> {
                 entry.setShippingCostSerial(newSerial);
@@ -144,14 +143,14 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
             List<OutboundEntryDO> originOutboundEntries = outboundEntryService.getEntriesWithShippingCostSerial(serial);
 
             StringBuilder record = new StringBuilder("修改者: " + modifiedEntry.getDrawer() + "; ");
-            boolean bool1 = compareEntryAndFormModificationRecord(record, modifiedEntry, originEntry);
+            boolean entryChanged = compareEntryAndFormModificationRecord(record, modifiedEntry, originEntry);
 
-            boolean bool2;
+            boolean detailChanged;
 
             // check for added inbound entry
             List<InboundEntryDO> tempModifiedInboundEntries = new ArrayList<>(modifiedInboundEntries);
             tempModifiedInboundEntries.removeAll(originInboundEntries);
-            bool2 = !tempModifiedInboundEntries.isEmpty();
+            detailChanged = !tempModifiedInboundEntries.isEmpty();
             for (var entry : tempModifiedInboundEntries) {
                 record.append(String.format("增加: %s; ", entry.getInboundEntryID()));
                 entry.setShippingCostSerial(serial);
@@ -160,7 +159,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
             // check for removed inbound entry
             List<InboundEntryDO> tempOriginalInboundEntries = new ArrayList<>(originInboundEntries);
             tempOriginalInboundEntries.removeAll(modifiedInboundEntries);
-            bool2 = bool2 || !tempOriginalInboundEntries.isEmpty();
+            detailChanged = detailChanged || !tempOriginalInboundEntries.isEmpty();
             for (var entry : tempOriginalInboundEntries) {
                 record.append(String.format("移除: %s; ", entry.getInboundEntryID()));
                 entry.setShippingCostSerial("");
@@ -169,7 +168,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
             // check for added outbound entry
             List<OutboundEntryDO> tempModifiedOutboundEntries = new ArrayList<>(modifiedOutboundEntries);
             tempModifiedOutboundEntries.removeAll(originOutboundEntries);
-            bool2 = bool2 || !tempModifiedOutboundEntries.isEmpty();
+            detailChanged = detailChanged || !tempModifiedOutboundEntries.isEmpty();
             for (var entry : tempModifiedOutboundEntries) {
                 record.append(String.format("增加: %s; ", entry.getOutboundEntryID()));
                 entry.setShippingCostSerial(serial);
@@ -178,21 +177,21 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
             // check for removed outbound entry
             List<OutboundEntryDO> tempOriginalOutboundEntries = new ArrayList<>(originOutboundEntries);
             tempOriginalOutboundEntries.removeAll(modifiedOutboundEntries);
-            bool2 = bool2 || !tempOriginalOutboundEntries.isEmpty();
+            detailChanged = detailChanged || !tempOriginalOutboundEntries.isEmpty();
             for (var entry : tempOriginalOutboundEntries) {
                 record.append(String.format("移除: %s; ", entry.getOutboundEntryID()));
                 entry.setShippingCostSerial("");
                 outboundEntryService.updateEntryWithShippingCostSerial(entry);
             }
 
-            if (bool1 || bool2) {
+            if (entryChanged || detailChanged) {
                 shippingCostEntryMapper.modifyEntry(modifiedEntry);
-
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        modifiedEntry.getShippingCostEntrySerial(), record.toString()));
+                logger.info("Updated shipping cost entry, {}", modifiedEntry.getShippingCostEntrySerial());
+                modificationRecordService.insertRecord(modifiedEntry.getShippingCostEntrySerial(), record);
             }
             else {
-                logger.warn("nothing changed");
+                logger.warn("Nothing changed, begin rolling back");
+                throw new RuntimeException();
             }
 
             // calculate balance
@@ -308,6 +307,7 @@ public class ShippingCostEntryServiceImpl implements ShippingCostEntryService, A
     public void updateEntryBalance(AccountsDetailO entry) {
         try {
             shippingCostEntryMapper.updateEntryBalanceBySerial(entry);
+            logger.info("Updated shipping cost entry with balance, {}", entry.getEntryID());
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();

@@ -1,7 +1,6 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.jc.backend.dao.ModificationMapper;
 import org.jc.backend.dao.WarehouseInEntryMapper;
 import org.jc.backend.dao.WarehouseOutEntryMapper;
 import org.jc.backend.entity.DO.WarehouseEntryDO;
@@ -12,6 +11,7 @@ import org.jc.backend.entity.VO.WarehouseEntryWithProductsVO;
 import org.jc.backend.entity.WarehouseProductO;
 import org.jc.backend.entity.WarehouseStockO;
 import org.jc.backend.service.ModelService;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.WarehouseEntryService;
 import org.jc.backend.service.WarehouseStockService;
 import org.jc.backend.utils.IOModificationUtils;
@@ -34,19 +34,19 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     private final WarehouseInEntryMapper warehouseInEntryMapper;
     private final WarehouseOutEntryMapper warehouseOutEntryMapper;
     private final WarehouseStockService warehouseStockService;
-    private final ModificationMapper modificationMapper;
+    private final ModificationRecordService modificationRecordService;
     private final ModelService modelService;
 
     public WarehouseEntryServiceImpl(
             WarehouseInEntryMapper warehouseInEntryMapper,
             WarehouseOutEntryMapper warehouseOutEntryMapper,
             WarehouseStockService warehouseStockService,
-            ModificationMapper modificationMapper,
+            ModificationRecordService modificationRecordService,
             ModelService modelService) {
         this.warehouseInEntryMapper = warehouseInEntryMapper;
         this.warehouseOutEntryMapper = warehouseOutEntryMapper;
         this.warehouseStockService = warehouseStockService;
-        this.modificationMapper = modificationMapper;
+        this.modificationRecordService = modificationRecordService;
         this.modelService = modelService;
     }
 
@@ -88,22 +88,25 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                         newWarehouseStock.setWarehouseID(warehouseID);
                         int newID = warehouseStockService.insertNewWarehouseStock(newWarehouseStock);
                         product.setWarehouseStockID(newID);
+                        logger.info("Insert new warehouse product id: {}", newID);
                     }
                     else {
                         // todo outbound does not support on product with no stock record
+                        logger.warn("Outbound does not support on product with no stock record");
+                        throw new RuntimeException(); // not implemented or handled
                     }
                 }
 
                 if (isInbound) {
                     warehouseStockService.increaseStock(product, entryDate, type);
                     warehouseInEntryMapper.insertNewProduct(product);
+                    logger.info("Inserted warehouse in entry, {}", product.getWarehouseEntryID());
                 }
                 else {
                     warehouseStockService.decreaseStock(product, entryDate, type);
                     warehouseOutEntryMapper.insertNewProduct(product);
+                    logger.info("Inserted warehouse out entry, {}", product.getWarehouseEntryID());
                 }
-                int id = product.getWarehouseProductID();
-                logger.info("Insert new warehouse product id: {}", id);
             }
 
         } catch (PersistenceException e) {
@@ -163,7 +166,6 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
         try {
             String id = currentEntry.getWarehouseEntryID();
-            logger.info("Serial to be changed: " + id);
 
             WarehouseEntryDO originalEntry;
             originalEntry = isInbound ? warehouseInEntryMapper.selectEntryForCompare(id) :
@@ -180,9 +182,11 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                 entryChanged = true;
                 if (isInbound) {
                     warehouseInEntryMapper.updateEntry(currentEntry);
+                    logger.info("Updated warehouse in entry, {}", id);
                 }
                 else {
                     warehouseOutEntryMapper.updateEntry(currentEntry);
+                    logger.info("Updated warehouse out entry, {}", id);
                 }
             }
 
@@ -196,9 +200,13 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                             warehouseStockService.modifyStock(currentProduct, currentEntry.getEntryDate(), isInbound);
                             if (isInbound) {
                                 warehouseInEntryMapper.updateProduct(currentProduct);
+                                logger.info("Updated warehouse in entry product, {}",
+                                        currentProduct.getWarehouseProductID());
                             }
                             else {
                                 warehouseOutEntryMapper.updateProduct(currentProduct);
+                                logger.info("Updated warehouse out entry product, {}",
+                                        currentProduct.getWarehouseProductID());
                             }
                         }
                         found = true;
@@ -213,12 +221,11 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             }
 
             if (entryChanged || productsChanged) {
-                logger.info("Modification: " + record);
-                modificationMapper.insertModificationRecord(new ModificationO(
-                        originalEntry.getWarehouseEntryID(), record.toString()));
+                modificationRecordService.insertRecord(originalEntry.getWarehouseEntryID(), record);
             }
             else {
-                logger.info("nothing changed!");
+                logger.info("Nothing changed, begin rolling back");
+                throw new RuntimeException();
             }
 
         } catch (PersistenceException e) {
@@ -248,8 +255,10 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         try {
             if (isInbound) {
                 warehouseInEntryMapper.updateProductStockInfo(productStatO);
+                logger.info("Updated warehouse in product stock info, {}", productStatO.getInboundProductID());
             } else {
                 warehouseOutEntryMapper.updateProductStockInfo(productStatO);
+                logger.info("Updated warehouse out product stock info, {}", productStatO.getOutboundProductID());
             }
 
         } catch (PersistenceException e) {
