@@ -17,7 +17,8 @@
         from w_supplier as s join c_partner_company as c on s.supplier_id = c.partner_company_id
     </select>
 
-    <insert id="createSupplier" useGeneratedKeys="true">
+    <insert id="createSupplier" useGeneratedKeys="true" keyProperty="supplierID"
+            keyColumn="supplier_id">
         insert into w_supplier(supplier_id, remark)
         values (#{supplierID}, #{remark})
     </insert>

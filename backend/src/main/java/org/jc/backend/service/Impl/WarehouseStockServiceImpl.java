@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 
 import static org.jc.backend.utils.MyUtils.myRoundingMode;
 import static org.jc.backend.utils.MyUtils.myScale;
+import static org.jc.backend.service.ModificationRecordService.WAREHOUSE_STOCK;
+import static org.jc.backend.service.ModificationRecordService.DELETION_MSG;
 
 @Service
 public class WarehouseStockServiceImpl implements WarehouseStockService {
@@ -50,19 +52,26 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
     private final WarehouseEntryService warehouseEntryService;
     private final ModelService modelService;
     private final SkuService skuService;
+    private final ModificationRecordService modificationRecordService;
+    private final UsageCheckService usageCheckService;
 
     public WarehouseStockServiceImpl(WarehouseStockMapper warehouseStockMapper,
                                      @Lazy InboundEntryService inboundEntryService,
                                      @Lazy OutboundEntryService outboundEntryService,
                                      @Lazy WarehouseEntryService warehouseEntryService,
                                      ModelService modelService,
-                                     @Lazy SkuService skuService) {
+                                     @Lazy SkuService skuService,
+                                     ModificationRecordService modificationRecordService,
+                                     UsageCheckService usageCheckService
+    ) {
         this.warehouseStockMapper = warehouseStockMapper;
         this.inboundEntryService = inboundEntryService;
         this.outboundEntryService = outboundEntryService;
         this.warehouseEntryService = warehouseEntryService;
         this.modelService = modelService;
         this.skuService = skuService;
+        this.modificationRecordService = modificationRecordService;
+        this.usageCheckService = usageCheckService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */

@@ -4,6 +4,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.jc.backend.dao.SupplierMapper;
 import org.jc.backend.entity.SupplierO;
 import org.jc.backend.entity.SupplierResourceO;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.SupplierService;
 import org.jc.backend.utils.IOModificationUtils;
 import org.slf4j.Logger;
@@ -16,15 +17,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.jc.backend.service.ModificationRecordService.SUPPLIER;
+import static org.jc.backend.service.ModificationRecordService.SUPPLIER_RESOURCE;
+import static org.jc.backend.service.ModificationRecordService.DELETION_MSG;
+
 @Service
 public class SupplierServiceImpl implements SupplierService {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplierServiceImpl.class);
 
     private final SupplierMapper supplierMapper;
+    private final ModificationRecordService modificationRecordService;
 
-    public SupplierServiceImpl(SupplierMapper supplierMapper) {
+    public SupplierServiceImpl(
+            SupplierMapper supplierMapper,
+            ModificationRecordService modificationRecordService
+    ) {
         this.supplierMapper = supplierMapper;
+        this.modificationRecordService = modificationRecordService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -125,8 +135,10 @@ public class SupplierServiceImpl implements SupplierService {
         try {
             List<SupplierResourceO> newResources = new ArrayList<>(updateVO);
             List<SupplierResourceO> oldResources = supplierMapper.queryResourcesBySupplier(supplierO.getSupplierID());
+
             if (oldResources.isEmpty()) { // new supplier
                 supplierMapper.createSupplier(supplierO);
+                logger.info("Inserted new supplier, id: {}", supplierO.getSupplierID());
             }
 
             // check for new added resources
@@ -135,7 +147,7 @@ public class SupplierServiceImpl implements SupplierService {
             for (var resource : newResources) {
                 resource.setSupplierID(supplierO.getSupplierID());
                 resource.setHistory("无历史报价记录");
-                supplierMapper.insertResource(resource);
+                supplierMapper.insertResource(resource); // todo logging
             }
 
             List<SupplierResourceO> updatedResources = new ArrayList<>(updateVO);
@@ -149,7 +161,7 @@ public class SupplierServiceImpl implements SupplierService {
                     }
                 }
                 resource.setHistory(history);
-                supplierMapper.updateResource(resource);
+                supplierMapper.updateResource(resource); // todo logging
             }
 
             // todo remove old resources
@@ -179,7 +191,9 @@ public class SupplierServiceImpl implements SupplierService {
     public void deleteResourcesBySupplierID(int id) {
         try {
             supplierMapper.deleteResourceBySupplierID(id);
+            logger.info("Deleted supplier, id: {}", id);
             supplierMapper.deleteSupplierByID(id);
+            logger.info("Deleted supplier resources with supplier id: {}", id);
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
