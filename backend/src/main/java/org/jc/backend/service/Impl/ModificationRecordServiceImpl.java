@@ -18,17 +18,7 @@ public class ModificationRecordServiceImpl implements ModificationRecordService 
 
     private final ModificationMapper modificationMapper;
 
-    public static String[] categories = {
-            "partnerCompanyCategory", "partnerCompany",
-            "relevantCompanyCategory", "relevantCompany",
-            "department",
-            "bankAccount", "feeCategory",
-            "factoryBrand", "measurementUnit",
-            "model", "modelCategory",
-            "sku", "storagePlace",
-            "supplier", "supplierResource",
-            "warehouse", "warehouseStock"
-    };
+
 
     public ModificationRecordServiceImpl(ModificationMapper modificationMapper) {
         this.modificationMapper = modificationMapper;
