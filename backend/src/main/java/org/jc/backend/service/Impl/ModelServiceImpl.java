@@ -11,6 +11,7 @@ import org.jc.backend.dao.ModelMapper;
 import org.jc.backend.entity.ModelCategoryO;
 import org.jc.backend.entity.ModelO;
 import org.jc.backend.service.ModelService;
+import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.SkuService;
 import org.jc.backend.service.UsageCheckService;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.jc.backend.service.ModificationRecordService.*;
+
 @Service
 public class ModelServiceImpl implements ModelService {
 
@@ -33,15 +36,18 @@ public class ModelServiceImpl implements ModelService {
 
     private final ModelMapper modelMapper;
     private final SkuService skuService;
+    private final ModificationRecordService modificationRecordService;
     private final UsageCheckService usageCheckService;
 
     public ModelServiceImpl(
             ModelMapper modelMapper,
             @Lazy SkuService skuService,
+            ModificationRecordService modificationRecordService,
             UsageCheckService usageCheckService
     ) {
         this.modelMapper = modelMapper;
         this.skuService = skuService;
+        this.modificationRecordService = modificationRecordService;
         this.usageCheckService = usageCheckService;
     }
 
@@ -90,27 +96,39 @@ public class ModelServiceImpl implements ModelService {
 
     @Override
     public void updateModelCategories(List<ModelCategoryO> updateVO) {
+        Subject subject = SecurityUtils.getSubject();
+        String usernameString = "修改者：" + subject.getPrincipals().getPrimaryPrincipal() + "; ";
+
         try {
             List<ModelCategoryO> tempCategories = new ArrayList<>(updateVO);
+            List<ModelCategoryO> oldCategories = modelMapper.queryModelCategories();
 
             tempCategories.removeIf(c -> c.getModelCategoryID() >= 0);
             for (var category : tempCategories) {
                 modelMapper.insertModelCategory(category);
+                logger.info("Inserted new model category, id: {}", category.getModelCategoryID());
             }
 
             tempCategories = new ArrayList<>(updateVO);
             tempCategories.removeIf(c -> c.getModelCategoryID() < 0);
             for (var category : tempCategories) {
-                modelMapper.updateModelCategory(category);
+                StringBuilder record = new StringBuilder(usernameString);
+                if (category.formModificationRecord(category.getOldObject(oldCategories), record)) {
+                    modelMapper.updateModelCategory(category);
+                    logger.info("Updated model category, id: {}", category.getModelCategoryID());
+                    modificationRecordService.insertRecord(MODEL_CATEGORY, category.getModelCategoryID(), record);
+                }
             }
 
             // check for removed
-            List<ModelCategoryO> oldCategories = modelMapper.queryModelCategories();
             oldCategories.removeIf(oldC -> updateVO.stream()
                 .anyMatch(c -> c.getModelCategoryID().equals(oldC.getModelCategoryID())));
             for (var category : oldCategories) {
                 if (!usageCheckService.isModelCategoryIDInUse(category.getModelCategoryID())) {
                     modelMapper.deleteModelCategory(category.getModelCategoryID());
+                    logger.info("Updated model category, id: {}", category.getModelCategoryID());
+                    modificationRecordService.insertRecord(MODEL_CATEGORY, category.getModelCategoryID(),
+                            usernameString + DELETION_MSG + category);
                 }
             }
 
@@ -138,15 +156,18 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public void updateModelsWithCategory(int categoryID, int[] brands, List<ModelO> updateVO) {
         Subject subject = SecurityUtils.getSubject();
+        String usernameString = "修改者：" + subject.getPrincipals().getPrimaryPrincipal() + "; ";
 
         try {
             List<ModelO> tempModels = new ArrayList<>(updateVO);
+            List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
 
             // check for added
             if (subject.isPermitted("system:models:create")) {
                 tempModels.removeIf(m -> m.getModelID() >= 0);
                 for (var model : tempModels) {
                     modelMapper.insertModel(model);
+                    logger.info("Inserted new model, id: {}", model.getModelID());
                 }
                 // now modelIDs are created, create sku based on the brands
                 if (brands.length > 0 && tempModels.size() > 0)
@@ -158,18 +179,25 @@ public class ModelServiceImpl implements ModelService {
                 tempModels = new ArrayList<>(updateVO);
                 tempModels.removeIf(i -> i.getModelID() < 0);
                 for (var model : tempModels) {
-                    modelMapper.updateModel(model);
+                    StringBuilder record = new StringBuilder(usernameString);
+                    if (model.formModificationRecord(model.getOldObject(oldModels), record)) {
+                        modelMapper.updateModel(model);
+                        logger.info("Updated model, id: {}", model.getModelID());
+                        modificationRecordService.insertRecord(MODEL, model.getModelID(), record);
+                    }
                 }
             }
 
+            // check for removed
             if (subject.isPermitted("system:models:remove")) {
-                // check for remove is possible
-                List<ModelO> oldModels = modelMapper.queryModelsByCategory(categoryID);
                 oldModels.removeIf(oldM -> updateVO.stream()
                         .anyMatch(m -> m.getModelID().equals(oldM.getModelID())));
                 for (var model : oldModels) {
                     if (!usageCheckService.isModelIDInUse(model.getModelID())) {
                         modelMapper.deleteModel(model.getModelID());
+                        logger.info("Deleted model, id: {}", model.getModelID());
+                        modificationRecordService.insertRecord(MODEL, model.getModelID(),
+                                usernameString + DELETION_MSG + model);
                     }
                 }
             }
@@ -185,6 +213,7 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public void updateCategoryOfModel(int modelID, int oldCategoryID, int newCategoryID) throws GlobalParamException {
         Subject subject = SecurityUtils.getSubject();
+        String usernameString = "修改者：" + subject.getPrincipals().getPrimaryPrincipal() + "; ";
 
         try {
             if (subject.isPermitted("system:models:update")) {
@@ -207,6 +236,9 @@ public class ModelServiceImpl implements ModelService {
                 }
 
                 modelMapper.updateCategoryOfModel(modelID, newCategoryID);
+                logger.info("Updated model, id: {}", modelID);
+                modificationRecordService.insertRecord(MODEL, modelID,
+                        String.format("%s分类：%d -> %d", usernameString, oldCategoryID, newCategoryID));
             }
 
         } catch (PersistenceException e) {
