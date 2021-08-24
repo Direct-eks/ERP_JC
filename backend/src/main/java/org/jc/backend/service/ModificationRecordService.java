@@ -32,5 +32,5 @@ public interface ModificationRecordService {
     static final String WAREHOUSE = "warehouse";
     static final String WAREHOUSE_STOCK = "warehouseStock";
 
-    static final String DELETION_MSG = "删除";
+    static final String DELETION_MSG = "删除：";
 }

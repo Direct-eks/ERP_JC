@@ -19,6 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.jc.backend.service.ModificationRecordService.COMPANY_CATEGORY;
+import static org.jc.backend.service.ModificationRecordService.COMPANY;
+import static org.jc.backend.service.ModificationRecordService.R_COMPANY_CATEGORY;
+import static org.jc.backend.service.ModificationRecordService.R_COMPANY;
+import static org.jc.backend.service.ModificationRecordService.DELETION_MSG;
+
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
@@ -119,6 +125,7 @@ public class CompanyServiceImpl implements CompanyService {
                 tempAreas.removeIf(a -> a.getAreaID() >= 0);
                 for (var area : tempAreas) {
                     companyMapper.insertPartnerCompanyArea(area);
+                    logger.info("Inserted new company area, id: {}", area.getAreaID());
                 }
             }
 
@@ -129,8 +136,8 @@ public class CompanyServiceImpl implements CompanyService {
                     StringBuilder record = new StringBuilder(usernameString);
                     if (area.formModificationRecord(area.getOldObject(oldAreas), record)) {
                         companyMapper.updatePartnerCompanyArea(area);
-                        modificationRecordService.insertRecord(ModificationRecordService.COMPANY_CATEGORY,
-                                area.getAreaID(), record);
+                        logger.info("Updated company area, id {}", area.getAreaID());
+                        modificationRecordService.insertRecord(COMPANY_CATEGORY, area.getAreaID(), record);
                     }
                 }
             }
@@ -142,8 +149,9 @@ public class CompanyServiceImpl implements CompanyService {
                 for (var area : oldAreas) {
                     if (!usageCheckService.isPartnerCompanyCategoryIDInUse(area.getAreaID())) {
                         companyMapper.deletePartnerCompanyArea(area.getAreaID());
-                        modificationRecordService.insertRecord(ModificationRecordService.COMPANY_CATEGORY,
-                                area.getAreaID(), usernameString + ModificationRecordService.DELETION_MSG);
+                        logger.info("Deleted company area, id {}", area.getAreaID());
+                        modificationRecordService.insertRecord(COMPANY_CATEGORY, area.getAreaID(),
+                                usernameString + DELETION_MSG + area);
                     }
                 }
             }
@@ -168,6 +176,7 @@ public class CompanyServiceImpl implements CompanyService {
             tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
             for (var company : tempCompanies) {
                 companyMapper.insertCompany(company);
+                logger.info("Inserted new company, id: {}", company.getCompanyID());
             }
 
             tempCompanies = new ArrayList<>(updateVO);
@@ -176,8 +185,8 @@ public class CompanyServiceImpl implements CompanyService {
                 StringBuilder record = new StringBuilder(usernameString);
                 if (company.formModificationRecord(company.getOldObject(oldCompanies), record)) {
                     companyMapper.updateCompany(company);
-                    modificationRecordService.insertRecord(ModificationRecordService.COMPANY,
-                            company.getCompanyID(), record);
+                    logger.info("Updated company, id: {}", company.getCompanyID());
+                    modificationRecordService.insertRecord(COMPANY, company.getCompanyID(), record);
                 }
             }
 
@@ -187,8 +196,9 @@ public class CompanyServiceImpl implements CompanyService {
             for (var company : oldCompanies) {
                 if (!usageCheckService.isPartnerCompanyIDInUse(company.getCompanyID())) {
                     companyMapper.deleteCompany(company.getCompanyID());
-                    modificationRecordService.insertRecord(ModificationRecordService.COMPANY,
-                            company.getCompanyID(), usernameString + ModificationRecordService.DELETION_MSG);
+                    logger.info("Deleted company, id: {}", company.getCompanyID());
+                    modificationRecordService.insertRecord(COMPANY, company.getCompanyID(),
+                            usernameString + DELETION_MSG + company);
                 }
             }
 
@@ -238,6 +248,7 @@ public class CompanyServiceImpl implements CompanyService {
             tempCategories.removeIf(c -> c.getCategoryID() >= 0);
             for (var category : tempCategories) {
                 companyMapper.insertRelevantCompanyCategory(category);
+                logger.info("Inserted new relevant company category, id: {}", category.getCategoryID());
             }
 
             tempCategories = new ArrayList<>(updateVO);
@@ -246,8 +257,8 @@ public class CompanyServiceImpl implements CompanyService {
                 StringBuilder record = new StringBuilder(usernameString);
                 if (category.formModificationRecord(category.getOldObject(oldCategories), record)) {
                     companyMapper.updateRelevantCompanyCategory(category);
-                    modificationRecordService.insertRecord(ModificationRecordService.R_COMPANY_CATEGORY,
-                            category.getCategoryID(), record);
+                    logger.info("Updated relevant company category, id: {}", category.getCategoryID());
+                    modificationRecordService.insertRecord(R_COMPANY_CATEGORY, category.getCategoryID(), record);
                 }
             }
 
@@ -257,8 +268,9 @@ public class CompanyServiceImpl implements CompanyService {
             for (var category : oldCategories) {
                 if (!usageCheckService.isRelevantCompanyCategoryIDInUse(category.getCategoryID())) {
                     companyMapper.deleteRelevantCompanyCategory(category.getCategoryID());
-                    modificationRecordService.insertRecord(ModificationRecordService.R_COMPANY_CATEGORY,
-                            category.getCategoryID(), usernameString + ModificationRecordService.DELETION_MSG);
+                    logger.info("Deleted relevant company category, id: {}", category.getCategoryID());
+                    modificationRecordService.insertRecord(R_COMPANY_CATEGORY, category.getCategoryID(),
+                            usernameString + DELETION_MSG + category);
                 }
             }
 
@@ -282,6 +294,7 @@ public class CompanyServiceImpl implements CompanyService {
             tempCompanies.removeIf(c -> c.getCompanyID() >= 0);
             for (var company : tempCompanies) {
                 companyMapper.insertRelevantCompany(company);
+                logger.info("Inserted new relevant company, id: {}", company.getCompanyID());
             }
 
             tempCompanies = new ArrayList<>(updateVO);
@@ -290,8 +303,8 @@ public class CompanyServiceImpl implements CompanyService {
                 StringBuilder record = new StringBuilder(usernameString);
                 if (company.formModificationRecord(company.getOldObject(oldCompanies), record)) {
                     companyMapper.updateRelevantCompany(company);
-                    modificationRecordService.insertRecord(ModificationRecordService.R_COMPANY,
-                            company.getCompanyID(), record);
+                    logger.info("Updated relevant company, id: {}", company.getCompanyID());
+                    modificationRecordService.insertRecord(R_COMPANY, company.getCompanyID(), record);
                 }
             }
 
@@ -301,8 +314,9 @@ public class CompanyServiceImpl implements CompanyService {
             for (var company : oldCompanies) {
                 if (!usageCheckService.isRelevantCompanyIDInUse(company.getCompanyID())) {
                     companyMapper.deleteRelevantCompany(company.getCompanyID());
-                    modificationRecordService.insertRecord(ModificationRecordService.R_COMPANY,
-                            company.getCompanyID(), usernameString + ModificationRecordService.DELETION_MSG);
+                    logger.info("Deleted relevant company, id: {}", company.getCompanyID());
+                    modificationRecordService.insertRecord(R_COMPANY, company.getCompanyID(),
+                            usernameString + DELETION_MSG + company);
                 }
             }
 
