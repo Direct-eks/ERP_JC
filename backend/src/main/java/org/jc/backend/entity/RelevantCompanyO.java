@@ -5,11 +5,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
 @ToString
-public class RelevantCompanyO {
+public class RelevantCompanyO implements ObjectComparison<RelevantCompanyO> {
     @NotNull(message = "companyID null error")
     private Integer companyID;
 
@@ -52,4 +53,72 @@ public class RelevantCompanyO {
 
     @NotNull(message = "isActive null error")
     private Integer isActive;
+
+    @Override
+    public RelevantCompanyO getOldObject(List<RelevantCompanyO> oldObjectList) {
+        for (var item : oldObjectList) {
+            if (this.companyID.equals(item.getCompanyID())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("DuplicatedCode")
+    public boolean formModificationRecord(RelevantCompanyO oldCompanyO, StringBuilder record) {
+        if (oldCompanyO == this) return true;
+        boolean bool = false;
+
+        if (!this.fullName.equals(oldCompanyO.getFullName())) {
+            bool = true;
+            record.append(String.format("全称：%s -> %s; ", oldCompanyO.getFullName(), this.fullName));
+        }
+        if (!this.phone.equals(oldCompanyO.getPhone())) {
+            bool = true;
+            record.append(String.format("电话：%s -> %s; ", oldCompanyO.getPhone(), this.phone));
+        }
+        if (!this.contactPerson.equals(oldCompanyO.getContactPerson())) {
+            bool = true;
+            record.append(String.format("联系人：%s -> %s; ", oldCompanyO.getContactPerson(), this.contactPerson));
+        }
+        if (!this.contactNumber.equals(oldCompanyO.getContactNumber())) {
+            bool = true;
+            record.append(String.format("联系电话：%s -> %s; ", oldCompanyO.getContactNumber(), this.contactNumber));
+        }
+        if (!this.address.equals(oldCompanyO.getAddress())) {
+            bool = true;
+            record.append(String.format("地址：%s -> %s; ", oldCompanyO.getAddress(), this.address));
+        }
+        if (!this.fax.equals(oldCompanyO.getFax())) {
+            bool = true;
+            record.append(String.format("传真：%s -> %s; ", oldCompanyO.getFax(), this.fax));
+        }
+        if (!this.zipcode.equals(oldCompanyO.getZipcode())) {
+            bool = true;
+            record.append(String.format("邮编：%s -> %s; ", oldCompanyO.getZipcode(), this.zipcode));
+        }
+        if (!this.email.equals(oldCompanyO.getEmail())) {
+            bool = true;
+            record.append(String.format("邮箱：%s -> %s; ", oldCompanyO.getEmail(), this.email));
+        }
+        if (!this.website.equals(oldCompanyO.getWebsite())) {
+            bool = true;
+            record.append(String.format("网址：%s -> %s; ", oldCompanyO.getWebsite(), this.website));
+        }
+        if (!this.categoryID.equals(oldCompanyO.getCategoryID())) {
+            bool = true;
+            record.append(String.format("分类：%s -> %s; ", oldCompanyO.getCategoryID(), this.categoryID));
+        }
+        if (!this.remark.equals(oldCompanyO.getRemark())) {
+            bool = true;
+            record.append(String.format("说明：%s -> %s; ", oldCompanyO.getRemark(), this.remark));
+        }
+        if (!this.isActive.equals(oldCompanyO.getIsActive())) {
+            bool = true;
+            record.append(String.format("状态：%s -> %s; ", oldCompanyO.getIsActive(), this.isActive));
+        }
+
+        return bool;
+    }
 }
