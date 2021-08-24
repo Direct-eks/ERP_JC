@@ -202,7 +202,7 @@ export default {
             nameSearchField: '',
             phoneSearchField: '',
 
-            treeLevel: {label: '', areaID: -1, children: []},
+            treeLevel: {label: '', categoryID: -1, children: []},
 
             editPanelOpen: false,
             editIndex: -1,
@@ -290,7 +290,7 @@ export default {
                 Object.assign(this.companyData, this.currentRow[0])
             }
             else {
-                if (this.treeLevel.areaID === -1) {
+                if (this.treeLevel.categoryID === -1) {
                     this.$store.commit('setSnackbar', {
                         message: '未选中分类', color: 'warning'
                     })
@@ -300,7 +300,7 @@ export default {
                 this.editIndex = -1
                 Object.assign(this.companyData, this.defaultCompanyData)
                 this.companyData.companyID = this.newItemIndex--
-                this.companyData.areaID = this.treeLevel.areaID
+                this.companyData.areaID = this.treeLevel.categoryID
             }
         },
         saveEdit() {
@@ -323,12 +323,12 @@ export default {
             this.currentRow = []
         },
         saveChanges() {
-            if (this.treeLevel.areaID === -1 || this.tableData.length === 0) return
+            if (this.treeLevel.categoryID === -1 || this.tableData.length === 0) return
 
             this.$postRequest(this.$api.updateCompaniesWithAreaID, {
                 elements: this.tableData
             }, {
-                areaID: this.treeLevel.areaID
+                areaID: this.treeLevel.categoryID
             }).then(() => {
                 this.$store.commit('setSnackbar', {
                     message: '保存成功', color: 'success'

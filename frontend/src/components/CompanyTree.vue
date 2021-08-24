@@ -87,7 +87,7 @@ export default {
             if (!this.selectForSearch) return
 
             if (val.children.length === 0) { // end node
-                const result = this.$store.getters.companies(val.areaID)
+                const result = this.$store.getters.companies(val.categoryID)
                 if (result) {
                     this.sendResult(result)
                     return
