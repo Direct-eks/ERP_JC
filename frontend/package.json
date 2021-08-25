@@ -43,7 +43,7 @@
         "fibers": "^5.0.0",
         "html-webpack-plugin": "5.3.2",
         "mini-css-extract-plugin": "2.2.0",
-        "sass": "1.38.0",
+        "sass": "~1.32.13",
         "sass-loader": "12.1.0",
         "style-loader": "3.2.1",
         "url-loader": "4.1.1",
