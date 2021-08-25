@@ -67,6 +67,7 @@ export default {
             queries: {
                 companyID: -1,
                 companyName: '',
+                companyClassificationToShow: 'customer'
             },
         }
     },

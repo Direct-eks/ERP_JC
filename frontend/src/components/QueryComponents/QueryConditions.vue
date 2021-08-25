@@ -22,7 +22,8 @@
                         单位助选
                     </v-btn>
                 </template>
-                <CompanySearch @fullSearchChoose="companySearchChooseAction">
+                <CompanySearch :classificationToShow="queries.companyClassificationToShow"
+                               @fullSearchChoose="companySearchChooseAction">
                 </CompanySearch>
             </v-dialog>
         </v-col>

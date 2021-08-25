@@ -71,6 +71,13 @@ export default {
     components: {
         CompanyTree: () => import("~/components/CompanyTree")
     },
+    props: {
+        classificationToShow: {
+            type: String,
+            required: false,
+            default: undefined
+        }
+    },
     data() {
         return {
             mdiClose,
@@ -99,8 +106,17 @@ export default {
             this.$emit('fullSearchChoose')
         },
         treeSelect(data) {
+            const processedData = []
+            if (this.classificationToShow) {
+                const val = this.classificationToShow === 'supplier' ? '供应商' : '客户'
+                for (const item of data) {
+                    if (item.classification === val) {
+                        processedData.push(item)
+                    }
+                }
+            }
+            this.tableData = processedData
             this.currentRow = []
-            this.tableData = data
         },
         searchCompanies() {
             if (this.phone === '' && this.name === '') return
