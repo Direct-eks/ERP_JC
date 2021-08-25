@@ -21,7 +21,7 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "6_Initial_Bank_Balance",
+    name: "Initial_Bank_Balance",
     components: {
 
     },

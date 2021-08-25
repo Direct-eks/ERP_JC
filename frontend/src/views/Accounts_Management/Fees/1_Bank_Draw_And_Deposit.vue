@@ -13,6 +13,12 @@
         </v-card-title>
         <v-card-text>
 
+            <FeeComponent mode="bank"></FeeComponent>
+
+            <v-divider class="my-2"></v-divider>
+
+            <FeeQueryComponent prefix=""></FeeQueryComponent>
+
         </v-card-text>
     </v-card>
 </template>
@@ -21,9 +27,12 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "1_Bank_Draw_And_Deposit",
+    name: "Bank_Draw_And_Deposit",
     components: {
-
+        FeeComponent: () => import(/* webpackChunkName: "FeesComponent" */
+            '~/components/AccountsManagementComponents/FeesComponent'),
+        FeeQueryComponent: () => import(/* webpackChunkName: "FeeQueryComponent" */
+            '~/components/AccountsManagementComponents/FeeQueryComponent')
     },
     data() {
         return {

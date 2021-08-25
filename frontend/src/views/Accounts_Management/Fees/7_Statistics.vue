@@ -21,7 +21,7 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "7_Statistics",
+    name: "Statistics",
     components: {
 
     },

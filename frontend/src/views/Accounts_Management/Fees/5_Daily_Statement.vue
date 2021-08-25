@@ -21,7 +21,7 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "5_Daily_Statement",
+    name: "Daily_Statement",
     components: {
 
     },

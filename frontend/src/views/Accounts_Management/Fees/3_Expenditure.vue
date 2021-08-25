@@ -13,6 +13,12 @@
         </v-card-title>
         <v-card-text>
 
+            <FeeComponent mode="expenditure"></FeeComponent>
+
+            <v-divider class="my-2"></v-divider>
+
+            <FeeQueryComponent prefix=""></FeeQueryComponent>
+
         </v-card-text>
     </v-card>
 </template>
@@ -21,9 +27,10 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "3_Expenditure",
+    name: "Expenditure",
     components: {
-
+        FeeComponent: () => import('~/components/AccountsManagementComponents/FeesComponent'),
+        FeeQueryComponent: () => import('~/components/AccountsManagementComponents/FeeQueryComponent')
     },
     data() {
         return {

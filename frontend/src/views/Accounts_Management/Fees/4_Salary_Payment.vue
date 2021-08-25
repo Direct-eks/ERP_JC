@@ -13,6 +13,12 @@
         </v-card-title>
         <v-card-text>
 
+            <FeeComponent mode="salary"></FeeComponent>
+
+            <v-divider class="my-2"></v-divider>
+
+            <FeeQueryComponent prefix=""></FeeQueryComponent>
+
         </v-card-text>
     </v-card>
 </template>
@@ -21,9 +27,10 @@
 import {mdiArrowLeft} from "@mdi/js";
 
 export default {
-    name: "4_Salary_Payment",
+    name: "Salary_Payment",
     components: {
-
+        FeeComponent: () => import('~/components/AccountsManagementComponents/FeesComponent'),
+        FeeQueryComponent: () => import('~/components/AccountsManagementComponents/FeeQueryComponent')
     },
     data() {
         return {
