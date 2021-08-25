@@ -17,6 +17,7 @@ public class FeeEntryDetailO {
     @NotNull(message = "feeCategoryID blank error")
     @Min(value = 0, message = "feeCategoryID value error")
     private Integer feeCategoryID;
+    private String feeCategoryName;
 
     @NotNull(message = "remark null error")
     private String remark;

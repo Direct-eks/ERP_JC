@@ -12,10 +12,19 @@ public class FeeEntryDO {
     private String entryDate;
     private String creationDate;
     private String drawer;
-    private int source_account_id;
-    private int destination_account_id;
+
+    private int sourceAccountId;
+    private String sourceAccountName;
+
+    private int destinationAccountId;
+    private String destinationAccountName;
+
     private String amount;
     private String number;
+
+    private int departmentID;
+    private String departmentName;
+
     private String remark;
     private int isBookKeeping;
     private int isVerified;

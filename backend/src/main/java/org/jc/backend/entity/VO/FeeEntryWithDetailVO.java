@@ -29,9 +29,11 @@ public class FeeEntryWithDetailVO {
 
     @NotNull(message = "sourceAccountId null error")
     private Integer sourceAccountId;
+    private String sourceAccountName;
 
     @NotNull(message = "destinationAccountId null error")
     private Integer destinationAccountId;
+    private String destinationAccountName;
 
     @NotNull(message = "amount null error")
     @NotBlank(message = "amount blank error")
@@ -39,6 +41,11 @@ public class FeeEntryWithDetailVO {
 
     @NotNull(message = "number null error")
     private String number;
+
+    @NotNull(message = "departmentID null error")
+    @Min(value = 0, message = "部门不能为空")
+    private Integer departmentID;
+    private String departmentName;
 
     @NotNull(message = "remark null error")
     private String remark;
