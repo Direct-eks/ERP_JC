@@ -15,7 +15,6 @@ public class BackendApplication {
     private static final Logger logger = LoggerFactory.getLogger(BackendApplication.class);
 
     public static void main(String[] args) {
-//        SpringProperties.setProperty("spring.index.ignore", ignoreIndex);
         SpringApplication.run(BackendApplication.class, args);
         logger.info("Application started!");
     }

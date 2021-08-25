@@ -46,6 +46,9 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
 
+swagger:
+  enable: false
+
 logging:
   config: classpath:log4j2.yaml
 #  level:
