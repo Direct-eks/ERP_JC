@@ -29,6 +29,18 @@
         where property_name = 'last_backup_time'
     </update>
 
+    <select id="queryAutoBackupStatus" resultType="int">
+        select property_value
+        from miscellaneous_data
+        where property_name = 'is_auto_backup_enabled'
+    </select>
+
+    <update id="updateAutoBackupStatus">
+        update miscellaneous_data
+        set property_value = #{status}
+        where property_name = 'is_auto_backup_enabled'
+    </update>
+
     <select id="queryPermittedRoundingAmountByUser" resultType="java.lang.String">
         select property_value2
         from miscellaneous_data

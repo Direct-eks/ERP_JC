@@ -68,6 +68,32 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public boolean isAutoBackupEnabled() {
+        try {
+            return miscellaneousDataMapper.queryAutoBackupStatus() == 1;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateAutoBackupStatus(int status) {
+        try {
+            miscellaneousDataMapper.updateAutoBackupStatus(status);
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
     @Transactional
     @Override
     public void backupDatabase() throws GlobalParamException {
@@ -79,6 +105,10 @@ public class MiscellaneousDataServiceImpl implements MiscellaneousDataService {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("backup failed");
             throw new GlobalParamException("备份失败");
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("backup time update failed");
+            throw e;
         }
     }
 

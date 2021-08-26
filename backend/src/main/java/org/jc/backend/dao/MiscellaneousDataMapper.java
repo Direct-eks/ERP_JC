@@ -15,6 +15,8 @@ public interface MiscellaneousDataMapper {
 
     String queryLastBackupTime();
     void updateLastBackupTime();
+    int queryAutoBackupStatus();
+    void updateAutoBackupStatus(int status);
 
     String queryPermittedRoundingAmountByUser(String username);
     void insertPermittedRoundingAmountByUser(String username, String amount);

@@ -1,5 +1,6 @@
 package org.jc.backend.utils;
 
+import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.service.MiscellaneousDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +23,20 @@ public class ScheduledTask {
     }
 
     // delay 1 hour, run every 1 hour
-    @Scheduled(initialDelay = 1000 * 10 * 60, fixedDelay = 1000 * 60 * 60)
-    public void calculateStockPrices() {
-        logger.info("database backup task begin");
+    @Scheduled(initialDelay = 1000 * 60 * 60, fixedDelay = 1000 * 60 * 60)
+    public void autoDatabaseBackup() {
+        logger.info("database auto backup task start");
 
-        try {
-            MyUtils.databaseBackup();
-        } catch (IOException e) {
+        if (!miscellaneousDataService.isAutoBackupEnabled()) {
+            logger.info("database auto backup disabled, task ended");
             return;
         }
 
-        miscellaneousDataService.updateLastBackupTime();
-        logger.info("database backup task end");
+        try {
+            miscellaneousDataService.backupDatabase();
+        } catch (GlobalParamException e) {
+            return;
+        }
+        logger.info("database auto backup task finished");
     }
 }

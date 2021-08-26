@@ -120,6 +120,8 @@ const api = {
     /* ------ /miscellaneousData ------*/
     allTaxRates: '/miscellaneousData/getAllTaxRateOptions', // GET
     lastBackupTime: '/miscellaneousData/getLastBackupTime', // GET
+    getAutoBackupStatus: '/miscellaneousData/getAutoBackupStatus', // GET
+    updateAutoBackupStatus: '/miscellaneousData/updateAutoBackupStatus', // POST
     backupDatabase: '/miscellaneousData/backupDatabase', // POST
     auditMonths: '/miscellaneousData/getAuditMonths', // GET
 

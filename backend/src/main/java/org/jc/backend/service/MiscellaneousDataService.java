@@ -12,6 +12,8 @@ public interface MiscellaneousDataService {
 
     String getLastBackupTime();
     void updateLastBackupTime();
+    boolean isAutoBackupEnabled();
+    void updateAutoBackupStatus(int status);
     void backupDatabase() throws GlobalParamException;
 
     String getPermittedRoundingAmountByUser(String username);

@@ -9,10 +9,7 @@ import org.jc.backend.service.MiscellaneousDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,6 +44,22 @@ public class MiscellaneousDataController {
         logger.info("GET Request to /miscellaneousData/getLastBackupTime");
 
         return miscellaneousDataService.getLastBackupTime();
+    }
+
+    @ApiOperation(value = "", response = Integer.class)
+    @GetMapping("/getAutoBackupStatus")
+    public Integer getAutoBackupStatus() {
+        logger.info("GET Request to /miscellaneousData/getAutoBackupStatus");
+
+        return miscellaneousDataService.isAutoBackupEnabled() ? 1 : 0;
+    }
+
+    @ApiOperation(value = "", response = void.class)
+    @PostMapping("/updateAutoBackupStatus")
+    public void updateAutoBackupStatus(@RequestParam("status") int status) {
+        logger.info("POST Request to /miscellaneousData/updateAutoBackupStatus: {}", status);
+
+        miscellaneousDataService.updateAutoBackupStatus(status);
     }
 
     @ApiOperation(value = "", response = void.class)
