@@ -4,12 +4,17 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jc.backend.dao.FeesMapper;
+import org.jc.backend.entity.DO.FeeEntryDO;
 import org.jc.backend.entity.FeeCategoryO;
+import org.jc.backend.entity.FeeEntryDetailO;
+import org.jc.backend.entity.VO.FeeEntryWithDetailVO;
 import org.jc.backend.service.FeesService;
 import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.UsageCheckService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,4 +102,43 @@ public class FeesServiceImpl implements FeesService {
         }
     }
 
+
+    @Transactional
+    @Override
+    public void createEntry(FeeEntryWithDetailVO entryWithDetailVO, String prefix) {
+        try {
+            FeeEntryDO feeEntryDO = new FeeEntryDO();
+            BeanUtils.copyProperties(entryWithDetailVO, feeEntryDO);
+            List<FeeEntryDetailO> detailList = new ArrayList<>(entryWithDetailVO.getFeeDetails());
+
+            String entryDate = feeEntryDO.getEntryDate();
+            int count = feesMapper.countNumberOfEntriesOfGivenDate(entryDate, prefix);
+            String newSerial = MyUtils.formNewSerial(prefix, count, entryDate);
+
+            feeEntryDO.setFeeEntryID(newSerial);
+            feesMapper.insertNewEntry(feeEntryDO);
+
+            for (var detailO : detailList) {
+                detailO.setFeeEntryID(newSerial);
+                feesMapper.insertNewDetail(detailO);
+            }
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("insert failed");
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateEntry(FeeEntryWithDetailVO entryWithDetailVO) {
+        try {
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
+    }
 }

@@ -3,6 +3,7 @@ package org.jc.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -23,5 +24,7 @@ public class FeeEntryDetailO {
     private String remark;
 
     @NotNull(message = "amount null error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "amount value error")
     private String amount;
 }

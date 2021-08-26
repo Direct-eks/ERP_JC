@@ -3,10 +3,14 @@ package org.jc.backend.entity.VO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jc.backend.config.validation.DecimalValidation;
 import org.jc.backend.entity.FeeEntryDetailO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -27,19 +31,19 @@ public class FeeEntryWithDetailVO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
-    @NotNull(message = "sourceAccountId null error")
     private Integer sourceAccountId;
     private String sourceAccountName;
 
-    @NotNull(message = "destinationAccountId null error")
     private Integer destinationAccountId;
     private String destinationAccountName;
 
     @NotNull(message = "amount null error")
-    @NotBlank(message = "amount blank error")
+    @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
+            message = "amount value error")
     private String amount;
 
     @NotNull(message = "number null error")
+    @NotBlank(message = "number blank error")
     private String number;
 
     @NotNull(message = "departmentID null error")
@@ -60,7 +64,6 @@ public class FeeEntryWithDetailVO {
     @Max(value = 1, message = "isVerified max value error")
     private Integer isVerified;
 
-    @NotEmpty(message = "feeDetails empty error")
     @Valid
     private List<FeeEntryDetailO> feeDetails;
 }
