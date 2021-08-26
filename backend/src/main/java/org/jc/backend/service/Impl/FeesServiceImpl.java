@@ -107,7 +107,7 @@ public class FeesServiceImpl implements FeesService {
 
     @Transactional
     @Override
-    public void createEntry(FeeEntryWithDetailVO entryWithDetailVO, String prefix) {
+    public void createEntry(FeeEntryWithDetailVO entryWithDetailVO, String prefix, boolean hasDetails) {
         try {
             FeeEntryDO feeEntryDO = new FeeEntryDO();
             BeanUtils.copyProperties(entryWithDetailVO, feeEntryDO);
@@ -119,15 +119,52 @@ public class FeesServiceImpl implements FeesService {
 
             feeEntryDO.setFeeEntryID(newSerial);
             feesMapper.insertNewEntry(feeEntryDO);
+            logger.info("Inserted new fee entry: {}", newSerial);
 
-            for (var detailO : detailList) {
-                detailO.setFeeEntryID(newSerial);
-                feesMapper.insertNewDetail(detailO);
+            if (hasDetails) {
+                for (var detailO : detailList) {
+                    detailO.setFeeEntryID(newSerial);
+                    feesMapper.insertNewDetail(detailO);
+                    logger.info("Inserted new fee details: {}", detailO.getFeeDetailEntryID());
+                }
             }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("insert failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<FeeEntryWithDetailVO> getEntriesInDateRange(String startDate, String endDate,
+                                                            String prefix, boolean hasDetails) {
+        try {
+            List<FeeEntryDO> entries = feesMapper.queryEntriesInDateRange(startDate, endDate, prefix);
+            List<FeeEntryWithDetailVO> entryVOs = new ArrayList<>(entries.size());
+
+            if (hasDetails) {
+                for (var entry : entries) {
+                    FeeEntryWithDetailVO vo = new FeeEntryWithDetailVO();
+                    BeanUtils.copyProperties(entry, vo);
+                    var details = feesMapper.queryDetailsByEntryID(entry.getFeeEntryID());
+                    vo.setFeeDetails(details);
+                    entryVOs.add(vo);
+                }
+            }
+            else {
+                for (var entry : entries) {
+                    FeeEntryWithDetailVO vo = new FeeEntryWithDetailVO();
+                    BeanUtils.copyProperties(entry, vo);
+                    entryVOs.add(vo);
+                }
+            }
+            return entryVOs;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

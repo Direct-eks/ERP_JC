@@ -66,9 +66,9 @@
         <result property="entryDate" column="entry_date"/>
         <result property="creationDate" column="creation_date"/>
         <result property="drawer" column="drawer"/>
-        <result property="sourceAccountId" column="source_account_id"/>
+        <result property="sourceAccountID" column="source_account_id"/>
         <result property="sourceAccountName" column="source_name"/>
-        <result property="destinationAccountId" column="destination_account_id"/>
+        <result property="destinationAccountID" column="destination_account_id"/>
         <result property="destinationAccountName" column="dest_name"/>
         <result property="amount" column="amount"/>
         <result property="number" column="number"/>

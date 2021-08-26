@@ -13,10 +13,10 @@ public class FeeEntryDO {
     private String creationDate;
     private String drawer;
 
-    private int sourceAccountId;
+    private int sourceAccountID;
     private String sourceAccountName;
 
-    private int destinationAccountId;
+    private int destinationAccountID;
     private String destinationAccountName;
 
     private String amount;

@@ -31,10 +31,10 @@ public class FeeEntryWithDetailVO {
     @NotBlank(message = "drawer blank error")
     private String drawer;
 
-    private Integer sourceAccountId;
+    private Integer sourceAccountID;
     private String sourceAccountName;
 
-    private Integer destinationAccountId;
+    private Integer destinationAccountID;
     private String destinationAccountName;
 
     @NotNull(message = "amount null error")

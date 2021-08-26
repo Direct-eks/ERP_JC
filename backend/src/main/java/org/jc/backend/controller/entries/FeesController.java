@@ -7,6 +7,7 @@ import org.jc.backend.entity.FeeCategoryO;
 import org.jc.backend.entity.VO.FeeEntryWithDetailVO;
 import org.jc.backend.entity.VO.ListUpdateVO;
 import org.jc.backend.service.FeesService;
+import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Indexed;
@@ -59,30 +60,33 @@ public class FeesController {
                 prefix, entryWithDetailVO);
 
         String serialPrefix;
+        boolean hasDetail = false;
         switch (prefix) {
             case "bank":
-                if (entryWithDetailVO.getSourceAccountId() == null ||
-                        entryWithDetailVO.getDestinationAccountId() == null) {
+                if (entryWithDetailVO.getSourceAccountID() == null ||
+                        entryWithDetailVO.getDestinationAccountID() == null) {
                     throw new GlobalParamException("at least one of the bank id null error");
                 }
                 serialPrefix = FEE_BANK;
                 break;
             case "income":
-                if (entryWithDetailVO.getDestinationAccountId() == null ||
+                if (entryWithDetailVO.getDestinationAccountID() == null ||
                         entryWithDetailVO.getFeeDetails().size() == 0) {
                     throw new GlobalParamException("bank id null error");
                 }
                 serialPrefix = FEE_INCOME;
+                hasDetail = true;
                 break;
             case "expenditure":
-                serialPrefix = FEE_EXPENDITURE;
-                if (entryWithDetailVO.getSourceAccountId() == null ||
+                if (entryWithDetailVO.getSourceAccountID() == null ||
                         entryWithDetailVO.getFeeDetails().size() == 0) {
                     throw new GlobalParamException("bank id null error");
                 }
+                serialPrefix = FEE_EXPENDITURE;
+                hasDetail = true;
                 break;
             case "salary":
-                if (entryWithDetailVO.getSourceAccountId() == null) {
+                if (entryWithDetailVO.getSourceAccountID() == null) {
                     throw new GlobalParamException("bank id null error");
                 }
                 serialPrefix = FEE_SALARY;
@@ -90,7 +94,41 @@ public class FeesController {
             default: throw new GlobalParamException("incorrect prefix");
         }
 
-        feesService.createEntry(entryWithDetailVO, serialPrefix);
+        feesService.createEntry(entryWithDetailVO, serialPrefix, hasDetail);
+    }
+
+    @ApiOperation(value = "", response = FeeEntryWithDetailVO.class)
+    @GetMapping("/getEntriesInDateRange")
+    public List<FeeEntryWithDetailVO> getEntriesInDateRange(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam(value = "prefix") String prefix
+    ) throws GlobalParamException {
+
+        MyUtils.parseAndCheckDateString(startDateString);
+        MyUtils.parseAndCheckDateString(endDateString);
+
+        String serialPrefix;
+        boolean hasDetail = false;
+        switch (prefix) {
+            case "bank":
+                serialPrefix = FEE_BANK;
+                break;
+            case "income":
+                serialPrefix = FEE_INCOME;
+                hasDetail = true;
+                break;
+            case "expenditure":
+                serialPrefix = FEE_EXPENDITURE;
+                hasDetail = true;
+                break;
+            case "salary":
+                serialPrefix = FEE_SALARY;
+                break;
+            default: throw new GlobalParamException("incorrect prefix");
+        }
+
+        return feesService.getEntriesInDateRange(startDateString, endDateString, serialPrefix, hasDetail);
     }
 
     @ApiOperation(value = "", response = void.class)

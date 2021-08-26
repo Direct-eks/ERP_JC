@@ -11,6 +11,8 @@ public interface FeesService {
     List<FeeCategoryO> getFeeCategories();
     void updateFeeCategories(List<FeeCategoryO> categories);
 
-    void createEntry(FeeEntryWithDetailVO entryWithDetailVO, String prefix);
+    void createEntry(FeeEntryWithDetailVO entryWithDetailVO, String prefix, boolean hasDetails);
+    List<FeeEntryWithDetailVO> getEntriesInDateRange(String startDate, String endDate,
+                                                     String prefix, boolean hasDetails);
     void updateEntry(FeeEntryWithDetailVO entryWithDetailVO, boolean containsDetail);
 }
