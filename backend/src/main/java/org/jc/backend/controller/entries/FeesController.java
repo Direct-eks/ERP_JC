@@ -55,6 +55,9 @@ public class FeesController {
             @RequestBody @Validated FeeEntryWithDetailVO entryWithDetailVO,
             @RequestParam("prefix") String prefix
     ) throws GlobalParamException {
+        logger.info("PUT Request to /fees/createEntry, prefix: {} data: {}",
+                prefix, entryWithDetailVO);
+
         String serialPrefix;
         switch (prefix) {
             case "bank":
@@ -92,7 +95,26 @@ public class FeesController {
 
     @ApiOperation(value = "", response = void.class)
     @PutMapping("/updateEntry")
-    public void updateEntry() {
+    public void updateEntry(
+            @RequestBody @Validated FeeEntryWithDetailVO entryWithDetailVO,
+            @RequestParam("prefix") String prefix
+    ) throws GlobalParamException {
+        logger.info("POST Request to /fees/updateEntry, prefix: {}, data {}",
+                prefix, entryWithDetailVO);
 
+        boolean containsDetail;
+        switch (prefix) {
+            case "bank":
+            case "salary":
+                containsDetail = false;
+                break;
+            case "income":
+            case "expenditure":
+                containsDetail = true;
+                break;
+            default: throw new GlobalParamException("incorrect prefix");
+        }
+
+        feesService.updateEntry(entryWithDetailVO, containsDetail);
     }
 }

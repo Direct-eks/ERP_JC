@@ -119,18 +119,24 @@
         from f_fee_entry as e join e_department as d on e.department_id = d.department_id
                               left join f_bank_account as b1 on e.source_account_id = b1.bank_account_id
                               left join f_bank_account as b2 on e.destination_account_id = b1.bank_account_id
-        where (e.entry_date between #{startDate} and #{endDate}) and fee_entry_id = #{id}
+        where fee_entry_id = #{id}
     </select>
 
     <update id="updateEntry">
         update f_fee_entry
         set amount = #{amount},
+            number = #{number},
+            department_id = #{departmentID},
+            remark = #{remark},
+            is_book_keeping = #{isBookKeeping},
+            is_verified = #{isVerified}
         where fee_entry_id = #{feeEntryID}
     </update>
 
     <update id="updateEntryDetail">
         update f_fee_detail_entry
-        set amount = #{amount},
+        set remark = #{remark},
+            amount = #{amount}
         where fee_detail_entry_id = #{feeDetailEntryID}
     </update>
 

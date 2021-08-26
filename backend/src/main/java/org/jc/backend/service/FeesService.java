@@ -12,5 +12,5 @@ public interface FeesService {
     void updateFeeCategories(List<FeeCategoryO> categories);
 
     void createEntry(FeeEntryWithDetailVO entryWithDetailVO, String prefix);
-    void updateEntry(FeeEntryWithDetailVO entryWithDetailVO);
+    void updateEntry(FeeEntryWithDetailVO entryWithDetailVO, boolean containsDetail);
 }

@@ -18,8 +18,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.jc.backend.service.ModificationRecordService.DELETION_MSG;
 import static org.jc.backend.service.ModificationRecordService.FEE_CATEGORY;
@@ -132,13 +134,134 @@ public class FeesServiceImpl implements FeesService {
 
     @Transactional
     @Override
-    public void updateEntry(FeeEntryWithDetailVO entryWithDetailVO) {
+    public void updateEntry(FeeEntryWithDetailVO entryWithDetailVO, boolean containsDetail) {
+        Subject subject = SecurityUtils.getSubject();
+        String usernameString = "修改者：" + subject.getPrincipals().getPrimaryPrincipal() + "; ";
+
         try {
+            FeeEntryDO modifiedDO = new FeeEntryDO();
+            BeanUtils.copyProperties(entryWithDetailVO, modifiedDO);
+
+            String feeEntryID = entryWithDetailVO.getFeeEntryID();
+            FeeEntryDO originalDO = feesMapper.selectEntryForCompare(feeEntryID);
+
+            StringBuilder record = new StringBuilder(usernameString);
+            boolean entryChanged = false;
+            if (this.formModificationRecord(record, modifiedDO, originalDO)) {
+                entryChanged = true;
+                feesMapper.updateEntry(modifiedDO);
+                logger.info("Updated fees entry: {}", feeEntryID);
+            }
+
+            if (containsDetail) {
+                List<FeeEntryDetailO> modifiedDetails = entryWithDetailVO.getFeeDetails();
+                List<FeeEntryDetailO> originalDetails = feesMapper.queryDetailsByEntryID(feeEntryID);
+
+                boolean productsChanged = false;
+                for (var originalDetail : originalDetails) {
+                    boolean found = false;
+                    for (var modifiedDetail : modifiedDetails) {
+                        if (Objects.equals(modifiedDetail.getFeeDetailEntryID(), originalDetail.getFeeDetailEntryID())) {
+                            if (this.formModificationRecord(record, modifiedDetail, originalDetail)) {
+                                productsChanged = true;
+                                feesMapper.updateEntryDetail(modifiedDetail);
+                                logger.info("Updated fee detail: {}", originalDetail.getFeeDetailEntryID());
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        logger.error("deleted detail found, currently not supported");
+                        throw new RuntimeException();
+                    }
+                }
+
+                if (entryChanged || productsChanged) {
+                    modificationRecordService.insertRecord(feeEntryID, record);
+                }
+                else {
+                    logger.warn("nothing changed, begin rolling back");
+                    throw new RuntimeException();
+                }
+            }
+            else {
+                if (entryChanged) {
+                    modificationRecordService.insertRecord(feeEntryID, record);
+                }
+                else {
+                    logger.warn("nothing changed, begin rolling back");
+                    throw new RuntimeException();
+                }
+            }
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
             throw e;
         }
+    }
+
+    private boolean formModificationRecord(
+            StringBuilder record, FeeEntryDO modifiedDO, FeeEntryDO originalDO) {
+        boolean bool = false;
+
+        if (new BigDecimal(modifiedDO.getAmount())
+                .compareTo(new BigDecimal(originalDO.getAmount())) != 0) {
+            bool = true;
+            record.append(String.format("金额: %s -> %s; ",
+                    originalDO.getAmount(), modifiedDO.getAmount()));
+        }
+        if (!modifiedDO.getNumber().equals(originalDO.getNumber())) {
+            bool = true;
+            record.append(String.format("号码: %s -> %s; ",
+                    originalDO.getNumber(), originalDO.getNumber()));
+        }
+        if (modifiedDO.getDepartmentID() != originalDO.getDepartmentID()) {
+            bool = true;
+            record.append(String.format("部门: %s -> %s; ",
+                    originalDO.getDepartmentName(), modifiedDO.getDepartmentName()));
+        }
+        if (!modifiedDO.getRemark().equals(originalDO.getRemark())) {
+            bool = true;
+            record.append(String.format("摘要: %s -> %s; ",
+                    originalDO.getRemark(), modifiedDO.getRemark()));
+        }
+        if (modifiedDO.getIsBookKeeping() != originalDO.getIsBookKeeping()) {
+            bool = true;
+            record.append(String.format("记账: %d -> %d; ",
+                    originalDO.getIsBookKeeping(), modifiedDO.getIsBookKeeping()));
+        }
+        if (modifiedDO.getIsVerified() != originalDO.getIsVerified()) {
+            bool = true;
+            record.append(String.format("审核: %d -> %d; ",
+                    originalDO.getIsVerified(), modifiedDO.getIsVerified()));
+        }
+
+        return bool;
+    }
+
+    private boolean formModificationRecord(
+            StringBuilder record, FeeEntryDetailO modifiedO, FeeEntryDetailO originalO) {
+        boolean bool = false;
+
+        int id = originalO.getFeeDetailEntryID();
+        if (!modifiedO.getRemark().equals(originalO.getRemark())) {
+            bool = true;
+            record.append(String.format("条目(%d) 摘要: %s -> %s; ", id,
+                    originalO.getRemark(), modifiedO.getRemark()));
+        }
+        if (new BigDecimal(modifiedO.getAmount())
+                .compareTo(new BigDecimal(originalO.getAmount())) != 0) {
+            bool = true;
+            record.append(String.format("条目(%d) 金额: %s -> %s; ", id,
+                    originalO.getAmount(), modifiedO.getAmount()));
+        }
+
+        return bool;
+    }
+
+    public void calculateBalance() {
+
     }
 }
