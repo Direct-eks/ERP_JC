@@ -182,7 +182,7 @@ public class AccountsServiceImpl implements AccountsService {
                 case CompanyClassification.OTHER_RECV:
                     break;
                 default:
-                    throw new GlobalParamException("此公司为供应商/其他应付");
+                    throw new GlobalParamException("此公司为供应商/其它应付");
             }
 
             return generateEntryList(companyID);
@@ -206,7 +206,7 @@ public class AccountsServiceImpl implements AccountsService {
                 case CompanyClassification.OTHER_PAY:
                     break;
                 default:
-                    throw new GlobalParamException("此公司为客户/其他应收");
+                    throw new GlobalParamException("此公司为客户/其它应收");
             }
 
             return generateEntryList(companyID);

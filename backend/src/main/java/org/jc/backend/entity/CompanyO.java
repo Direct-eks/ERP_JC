@@ -35,7 +35,7 @@ public class CompanyO implements ObjectComparison<CompanyO> {
     private String fax;
 
     @NotNull(message = "classification null error")
-    @Pattern(regexp = "^(客户|供应商|其他应收|其他应付)$",
+    @Pattern(regexp = "^(客户|供应商|其它应收|其它应付)$",
             message = "客户类别输入错误")
     private String classification;
 

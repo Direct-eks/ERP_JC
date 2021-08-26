@@ -108,14 +108,18 @@ export default {
         treeSelect(data) {
             const processedData = []
             if (this.classificationToShow) {
-                const val = this.classificationToShow === 'supplier' ? '供应商' : '客户'
+                const val1 = this.classificationToShow === 'supplier' ? '供应商' : '客户'
+                const val2 = this.classificationToShow === 'supplier' ? '其它应付' : '其它应收'
                 for (const item of data) {
-                    if (item.classification === val) {
+                    if (item.classification === val1 || item.classification === val2) {
                         processedData.push(item)
                     }
                 }
+                this.tableData = processedData
             }
-            this.tableData = processedData
+            else {
+                this.tableData = data
+            }
             this.currentRow = []
         },
         searchCompanies() {

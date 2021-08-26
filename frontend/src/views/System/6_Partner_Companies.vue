@@ -196,7 +196,7 @@ export default {
             mdiArrowLeft,
 
             classificationOptions: [
-                '客户', '供应商', '其他应收', '其他应付'
+                '客户', '供应商', '其它应收', '其它应付'
             ],
             filterField: '',
             nameSearchField: '',
