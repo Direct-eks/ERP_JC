@@ -170,7 +170,9 @@
             <v-col cols="auto">
                 <v-dialog v-model="deletePopup" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="warning" v-on="on">删除</v-btn>
+                        <v-btn :disabled="form.acceptanceEntrySerial === ''" color="warning" v-on="on">
+                            删除
+                        </v-btn>
                     </template>
                     <v-card>
                         <v-card-title>确认删除？</v-card-title>

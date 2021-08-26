@@ -74,6 +74,8 @@ const api = {
     /* ------ /fees ------*/
     allFeeCategories: '/fees/getFeeCategories', // GET
     updateFeeCategories: '/fees/updateFeeCategories', // POST
+    createFeeEntry: '/fees/createEntry', // PUT
+    updateFeeEntry: '/fees/updateEntry', // POST
 
     /* ------ /inboundEntry ------*/
     completeInboundEntry: '/inboundEntry/completeEntry', // PATCH

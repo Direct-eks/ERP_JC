@@ -48,6 +48,14 @@ export default {
             required: true
         }
     },
+    watch: {
+        prefix: {
+            handler: function (val) {
+
+            },
+            immediate: true,
+        }
+    },
     data() {
         return {
             dateRange: [

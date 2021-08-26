@@ -60,7 +60,7 @@
             </v-row>
             <v-row dense>
                 <v-col v-if="!hideSourceBank" cols="auto">
-                    <v-select v-model="form.source_account_id"
+                    <v-select v-model="form.sourceAccountId"
                               :rules="rules.bankAccountID"
                               :items="bankAccountOptions"
                               item-value="bankAccountID"
@@ -73,7 +73,7 @@
                     </v-select>
                 </v-col>
                 <v-col v-if="!hideDestinationBank" cols="auto">
-                    <v-select v-model="form.destination_account_id"
+                    <v-select v-model="form.destinationAccountId"
                               :rules="rules.bankAccountID"
                               :items="bankAccountOptions"
                               item-value="bankAccountID"
@@ -122,25 +122,94 @@
                 </v-col>
             </v-row>
         </v-form>
-        <v-divider class="mt-3 mb-1"></v-divider>
-        <v-data-table v-if="!hideDetail"
-                      v-model="tableCurrentRow"
-                      :headers="tableHeaders"
-                      :items="tableData"
-                      item-key="feeDetailEntryID"
-                      show-select
-                      single-select
-                      checkbox-color="accent"
-                      @click:row="tableClick"
-                      @item-selected="tableClick2"
-                      height="25vh"
-                      calculate-widths
-                      disable-sort
-                      fixed-header
-                      hide-default-footer
-                      locale="zh-cn"
-                      dense>
-        </v-data-table>
+
+        <v-divider class="my-2"></v-divider>
+
+        <div class="d-flex">
+            <v-card v-if="!hideDetail" outlined>
+                <v-data-table v-model="tableCurrentRow"
+                              :headers="tableHeaders"
+                              :items="form.feeDetails"
+                              item-key="feeDetailEntryID"
+                              show-select
+                              single-select
+                              checkbox-color="accent"
+                              @click:row="tableClick"
+                              @item-selected="tableClick2"
+                              height="25vh"
+                              calculate-widths
+                              disable-sort
+                              fixed-header
+                              hide-default-footer
+                              locale="zh-cn"
+                              dense>
+                </v-data-table>
+            </v-card>
+
+            <v-row class="ml-6">
+                <v-spacer v-if="hideDetail"></v-spacer>
+                <v-col v-if="!hideDetail" cols="12">
+                    <v-dialog v-model="addNewPopup" max-width="600px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="primary" v-on="on">新增</v-btn>
+                        </template>
+                        <FeeDetailComponent :mode="mode" @createDetail="addNew">
+                        </FeeDetailComponent>
+                    </v-dialog>
+                </v-col>
+                <v-col :cols="hideDetail ? 'auto' : '12'">
+                    <v-dialog v-model="deletePopup" max-width="300px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn :disabled="form.feeEntryID === ''" color="warning" v-on="on">
+                                删除
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>确认删除？</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" @click="deletePopup = false">取消</v-btn>
+                                <v-btn color="success" @click="handleDelete">确认</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-col>
+                <v-col :cols="hideDetail ? 'auto' : '12'">
+                    <v-dialog v-model="submitPopup" max-width="300px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn :disabled="form.feeEntryID !== ''" color="primary" v-on="on">
+                                保存新单据
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>确认提交？</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" @click="submitPopup = false">取消</v-btn>
+                                <v-btn color="success" @click="saveNew">确认</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-col>
+                <v-col :cols="hideDetail ? 'auto' : '12'">
+                    <v-dialog v-model="submitPopup2" max-width="300px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn :disabled="form.feeEntryID === ''" color="accent" v-on="on">
+                                修改
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>确认提交？</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" @click="submitPopup2 = false">取消</v-btn>
+                                <v-btn color="success" @click="saveChange">确认</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-col>
+            </v-row>
+        </div>
     </v-container>
 </template>
 
@@ -148,7 +217,9 @@
 export default {
     name: "FeesComponent",
     components: {
-        DatePicker: () => import("~/components/DatePicker")
+        DatePicker: () => import('~/components/DatePicker'),
+        FeeDetailComponent: () => import(/* webpackChunkName: "FeeDetailComponent" */
+            '~/components/AccountsManagementComponents/FeeDetailComponent')
     },
     props: {
         mode: {
@@ -196,6 +267,11 @@ export default {
             hideDestinationBank: false,
             hideDetail: true,
 
+            addNewPopup: false,
+            deletePopup: false,
+            submitPopup: false,
+            submitPopup2: false,
+
             bookKeepingOptions: [
                 { value: 0, label: '保存' },
                 { value: 1, label: '审核' }
@@ -211,7 +287,7 @@ export default {
                 creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 drawer: this.$store.getters.currentUser,
                 departmentID: -1,
-                source_account_id: -1, destination_account_id: -1,
+                sourceAccountId: -1, destinationAccountId: -1,
                 amount: '0', number: '', remark: '',
                 isBookKeeping: 0, isVerified: 0,
                 feeDetails: [],
@@ -224,12 +300,10 @@ export default {
 
             tableHeaders: [
                 { text: '类别', value: 'feeCategoryName', width: '110px' },
-                { text: '摘要', value: 'remark', width: '180px' },
+                { text: '摘要', value: 'remark', width: '220px' },
                 { text: '金额', value: 'amount', width: '110px' },
             ],
-            tableData: [],
             tableCurrentRow: [],
-            newItemIndex: -1,
         }
     },
     computed: {
@@ -269,15 +343,61 @@ export default {
                 this.tableCurrentRow = [row.item]
             }
         },
-        addNew() {
-            this.tableData.push({
-                feeDetailEntryID: this.newItemIndex--,
-                feeEntryID: -1,
-                feeCategoryID: -1,
-                feeCategoryName: '',
-                remark: '',
-                amount: '',
-            })
+        addNew(val) {
+            if (val) {
+                this.form.feeDetails.push(val)
+            }
+            this.addNewPopup = false
+        },
+        handleDelete() {
+
+        },
+        saveNew() {
+            this.submitPopup = false
+
+            if (this.form.feeEntryID !== '') {
+                this.$store.commit('setSnackbar', {
+                    message: '不能新增', color: 'warning'
+                })
+                return
+            }
+
+            if (!this.hideDetail && this.form.feeDetails.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '明细不能为空', color: 'warning'
+                })
+                return
+            }
+
+            if (this.$refs.form.validate()) {
+                this.$putRequest(this.$api.createFeeEntry, this.form, {
+                    prefix: this.mode
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '保存成功', color: 'success'
+                    })
+                }).catch(() => {})
+            }
+        },
+        saveChange() {
+            this.submitPopup2 = false
+
+            if (!this.hideDetail && this.form.feeDetails.length === 0) {
+                this.$store.commit('setSnackbar', {
+                    message: '明细不能为空', color: 'warning'
+                })
+                return
+            }
+
+            if (this.$refs.form.validate()) {
+                this.$postRequest(this.$api.updateFeeEntry, this.form, {
+                    prefix: this.mode
+                }).then(() => {
+                    this.$store.commit('setSnackbar', {
+                        message: '保存成功', color: 'success'
+                    })
+                }).catch(() => {})
+            }
         }
     }
 }
