@@ -23,7 +23,7 @@
                       checkbox-color="accent"
                       @click:row="tableClick"
                       @item-selected="tableClick2"
-                      height="45vh"
+                      height="40vh"
                       calculate-widths
                       disable-sort
                       fixed-header
@@ -66,7 +66,7 @@ export default {
             queryTableHeaders: [
                 { text: '日期', value: 'entryDate', width: '110px' },
                 { text: '单据号', value: 'feeEntryID', width: '140px' },
-                { text: '部门', value: 'companyAbbreviatedName', width: '140px' },
+                { text: '部门', value: 'departmentName', width: '140px' },
                 { text: '收款去向', value: 'destinationAccountName', width: '250px' },
                 { text: '票号', value: 'number', width: '140px' },
                 { text: '金额', value: 'amount', width: '110px' },
@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         query() {
-            this.$getRequest(this.$api.getAcceptanceEntryInDateRange, {
+            this.$getRequest(this.$api.getFeeEntriesInDateRange, {
                 startDate: this.dateRange[0],
                 endDate: this.dateRange[1],
                 prefix: this.prefix

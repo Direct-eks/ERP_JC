@@ -60,7 +60,7 @@
             </v-row>
             <v-row dense>
                 <v-col v-if="!hideSourceBank" cols="auto">
-                    <v-select v-model="form.sourceAccountId"
+                    <v-select v-model="form.sourceAccountID"
                               :rules="rules.bankAccountID"
                               :items="bankAccountOptions"
                               item-value="bankAccountID"
@@ -73,7 +73,7 @@
                     </v-select>
                 </v-col>
                 <v-col v-if="!hideDestinationBank" cols="auto">
-                    <v-select v-model="form.destinationAccountId"
+                    <v-select v-model="form.destinationAccountID"
                               :rules="rules.bankAccountID"
                               :items="bankAccountOptions"
                               item-value="bankAccountID"
@@ -92,7 +92,7 @@
                                   type="number"
                                   @change="handlePaymentAmountChange"
                                   outlined
-                                  :readonly="displayMode"
+                                  :readonly="!hideDetail"
                                   dense
                                   style="width: 160px">
                     </v-text-field>
@@ -136,13 +136,36 @@
                               checkbox-color="accent"
                               @click:row="tableClick"
                               @item-selected="tableClick2"
-                              height="25vh"
+                              height="20vh"
                               calculate-widths
                               disable-sort
                               fixed-header
                               hide-default-footer
                               locale="zh-cn"
                               dense>
+                    <template v-if="modificationMode" v-slot:item.remark="{ item }">
+                        <v-edit-dialog :return-value="item.remark">
+                            {{ item.remark }}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.remark" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)">
+                                </v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+                    <template v-if="modificationMode" v-slot:item.amount="{ item }">
+                        <v-edit-dialog :return-value="item.amount"
+                                       @close="handleAmountChange(item)"
+                                       @cancel="handleAmountChange(item)"
+                                       @submit="handleAmountChange(item)">
+                            {{ item.amount }}
+                            <template v-slot:input>
+                                <v-text-field v-model="item.amount" single-line
+                                              @focus="$event.target.setSelectionRange(0, 100)">
+                                </v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
                 </v-data-table>
             </v-card>
 
@@ -151,17 +174,17 @@
                 <v-col v-if="!hideDetail" cols="12">
                     <v-dialog v-model="addNewPopup" max-width="600px">
                         <template v-slot:activator="{ on }">
-                            <v-btn color="primary" v-on="on">新增</v-btn>
+                            <v-btn color="primary" v-on="on">新增条目</v-btn>
                         </template>
                         <FeeDetailComponent :mode="mode" @createDetail="addNew">
                         </FeeDetailComponent>
                     </v-dialog>
                 </v-col>
-                <v-col :cols="hideDetail ? 'auto' : '12'">
+                <v-col v-if="!hideDetail" cols="12">
                     <v-dialog v-model="deletePopup" max-width="300px">
                         <template v-slot:activator="{ on }">
-                            <v-btn :disabled="form.feeEntryID === ''" color="warning" v-on="on">
-                                删除
+                            <v-btn :disabled="tableCurrentRow.length === 0" color="warning" v-on="on">
+                                删除条目
                             </v-btn>
                         </template>
                         <v-card>
@@ -174,10 +197,10 @@
                         </v-card>
                     </v-dialog>
                 </v-col>
-                <v-col :cols="hideDetail ? 'auto' : '12'">
+                <v-col v-if="!modificationMode" :cols="hideDetail ? 'auto' : '12'">
                     <v-dialog v-model="submitPopup" max-width="300px">
                         <template v-slot:activator="{ on }">
-                            <v-btn :disabled="form.feeEntryID !== ''" color="primary" v-on="on">
+                            <v-btn color="primary" v-on="on">
                                 保存新单据
                             </v-btn>
                         </template>
@@ -191,10 +214,10 @@
                         </v-card>
                     </v-dialog>
                 </v-col>
-                <v-col :cols="hideDetail ? 'auto' : '12'">
+                <v-col v-if="modificationMode" :cols="hideDetail ? 'auto' : '12'">
                     <v-dialog v-model="submitPopup2" max-width="300px">
                         <template v-slot:activator="{ on }">
-                            <v-btn :disabled="form.feeEntryID === ''" color="accent" v-on="on">
+                            <v-btn color="accent" v-on="on">
                                 修改
                             </v-btn>
                         </template>
@@ -207,6 +230,11 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
+                </v-col>
+                <v-col v-if="modificationMode" :cols="hideDetail ? 'auto' : '12'">
+                    <v-btn color="accent" @click="reset">
+                        放弃修改
+                    </v-btn>
                 </v-col>
             </v-row>
         </div>
@@ -234,10 +262,12 @@ export default {
     watch: {
         paramForm: {
             handler: function(val) {
-
+                if (!val.hasOwnProperty('feeEntryID')) return
+                if (val.feeEntryID === '') return
+                this.form = JSON.parse(JSON.stringify(val))
             },
             deep: true,
-            immediate: true
+            immediate: false
         }
     },
     beforeMount() {
@@ -259,6 +289,7 @@ export default {
 
         this.$store.dispatch('getDepartmentOptions')
         this.$store.dispatch('getBankAccounts')
+        Object.assign(this.emptyForm, this.form)
     },
     data() {
         return {
@@ -286,12 +317,13 @@ export default {
                 entryDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 creationDate: new Date().format("yyyy-MM-dd").substr(0, 10),
                 drawer: this.$store.getters.currentUser,
-                departmentID: -1,
-                sourceAccountId: -1, destinationAccountId: -1,
+                departmentID: -1, departmentName: '',
+                sourceAccountID: -1, destinationAccountID: -1,
                 amount: '0', number: '', remark: '',
                 isBookKeeping: 0, isVerified: 0,
                 feeDetails: [],
             },
+            emptyForm: {},
 
             rules: {
                 departmentID: [v => v > 0 || '请选择部门'],
@@ -299,8 +331,8 @@ export default {
             },
 
             tableHeaders: [
-                { text: '类别', value: 'feeCategoryName', width: '110px' },
-                { text: '摘要', value: 'remark', width: '220px' },
+                { text: '类别', value: 'feeCategoryName', width: '180px' },
+                { text: '摘要', value: 'remark', width: '260px' },
                 { text: '金额', value: 'amount', width: '110px' },
             ],
             tableCurrentRow: [],
@@ -322,6 +354,9 @@ export default {
             default: return ['', '']
             }
         },
+        modificationMode() {
+            return this.form.feeEntryID !== ''
+        }
     },
     methods: {
         handlePaymentAmountChange(item) {
@@ -343,14 +378,32 @@ export default {
                 this.tableCurrentRow = [row.item]
             }
         },
+        calculateTotalPrice() {
+            let total = this.$Big('0')
+            for (const item of this.form.feeDetails) {
+                total = total.add(item.amount)
+            }
+            this.form.amount = total.toString()
+        },
+        handleAmountChange(item) {
+            item.amount = this.$validateFloat(item.amount, true)
+            this.calculateTotalPrice()
+        },
         addNew(val) {
             if (val) {
                 this.form.feeDetails.push(val)
+                this.calculateTotalPrice()
             }
             this.addNewPopup = false
         },
         handleDelete() {
-
+            this.deletePopup = false
+            if (this.tableCurrentRow.length === 0) return
+            for (const item of this.tableCurrentRow) {
+                this.form.feeDetails.splice(this.form.feeDetails.indexOf(item), 1)
+            }
+            this.calculateTotalPrice()
+            this.tableCurrentRow = []
         },
         saveNew() {
             this.submitPopup = false
@@ -398,6 +451,9 @@ export default {
                     })
                 }).catch(() => {})
             }
+        },
+        reset() {
+            Object.assign(this.form, this.emptyForm)
         }
     }
 }

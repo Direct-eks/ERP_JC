@@ -13,11 +13,15 @@
         </v-card-title>
         <v-card-text>
 
-            <FeeComponent mode="salary"></FeeComponent>
+            <FeeComponent :paramForm="form"
+                          mode="salary">
+            </FeeComponent>
 
             <v-divider class="my-2"></v-divider>
 
-            <FeeQueryComponent prefix=""></FeeQueryComponent>
+            <FeeQueryComponent prefix="salary"
+                               @entryClick="handleTableClick">
+            </FeeQueryComponent>
 
         </v-card-text>
     </v-card>
@@ -35,10 +39,24 @@ export default {
     data() {
         return {
             mdiArrowLeft,
+
+            form: {
+                feeEntryID: '',
+                entryDate: '', creationDate: '',
+                drawer: '',
+                departmentID: -1, departmentName: '',
+                sourceAccountID: -1, sourceAccountName: '',
+                destinationAccountID: -1, destinationAccountName: '',
+                amount: '', number: '', remark: '',
+                isBookKeeping: 0, isVerified: 0,
+                feeDetails: [],
+            },
         }
     },
     methods: {
-
+        handleTableClick(val) {
+            Object.assign(this.form, val)
+        },
     }
 }
 </script>

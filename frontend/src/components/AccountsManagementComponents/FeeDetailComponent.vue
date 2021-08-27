@@ -129,6 +129,8 @@ export default {
                 return
             }
             this.$emit('createDetail', JSON.parse(JSON.stringify(this.form)))
+            this.emptyForm.feeCategoryID = this.form.feeCategoryID // preserve selection
+            this.emptyForm.feeCategoryName = this.form.feeCategoryName
             Object.assign(this.form, this.emptyForm)
             this.form.feeDetailEntryID = --this.newItemIndex
         }
