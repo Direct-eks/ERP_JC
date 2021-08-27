@@ -47,7 +47,6 @@ function getIPAddress() {
     }
 }
 const myIPAddress = getIPAddress();
-console.log(myIPAddress)
 
 
 const child = require('child_process')
