@@ -6,8 +6,14 @@
 
     <insert id="insertAccount" useGeneratedKeys="true" keyProperty="bankAccountID"
             keyColumn="bank_account_id">
-        insert into f_bank_account(name, account_number, remark, is_visible, in_use, initial_balance)
-        values(#{name}, #{accountNumber}, #{remark}, #{isVisible}, #{inUse}, #{initialBalance})
+        insert into f_bank_account(
+            name, account_number, remark, is_visible, in_use, initial_balance, in_or_out,
+            initial_remark, initial_date
+        )
+        values(
+            #{name}, #{accountNumber}, #{remark}, #{isVisible}, #{inUse}, #{initialBalance},
+            #{inOrOut}, #{initialRemark}, #{initialDate}
+        )
     </insert>
 
     <update id="updateAccount">
@@ -17,7 +23,10 @@
             remark = #{remark},
             is_visible = #{isVisible},
             in_use = #{inUse},
-            initial_balance = #{initialBalance}
+            initial_balance = #{initialBalance},
+            in_or_out = #{inOrOut},
+            initial_remark = #{initialRemark},
+            initial_date = #{initialDate}
         where bank_account_id = #{bankAccountID}
     </update>
 
@@ -34,16 +43,21 @@
         <result property="isVisible" column="is_visible"/>
         <result property="inUse" column="in_use"/>
         <result property="initialBalance" column="initial_balance"/>
+        <result property="inOrOut" column="in_or_out"/>
+        <result property="initialRemark" column="initial_remark"/>
+        <result property="initialDate" column="initial_date"/>
     </resultMap>
 
 
     <select id="queryAllAccounts" resultMap="bankAccountResultMap">
-        select bank_account_id, name, account_number, remark, is_visible, in_use, initial_balance
+        select bank_account_id, name, account_number, remark, is_visible, in_use,
+               initial_balance, in_or_out, initial_remark, initial_date
         from f_bank_account;
     </select>
 
     <select id="queryVisibleAccounts" resultMap="bankAccountResultMap">
-        select bank_account_id, name, account_number, remark, is_visible, in_use, initial_balance
+        select bank_account_id, name, account_number, remark, is_visible, in_use,
+               initial_balance, in_or_out, initial_remark, initial_date
         from f_bank_account
         where is_visible = 1
     </select>

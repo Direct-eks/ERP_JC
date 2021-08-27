@@ -5,10 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jc.backend.config.validation.DecimalValidation;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
@@ -24,7 +21,6 @@ public class BankAccountO implements ObjectComparison<BankAccountO> {
     private String name;
 
     @NotNull(message = "accountNumber null error")
-    @NotBlank(message = "账号不能为空白")
     private String accountNumber;
 
     @NotNull(message = "remark null error")
@@ -44,6 +40,17 @@ public class BankAccountO implements ObjectComparison<BankAccountO> {
     @DecimalValidation(type = DecimalValidation.ValidationTypeEnum.DECIMAL_2,
             message = "期初值格式错误")
     private String initialBalance;
+
+    @NotNull(message = "inOrOut null error")
+    @Pattern(regexp = "^[收支]$", message = "inOrOut value error")
+    private String inOrOut;
+
+    @NotNull(message = "initialRemark null error")
+    private String initialRemark;
+
+    @NotNull(message = "initialDate null error")
+    @NotBlank(message = "期初日期不能为空")
+    private String initialDate;
 
     @Override
     public BankAccountO getOldObject(List<BankAccountO> oldObjectList) {
@@ -84,6 +91,18 @@ public class BankAccountO implements ObjectComparison<BankAccountO> {
         if (!this.initialBalance.equals(oldAccountO.getInitialBalance())) {
             bool = true;
             record.append(String.format("期初：%s -> %s; ", oldAccountO.getInitialBalance(), this.initialBalance));
+        }
+        if (!this.inOrOut.equals(oldAccountO.getInOrOut())) {
+            bool = true;
+            record.append(String.format("借贷：%s -> %s; ", oldAccountO.getInOrOut(), this.inOrOut));
+        }
+        if (!this.initialRemark.equals(oldAccountO.getInitialRemark())) {
+            bool = true;
+            record.append(String.format("期初说明：%s -> %s; ", oldAccountO.getInitialRemark(), this.initialRemark));
+        }
+        if (!this.initialDate.equals(oldAccountO.getInitialDate())) {
+            bool = true;
+            record.append(String.format("期初日期：%s -> %s; ", oldAccountO.getInitialDate(), this.initialDate));
         }
 
         return bool;

@@ -31,6 +31,7 @@ const api = {
     /* ------ /bankAccount ------*/
     allBankAccounts: '/bankAccount/getAllAccounts', // GET
     visibleBankAccounts: '/bankAccount/getVisibleAccounts', // GET
+    updateBankAccounts: '/bankAccount/updateAccounts', // POSTall
 
     /* ------ /checkoutEntry ------*/
     createCheckoutEntry: '/checkoutEntry/createEntry', // PUT

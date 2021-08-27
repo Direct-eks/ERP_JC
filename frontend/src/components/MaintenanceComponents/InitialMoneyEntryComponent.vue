@@ -172,7 +172,7 @@ export default {
                     message: '保存成功', color: 'success'
                 })
                 this.$router.replace('/maintenance')
-            })
+            }).catch(() => {})
         }
     }
 }

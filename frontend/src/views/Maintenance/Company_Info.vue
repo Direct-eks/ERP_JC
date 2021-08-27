@@ -12,16 +12,20 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-
+            <BankAccountComponent></BankAccountComponent>
         </v-card-text>
     </v-card>
 </template>
 
 <script>
 import {mdiArrowLeft} from "@mdi/js";
+import BankAccountComponent from '~/components/Bank_Account'
 
 export default {
     name: "Company_Info",
+    components: {
+        BankAccountComponent
+    },
     data() {
         return {
             mdiArrowLeft,
