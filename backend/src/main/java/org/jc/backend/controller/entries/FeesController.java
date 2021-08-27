@@ -132,7 +132,7 @@ public class FeesController {
     }
 
     @ApiOperation(value = "", response = void.class)
-    @PutMapping("/updateEntry")
+    @PostMapping("/updateEntry")
     public void updateEntry(
             @RequestBody @Validated FeeEntryWithDetailVO entryWithDetailVO,
             @RequestParam("prefix") String prefix

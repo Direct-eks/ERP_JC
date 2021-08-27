@@ -28,4 +28,8 @@ public class FeeEntryDO {
     private String remark;
     private int isBookKeeping;
     private int isVerified;
+    private int isModified;
+
+    private String inOrOut;
+    private String balance;
 }

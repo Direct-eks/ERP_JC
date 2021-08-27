@@ -66,4 +66,8 @@ public class FeeEntryWithDetailVO {
 
     @Valid
     private List<FeeEntryDetailO> feeDetails;
+
+    private int isModified;
+    private String inOrOut;
+    private String balance;
 }

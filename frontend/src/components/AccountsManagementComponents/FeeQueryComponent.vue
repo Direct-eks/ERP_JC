@@ -27,9 +27,14 @@
                       calculate-widths
                       disable-sort
                       fixed-header
-                      hide-default-footer
+                      :footer-props="{'items-per-page-options': [20,50,-1]}"
                       locale="zh-cn"
                       dense>
+            <template v-slot:item.feeEntryID="{ item }">
+                <v-chip :color="item.isModified === 1 ? 'red' : null">
+                    {{ item.feeEntryID }}
+                </v-chip>
+            </template>
         </v-data-table>
     </div>
 </template>
@@ -64,8 +69,8 @@ export default {
             ],
 
             queryTableHeaders: [
-                { text: '日期', value: 'entryDate', width: '110px' },
                 { text: '单据号', value: 'feeEntryID', width: '140px' },
+                { text: '日期', value: 'entryDate', width: '110px' },
                 { text: '部门', value: 'departmentName', width: '140px' },
                 { text: '收款去向', value: 'destinationAccountName', width: '250px' },
                 { text: '票号', value: 'number', width: '140px' },
