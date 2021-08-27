@@ -1,4 +1,9 @@
-const {app, ipcMain, BrowserWindow, dialog, Menu} = require('electron')
+const {
+    app,
+    BrowserWindow,
+    dialog,
+    Menu,
+} = require('electron')
 
 /* ---------------------- */
 
@@ -59,6 +64,13 @@ springBootLauncher.on('message', (message) => {
             },
             useContentSize: true
         })
+        // proxy/redirection
+        const filter = { urls: ['http://localhost/*'] }
+        mainWin.webContents.session.webRequest.onBeforeRequest(filter, (detail, callback) => {
+            detail.url = 'http://' + myIPAddress + detail.url.substring(16)
+            callback({ url: detail.url })
+        })
+
         mainWin.loadFile(__dirname + '/webpages/index.html', {hash: '#/Login'})
             .then(() => {
                 launchWin.destroy()

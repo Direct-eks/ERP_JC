@@ -76,7 +76,7 @@ if (process.env.BUILD_ENV === 'development') {
     base = '/api'
 }
 else if (process.env.BUILD_ENV === 'production') {
-    base = 'http://127.0.0.1' // for electron
+    base = 'http://localhost' // for electron
 }
 else {
     base = '' // for web
