@@ -1,12 +1,12 @@
 const { spawn } = require('child_process')
-const http = require('http')
 
 const path = require('path')
 
 let springBoot
 
 process.on('message', (message) => {
-    if (message.msg === 'ip') {
+    if (message.msg === 'start') {
+        const jarName = message.jarName
         springBoot = spawn(path.resolve('C:\\ERP_JC\\fulljre11\\bin\\java'),
             [
                 '-Dlog4j.skipJansi=false',
@@ -14,8 +14,8 @@ process.on('message', (message) => {
                 '-noverify',
                 '-Dspring.jmx.enabled=false',
                 '-jar',
-                path.resolve('C:\\ERP_JC\\backend\\backend-0.0.1-SNAPSHOT.jar'),
-                '--server.address=' + message.ipAddress
+                path.resolve('C:\\ERP_JC\\backend\\', jarName),
+                '--server.address=0.0.0.0'
             ]);
 
         let applicationStarted = false
@@ -35,21 +35,6 @@ process.on('message', (message) => {
         springBoot.on('exit', (code) => {
             process.send({ msg: 'exited' })
         })
-    }
-    else if (message.msg === 'shutdown') {
-        const options = {
-            hostname: 'localhost',
-            port: 80,
-            path: '/actuator/shutdown',
-            method: 'POST',
-            headers: {}
-        }
-
-        const req = http.request(options, res => {
-            console.log(`${res.statusCode}`)
-        })
-        req.write('')
-        req.end()
     }
 })
 

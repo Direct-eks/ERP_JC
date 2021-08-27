@@ -4,10 +4,14 @@ const {app, ipcMain, BrowserWindow, dialog, Menu} = require('electron')
 
 const fs = require('fs')
 const path = require('path')
+const os = require('os');
+const http = require('http')
 
 let backendFilesExist = false
 let jreFilesExist = false
 let databaseFilesExist = false
+
+const jarName = 'backend-0.0.1-SNAPSHOT.jar'
 
 const files = fs.readdirSync(path.resolve('C:\\ERP_JC'))
 for (const file of files) {
@@ -23,6 +27,22 @@ if (!backendFilesExist || !jreFilesExist || !databaseFilesExist) {
     app.quit()
     process.exit(1)
 }
+
+// get ipv4 address of this machine
+function getIPAddress() {
+    const interfaces = os.networkInterfaces();
+    for (const devName in interfaces) {
+        const tempInterface = interfaces[devName];
+        for (let i = 0; i < tempInterface.length; i++) {
+            const alias = tempInterface[i];
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                return alias.address;
+            }
+        }
+    }
+}
+const myIPAddress = getIPAddress();
+console.log(myIPAddress)
 
 
 const child = require('child_process')
@@ -69,7 +89,7 @@ let launchWin, mainWin
 Menu.setApplicationMenu(null)
 
 app.whenReady().then(() => {
-    springBootLauncher.send({ msg: 'ip', ipAddress: 'localhost' })
+    springBootLauncher.send({ msg: 'start', jarName: jarName})
     launchWin = new BrowserWindow({
         width: 500,
         height: 300,
@@ -89,7 +109,18 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        springBootLauncher.send({ msg: 'shutdown' })
+        const options = {
+            hostname: myIPAddress,
+            port: 80,
+            path: '/actuator/shutdown',
+            method: 'POST',
+            headers: {}
+        }
+        const req = http.request(options, res => {
+            console.log(`${res.statusCode}`)
+        })
+        req.write('')
+        req.end()
     }
 })
 
