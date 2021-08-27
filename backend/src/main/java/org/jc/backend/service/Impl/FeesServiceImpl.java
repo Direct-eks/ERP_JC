@@ -8,6 +8,7 @@ import org.jc.backend.entity.DO.FeeEntryDO;
 import org.jc.backend.entity.FeeCategoryO;
 import org.jc.backend.entity.FeeEntryDetailO;
 import org.jc.backend.entity.VO.FeeEntryWithDetailVO;
+import org.jc.backend.service.BankAccountStatService;
 import org.jc.backend.service.FeesService;
 import org.jc.backend.service.ModificationRecordService;
 import org.jc.backend.service.UsageCheckService;
@@ -15,6 +16,7 @@ import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,15 +35,21 @@ public class FeesServiceImpl implements FeesService {
     private final FeesMapper feesMapper;
     private final ModificationRecordService modificationRecordService;
     private final UsageCheckService usageCheckService;
+    private final BankAccountStatService acceptanceService;
+    private final BankAccountStatService moneyEntryService;
 
     public FeesServiceImpl(
             FeesMapper feesMapper,
             ModificationRecordService modificationRecordService,
-            UsageCheckService usageCheckService
+            UsageCheckService usageCheckService,
+            @Qualifier("acceptanceServiceImpl") BankAccountStatService acceptanceServiceImpl,
+            @Qualifier("moneyEntryServiceImpl") BankAccountStatService moneyEntryServiceImpl
     ) {
         this.feesMapper = feesMapper;
         this.modificationRecordService = modificationRecordService;
         this.usageCheckService = usageCheckService;
+        this.acceptanceService = acceptanceServiceImpl;
+        this.moneyEntryService = moneyEntryServiceImpl;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -298,7 +306,11 @@ public class FeesServiceImpl implements FeesService {
         return bool;
     }
 
-    public void calculateBalance() {
+    public void calculateBalance(int bankID) {
+        var acceptanceInEntries = acceptanceService.getFeeDetails(bankID, true);
+        var acceptanceOutEntries = acceptanceService.getFeeDetails(bankID, false);
 
+        var moneyInEntries = moneyEntryService.getFeeDetails(bankID, true);
+        var moneyOutEntries = moneyEntryService.getFeeDetails(bankID, false);
     }
 }

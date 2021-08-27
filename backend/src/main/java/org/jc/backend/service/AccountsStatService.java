@@ -10,6 +10,6 @@ public interface AccountsStatService {
     // summary
     List<Integer> getDistinctCompaniesInvolvedInEntries();
     // detail
-    List<AccountsDetailO> getEntryDetails(int id, boolean isInbound);
+    List<AccountsDetailO> getEntryDetails(int companyID, boolean isInbound);
     default void updateEntryBalance(AccountsDetailO entry) {} // no implementation for initialMoneyEntry
 }

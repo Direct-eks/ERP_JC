@@ -19,8 +19,12 @@ public interface MoneyEntryMapper {
     MoneyEntryO selectEntryBySerial(String serial);
     void modifyEntry(MoneyEntryO moneyEntryO);
 
-    // for accounts service
+    // for accounts stat service
     List<Integer> queryDistinctCompanyIDs();
     List<MoneyEntryO> queryAllEntriesByPrefixAndCompany(String prefix, int id);
     void updateEntryBalanceBySerial(AccountsDetailO entry);
+
+    // for bankAccount stat service
+    List<Integer> queryDistinctBankAccountIDs();
+    List<MoneyEntryO> queryAllEntriesByPrefixAndBankAccount(String prefix, int id);
 }

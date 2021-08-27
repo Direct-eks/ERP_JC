@@ -116,4 +116,19 @@
         where money_entry_serial = #{entryID}
     </update>
 
+    <select id="queryDistinctBankAccountIDs" resultType="java.lang.Integer">
+        select distinct bank_account_id
+        from m_money_entry
+        where bank_account_id != -1
+    </select>
+
+    <select id="queryAllEntriesByPrefixAndBankAccount" resultMap="moneyEntryResultMap">
+        select money_entry_serial, partner_company_id, payment_method, payment_number,
+               payment_amount, bank_account_id, remark, drawer, creation_date,
+               payment_date, checkout_serial, debit_or_credit, balance
+        from m_money_entry
+        where money_entry_serial like #{prefix}||'%'
+          and bank_account_id = #{id}
+    </select>
+
 </mapper>

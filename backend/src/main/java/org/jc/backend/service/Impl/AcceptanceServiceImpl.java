@@ -5,9 +5,11 @@ import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.entity.StatO.AccountsDetailO;
+import org.jc.backend.entity.StatO.BankStatO;
 import org.jc.backend.service.AcceptanceService;
 import org.jc.backend.service.AccountsService;
 import org.jc.backend.service.AccountsStatService;
+import org.jc.backend.service.BankAccountStatService;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,7 @@ import java.util.List;
 import static org.jc.backend.utils.AcceptanceBillClassification.*;
 
 @Service
-public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatService {
+public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatService, BankAccountStatService {
 
     private static final Logger logger = LoggerFactory.getLogger(AcceptanceServiceImpl.class);
 
@@ -207,6 +209,43 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
+            throw e;
+        }
+    }
+
+    /* -------------------------- BankAccount Stat Service -------------------------- */
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Integer> getDistinctBankAccountsInvolvedInEntries() {
+        try {
+            return acceptanceMapper.queryDistinctBankAccountIDs();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<BankStatO> getFeeDetails(int bankAccountID, boolean isSolutionPay) {
+        try {
+            var list = acceptanceMapper.queryAllEntriesByPrefixAndBankAccount(
+                    isSolutionPay ? ACCEPTANCE_SOLUTION : ACCEPTANCE_PROMISSORY, bankAccountID);
+            var results = new ArrayList<BankStatO>(list.size());
+
+            for (var item : list) {
+                BankStatO statO = new BankStatO();
+                // todo
+                results.add(statO);
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }

@@ -122,4 +122,19 @@
         where acceptance_entry_serial = #{entryID}
     </update>
 
+    <select id="queryDistinctBankAccountIDs" resultType="java.lang.Integer">
+        select distinct bank_account_id
+        from m_acceptance_entry
+    </select>
+
+    <select id="queryAllEntriesByPrefixAndBankAccount" resultMap="entryResultMap">
+        select acceptance_entry_serial, partner_company_id, entry_date, creation_date,
+               department_id, source, bank_account_id, source_serial, amount, number,
+               issue_date, expiration_date, type, drawer, remark, classification,
+               status, debit_or_credit, balance
+        from m_acceptance_entry
+        where acceptance_entry_serial like #{prefix}||'%'
+          and bank_account_id = #{id}
+    </select>
+
 </mapper>

@@ -5,10 +5,8 @@ import org.jc.backend.dao.MoneyEntryMapper;
 import org.jc.backend.entity.DO.CheckoutEntryDO;
 import org.jc.backend.entity.MoneyEntryO;
 import org.jc.backend.entity.StatO.AccountsDetailO;
-import org.jc.backend.service.AccountsService;
-import org.jc.backend.service.AccountsStatService;
-import org.jc.backend.service.ModificationRecordService;
-import org.jc.backend.service.MoneyEntryService;
+import org.jc.backend.entity.StatO.BankStatO;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +19,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.jc.backend.utils.AcceptanceBillClassification.ACCEPTANCE_PROMISSORY;
+import static org.jc.backend.utils.AcceptanceBillClassification.ACCEPTANCE_SOLUTION;
 import static org.jc.backend.utils.EntryClassification.INBOUND_PAYABLE;
 import static org.jc.backend.utils.EntryClassification.OUTBOUND_RECEIVABLE;
 
 @Service
-public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatService {
+public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatService, BankAccountStatService {
     private static final Logger logger = LoggerFactory.getLogger(MoneyEntryServiceImpl.class);
 
     private final MoneyEntryMapper moneyEntryMapper;
@@ -304,6 +304,41 @@ public class MoneyEntryServiceImpl implements MoneyEntryService, AccountsStatSer
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
             logger.error("update failed");
+            throw e;
+        }
+    }
+
+    /* -------------------------- BankAccount Stat Service -------------------------- */
+
+    @Override
+    public List<Integer> getDistinctBankAccountsInvolvedInEntries() {
+        try {
+            return moneyEntryMapper.queryDistinctBankAccountIDs();
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
+            throw e;
+        }
+    }
+
+    @Override
+    public List<BankStatO> getFeeDetails(int bankAccountID, boolean isSolutionPay) {
+        try {
+            var list = moneyEntryMapper.queryAllEntriesByPrefixAndBankAccount(
+                    isSolutionPay ? ACCEPTANCE_SOLUTION : ACCEPTANCE_PROMISSORY, bankAccountID);
+            var results = new ArrayList<BankStatO>(list.size());
+
+            for (var item : list) {
+                BankStatO statO = new BankStatO();
+                // todo
+                results.add(statO);
+            }
+            return results;
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("query failed");
             throw e;
         }
     }
