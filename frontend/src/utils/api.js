@@ -17,9 +17,9 @@ const api = {
     payableSummary: '/accounts/getPayableSummary',
     payableDetail: '/accounts/getPayableDetail',
     payableLedger: '/accounts/getPayableLedger',
-    receivableSummary: 'accounts/getReceivableSummary',
-    receivableDetail: 'accounts/getReceivableDetail',
-    receivableLedger: 'accounts/getReceivableLedger',
+    receivableSummary: '/accounts/getReceivableSummary',
+    receivableDetail: '/accounts/getReceivableDetail',
+    receivableLedger: '/accounts/getReceivableLedger',
 
     /* ------ /acceptanceEntry ------*/
     createAcceptanceEntry: '/acceptanceEntry/createEntry', // PUT
