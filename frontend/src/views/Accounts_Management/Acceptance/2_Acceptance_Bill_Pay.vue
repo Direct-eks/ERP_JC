@@ -18,9 +18,11 @@
                                      @reset="handleReset">
             </AcceptanceBillComponent>
 
-            <AcceptanceBillQueryComponent prefix="承付"
+            <v-divider class="my-2"></v-divider>
+
+            <AcceptanceQueryComponent prefix="承付"
                                           @entryClick="handleTableClick">
-            </AcceptanceBillQueryComponent>
+            </AcceptanceQueryComponent>
 
         </v-card-text>
     </v-card>
@@ -33,7 +35,7 @@ export default {
     name: "Acceptance_Bill_Pay",
     components: {
         AcceptanceBillComponent: () => import('~/components/AccountsManagementComponents/AcceptanceBillComponent'),
-        AcceptanceBillQueryComponent: () => import('~/components/AccountsManagementComponents/AcceptanceBillQueryComponent')
+        AcceptanceQueryComponent: () => import('~/components/AccountsManagementComponents/AcceptanceQueryComponent')
     },
     beforeMount() {
         Object.assign(this.emptyForm, this.form)

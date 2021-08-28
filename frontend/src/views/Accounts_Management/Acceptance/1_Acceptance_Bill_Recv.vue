@@ -20,9 +20,9 @@
 
             <v-divider class="my-2"></v-divider>
 
-            <AcceptanceBillQueryComponent prefix="承收"
+            <AcceptanceQueryComponent prefix="承收"
                                           @entryClick="handleTableClick">
-            </AcceptanceBillQueryComponent>
+            </AcceptanceQueryComponent>
 
         </v-card-text>
     </v-card>
@@ -36,8 +36,8 @@ export default {
     components: {
         AcceptanceBillComponent: () => import(/* webpackChunkName: "AcceptanceBillComponent" */
             '~/components/AccountsManagementComponents/AcceptanceBillComponent'),
-        AcceptanceBillQueryComponent: () => import(/* webpackChunkName: "AcceptanceBillQueryComponent" */
-            '~/components/AccountsManagementComponents/AcceptanceBillQueryComponent')
+        AcceptanceQueryComponent: () => import(/* webpackChunkName: "AcceptanceBillQueryComponent" */
+            '~/components/AccountsManagementComponents/AcceptanceQueryComponent')
     },
     beforeMount() {
         Object.assign(this.emptyForm, this.form)

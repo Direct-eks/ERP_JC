@@ -11,6 +11,20 @@
                 返回
             </v-btn>
         </v-card-title>
+        <v-card-text>
+
+            <AcceptancePayComponent :isSolutionPay="true"
+                                    :paramForm="form"
+                                    @reset="handleReset">
+            </AcceptancePayComponent>
+
+            <v-divider class="my-2"></v-divider>
+
+            <AcceptanceQueryComponent prefix="承解"
+                                      @entryClick="handleTableClick">
+            </AcceptanceQueryComponent>
+
+        </v-card-text>
     </v-card>
 </template>
 
@@ -19,9 +33,39 @@ import {mdiArrowLeft} from "@mdi/js";
 
 export default {
     name: "Acceptance_Bill_Solution_Pay",
+    components: {
+        AcceptancePayComponent: () => import('~/components/AccountsManagementComponents/AcceptancePayComponent'),
+        AcceptanceQueryComponent: () => import('~/components/AccountsManagementComponents/AcceptanceQueryComponent')
+    },
+    beforeMount() {
+        Object.assign(this.emptyForm, this.form)
+    },
     data() {
         return {
-            mdiArrowLeft
+            mdiArrowLeft,
+
+            form: {
+                acceptanceEntrySerial: '',
+                partnerCompanyID: -1, companyAbbreviatedName: '',
+                entryDate: '',
+                departmentID: -1, departmentName: '',
+                source: '',
+                bankAccountID: -1, bankAccountName: '',
+                sourceSerial: '',
+                amount: '', number: '',
+                issueDate: '', expirationDate: '',
+                type: '', drawer: '',
+                remark: '', classification: '', status: 0,
+            },
+            emptyForm: {}
+        }
+    },
+    methods: {
+        handleTableClick(val) {
+            Object.assign(this.form, val)
+        },
+        handleReset() {
+            Object.assign(this.form, this.emptyForm)
         }
     }
 }

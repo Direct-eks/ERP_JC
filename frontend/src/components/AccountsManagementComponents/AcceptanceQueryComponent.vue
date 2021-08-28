@@ -15,7 +15,7 @@
         </v-row>
 
         <v-data-table v-model="queryTableCurrentRow"
-                      :headers="queryTableHeaders"
+                      :headers="entryMode ? queryTableHeaders1 : queryTableHeaders2"
                       :items="queryTableData"
                       item-key="acceptanceEntrySerial"
                       show-select
@@ -38,7 +38,7 @@
 import DateRangePicker from "~/components/DateRangePicker";
 
 export default {
-    name: "AcceptanceBillQueryComponent",
+    name: "AcceptanceQueryComponent",
     components: {
         DateRangePicker
     },
@@ -48,14 +48,26 @@ export default {
             required: true
         }
     },
+    beforeMount() {
+        switch (this.prefix) {
+        case '承付':
+        case '承收':
+            break
+        case '承解':
+        case '承款':
+            break
+        }
+    },
     data() {
         return {
+            entryMode: true,
+
             dateRange: [
                 new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10),
                 new Date().format("yyyy-MM-dd").substr(0,10)
             ],
 
-            queryTableHeaders: [
+            queryTableHeaders1: [
                 { text: '单据号', value: 'acceptanceEntrySerial', width: '140px' },
                 { text: this.isInbound ? '付款单位' : '收款单位', value: 'companyAbbreviatedName', width: '140px' },
                 { text: '总金额', value: 'amount', width: '110px' },
@@ -64,6 +76,15 @@ export default {
                 { text: '出票日期', value: 'issueDate', width: '110px' },
                 { text: '到期日期', value: 'expirationDate', width: '110px' },
                 { text: '类型', value: 'type', width: '60px' },
+                { text: '开单人', value: 'drawer', width: '75px' },
+                { text: '标志', value: 'classification', width: '60px' },
+            ],
+            queryTableHeaders2: [
+                { text: '单据号', value: 'acceptanceEntrySerial', width: '140px' },
+                { text: this.isInbound ? '付款单位' : '收款单位', value: 'companyAbbreviatedName', width: '140px' },
+                { text: '总金额', value: 'amount', width: '110px' },
+                { text: '承兑票号', value: 'number', width: '140px' },
+                { text: '录入日期', value: 'entryDate', width: '110px' },
                 { text: '开单人', value: 'drawer', width: '75px' },
                 { text: '标志', value: 'classification', width: '60px' },
             ],
@@ -89,7 +110,7 @@ export default {
         },
         exportEntry() {
             if (this.queryTableCurrentRow.length === 0) {
-                this.$store.commit('setSnackbar', this.$warningMessage('未选择单据'))
+                this.$warningMessage('未选择单据')
                 return
             }
             this.$emit('entryClick', this.queryTableCurrentRow[0])
