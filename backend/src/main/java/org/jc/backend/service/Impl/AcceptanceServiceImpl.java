@@ -87,9 +87,19 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional
     @Override
-    public void createPayEntry() {
+    public void createPayEntry(boolean isSolutionPay, AcceptanceEntryO entryO) {
         try {
+            String entryDate = entryO.getEntryDate();
+            String base = isSolutionPay ? ACCEPTANCE_SOLUTION : ACCEPTANCE_PROMISSORY;
+            int count = acceptanceMapper.countNumberOfEntriesOfGivenDate(entryDate, base);
+            String newSerial = MyUtils.formNewSerial(base, count, entryDate);
 
+            entryO.setClassification(NORMAL);
+            entryO.setAcceptanceEntrySerial(newSerial);
+            acceptanceMapper.insertEntry(entryO);
+            logger.info("Inserted new acceptance pay entry: {}", newSerial);
+
+            // todo, calculate bank account balance?
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -186,6 +196,18 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
         // todo, now only support the two fields above
 
         return bool;
+    }
+
+    @Transactional
+    @Override
+    public void updatePayEntry(boolean isSolutionPay, AcceptanceEntryO entryO) {
+        try {
+
+        } catch (PersistenceException e) {
+            if (logger.isDebugEnabled()) e.printStackTrace();
+            logger.error("update failed");
+            throw e;
+        }
     }
 
     /* -------------------------- Accounts Stat Service -------------------------- */

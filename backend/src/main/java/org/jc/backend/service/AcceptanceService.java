@@ -9,10 +9,11 @@ import java.util.List;
 @Indexed
 public interface AcceptanceService {
     void createEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException;
-    void createPayEntry();
+    void createPayEntry(boolean isSolutionPay, AcceptanceEntryO entryO);
 
     List<AcceptanceEntryO> getEntryByNumber(String number);
     List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String prefix);
 
     void updateEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException;
+    void updatePayEntry(boolean isSolutionPay, AcceptanceEntryO entryO);
 }

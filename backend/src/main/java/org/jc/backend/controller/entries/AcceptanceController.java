@@ -56,10 +56,15 @@ public class AcceptanceController {
     }
 
     @ApiOperation(value = "", response = void.class)
-    @PutMapping("/createSolutionPayEntry")
-    public void createSolutionPayEntry() {
-        logger.info("PUT Request to /acceptanceEntry/createSolutionPayEntry");
+    @PutMapping("/createPayEntry")
+    public void createSolutionPayEntry(
+            @RequestBody @Validated AcceptanceEntryO entryO,
+            @RequestParam("isSolutionPay") boolean isSolutionPay
+    ) {
+        logger.info("PUT Request to /acceptanceEntry/createPayEntry, " +
+                "isSolutionPay: {}, data: {}", isSolutionPay, entryO);
 
+        acceptanceService.createPayEntry(isSolutionPay, entryO);
     }
 
     @ApiOperation(value = "", response = AcceptanceEntryO.class)
