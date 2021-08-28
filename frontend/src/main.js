@@ -153,6 +153,34 @@ function createOneLevelTree(data) {
 }
 Vue.prototype.$createOneLevelTree = createOneLevelTree
 
+
+Vue.prototype.$querySuccessMessage = function (data) {
+    store.commit('setSnackbar', {
+        message: '查询成功，返回' + data.length + '条结果',
+        color: 'success'
+    })
+}
+Vue.prototype.$saveSuccessMessage = function () {
+    store.commit('setSnackbar', {
+        message: '保存成功', color: 'success'
+    })
+}
+Vue.prototype.$successMessage = function (msg) {
+    store.commit('setSnackbar', {
+        message: msg, color: 'success'
+    })
+}
+Vue.prototype.$errorMessage = function (msg) {
+    store.commit('setSnackbar', {
+        message: msg, color: 'error'
+    })
+}
+Vue.prototype.$warningMessage = function (msg) {
+    store.commit('setSnackbar', {
+        message: msg, color: 'warning'
+    })
+}
+
 export default new Vue({
     el: '#app',
     store,
