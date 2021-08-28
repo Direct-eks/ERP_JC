@@ -5,7 +5,7 @@
                 <v-col cols="auto">
                     <DatePicker label="日期"
                                 v-model="form.entryDate"
-                                :disabled="displayMode">
+                                :disabled="modificationMode">
                     </DatePicker>
                 </v-col>
                 <v-col cols="auto">
@@ -26,7 +26,6 @@
                               item-text="name"
                               label="部门"
                               hide-details="auto"
-                              :readonly="displayMode"
                               outlined dense
                               style="width: 180px">
                     </v-select>
@@ -39,7 +38,6 @@
                               item-text="label"
                               label="记账"
                               hide-details="auto"
-                              :readonly="displayMode"
                               outlined dense
                               style="width: 90px">
                     </v-select>
@@ -51,7 +49,6 @@
                               item-text="label"
                               label="标志"
                               hide-details="auto"
-                              :readonly="displayMode"
                               outlined dense
                               style="width: 90px">
                     </v-select>
@@ -67,7 +64,7 @@
                               item-text="name"
                               :label="bankFieldName[0]"
                               hide-details="auto"
-                              :readonly="displayMode"
+                              :readonly="modificationMode"
                               outlined dense
                               style="width: 250px">
                     </v-select>
@@ -80,7 +77,7 @@
                               item-text="name"
                               :label="bankFieldName[1]"
                               hide-details="auto"
-                              :readonly="displayMode"
+                              :readonly="modificationMode"
                               outlined dense
                               style="width: 250px">
                     </v-select>
@@ -103,7 +100,6 @@
                                   hide-details="auto"
                                   outlined
                                   dense
-                                  :readonly="displayMode"
                                   style="width: 200px">
                     </v-text-field>
                 </v-col>
@@ -113,7 +109,6 @@
                     <v-textarea v-model="form.remark"
                                 label="备注"
                                 hide-details="auto"
-                                :readonly="displayMode"
                                 outlined
                                 dense
                                 auto-grow
@@ -293,7 +288,6 @@ export default {
     },
     data() {
         return {
-            displayMode: false,
             hideSourceBank: false,
             hideDestinationBank: false,
             hideDetail: true,
