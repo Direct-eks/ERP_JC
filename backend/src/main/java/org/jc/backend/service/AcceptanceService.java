@@ -9,7 +9,7 @@ import java.util.List;
 @Indexed
 public interface AcceptanceService {
     void createEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException;
-    void createSolutionPayEntry();
+    void createPayEntry();
 
     List<AcceptanceEntryO> getEntryByNumber(String number);
     List<AcceptanceEntryO> getEntriesInDateRange(String startDate, String endDate, String prefix);

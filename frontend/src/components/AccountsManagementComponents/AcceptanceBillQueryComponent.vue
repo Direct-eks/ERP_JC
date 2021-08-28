@@ -17,7 +17,7 @@
         <v-data-table v-model="queryTableCurrentRow"
                       :headers="queryTableHeaders"
                       :items="queryTableData"
-                      item-key="checkoutEntrySerial"
+                      item-key="acceptanceEntrySerial"
                       show-select
                       single-select
                       checkbox-color="accent"
@@ -79,6 +79,8 @@ export default {
                 endDate: this.dateRange[1],
                 prefix: this.prefix
             }).then(data => {
+                this.$querySuccessMessage(data)
+                this.queryTableCurrentRow = []
                 this.queryTableData = data
             }).catch(() => {})
         },
@@ -87,9 +89,7 @@ export default {
         },
         exportEntry() {
             if (this.queryTableCurrentRow.length === 0) {
-                this.$store.commit('setSnackbar', {
-                    message: '未选择单据', color: 'warning'
-                })
+                this.$store.commit('setSnackbar', this.$warningMessage('未选择单据'))
                 return
             }
             this.$emit('entryClick', this.queryTableCurrentRow[0])

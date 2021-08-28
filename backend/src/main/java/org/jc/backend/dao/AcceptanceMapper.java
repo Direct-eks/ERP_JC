@@ -20,6 +20,7 @@ public interface AcceptanceMapper {
 
     List<AcceptanceEntryO> queryEntryByNumber(String number);
     List<AcceptanceEntryO> queryEntriesInDateRange(String startDate, String endDate, String prefix);
+    AcceptanceEntryO selectForCompare(String id);
     void updateEntry(AcceptanceEntryO entryO);
     void deleteEntry(String id);
 

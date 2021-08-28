@@ -30,7 +30,8 @@
                 </v-col>
                 <v-col cols="auto">
                     <DatePicker label="办理日期"
-                                v-model="form.entryDate">
+                                v-model="form.entryDate"
+                                :disabled="modificationMode">
                     </DatePicker>
                 </v-col>
                 <v-col cols="auto">
@@ -202,9 +203,14 @@
                 </v-dialog>
             </v-col>
             <v-col v-if="modificationMode" cols="auto">
+                <v-btn color="accent" @click="reset">
+                    放弃修改
+                </v-btn>
+            </v-col>
+            <v-col v-if="modificationMode" cols="auto">
                 <v-dialog v-model="submitPopup2" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="accent" v-on="on">
+                        <v-btn color="primary" v-on="on">
                             修改
                         </v-btn>
                     </template>
@@ -217,11 +223,6 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-            </v-col>
-            <v-col v-if="modificationMode" cols="auto">
-                <v-btn color="accent" @click="reset">
-                    放弃修改
-                </v-btn>
             </v-col>
         </v-row>
     </v-container>
@@ -376,7 +377,7 @@ export default {
             this.submitPopup2 = false
 
             if (this.$refs.form.validate()) {
-                this.$postRequest(this.$api.updateAcceptanceEntry, this.form, {
+                this.$patchRequest(this.$api.updateAcceptanceEntry, this.form, {
                     isInbound: this.isInbound
                 }).then(() => {
                     this.$saveSuccessMessage()

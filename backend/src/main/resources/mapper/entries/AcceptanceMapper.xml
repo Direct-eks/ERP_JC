@@ -90,8 +90,23 @@
         order by a.acceptance_entry_serial, a.entry_date desc
     </select>
 
-    <update id="updateEntry">
+    <select id="selectForCompare" resultMap="entryResultMap">
+        select acceptance_entry_serial, a.partner_company_id, c.abbreviated_name, a.entry_date,
+               a.creation_date, a.department_id, d.name as department_name, a.source, a.bank_account_id,
+               b.name as bank_account_name, a.source_serial, a.amount, a.number, a.issue_date,
+               a.expiration_date, a.type, a.remark, a.drawer, a.classification, a.status
+        from m_acceptance_entry as a join c_partner_company as c
+            on a.partner_company_id = c.partner_company_id
+            join e_department as d on a.department_id = d.department_id
+            left join f_bank_account as b on a.bank_account_id = b.bank_account_id
+        where a.acceptance_entry_serial = #{id}
+    </select>
 
+    <update id="updateEntry">
+        update m_acceptance_entry
+        set partner_company_id = #{partnerCompanyID},
+            department_id = #{departmentID}
+        where acceptance_entry_serial = #{acceptanceEntrySerial}
     </update>
 
     <delete id="deleteEntry">

@@ -1,15 +1,14 @@
 package org.jc.backend.service.Impl;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.jc.backend.config.exception.GlobalParamException;
 import org.jc.backend.dao.AcceptanceMapper;
 import org.jc.backend.entity.AcceptanceEntryO;
 import org.jc.backend.entity.StatO.AccountsDetailO;
 import org.jc.backend.entity.StatO.BankStatO;
-import org.jc.backend.service.AcceptanceService;
-import org.jc.backend.service.AccountsService;
-import org.jc.backend.service.AccountsStatService;
-import org.jc.backend.service.BankAccountStatService;
+import org.jc.backend.service.*;
 import org.jc.backend.utils.MyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +27,16 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     private final AcceptanceMapper acceptanceMapper;
     private final AccountsService accountsService;
+    private final ModificationRecordService modificationRecordService;
 
     public AcceptanceServiceImpl(
             AcceptanceMapper acceptanceMapper,
-            AccountsService accountsService
+            AccountsService accountsService,
+            ModificationRecordService modificationRecordService
     ) {
         this.acceptanceMapper = acceptanceMapper;
         this.accountsService = accountsService;
+        this.modificationRecordService = modificationRecordService;
     }
 
     /* ------------------------------ SERVICE ------------------------------ */
@@ -85,8 +87,9 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
 
     @Transactional
     @Override
-    public void createSolutionPayEntry() {
+    public void createPayEntry() {
         try {
+
 
         } catch (PersistenceException e) {
             if (logger.isDebugEnabled()) e.printStackTrace();
@@ -124,6 +127,9 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
     @Transactional
     @Override
     public void updateEntry(boolean isInbound, AcceptanceEntryO entryO) throws GlobalParamException {
+        Subject subject = SecurityUtils.getSubject();
+        String usernameString = "修改者：" + subject.getPrincipals().getPrimaryPrincipal() + "; ";
+
         try {
             var oldEntry = acceptanceMapper.queryEntryBySerial(entryO.getAcceptanceEntrySerial());
 
@@ -139,7 +145,19 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
                 }
             }
 
-            // todo
+            String serial = entryO.getAcceptanceEntrySerial();
+            AcceptanceEntryO originalEntry = acceptanceMapper.selectForCompare(serial);
+
+            StringBuilder record = new StringBuilder(usernameString);
+            if (this.formModificationRecord(record, entryO, originalEntry)) {
+                acceptanceMapper.updateEntry(entryO);
+                logger.info("Updated acceptance entry: {}", serial);
+                modificationRecordService.insertRecord(serial, record);
+            }
+            else {
+                logger.warn("nothing changed, begin rolling back");
+                throw new RuntimeException();
+            }
 
             // calculate balance
             accountsService.calculateBalance(entryO.getPartnerCompanyID());
@@ -149,6 +167,25 @@ public class AcceptanceServiceImpl implements AcceptanceService, AccountsStatSer
             logger.error("update failed");
             throw e;
         }
+    }
+
+    private boolean formModificationRecord(
+            StringBuilder record, AcceptanceEntryO modifiedO, AcceptanceEntryO originalO) {
+        boolean bool = false;
+
+        if (!modifiedO.getPartnerCompanyID().equals(originalO.getPartnerCompanyID())) {
+            bool = true;
+            record.append(String.format("单位：%s -> %s",
+                    originalO.getCompanyAbbreviatedName(), modifiedO.getCompanyAbbreviatedName()));
+        }
+        if (!modifiedO.getDepartmentID().equals(originalO.getDepartmentID())) {
+            bool = true;
+            record.append(String.format("部门：%s -> %s",
+                    originalO.getDepartmentName(), modifiedO.getDepartmentName()));
+        }
+        // todo, now only support the two fields above
+
+        return bool;
     }
 
     /* -------------------------- Accounts Stat Service -------------------------- */
