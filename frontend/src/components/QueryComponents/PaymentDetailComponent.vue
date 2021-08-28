@@ -73,6 +73,7 @@ export default {
                 this.$api.payableDetail, {
                 companyID: val
             }).then(data => {
+                this.$querySuccessMessage(data)
                 this.tableData = data
                 this.loading = false
             }).catch(() => { this.loading = false })

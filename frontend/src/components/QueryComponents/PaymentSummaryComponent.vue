@@ -40,6 +40,7 @@ export default {
 
         this.$getRequest(this.customerMode ? this.$api.receivableSummary :
             this.$api.payableSummary).then(data => {
+            this.$querySuccessMessage(data)
             this.tableData = data
             this.loading = false
         }).catch(() => { this.loading = false })

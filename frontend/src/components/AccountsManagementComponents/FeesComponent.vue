@@ -409,16 +409,12 @@ export default {
             this.submitPopup = false
 
             if (this.form.feeEntryID !== '') {
-                this.$store.commit('setSnackbar', {
-                    message: '不能新增', color: 'warning'
-                })
+                this.$warningMessage('不能新增')
                 return
             }
 
             if (!this.hideDetail && this.form.feeDetails.length === 0) {
-                this.$store.commit('setSnackbar', {
-                    message: '明细不能为空', color: 'warning'
-                })
+                this.$warningMessage('明细不能为空')
                 return
             }
 
@@ -426,9 +422,7 @@ export default {
                 this.$putRequest(this.$api.createFeeEntry, this.form, {
                     prefix: this.mode
                 }).then(() => {
-                    this.$store.commit('setSnackbar', {
-                        message: '保存成功', color: 'success'
-                    })
+                    this.$saveSuccessMessage()
                 }).catch(() => {})
             }
         },
@@ -436,9 +430,7 @@ export default {
             this.submitPopup2 = false
 
             if (!this.hideDetail && this.form.feeDetails.length === 0) {
-                this.$store.commit('setSnackbar', {
-                    message: '明细不能为空', color: 'warning'
-                })
+                this.$warningMessage('明细不能为空')
                 return
             }
 
@@ -446,9 +438,7 @@ export default {
                 this.$postRequest(this.$api.updateFeeEntry, this.form, {
                     prefix: this.mode
                 }).then(() => {
-                    this.$store.commit('setSnackbar', {
-                        message: '保存成功', color: 'success'
-                    })
+                    this.$saveSuccessMessage()
                 }).catch(() => {})
             }
         },

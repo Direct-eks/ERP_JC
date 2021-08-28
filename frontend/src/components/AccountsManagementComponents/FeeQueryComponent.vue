@@ -17,7 +17,7 @@
         <v-data-table v-model="queryTableCurrentRow"
                       :headers="queryTableHeaders"
                       :items="queryTableData"
-                      item-key="checkoutEntrySerial"
+                      item-key="feeEntryID"
                       show-select
                       single-select
                       checkbox-color="accent"
@@ -92,6 +92,7 @@ export default {
                 endDate: this.dateRange[1],
                 prefix: this.prefix
             }).then(data => {
+                this.$querySuccessMessage(data)
                 this.queryTableData = data
             }).catch(() => {})
         },
