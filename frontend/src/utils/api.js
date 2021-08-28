@@ -23,7 +23,7 @@ const api = {
 
     /* ------ /acceptanceEntry ------*/
     createAcceptanceEntry: '/acceptanceEntry/createEntry', // PUT
-    createSolutionPayEntry: '/acceptanceEntry/createSolutionPayEntry', // PUT
+    createPayEntry: '/acceptanceEntry/createPayEntry', // PUT
     getAcceptanceEntryByNumber: '/acceptanceEntry/getEntriesByNumber', // GET
     getAcceptanceEntryInDateRange: '/acceptanceEntry/getEntriesInDateRange', // GET
     updateAcceptanceEntry: '/acceptanceEntry/updateEntry', // PATCH
