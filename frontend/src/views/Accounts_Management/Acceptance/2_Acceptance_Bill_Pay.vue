@@ -14,7 +14,8 @@
         <v-card-text>
 
             <AcceptanceBillComponent :isInbound="false"
-                                     :paramForm="{}">
+                                     :paramForm="form"
+                                     @reset="handleReset">
             </AcceptanceBillComponent>
 
             <AcceptanceBillQueryComponent prefix="承付"
@@ -34,14 +35,35 @@ export default {
         AcceptanceBillComponent: () => import('~/components/AccountsManagementComponents/AcceptanceBillComponent'),
         AcceptanceBillQueryComponent: () => import('~/components/AccountsManagementComponents/AcceptanceBillQueryComponent')
     },
+    beforeMount() {
+        Object.assign(this.emptyForm, this.form)
+    },
     data() {
         return {
             mdiArrowLeft,
+
+            form: {
+                acceptanceEntrySerial: '',
+                partnerCompanyID: -1, companyAbbreviatedName: '',
+                entryDate: '',
+                departmentID: -1, departmentName: '',
+                source: '',
+                bankAccountID: -1, bankAccountName: '',
+                sourceSerial: '',
+                amount: '', number: '',
+                issueDate: '', expirationDate: '',
+                type: '', drawer: '',
+                remark: '', classification: '', status: 0,
+            },
+            emptyForm: {}
         }
     },
     methods: {
-        handleTableClick() {
-
+        handleTableClick(val) {
+            Object.assign(this.form, val)
+        },
+        handleReset() {
+            Object.assign(this.form, this.emptyForm)
         }
     }
 }

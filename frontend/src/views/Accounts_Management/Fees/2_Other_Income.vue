@@ -14,7 +14,8 @@
         <v-card-text>
 
             <FeeComponent :paramForm="form"
-                          mode="income">
+                          mode="income"
+                          @reset="handleReset">
             </FeeComponent>
 
             <v-divider class="my-2"></v-divider>
@@ -35,6 +36,9 @@ export default {
         FeeComponent: () => import('~/components/AccountsManagementComponents/FeesComponent'),
         FeeQueryComponent: () => import('~/components/AccountsManagementComponents/FeeQueryComponent')
     },
+    beforeMount() {
+        Object.assign(this.emptyForm, this.form)
+    },
     data() {
         return {
             mdiArrowLeft,
@@ -50,12 +54,16 @@ export default {
                 isBookKeeping: 0, isVerified: 0,
                 feeDetails: [],
             },
+            emptyForm: {}
         }
     },
     methods: {
         handleTableClick(val) {
             Object.assign(this.form, val)
         },
+        handleReset() {
+            Object.assign(this.form, this.emptyForm)
+        }
     }
 }
 </script>

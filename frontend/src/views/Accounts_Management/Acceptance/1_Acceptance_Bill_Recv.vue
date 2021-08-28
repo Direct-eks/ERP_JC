@@ -14,7 +14,8 @@
         <v-card-text>
 
             <AcceptanceBillComponent :isInbound="true"
-                                     :paramForm="form">
+                                     :paramForm="form"
+                                     @reset="handleReset">
             </AcceptanceBillComponent>
 
             <v-divider class="my-2"></v-divider>
@@ -38,6 +39,9 @@ export default {
         AcceptanceBillQueryComponent: () => import(/* webpackChunkName: "AcceptanceBillQueryComponent" */
             '~/components/AccountsManagementComponents/AcceptanceBillQueryComponent')
     },
+    beforeMount() {
+        Object.assign(this.emptyForm, this.form)
+    },
     data() {
         return {
             mdiArrowLeft,
@@ -55,11 +59,15 @@ export default {
                 type: '', drawer: '',
                 remark: '', classification: '', status: 0,
             },
+            emptyForm: {}
         }
     },
     methods: {
         handleTableClick(val) {
             Object.assign(this.form, val)
+        },
+        handleReset() {
+            Object.assign(this.form, this.emptyForm)
         }
     }
 }

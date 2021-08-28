@@ -444,6 +444,7 @@ export default {
         },
         reset() {
             Object.assign(this.form, this.emptyForm)
+            this.$emit('reset')
         }
     }
 }

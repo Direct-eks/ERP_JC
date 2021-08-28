@@ -167,11 +167,11 @@
 
         <v-row>
             <v-spacer></v-spacer>
-            <v-col cols="auto">
+            <v-col v-if="modificationMode" cols="auto">
                 <v-dialog v-model="deletePopup" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn :disabled="form.acceptanceEntrySerial === ''" color="warning" v-on="on">
-                            删除
+                        <v-btn color="warning" v-on="on">
+                            删除此单据
                         </v-btn>
                     </template>
                     <v-card>
@@ -184,10 +184,10 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col cols="auto">
+            <v-col v-if="!modificationMode" cols="auto">
                 <v-dialog v-model="submitPopup" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn :disabled="form.acceptanceEntrySerial !== ''" color="primary" v-on="on">
+                        <v-btn color="primary" v-on="on">
                             保存新单据
                         </v-btn>
                     </template>
@@ -201,10 +201,10 @@
                     </v-card>
                 </v-dialog>
             </v-col>
-            <v-col cols="auto">
+            <v-col v-if="modificationMode" cols="auto">
                 <v-dialog v-model="submitPopup2" max-width="300px">
                     <template v-slot:activator="{ on }">
-                        <v-btn :disabled="form.acceptanceEntrySerial === ''" color="accent" v-on="on">
+                        <v-btn color="accent" v-on="on">
                             修改
                         </v-btn>
                     </template>
@@ -217,6 +217,11 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+            </v-col>
+            <v-col v-if="modificationMode" cols="auto">
+                <v-btn color="accent" @click="reset">
+                    放弃修改
+                </v-btn>
             </v-col>
         </v-row>
     </v-container>
@@ -254,6 +259,7 @@ export default {
     beforeMount() {
         this.$store.dispatch('getDepartmentOptions')
         this.$store.dispatch('getBankAccounts')
+        Object.assign(this.emptyForm, this.form)
     },
     data() {
         return {
@@ -283,6 +289,8 @@ export default {
                 type: '银行', drawer: this.$store.getters.currentUser,
                 remark: '', classification: '', status: 0,
             },
+            emptyForm: {},
+
             rules: {
                 company: [v => !!v || '请选择单位'],
                 departmentID: [v => v !== -1 || '请选择部门'],
@@ -295,20 +303,16 @@ export default {
     },
     computed: {
         departmentOptions() {
-            const options = this.$store.state.departmentOptions
-            for (const item of options) {
-                if (item.isDefault === 1) {
-                    this.form.departmentID = item.departmentID
-                    break
-                }
-            }
-            return options
+            return this.$store.state.departmentOptions
         },
         bankAccountOptions() {
             return this.$store.state.visibleBankAccounts
         },
         disableFields() {
             return !this.isInbound && this.form.source === '外单位'
+        },
+        modificationMode() {
+            return this.form.acceptanceEntrySerial !== ''
         }
     },
     methods: {
@@ -349,15 +353,14 @@ export default {
             this.form.amount = this.$validateFloat(item, true)
         },
         handleDelete() {
-
+            this.deletePopup = false
+            // todo
         },
         saveNew() {
             this.submitPopup = false
 
             if (this.form.acceptanceEntrySerial !== '') {
-                this.$store.commit('setSnackbar', {
-                    message: '不能新增', color: 'warning'
-                })
+                this.$warningMessage('不能新增')
                 return
             }
 
@@ -365,14 +368,24 @@ export default {
                 this.$putRequest(this.$api.createAcceptanceEntry, this.form, {
                     isInbound: this.isInbound
                 }).then(() => {
-                    this.$store.commit('setSnackbar', {
-                        message: '保存成功', color: 'success'
-                    })
+                    this.$saveSuccessMessage()
                 }).catch(() => {})
             }
         },
         saveChange() {
+            this.submitPopup2 = false
 
+            if (this.$refs.form.validate()) {
+                this.$postRequest(this.$api.updateAcceptanceEntry, this.form, {
+                    isInbound: this.isInbound
+                }).then(() => {
+                    this.$saveSuccessMessage()
+                }).catch(() => {})
+            }
+        },
+        reset() {
+            Object.assign(this.form, this.emptyForm)
+            this.$emit('reset')
         }
     }
 
