@@ -47,6 +47,12 @@ Date.prototype.format = function (fmt) {
     }
     return fmt;
 }
+Vue.prototype.$todayDateString = function () {
+    return new Date().format("yyyy-MM-dd").substr(0,10)
+}
+Vue.prototype.$firstDayOfMonthDateString = function () {
+    return new Date(new Date().setDate(1)).format("yyyy-MM-dd").substr(0,10)
+}
 
 import Big from "big.js"
 Vue.prototype.$Big = Big
