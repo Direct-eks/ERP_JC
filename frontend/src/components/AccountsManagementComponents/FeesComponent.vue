@@ -435,7 +435,7 @@ export default {
             }
 
             if (this.$refs.form.validate()) {
-                this.$postRequest(this.$api.updateFeeEntry, this.form, {
+                this.$patchRequest(this.$api.updateFeeEntry, this.form, {
                     prefix: this.mode
                 }).then(() => {
                     this.$saveSuccessMessage()

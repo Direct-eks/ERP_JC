@@ -77,7 +77,7 @@ const api = {
     updateFeeCategories: '/fees/updateFeeCategories', // POST
     createFeeEntry: '/fees/createEntry', // PUT
     getFeeEntriesInDateRange: '/fees/getEntriesInDateRange', // GET
-    updateFeeEntry: '/fees/updateEntry', // POST
+    updateFeeEntry: '/fees/updateEntry', // PATCH
 
     /* ------ /inboundEntry ------*/
     completeInboundEntry: '/inboundEntry/completeEntry', // PATCH
